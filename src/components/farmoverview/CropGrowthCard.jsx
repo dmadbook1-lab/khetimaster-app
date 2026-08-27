@@ -1,15 +1,12 @@
 import React from 'react';
-import {View, Text, StyleSheet, Dimensions} from 'react-native';
-import {Sprout} from 'lucide-react-native';
-
-const {width} = Dimensions.get('window');
+import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import { Sprout } from 'lucide-react-native';
+const { width } = Dimensions.get('window');
 const GREEN = '#16883E';
-
 const rf = size => {
   const scale = width / 390;
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
-
 export default function CropGrowthCard() {
   return (
     <View style={styles.card}>
@@ -40,7 +37,6 @@ export default function CropGrowthCard() {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   card: {
     marginHorizontal: width * 0.055,
@@ -51,7 +47,10 @@ const styles = StyleSheet.create({
     shadowColor: '#0F172A',
     shadowOpacity: 0.06,
     shadowRadius: 12,
-    shadowOffset: {width: 0, height: 6},
+    shadowOffset: {
+      width: 0,
+      height: 6,
+    },
     elevation: 3,
   },
   headerRow: {

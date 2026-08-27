@@ -9,9 +9,15 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
-import Svg, {Path, Circle, Defs, LinearGradient as SvgGradient, Stop} from 'react-native-svg';
+import Svg, {
+  Path,
+  Circle,
+  Defs,
+  LinearGradient as SvgGradient,
+  Stop,
+} from 'react-native-svg';
 import {
   ChevronLeft,
   MapPin,
@@ -33,9 +39,7 @@ import {
   CloudSun,
   Cloud,
 } from 'lucide-react-native';
-
-const {width} = Dimensions.get('window');
-
+const { width } = Dimensions.get('window');
 const GREEN = '#16A34A';
 const DARK_GREEN = '#16883E';
 const BRIGHT_GREEN = '#1FC45A';
@@ -48,20 +52,31 @@ const BLUE = '#3B82F6';
 const AMBER = '#F59E0B';
 const RED = '#EF4444';
 const PURPLE = '#A855F7';
-
 const PAGE_PADDING = width * 0.037;
-
 const rf = size => {
   const scale = width / 390;
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
-
 const RAIN_STATS = [
-  {id: 'expected', value: '2.5 mm', label: 'Expected Rain', Icon: Droplet},
-  {id: 'starts', value: '6:30 PM', label: 'Rain Starts', Icon: Clock},
-  {id: 'intensity', value: 'Moderate', label: 'Intensity', Icon: Wind},
+  {
+    id: 'expected',
+    value: '2.5 mm',
+    label: 'Expected Rain',
+    Icon: Droplet,
+  },
+  {
+    id: 'starts',
+    value: '6:30 PM',
+    label: 'Rain Starts',
+    Icon: Clock,
+  },
+  {
+    id: 'intensity',
+    value: 'Moderate',
+    label: 'Intensity',
+    Icon: Wind,
+  },
 ];
-
 const AI_ADVISORY = [
   {
     id: 'spray',
@@ -91,16 +106,51 @@ const AI_ADVISORY = [
     badgeColor: '#B45309',
   },
 ];
-
 const TIMELINE_DATA = [
-  {id: '8am', time: '8AM', value: '0%', Icon: Sun, color: '#FBBF24'},
-  {id: '10am', time: '10AM', value: '5%', Icon: Sun, color: '#FBBF24'},
-  {id: '12pm', time: '12PM', value: '10%', Icon: CloudSun, color: '#FBBF24'},
-  {id: '4pm', time: '4PM', value: '40%', Icon: Cloud, color: '#94A3B8'},
-  {id: '7pm', time: '7PM', value: '82%', Icon: CloudRain, color: BLUE, active: true},
-  {id: '9pm', time: '9PM', value: '20%', Icon: Cloud, color: '#94A3B8'},
+  {
+    id: '8am',
+    time: '8AM',
+    value: '0%',
+    Icon: Sun,
+    color: '#FBBF24',
+  },
+  {
+    id: '10am',
+    time: '10AM',
+    value: '5%',
+    Icon: Sun,
+    color: '#FBBF24',
+  },
+  {
+    id: '12pm',
+    time: '12PM',
+    value: '10%',
+    Icon: CloudSun,
+    color: '#FBBF24',
+  },
+  {
+    id: '4pm',
+    time: '4PM',
+    value: '40%',
+    Icon: Cloud,
+    color: '#94A3B8',
+  },
+  {
+    id: '7pm',
+    time: '7PM',
+    value: '82%',
+    Icon: CloudRain,
+    color: BLUE,
+    active: true,
+  },
+  {
+    id: '9pm',
+    time: '9PM',
+    value: '20%',
+    Icon: Cloud,
+    color: '#94A3B8',
+  },
 ];
-
 const INSIGHTS = [
   {
     id: 'prob',
@@ -140,7 +190,6 @@ const INSIGHTS = [
     border: '#FED7AA',
   },
 ];
-
 const FARM_IMPACT = [
   {
     id: 'spray',
@@ -168,31 +217,41 @@ const FARM_IMPACT = [
     bg: '#FEF9E7',
   },
 ];
-
 const SAFETY_TIPS = [
   'Avoid fertilizer application during rainfall.',
   'Cover harvested produce before evening.',
   'Delay pesticide spraying after rainfall starts.',
 ];
-
-// Rain Timeline curve component
 function RainCurve() {
   const chartWidth = width - PAGE_PADDING * 2 - 30;
   const chartHeight = 90;
-
-  // 6 data points mapped to positions
   const points = [
-    {x: chartWidth * 0.02, y: chartHeight * 0.85}, // 8AM 0%
-    {x: chartWidth * 0.20, y: chartHeight * 0.72}, // 10AM 5%
-    {x: chartWidth * 0.38, y: chartHeight * 0.55}, // 12PM 10%
-    {x: chartWidth * 0.56, y: chartHeight * 0.32}, // 4PM 40%
-    {x: chartWidth * 0.74, y: chartHeight * 0.18}, // 7PM 82% (peak)
-    {x: chartWidth * 0.96, y: chartHeight * 0.42}, // 9PM 20%
+    {
+      x: chartWidth * 0.02,
+      y: chartHeight * 0.85,
+    },
+    {
+      x: chartWidth * 0.2,
+      y: chartHeight * 0.72,
+    },
+    {
+      x: chartWidth * 0.38,
+      y: chartHeight * 0.55,
+    },
+    {
+      x: chartWidth * 0.56,
+      y: chartHeight * 0.32,
+    },
+    {
+      x: chartWidth * 0.74,
+      y: chartHeight * 0.18,
+    },
+    {
+      x: chartWidth * 0.96,
+      y: chartHeight * 0.42,
+    },
   ];
-
-  const activePoint = points[4]; // 7PM
-
-  // Build smooth curve path
+  const activePoint = points[4];
   const pathD = points
     .map((p, i) => {
       if (i === 0) return `M ${p.x} ${p.y}`;
@@ -204,10 +263,9 @@ function RainCurve() {
       return `C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${p.x} ${p.y}`;
     })
     .join(' ');
-
-  // Fill area path
-  const fillD = `${pathD} L ${points[points.length - 1].x} ${chartHeight} L ${points[0].x} ${chartHeight} Z`;
-
+  const fillD = `${pathD} L ${points[points.length - 1].x} ${chartHeight} L ${
+    points[0].x
+  } ${chartHeight} Z`;
   return (
     <Svg width={chartWidth} height={chartHeight}>
       <Defs>
@@ -237,27 +295,27 @@ function RainCurve() {
     </Svg>
   );
 }
-
-export default function RainfallDetailsScreen({navigation}) {
+export default function RainfallDetailsScreen({ navigation }) {
   const handleBack = () => {
     if (navigation?.canGoBack()) navigation.goBack();
   };
-
   const handleViewAlerts = () => {
     navigation.navigate('AIWeatherInsights');
   };
-
   const handleShare = () => {
     Alert.alert('Share', 'Sharing rainfall details...');
   };
-
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
 
-      {/* Header */}
+      {}
       <View style={styles.header}>
-        <TouchableOpacity activeOpacity={0.8} onPress={handleBack} style={styles.iconBtn}>
+        <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={handleBack}
+          style={styles.iconBtn}
+        >
           <ChevronLeft size={rf(22)} color={DARK} strokeWidth={2.6} />
         </TouchableOpacity>
 
@@ -271,21 +329,33 @@ export default function RainfallDetailsScreen({navigation}) {
           </View>
         </View>
 
-        <TouchableOpacity activeOpacity={0.8} onPress={handleShare} style={styles.iconBtn}>
+        <TouchableOpacity
+          activeOpacity={0.8}
+          onPress={handleShare}
+          style={styles.iconBtn}
+        >
           <Share2 size={rf(18)} color={DARK} strokeWidth={2.2} />
         </TouchableOpacity>
       </View>
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}>
-        {/* Hero Probability Card */}
+        contentContainerStyle={styles.scrollContent}
+      >
+        {}
         <LinearGradient
           colors={['#3B9EFF', '#1E7FFF', '#0F5FE0']}
           locations={[0, 0.5, 1]}
-          start={{x: 0, y: 0}}
-          end={{x: 1, y: 1}}
-          style={styles.heroCard}>
+          start={{
+            x: 0,
+            y: 0,
+          }}
+          end={{
+            x: 1,
+            y: 1,
+          }}
+          style={styles.heroCard}
+        >
           <View style={styles.glowTopRight} />
           <View style={styles.glowBottomLeft} />
 
@@ -329,12 +399,14 @@ export default function RainfallDetailsScreen({navigation}) {
           </View>
         </LinearGradient>
 
-        {/* AI Rain Advisory */}
+        {}
         <View style={styles.advisoryCard}>
           <View style={styles.advisoryHeader}>
             <View style={styles.advisoryHeaderLeft}>
               <Text style={styles.advisoryTitle}>AI Rain Advisory</Text>
-              <Text style={styles.advisorySubtitle}>Powered by KhetiMaster AI</Text>
+              <Text style={styles.advisorySubtitle}>
+                Powered by KhetiMaster AI
+              </Text>
             </View>
 
             <View style={styles.advisoryBotBox}>
@@ -361,13 +433,19 @@ export default function RainfallDetailsScreen({navigation}) {
                   <View
                     style={[
                       styles.advisoryBadge,
-                      {backgroundColor: item.badgeBg},
-                    ]}>
+                      {
+                        backgroundColor: item.badgeBg,
+                      },
+                    ]}
+                  >
                     <Text
                       style={[
                         styles.advisoryBadgeText,
-                        {color: item.badgeColor},
-                      ]}>
+                        {
+                          color: item.badgeColor,
+                        },
+                      ]}
+                    >
                       {item.badge}
                     </Text>
                   </View>
@@ -382,7 +460,7 @@ export default function RainfallDetailsScreen({navigation}) {
           </TouchableOpacity>
         </View>
 
-        {/* Rain Timeline */}
+        {}
         <Text style={styles.sectionTitle}>Rain Timeline</Text>
 
         <View style={styles.timelineCard}>
@@ -405,8 +483,11 @@ export default function RainfallDetailsScreen({navigation}) {
                   <Text
                     style={[
                       styles.timelineValue,
-                      item.active && {color: BLUE},
-                    ]}>
+                      item.active && {
+                        color: BLUE,
+                      },
+                    ]}
+                  >
                     {item.value}
                   </Text>
                   <Text style={styles.timelineTime}>{item.time}</Text>
@@ -416,7 +497,7 @@ export default function RainfallDetailsScreen({navigation}) {
           </View>
         </View>
 
-        {/* Rain Insights */}
+        {}
         <Text style={styles.sectionTitle}>Rain Insights</Text>
 
         <View style={styles.insightsGrid}>
@@ -427,15 +508,26 @@ export default function RainfallDetailsScreen({navigation}) {
                 key={item.id}
                 style={[
                   styles.insightCard,
-                  {backgroundColor: item.bg, borderColor: item.border},
-                ]}>
+                  {
+                    backgroundColor: item.bg,
+                    borderColor: item.border,
+                  },
+                ]}
+              >
                 <Icon
                   size={rf(22)}
                   color={item.color}
                   strokeWidth={2.3}
                   fill={item.iconFill ? item.color : 'none'}
                 />
-                <Text style={[styles.insightValue, {color: item.color}]}>
+                <Text
+                  style={[
+                    styles.insightValue,
+                    {
+                      color: item.color,
+                    },
+                  ]}
+                >
                   {item.value}
                 </Text>
                 <Text style={styles.insightLabel}>{item.label}</Text>
@@ -444,7 +536,7 @@ export default function RainfallDetailsScreen({navigation}) {
           })}
         </View>
 
-        {/* Today's Farm Impact */}
+        {}
         <Text style={styles.sectionTitle}>Today's Farm Impact</Text>
 
         <View style={styles.impactList}>
@@ -454,12 +546,16 @@ export default function RainfallDetailsScreen({navigation}) {
               <TouchableOpacity
                 key={item.id}
                 activeOpacity={0.85}
-                style={styles.impactCard}>
+                style={styles.impactCard}
+              >
                 <View
                   style={[
                     styles.impactIconCircle,
-                    {backgroundColor: item.bg},
-                  ]}>
+                    {
+                      backgroundColor: item.bg,
+                    },
+                  ]}
+                >
                   <Icon
                     size={rf(18)}
                     color={item.color}
@@ -469,23 +565,26 @@ export default function RainfallDetailsScreen({navigation}) {
                 </View>
 
                 <View style={styles.impactTextBox}>
-                  <Text style={[styles.impactTitle, {color: item.color}]}>
+                  <Text
+                    style={[
+                      styles.impactTitle,
+                      {
+                        color: item.color,
+                      },
+                    ]}
+                  >
                     {item.title}
                   </Text>
                   <Text style={styles.impactSubtitle}>{item.subtitle}</Text>
                 </View>
 
-                <ChevronRight
-                  size={rf(16)}
-                  color="#94A3B8"
-                  strokeWidth={2.3}
-                />
+                <ChevronRight size={rf(16)} color="#94A3B8" strokeWidth={2.3} />
               </TouchableOpacity>
             );
           })}
         </View>
 
-        {/* Rain Safety */}
+        {}
         <View style={styles.safetyCard}>
           <View style={styles.safetyHeader}>
             <AlertCircle size={rf(18)} color={ORANGE} strokeWidth={2.4} />
@@ -503,12 +602,13 @@ export default function RainfallDetailsScreen({navigation}) {
         </View>
       </ScrollView>
 
-      {/* Bottom Bar */}
+      {}
       <View style={styles.bottomBar}>
         <TouchableOpacity
           activeOpacity={0.9}
           onPress={handleViewAlerts}
-          style={styles.primaryButton}>
+          style={styles.primaryButton}
+        >
           <Bell size={rf(16)} color="#FFFFFF" strokeWidth={2.4} />
           <Text style={styles.primaryButtonText}>View Weather Alerts</Text>
         </TouchableOpacity>
@@ -516,10 +616,11 @@ export default function RainfallDetailsScreen({navigation}) {
     </SafeAreaView>
   );
 }
-
 const styles = StyleSheet.create({
-  safeArea: {flex: 1, backgroundColor: '#FFFFFF'},
-
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
   header: {
     minHeight: 74,
     paddingHorizontal: PAGE_PADDING,
@@ -530,7 +631,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#EEF1F2',
   },
-
   iconBtn: {
     width: 39,
     height: 39,
@@ -539,32 +639,42 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
-  headerTextBox: {flex: 1, marginHorizontal: 12, alignItems: 'center'},
-
-  headerTitle: {fontSize: rf(18), fontWeight: '900', color: DARK},
-
+  headerTextBox: {
+    flex: 1,
+    marginHorizontal: 12,
+    alignItems: 'center',
+  },
+  headerTitle: {
+    fontSize: rf(18),
+    fontWeight: '900',
+    color: DARK,
+  },
   headerSubRow: {
     marginTop: 3,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
   },
-
-  headerSubText: {fontSize: rf(10), fontWeight: '600', color: MUTED},
-
-  headerDot: {fontSize: rf(9), color: MUTED},
-
-  headerUpdated: {fontSize: rf(9.5), fontWeight: '900', color: DARK_GREEN},
-
+  headerSubText: {
+    fontSize: rf(10),
+    fontWeight: '600',
+    color: MUTED,
+  },
+  headerDot: {
+    fontSize: rf(9),
+    color: MUTED,
+  },
+  headerUpdated: {
+    fontSize: rf(9.5),
+    fontWeight: '900',
+    color: DARK_GREEN,
+  },
   scrollContent: {
     paddingHorizontal: PAGE_PADDING,
     paddingTop: 14,
     paddingBottom: 90,
     backgroundColor: PAGE_BG,
   },
-
-  // Hero
   heroCard: {
     borderRadius: 18,
     padding: 18,
@@ -572,10 +682,12 @@ const styles = StyleSheet.create({
     shadowColor: '#1E7FFF',
     shadowOpacity: 0.38,
     shadowRadius: 18,
-    shadowOffset: {width: 0, height: 10},
+    shadowOffset: {
+      width: 0,
+      height: 10,
+    },
     elevation: 8,
   },
-
   glowTopRight: {
     position: 'absolute',
     top: -80,
@@ -585,7 +697,6 @@ const styles = StyleSheet.create({
     borderRadius: 110,
     backgroundColor: 'rgba(255,255,255,0.14)',
   },
-
   glowBottomLeft: {
     position: 'absolute',
     bottom: -90,
@@ -595,21 +706,19 @@ const styles = StyleSheet.create({
     borderRadius: 115,
     backgroundColor: 'rgba(255,255,255,0.09)',
   },
-
   heroTopRow: {
     flexDirection: 'row',
     alignItems: 'flex-start',
   },
-
-  heroLeft: {flex: 1},
-
+  heroLeft: {
+    flex: 1,
+  },
   heroLabel: {
     fontSize: rf(10),
     fontWeight: '800',
     color: 'rgba(255,255,255,0.85)',
     letterSpacing: 0.5,
   },
-
   heroPercent: {
     marginTop: 4,
     fontSize: rf(54),
@@ -618,7 +727,6 @@ const styles = StyleSheet.create({
     letterSpacing: -1.5,
     lineHeight: rf(60),
   },
-
   heroChip: {
     marginTop: 10,
     alignSelf: 'flex-start',
@@ -631,24 +739,20 @@ const styles = StyleSheet.create({
     gap: 8,
     maxWidth: 180,
   },
-
   heroChipText: {
     fontSize: rf(10.5),
     fontWeight: '700',
     color: '#FFFFFF',
     lineHeight: rf(14),
   },
-
   heroCloudIcon: {
     marginTop: 4,
   },
-
   heroStatsRow: {
     marginTop: 18,
     flexDirection: 'row',
     gap: 8,
   },
-
   heroStatBox: {
     flex: 1,
     padding: 12,
@@ -657,41 +761,42 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
   },
-
-  heroStatValue: {fontSize: rf(13), fontWeight: '900', color: '#FFFFFF'},
-
+  heroStatValue: {
+    fontSize: rf(13),
+    fontWeight: '900',
+    color: '#FFFFFF',
+  },
   heroStatLabel: {
     fontSize: rf(9),
     fontWeight: '600',
     color: 'rgba(255,255,255,0.85)',
     textAlign: 'center',
   },
-
-  // Advisory
   advisoryCard: {
     marginTop: 16,
     borderRadius: 16,
     padding: 16,
     backgroundColor: DARK_GREEN,
   },
-
   advisoryHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-
-  advisoryHeaderLeft: {flex: 1},
-
-  advisoryTitle: {fontSize: rf(16), fontWeight: '900', color: '#FFFFFF'},
-
+  advisoryHeaderLeft: {
+    flex: 1,
+  },
+  advisoryTitle: {
+    fontSize: rf(16),
+    fontWeight: '900',
+    color: '#FFFFFF',
+  },
   advisorySubtitle: {
     marginTop: 2,
     fontSize: rf(10),
     fontWeight: '500',
     color: 'rgba(255,255,255,0.85)',
   },
-
   advisoryBotBox: {
     width: 38,
     height: 38,
@@ -700,9 +805,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
-  advisoryList: {marginTop: 14, gap: 8},
-
+  advisoryList: {
+    marginTop: 14,
+    gap: 8,
+  },
   advisoryRow: {
     padding: 12,
     borderRadius: 10,
@@ -710,7 +816,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-
   advisoryIconBox: {
     width: 34,
     height: 34,
@@ -719,27 +824,31 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
-  advisoryTextBox: {flex: 1, marginLeft: 10},
-
-  advisoryRowTitle: {fontSize: rf(12), fontWeight: '900', color: '#FFFFFF'},
-
+  advisoryTextBox: {
+    flex: 1,
+    marginLeft: 10,
+  },
+  advisoryRowTitle: {
+    fontSize: rf(12),
+    fontWeight: '900',
+    color: '#FFFFFF',
+  },
   advisoryRowSubtitle: {
     marginTop: 2,
     fontSize: rf(10),
     fontWeight: '500',
     color: 'rgba(255,255,255,0.8)',
   },
-
   advisoryBadge: {
     height: 26,
     paddingHorizontal: 10,
     borderRadius: 13,
     justifyContent: 'center',
   },
-
-  advisoryBadgeText: {fontSize: rf(10), fontWeight: '900'},
-
+  advisoryBadgeText: {
+    fontSize: rf(10),
+    fontWeight: '900',
+  },
   advisoryButton: {
     height: 46,
     marginTop: 14,
@@ -750,10 +859,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 6,
   },
-
-  advisoryButtonText: {fontSize: rf(12), fontWeight: '900', color: '#FFFFFF'},
-
-  // Sections
+  advisoryButtonText: {
+    fontSize: rf(12),
+    fontWeight: '900',
+    color: '#FFFFFF',
+  },
   sectionTitle: {
     marginTop: 22,
     marginBottom: 12,
@@ -761,8 +871,6 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     color: DARK,
   },
-
-  // Timeline
   timelineCard: {
     borderRadius: 14,
     padding: 14,
@@ -770,37 +878,37 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: BORDER,
   },
-
   timelineCurveWrap: {
     alignItems: 'center',
     marginLeft: 10,
     marginRight: 20,
   },
-
   timelineDataRow: {
     marginTop: 8,
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-
   timelineDataCol: {
     flex: 1,
     alignItems: 'center',
     gap: 4,
   },
-
-  timelineValue: {fontSize: rf(11), fontWeight: '900', color: DARK},
-
-  timelineTime: {fontSize: rf(9), fontWeight: '600', color: MUTED},
-
-  // Insights
+  timelineValue: {
+    fontSize: rf(11),
+    fontWeight: '900',
+    color: DARK,
+  },
+  timelineTime: {
+    fontSize: rf(9),
+    fontWeight: '600',
+    color: MUTED,
+  },
   insightsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     justifyContent: 'space-between',
     rowGap: 10,
   },
-
   insightCard: {
     width: '48.5%',
     padding: 14,
@@ -808,23 +916,20 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     minHeight: 108,
   },
-
   insightValue: {
     marginTop: 10,
     fontSize: rf(20),
     fontWeight: '900',
   },
-
   insightLabel: {
     marginTop: 2,
     fontSize: rf(11),
     fontWeight: '600',
     color: MUTED,
   },
-
-  // Impact
-  impactList: {gap: 10},
-
+  impactList: {
+    gap: 10,
+  },
   impactCard: {
     padding: 12,
     borderRadius: 12,
@@ -834,7 +939,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-
   impactIconCircle: {
     width: 42,
     height: 42,
@@ -842,19 +946,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
-  impactTextBox: {flex: 1, marginLeft: 11},
-
-  impactTitle: {fontSize: rf(12), fontWeight: '900'},
-
+  impactTextBox: {
+    flex: 1,
+    marginLeft: 11,
+  },
+  impactTitle: {
+    fontSize: rf(12),
+    fontWeight: '900',
+  },
   impactSubtitle: {
     marginTop: 3,
     fontSize: rf(10),
     fontWeight: '500',
     color: MUTED,
   },
-
-  // Safety
   safetyCard: {
     marginTop: 18,
     padding: 14,
@@ -863,23 +968,25 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#FDE68A',
   },
-
   safetyHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
   },
-
-  safetyTitle: {fontSize: rf(13), fontWeight: '900', color: '#92400E'},
-
-  safetyList: {marginTop: 10, gap: 8},
-
+  safetyTitle: {
+    fontSize: rf(13),
+    fontWeight: '900',
+    color: '#92400E',
+  },
+  safetyList: {
+    marginTop: 10,
+    gap: 8,
+  },
   safetyRow: {
     flexDirection: 'row',
     alignItems: 'flex-start',
     gap: 8,
   },
-
   safetyBullet: {
     width: 6,
     height: 6,
@@ -887,7 +994,6 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     backgroundColor: ORANGE,
   },
-
   safetyText: {
     flex: 1,
     fontSize: rf(10.5),
@@ -895,8 +1001,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#78350F',
   },
-
-  // Bottom Bar
   bottomBar: {
     position: 'absolute',
     left: 0,
@@ -908,7 +1012,6 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: BORDER,
   },
-
   primaryButton: {
     height: 52,
     borderRadius: 12,
@@ -920,9 +1023,15 @@ const styles = StyleSheet.create({
     shadowColor: BLUE,
     shadowOpacity: 0.3,
     shadowRadius: 10,
-    shadowOffset: {width: 0, height: 6},
+    shadowOffset: {
+      width: 0,
+      height: 6,
+    },
     elevation: 5,
   },
-
-  primaryButtonText: {fontSize: rf(14), fontWeight: '900', color: '#FFFFFF'},
+  primaryButtonText: {
+    fontSize: rf(14),
+    fontWeight: '900',
+    color: '#FFFFFF',
+  },
 });

@@ -1,4 +1,4 @@
-import React, {useCallback, useState} from 'react';
+import React, { useCallback, useState } from 'react';
 import {
   View,
   Text,
@@ -11,8 +11,8 @@ import {
   Switch,
   BackHandler,
 } from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import {useFocusEffect} from '@react-navigation/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useFocusEffect } from '@react-navigation/native';
 import {
   ArrowLeft,
   Camera,
@@ -34,26 +34,32 @@ import {
   Send,
   MessageCircle,
 } from 'lucide-react-native';
-
-import {COLORS, rf, PAGE_PADDING} from '../../components/community/theme';
-import {COMMUNITY_IMAGES} from '../../components/community/communityImages';
-
+import { COLORS, rf, PAGE_PADDING } from '../../components/community/theme';
+import { COMMUNITY_IMAGES } from '../../components/community/communityImages';
 const TOTAL_STEPS = 5;
-
 const CROPS = ['Tomato', 'Wheat', 'Rice', 'Cotton', 'Maize', 'Sugarcane'];
 const STAGES = ['Seedling', 'Vegetative', 'Flowering', 'Fruiting', 'Harvest'];
 const CATEGORIES = ['Disease', 'Pest', 'Nutrition', 'Irrigation', 'Other'];
-
 const PHOTO_TIPS = [
-  {icon: '☀️', label: 'Take photo in daylight'},
-  {icon: '🌿', label: 'Focus on affected leaves'},
-  {icon: '🌱', label: 'Capture the whole plant'},
-  {icon: '📷', label: 'Avoid blurry images'},
+  {
+    icon: '☀️',
+    label: 'Take photo in daylight',
+  },
+  {
+    icon: '🌿',
+    label: 'Focus on affected leaves',
+  },
+  {
+    icon: '🌱',
+    label: 'Capture the whole plant',
+  },
+  {
+    icon: '📷',
+    label: 'Avoid blurry images',
+  },
 ];
-
 const DEMO_IMAGE = COMMUNITY_IMAGES.community5;
-
-export default function AskWithPhotoScreen({navigation}) {
+export default function AskWithPhotoScreen({ navigation }) {
   const [step, setStep] = useState(1);
   const [photoUri, setPhotoUri] = useState(null);
   const [annotationTool, setAnnotationTool] = useState('Circle');
@@ -62,7 +68,6 @@ export default function AskWithPhotoScreen({navigation}) {
   const [selectedStage, setSelectedStage] = useState('Fruiting');
   const [selectedCategory, setSelectedCategory] = useState('Disease');
   const [aiEnabled, setAiEnabled] = useState(true);
-
   const handleBack = useCallback(() => {
     if (step > 1) {
       setStep(step - 1);
@@ -71,47 +76,46 @@ export default function AskWithPhotoScreen({navigation}) {
     navigation?.goBack();
     return true;
   }, [step, navigation]);
-
   useFocusEffect(
     useCallback(() => {
       const sub = BackHandler.addEventListener('hardwareBackPress', handleBack);
       return () => sub.remove();
     }, [handleBack]),
   );
-
   const handleNext = () => {
     if (step < TOTAL_STEPS) setStep(step + 1);
   };
-
   const handleTakePhoto = () => {
     setPhotoUri(DEMO_IMAGE);
     handleNext();
   };
-
-  // ---- HEADER (shared for steps 1-4) ----
   const renderHeader = (title, subtitle) => (
     <View style={styles.headerBox}>
       <View style={styles.headerRow}>
         <TouchableOpacity
           activeOpacity={0.7}
           onPress={handleBack}
-          style={styles.backBtn}>
+          style={styles.backBtn}
+        >
           <ArrowLeft size={rf(16)} color={COLORS.DARK} strokeWidth={2.5} />
         </TouchableOpacity>
-        <View style={{flex: 1}}>
+        <View
+          style={{
+            flex: 1,
+          }}
+        >
           <Text style={styles.headerTitle}>{title}</Text>
           <Text style={styles.headerSubtitle}>{subtitle}</Text>
         </View>
       </View>
 
       <View style={styles.progressRow}>
-        {Array.from({length: TOTAL_STEPS}).map((_, i) => (
+        {Array.from({
+          length: TOTAL_STEPS,
+        }).map((_, i) => (
           <View
             key={i}
-            style={[
-              styles.progressSeg,
-              i < step && styles.progressSegActive,
-            ]}
+            style={[styles.progressSeg, i < step && styles.progressSegActive]}
           />
         ))}
       </View>
@@ -120,8 +124,6 @@ export default function AskWithPhotoScreen({navigation}) {
       </Text>
     </View>
   );
-
-  // ================= STEP 1: UPLOAD PHOTO =================
   const renderStep1 = () => (
     <>
       {renderHeader(
@@ -130,7 +132,7 @@ export default function AskWithPhotoScreen({navigation}) {
       )}
 
       <ScrollView contentContainerStyle={styles.scroll}>
-        {/* Upload Card */}
+        {}
         <View style={styles.card}>
           <View style={styles.uploadIconWrap}>
             <View style={styles.uploadIconCircle}>
@@ -147,7 +149,8 @@ export default function AskWithPhotoScreen({navigation}) {
             <TouchableOpacity
               activeOpacity={0.9}
               onPress={handleTakePhoto}
-              style={styles.takePhotoBtn}>
+              style={styles.takePhotoBtn}
+            >
               <Camera size={rf(16)} color="#FFFFFF" strokeWidth={2.4} />
               <Text style={styles.takePhotoText}>Take Photo</Text>
             </TouchableOpacity>
@@ -155,7 +158,8 @@ export default function AskWithPhotoScreen({navigation}) {
             <TouchableOpacity
               activeOpacity={0.85}
               onPress={handleTakePhoto}
-              style={styles.galleryBtn}>
+              style={styles.galleryBtn}
+            >
               <ImageIcon
                 size={rf(16)}
                 color={COLORS.DARK_GREEN}
@@ -166,7 +170,7 @@ export default function AskWithPhotoScreen({navigation}) {
           </View>
         </View>
 
-        {/* Tips */}
+        {}
         <View style={styles.card}>
           <View style={styles.tipsHeader}>
             <View style={styles.tipsIconCircle}>
@@ -184,7 +188,7 @@ export default function AskWithPhotoScreen({navigation}) {
           ))}
         </View>
 
-        {/* Supported */}
+        {}
         <View style={styles.supportRow}>
           <Text style={styles.supportLabel}>Supported:</Text>
           {['JPG', 'PNG', 'HEIC'].map(f => (
@@ -200,14 +204,13 @@ export default function AskWithPhotoScreen({navigation}) {
         <TouchableOpacity
           activeOpacity={0.9}
           onPress={handleTakePhoto}
-          style={styles.primaryBtn}>
+          style={styles.primaryBtn}
+        >
           <Text style={styles.primaryBtnText}>Upload Photo to Continue</Text>
         </TouchableOpacity>
       </View>
     </>
   );
-
-  // ================= STEP 2: PREVIEW & ANNOTATE =================
   const renderStep2 = () => (
     <>
       {renderHeader(
@@ -216,7 +219,7 @@ export default function AskWithPhotoScreen({navigation}) {
       )}
 
       <ScrollView contentContainerStyle={styles.scroll}>
-        {/* Image with marker */}
+        {}
         <View style={styles.imageWrap}>
           <Image source={photoUri || DEMO_IMAGE} style={styles.previewImage} />
           <View style={styles.affectedBadge}>
@@ -224,13 +227,13 @@ export default function AskWithPhotoScreen({navigation}) {
             <Text style={styles.affectedBadgeText}>AFFECTED AREA MARKED</Text>
           </View>
 
-          {/* Dashed overlay simulating marked area */}
+          {}
           <View style={styles.markedOverlay}>
             <View style={styles.markedCenterDot} />
           </View>
         </View>
 
-        {/* Tools row */}
+        {}
         <View style={styles.toolRow}>
           <TouchableOpacity activeOpacity={0.85} style={styles.toolChip}>
             <RotateCw size={rf(12)} color={COLORS.DARK} strokeWidth={2.4} />
@@ -246,7 +249,7 @@ export default function AskWithPhotoScreen({navigation}) {
           </TouchableOpacity>
         </View>
 
-        {/* Mark Affected Area */}
+        {}
         <View style={styles.card}>
           <View style={styles.markHeader}>
             <View style={styles.markIconCircle}>
@@ -265,9 +268,21 @@ export default function AskWithPhotoScreen({navigation}) {
 
           <View style={styles.annotToolRow}>
             {[
-              {id: 'Circle', Icon: Circle, active: COLORS.ORANGE},
-              {id: 'Rectangle', Icon: Square, active: COLORS.DARK},
-              {id: 'Clear', Icon: X, active: COLORS.DARK},
+              {
+                id: 'Circle',
+                Icon: Circle,
+                active: COLORS.ORANGE,
+              },
+              {
+                id: 'Rectangle',
+                Icon: Square,
+                active: COLORS.DARK,
+              },
+              {
+                id: 'Clear',
+                Icon: X,
+                active: COLORS.DARK,
+              },
             ].map(t => {
               const Icon = t.Icon;
               const isActive = annotationTool === t.id;
@@ -278,8 +293,11 @@ export default function AskWithPhotoScreen({navigation}) {
                   onPress={() => setAnnotationTool(t.id)}
                   style={[
                     styles.annotBtn,
-                    isActive && {borderColor: COLORS.ORANGE},
-                  ]}>
+                    isActive && {
+                      borderColor: COLORS.ORANGE,
+                    },
+                  ]}
+                >
                   <Icon
                     size={rf(13)}
                     color={isActive ? COLORS.ORANGE : COLORS.DARK}
@@ -288,8 +306,11 @@ export default function AskWithPhotoScreen({navigation}) {
                   <Text
                     style={[
                       styles.annotBtnText,
-                      isActive && {color: COLORS.ORANGE},
-                    ]}>
+                      isActive && {
+                        color: COLORS.ORANGE,
+                      },
+                    ]}
+                  >
                     {t.id}
                   </Text>
                 </TouchableOpacity>
@@ -298,7 +319,7 @@ export default function AskWithPhotoScreen({navigation}) {
           </View>
         </View>
 
-        {/* Quality good */}
+        {}
         <View style={styles.qualityCard}>
           <CheckCircle
             size={rf(15)}
@@ -315,14 +336,13 @@ export default function AskWithPhotoScreen({navigation}) {
         <TouchableOpacity
           activeOpacity={0.9}
           onPress={handleNext}
-          style={styles.primaryBtn}>
+          style={styles.primaryBtn}
+        >
           <Text style={styles.primaryBtnText}>Continue to Question</Text>
         </TouchableOpacity>
       </View>
     </>
   );
-
-  // ================= STEP 3: ASK QUESTION =================
   const renderStep3 = () => (
     <>
       {renderHeader(
@@ -331,10 +351,14 @@ export default function AskWithPhotoScreen({navigation}) {
       )}
 
       <ScrollView contentContainerStyle={styles.scroll}>
-        {/* Photo attached */}
+        {}
         <View style={styles.attachedRow}>
           <Image source={photoUri || DEMO_IMAGE} style={styles.attachedThumb} />
-          <View style={{flex: 1}}>
+          <View
+            style={{
+              flex: 1,
+            }}
+          >
             <Text style={styles.attachedTitle}>Photo attached</Text>
             <Text style={styles.attachedSub}>
               Affected area marked · 1 photo
@@ -345,10 +369,17 @@ export default function AskWithPhotoScreen({navigation}) {
           </TouchableOpacity>
         </View>
 
-        {/* Question */}
+        {}
         <View style={styles.card}>
           <Text style={styles.labelReq}>
-            Your Question <Text style={{color: COLORS.ORANGE}}>*</Text>
+            Your Question{' '}
+            <Text
+              style={{
+                color: COLORS.ORANGE,
+              }}
+            >
+              *
+            </Text>
           </Text>
 
           <View style={styles.questionInputWrap}>
@@ -367,7 +398,7 @@ export default function AskWithPhotoScreen({navigation}) {
           <Text style={styles.helperText}>Tap mic icon to use voice input</Text>
         </View>
 
-        {/* Crop & Stage */}
+        {}
         <View style={styles.card}>
           <Text style={styles.blockTitle}>Crop & Stage</Text>
 
@@ -379,12 +410,11 @@ export default function AskWithPhotoScreen({navigation}) {
                   key={c}
                   activeOpacity={0.85}
                   onPress={() => setSelectedCrop(c)}
-                  style={[styles.chip, active && styles.chipActiveGreen]}>
+                  style={[styles.chip, active && styles.chipActiveGreen]}
+                >
                   <Text
-                    style={[
-                      styles.chipText,
-                      active && styles.chipTextActive,
-                    ]}>
+                    style={[styles.chipText, active && styles.chipTextActive]}
+                  >
                     {c}
                   </Text>
                 </TouchableOpacity>
@@ -392,7 +422,16 @@ export default function AskWithPhotoScreen({navigation}) {
             })}
           </View>
 
-          <Text style={[styles.blockTitle, {marginTop: 14}]}>Crop Stage</Text>
+          <Text
+            style={[
+              styles.blockTitle,
+              {
+                marginTop: 14,
+              },
+            ]}
+          >
+            Crop Stage
+          </Text>
           <View style={styles.chipRow}>
             {STAGES.map(s => {
               const active = s === selectedStage;
@@ -401,12 +440,11 @@ export default function AskWithPhotoScreen({navigation}) {
                   key={s}
                   activeOpacity={0.85}
                   onPress={() => setSelectedStage(s)}
-                  style={[styles.chip, active && styles.chipActiveGreen]}>
+                  style={[styles.chip, active && styles.chipActiveGreen]}
+                >
                   <Text
-                    style={[
-                      styles.chipText,
-                      active && styles.chipTextActive,
-                    ]}>
+                    style={[styles.chipText, active && styles.chipTextActive]}
+                  >
                     {s}
                   </Text>
                 </TouchableOpacity>
@@ -415,7 +453,7 @@ export default function AskWithPhotoScreen({navigation}) {
           </View>
         </View>
 
-        {/* Category */}
+        {}
         <View style={styles.card}>
           <Text style={styles.blockTitle}>Category</Text>
           <View style={styles.chipRow}>
@@ -429,12 +467,16 @@ export default function AskWithPhotoScreen({navigation}) {
                   style={[
                     styles.chip,
                     active && styles.chipActiveOrangeOutline,
-                  ]}>
+                  ]}
+                >
                   <Text
                     style={[
                       styles.chipText,
-                      active && {color: COLORS.ORANGE},
-                    ]}>
+                      active && {
+                        color: COLORS.ORANGE,
+                      },
+                    ]}
+                  >
                     {c}
                   </Text>
                 </TouchableOpacity>
@@ -443,7 +485,7 @@ export default function AskWithPhotoScreen({navigation}) {
           </View>
         </View>
 
-        {/* Location */}
+        {}
         <View style={styles.card}>
           <Text style={styles.blockTitle}>
             Location <Text style={styles.optionalInline}>(Optional)</Text>
@@ -457,7 +499,7 @@ export default function AskWithPhotoScreen({navigation}) {
           </View>
         </View>
 
-        {/* AI Analysis */}
+        {}
         <View style={styles.card}>
           <View style={styles.aiHeader}>
             <View style={styles.aiIconBox}>
@@ -468,14 +510,21 @@ export default function AskWithPhotoScreen({navigation}) {
                 fill={COLORS.DARK_GREEN}
               />
             </View>
-            <View style={{flex: 1}}>
+            <View
+              style={{
+                flex: 1,
+              }}
+            >
               <Text style={styles.aiTitle}>AI Analysis</Text>
               <Text style={styles.aiSub}>Auto-detect possible issues</Text>
             </View>
             <Switch
               value={aiEnabled}
               onValueChange={setAiEnabled}
-              trackColor={{false: '#CBD5E1', true: COLORS.DARK_GREEN}}
+              trackColor={{
+                false: '#CBD5E1',
+                true: COLORS.DARK_GREEN,
+              }}
               thumbColor="#FFFFFF"
             />
           </View>
@@ -483,12 +532,20 @@ export default function AskWithPhotoScreen({navigation}) {
           {aiEnabled && (
             <View style={styles.aiResultCard}>
               <View style={styles.aiResultHeader}>
-                <Zap size={rf(11)} color={COLORS.DARK_GREEN} strokeWidth={2.4} />
+                <Zap
+                  size={rf(11)}
+                  color={COLORS.DARK_GREEN}
+                  strokeWidth={2.4}
+                />
                 <Text style={styles.aiResultLabel}>AI ANALYSIS RESULT</Text>
               </View>
 
               <View style={styles.aiResultRow}>
-                <View style={{flex: 1}}>
+                <View
+                  style={{
+                    flex: 1,
+                  }}
+                >
                   <Text style={styles.aiPossibleLabel}>Possible Issue</Text>
                   <Text style={styles.aiIssueName}>
                     Early Blight (Alternaria{'\n'}solani)
@@ -497,7 +554,14 @@ export default function AskWithPhotoScreen({navigation}) {
                 <View style={styles.aiConfidenceBox}>
                   <Text style={styles.aiConfLabel}>Confidence</Text>
                   <View style={styles.confBarWrap}>
-                    <View style={[styles.confBar, {width: '78%'}]} />
+                    <View
+                      style={[
+                        styles.confBar,
+                        {
+                          width: '78%',
+                        },
+                      ]}
+                    />
                   </View>
                   <Text style={styles.aiConfValue}>78%</Text>
                 </View>
@@ -515,14 +579,13 @@ export default function AskWithPhotoScreen({navigation}) {
         <TouchableOpacity
           activeOpacity={0.9}
           onPress={handleNext}
-          style={styles.primaryBtn}>
+          style={styles.primaryBtn}
+        >
           <Text style={styles.primaryBtnText}>Continue to Community</Text>
         </TouchableOpacity>
       </View>
     </>
   );
-
-  // ================= STEP 4: PREVIEW POST =================
   const renderStep4 = () => (
     <>
       {renderHeader(
@@ -540,9 +603,19 @@ export default function AskWithPhotoScreen({navigation}) {
         <View style={styles.previewCard}>
           <View style={styles.previewHeader}>
             <View style={styles.previewAvatar}>
-              <Text style={{fontSize: rf(20)}}>👤</Text>
+              <Text
+                style={{
+                  fontSize: rf(20),
+                }}
+              >
+                👤
+              </Text>
             </View>
-            <View style={{flex: 1}}>
+            <View
+              style={{
+                flex: 1,
+              }}
+            >
               <Text style={styles.previewName}>Ramesh Patil</Text>
               <View style={styles.previewLocRow}>
                 <MapPin size={rf(10)} color={COLORS.RED} strokeWidth={2.3} />
@@ -612,17 +685,23 @@ export default function AskWithPhotoScreen({navigation}) {
         <TouchableOpacity
           activeOpacity={0.9}
           onPress={handleNext}
-          style={styles.primaryBtn}>
+          style={styles.primaryBtn}
+        >
           <Send size={rf(14)} color="#FFFFFF" strokeWidth={2.4} />
-          <Text style={[styles.primaryBtnText, {marginLeft: 6}]}>
+          <Text
+            style={[
+              styles.primaryBtnText,
+              {
+                marginLeft: 6,
+              },
+            ]}
+          >
             Post Question
           </Text>
         </TouchableOpacity>
       </View>
     </>
   );
-
-  // ================= STEP 5: SUCCESS =================
   const renderStep5 = () => (
     <>
       <View style={styles.successHeader}>
@@ -631,12 +710,67 @@ export default function AskWithPhotoScreen({navigation}) {
 
       <ScrollView contentContainerStyle={styles.successScroll}>
         <View style={styles.successCircleWrap}>
-          {/* Confetti dots (decorative) */}
-          <View style={[styles.confetti, {top: 20, left: 30, backgroundColor: COLORS.ORANGE}]} />
-          <View style={[styles.confetti, {top: 40, right: 40, backgroundColor: COLORS.DARK_GREEN}]} />
-          <View style={[styles.confetti, {bottom: 30, left: 20, backgroundColor: COLORS.ORANGE, transform: [{rotate: '45deg'}]}]} />
-          <View style={[styles.confetti, {bottom: 50, right: 20, backgroundColor: COLORS.DARK_GREEN, transform: [{rotate: '30deg'}]}]} />
-          <View style={[styles.confetti, {top: 10, right: 80, backgroundColor: COLORS.ORANGE}]} />
+          {}
+          <View
+            style={[
+              styles.confetti,
+              {
+                top: 20,
+                left: 30,
+                backgroundColor: COLORS.ORANGE,
+              },
+            ]}
+          />
+          <View
+            style={[
+              styles.confetti,
+              {
+                top: 40,
+                right: 40,
+                backgroundColor: COLORS.DARK_GREEN,
+              },
+            ]}
+          />
+          <View
+            style={[
+              styles.confetti,
+              {
+                bottom: 30,
+                left: 20,
+                backgroundColor: COLORS.ORANGE,
+                transform: [
+                  {
+                    rotate: '45deg',
+                  },
+                ],
+              },
+            ]}
+          />
+          <View
+            style={[
+              styles.confetti,
+              {
+                bottom: 50,
+                right: 20,
+                backgroundColor: COLORS.DARK_GREEN,
+                transform: [
+                  {
+                    rotate: '30deg',
+                  },
+                ],
+              },
+            ]}
+          />
+          <View
+            style={[
+              styles.confetti,
+              {
+                top: 10,
+                right: 80,
+                backgroundColor: COLORS.ORANGE,
+              },
+            ]}
+          />
 
           <View style={styles.successOuterCircle}>
             <View style={styles.successInnerCircle}>
@@ -671,9 +805,17 @@ export default function AskWithPhotoScreen({navigation}) {
         <TouchableOpacity
           activeOpacity={0.9}
           onPress={() => navigation?.goBack()}
-          style={styles.primaryBtnFull}>
+          style={styles.primaryBtnFull}
+        >
           <MessageCircle size={rf(14)} color="#FFFFFF" strokeWidth={2.4} />
-          <Text style={[styles.primaryBtnText, {marginLeft: 6}]}>
+          <Text
+            style={[
+              styles.primaryBtnText,
+              {
+                marginLeft: 6,
+              },
+            ]}
+          >
             View Discussion
           </Text>
         </TouchableOpacity>
@@ -681,16 +823,23 @@ export default function AskWithPhotoScreen({navigation}) {
         <TouchableOpacity
           activeOpacity={0.85}
           onPress={() => navigation?.goBack()}
-          style={styles.secondaryBtnFull}>
+          style={styles.secondaryBtnFull}
+        >
           <ArrowLeft size={rf(13)} color={COLORS.DARK} strokeWidth={2.4} />
-          <Text style={[styles.secondaryBtnText, {marginLeft: 6}]}>
+          <Text
+            style={[
+              styles.secondaryBtnText,
+              {
+                marginLeft: 6,
+              },
+            ]}
+          >
             Back to Community
           </Text>
         </TouchableOpacity>
       </ScrollView>
     </>
   );
-
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
@@ -703,16 +852,16 @@ export default function AskWithPhotoScreen({navigation}) {
     </SafeAreaView>
   );
 }
-
 const styles = StyleSheet.create({
-  safeArea: {flex: 1, backgroundColor: COLORS.PAGE_BG},
+  safeArea: {
+    flex: 1,
+    backgroundColor: COLORS.PAGE_BG,
+  },
   scroll: {
     paddingHorizontal: PAGE_PADDING,
     paddingTop: 6,
     paddingBottom: 110,
   },
-
-  // ============ Header ============
   headerBox: {
     paddingHorizontal: PAGE_PADDING,
     paddingTop: 12,
@@ -721,7 +870,11 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#F1F5F9',
   },
-  headerRow: {flexDirection: 'row', gap: 10, alignItems: 'flex-start'},
+  headerRow: {
+    flexDirection: 'row',
+    gap: 10,
+    alignItems: 'flex-start',
+  },
   backBtn: {
     width: 36,
     height: 36,
@@ -730,7 +883,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  headerTitle: {fontSize: rf(18), fontWeight: '900', color: COLORS.DARK},
+  headerTitle: {
+    fontSize: rf(18),
+    fontWeight: '900',
+    color: COLORS.DARK,
+  },
   headerSubtitle: {
     marginTop: 3,
     fontSize: rf(11),
@@ -738,14 +895,20 @@ const styles = StyleSheet.create({
     color: COLORS.MUTED,
     fontWeight: '500',
   },
-  progressRow: {marginTop: 14, flexDirection: 'row', gap: 6},
+  progressRow: {
+    marginTop: 14,
+    flexDirection: 'row',
+    gap: 6,
+  },
   progressSeg: {
     flex: 1,
     height: 4,
     borderRadius: 2,
     backgroundColor: '#E5E7EB',
   },
-  progressSegActive: {backgroundColor: COLORS.DARK_GREEN},
+  progressSegActive: {
+    backgroundColor: COLORS.DARK_GREEN,
+  },
   stepLabel: {
     marginTop: 8,
     fontSize: rf(10),
@@ -753,8 +916,6 @@ const styles = StyleSheet.create({
     color: COLORS.MUTED,
     letterSpacing: 0.5,
   },
-
-  // ============ Cards ============
   card: {
     marginTop: 12,
     padding: 16,
@@ -763,9 +924,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.BORDER,
   },
-
-  // Step 1 - Upload
-  uploadIconWrap: {alignItems: 'center', marginTop: 8},
+  uploadIconWrap: {
+    alignItems: 'center',
+    marginTop: 8,
+  },
   uploadIconCircle: {
     width: 100,
     height: 100,
@@ -789,7 +951,11 @@ const styles = StyleSheet.create({
     color: COLORS.MUTED,
     fontWeight: '500',
   },
-  uploadBtnRow: {marginTop: 16, flexDirection: 'row', gap: 10},
+  uploadBtnRow: {
+    marginTop: 16,
+    flexDirection: 'row',
+    gap: 10,
+  },
   takePhotoBtn: {
     flex: 1,
     height: 60,
@@ -799,7 +965,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 6,
   },
-  takePhotoText: {fontSize: rf(12), fontWeight: '900', color: '#FFFFFF'},
+  takePhotoText: {
+    fontSize: rf(12),
+    fontWeight: '900',
+    color: '#FFFFFF',
+  },
   galleryBtn: {
     flex: 1,
     height: 60,
@@ -811,9 +981,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 6,
   },
-  galleryText: {fontSize: rf(12), fontWeight: '900', color: COLORS.DARK_GREEN},
-
-  tipsHeader: {flexDirection: 'row', alignItems: 'center', gap: 8},
+  galleryText: {
+    fontSize: rf(12),
+    fontWeight: '900',
+    color: COLORS.DARK_GREEN,
+  },
+  tipsHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
   tipsIconCircle: {
     width: 22,
     height: 22,
@@ -822,8 +999,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  tipsTitle: {fontSize: rf(13), fontWeight: '900', color: COLORS.DARK},
-
+  tipsTitle: {
+    fontSize: rf(13),
+    fontWeight: '900',
+    color: COLORS.DARK,
+  },
   tipRow: {
     marginTop: 10,
     height: 42,
@@ -834,9 +1014,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 10,
   },
-  tipEmoji: {fontSize: rf(13)},
-  tipLabel: {flex: 1, fontSize: rf(11.5), fontWeight: '700', color: COLORS.DARK},
-
+  tipEmoji: {
+    fontSize: rf(13),
+  },
+  tipLabel: {
+    flex: 1,
+    fontSize: rf(11.5),
+    fontWeight: '700',
+    color: COLORS.DARK,
+  },
   supportRow: {
     marginTop: 16,
     justifyContent: 'center',
@@ -845,7 +1031,11 @@ const styles = StyleSheet.create({
     gap: 8,
     flexWrap: 'wrap',
   },
-  supportLabel: {fontSize: rf(10), fontWeight: '600', color: COLORS.MUTED},
+  supportLabel: {
+    fontSize: rf(10),
+    fontWeight: '600',
+    color: COLORS.MUTED,
+  },
   formatChip: {
     paddingHorizontal: 8,
     height: 22,
@@ -853,16 +1043,22 @@ const styles = StyleSheet.create({
     backgroundColor: '#E0F2FE',
     justifyContent: 'center',
   },
-  formatChipText: {fontSize: rf(9.5), fontWeight: '900', color: '#0369A1'},
-
-  // Step 2 - Preview & Annotate
+  formatChipText: {
+    fontSize: rf(9.5),
+    fontWeight: '900',
+    color: '#0369A1',
+  },
   imageWrap: {
     marginTop: 6,
     position: 'relative',
     borderRadius: 14,
     overflow: 'hidden',
   },
-  previewImage: {width: '100%', height: 260, backgroundColor: '#000'},
+  previewImage: {
+    width: '100%',
+    height: 260,
+    backgroundColor: '#000',
+  },
   affectedBadge: {
     position: 'absolute',
     top: 12,
@@ -906,7 +1102,6 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     backgroundColor: COLORS.ORANGE,
   },
-
   toolRow: {
     marginTop: 12,
     flexDirection: 'row',
@@ -922,9 +1117,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 5,
   },
-  toolText: {fontSize: rf(11), fontWeight: '800', color: COLORS.DARK},
-
-  markHeader: {flexDirection: 'row', alignItems: 'center', gap: 8},
+  toolText: {
+    fontSize: rf(11),
+    fontWeight: '800',
+    color: COLORS.DARK,
+  },
+  markHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
   markIconCircle: {
     width: 22,
     height: 22,
@@ -933,7 +1135,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  markTitle: {flex: 1, fontSize: rf(13), fontWeight: '900', color: COLORS.DARK},
+  markTitle: {
+    flex: 1,
+    fontSize: rf(13),
+    fontWeight: '900',
+    color: COLORS.DARK,
+  },
   optionalPill: {
     height: 22,
     paddingHorizontal: 10,
@@ -941,7 +1148,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#EAFBF0',
     justifyContent: 'center',
   },
-  optionalPillText: {fontSize: rf(9.5), fontWeight: '900', color: COLORS.DARK_GREEN},
+  optionalPillText: {
+    fontSize: rf(9.5),
+    fontWeight: '900',
+    color: COLORS.DARK_GREEN,
+  },
   markSub: {
     marginTop: 8,
     fontSize: rf(11),
@@ -949,8 +1160,11 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: COLORS.MUTED,
   },
-
-  annotToolRow: {marginTop: 12, flexDirection: 'row', gap: 8},
+  annotToolRow: {
+    marginTop: 12,
+    flexDirection: 'row',
+    gap: 8,
+  },
   annotBtn: {
     flex: 1,
     height: 40,
@@ -963,8 +1177,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 5,
   },
-  annotBtnText: {fontSize: rf(11), fontWeight: '900', color: COLORS.DARK},
-
+  annotBtnText: {
+    fontSize: rf(11),
+    fontWeight: '900',
+    color: COLORS.DARK,
+  },
   qualityCard: {
     marginTop: 12,
     padding: 14,
@@ -976,10 +1193,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
   },
-  qualityText: {flex: 1, fontSize: rf(11.5), fontWeight: '900', color: COLORS.DARK_GREEN},
-  qualityPercent: {fontSize: rf(10.5), fontWeight: '700', color: COLORS.MUTED},
-
-  // Step 3 - Ask Question
+  qualityText: {
+    flex: 1,
+    fontSize: rf(11.5),
+    fontWeight: '900',
+    color: COLORS.DARK_GREEN,
+  },
+  qualityPercent: {
+    fontSize: rf(10.5),
+    fontWeight: '700',
+    color: COLORS.MUTED,
+  },
   attachedRow: {
     marginTop: 12,
     padding: 12,
@@ -997,8 +1221,17 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: '#F1F5F9',
   },
-  attachedTitle: {fontSize: rf(12), fontWeight: '900', color: COLORS.DARK},
-  attachedSub: {marginTop: 2, fontSize: rf(10), fontWeight: '500', color: COLORS.MUTED},
+  attachedTitle: {
+    fontSize: rf(12),
+    fontWeight: '900',
+    color: COLORS.DARK,
+  },
+  attachedSub: {
+    marginTop: 2,
+    fontSize: rf(10),
+    fontWeight: '500',
+    color: COLORS.MUTED,
+  },
   changeBtn: {
     height: 30,
     paddingHorizontal: 12,
@@ -1006,10 +1239,16 @@ const styles = StyleSheet.create({
     backgroundColor: '#EAFBF0',
     justifyContent: 'center',
   },
-  changeBtnText: {fontSize: rf(10.5), fontWeight: '900', color: COLORS.DARK_GREEN},
-
-  labelReq: {fontSize: rf(12.5), fontWeight: '900', color: COLORS.DARK},
-
+  changeBtnText: {
+    fontSize: rf(10.5),
+    fontWeight: '900',
+    color: COLORS.DARK_GREEN,
+  },
+  labelReq: {
+    fontSize: rf(12.5),
+    fontWeight: '900',
+    color: COLORS.DARK,
+  },
   questionInputWrap: {
     marginTop: 10,
     padding: 12,
@@ -1046,10 +1285,16 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: COLORS.MUTED,
   },
-
-  blockTitle: {fontSize: rf(12.5), fontWeight: '900', color: COLORS.DARK},
-  optionalInline: {fontSize: rf(11), fontWeight: '500', color: COLORS.MUTED},
-
+  blockTitle: {
+    fontSize: rf(12.5),
+    fontWeight: '900',
+    color: COLORS.DARK,
+  },
+  optionalInline: {
+    fontSize: rf(11),
+    fontWeight: '500',
+    color: COLORS.MUTED,
+  },
   chipRow: {
     marginTop: 10,
     flexDirection: 'row',
@@ -1065,14 +1310,21 @@ const styles = StyleSheet.create({
     borderColor: 'transparent',
     justifyContent: 'center',
   },
-  chipActiveGreen: {backgroundColor: COLORS.DARK_GREEN},
+  chipActiveGreen: {
+    backgroundColor: COLORS.DARK_GREEN,
+  },
   chipActiveOrangeOutline: {
     backgroundColor: '#FFFFFF',
     borderColor: COLORS.ORANGE,
   },
-  chipText: {fontSize: rf(11), fontWeight: '900', color: '#64748B'},
-  chipTextActive: {color: '#FFFFFF'},
-
+  chipText: {
+    fontSize: rf(11),
+    fontWeight: '900',
+    color: '#64748B',
+  },
+  chipTextActive: {
+    color: '#FFFFFF',
+  },
   locRow: {
     marginTop: 10,
     height: 44,
@@ -1085,10 +1337,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
   },
-  locText: {flex: 1, fontSize: rf(11), fontWeight: '700', color: COLORS.DARK},
-  detectText: {fontSize: rf(11), fontWeight: '900', color: COLORS.DARK_GREEN},
-
-  aiHeader: {flexDirection: 'row', alignItems: 'center', gap: 10},
+  locText: {
+    flex: 1,
+    fontSize: rf(11),
+    fontWeight: '700',
+    color: COLORS.DARK,
+  },
+  detectText: {
+    fontSize: rf(11),
+    fontWeight: '900',
+    color: COLORS.DARK_GREEN,
+  },
+  aiHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
   aiIconBox: {
     width: 32,
     height: 32,
@@ -1097,9 +1361,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  aiTitle: {fontSize: rf(12.5), fontWeight: '900', color: COLORS.DARK},
-  aiSub: {marginTop: 2, fontSize: rf(10), fontWeight: '500', color: COLORS.MUTED},
-
+  aiTitle: {
+    fontSize: rf(12.5),
+    fontWeight: '900',
+    color: COLORS.DARK,
+  },
+  aiSub: {
+    marginTop: 2,
+    fontSize: rf(10),
+    fontWeight: '500',
+    color: COLORS.MUTED,
+  },
   aiResultCard: {
     marginTop: 12,
     padding: 12,
@@ -1108,15 +1380,27 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#BBF0CC',
   },
-  aiResultHeader: {flexDirection: 'row', alignItems: 'center', gap: 5},
+  aiResultHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+  },
   aiResultLabel: {
     fontSize: rf(9.5),
     fontWeight: '900',
     color: COLORS.DARK_GREEN,
     letterSpacing: 0.5,
   },
-  aiResultRow: {marginTop: 8, flexDirection: 'row', gap: 12},
-  aiPossibleLabel: {fontSize: rf(10), fontWeight: '600', color: COLORS.MUTED},
+  aiResultRow: {
+    marginTop: 8,
+    flexDirection: 'row',
+    gap: 12,
+  },
+  aiPossibleLabel: {
+    fontSize: rf(10),
+    fontWeight: '600',
+    color: COLORS.MUTED,
+  },
   aiIssueName: {
     marginTop: 3,
     fontSize: rf(12),
@@ -1124,8 +1408,16 @@ const styles = StyleSheet.create({
     color: COLORS.DARK,
     lineHeight: rf(16),
   },
-  aiConfidenceBox: {alignItems: 'flex-end', gap: 4, minWidth: 100},
-  aiConfLabel: {fontSize: rf(10), fontWeight: '600', color: COLORS.MUTED},
+  aiConfidenceBox: {
+    alignItems: 'flex-end',
+    gap: 4,
+    minWidth: 100,
+  },
+  aiConfLabel: {
+    fontSize: rf(10),
+    fontWeight: '600',
+    color: COLORS.MUTED,
+  },
   confBarWrap: {
     width: 90,
     height: 5,
@@ -1133,8 +1425,16 @@ const styles = StyleSheet.create({
     backgroundColor: '#D1F3DE',
     overflow: 'hidden',
   },
-  confBar: {height: '100%', backgroundColor: COLORS.DARK_GREEN, borderRadius: 3},
-  aiConfValue: {fontSize: rf(11), fontWeight: '900', color: COLORS.DARK_GREEN},
+  confBar: {
+    height: '100%',
+    backgroundColor: COLORS.DARK_GREEN,
+    borderRadius: 3,
+  },
+  aiConfValue: {
+    fontSize: rf(11),
+    fontWeight: '900',
+    color: COLORS.DARK_GREEN,
+  },
   aiFootnote: {
     marginTop: 10,
     fontSize: rf(9.5),
@@ -1142,8 +1442,6 @@ const styles = StyleSheet.create({
     color: COLORS.MUTED,
     lineHeight: rf(13),
   },
-
-  // Step 4 - Preview Post
   livePreviewRow: {
     marginTop: 8,
     marginBottom: 4,
@@ -1151,14 +1449,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 10,
   },
-  livePreviewLine: {flex: 1, height: 1, backgroundColor: '#CBD5E1'},
+  livePreviewLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: '#CBD5E1',
+  },
   livePreviewText: {
     fontSize: rf(10),
     fontWeight: '900',
     color: COLORS.MUTED,
     letterSpacing: 1,
   },
-
   previewCard: {
     marginTop: 10,
     padding: 14,
@@ -1167,7 +1468,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.BORDER,
   },
-  previewHeader: {flexDirection: 'row', alignItems: 'center', gap: 10},
+  previewHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
   previewAvatar: {
     width: 42,
     height: 42,
@@ -1176,9 +1481,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  previewName: {fontSize: rf(12), fontWeight: '900', color: COLORS.DARK},
-  previewLocRow: {marginTop: 2, flexDirection: 'row', alignItems: 'center', gap: 4},
-  previewLoc: {fontSize: rf(9.5), fontWeight: '500', color: COLORS.MUTED},
+  previewName: {
+    fontSize: rf(12),
+    fontWeight: '900',
+    color: COLORS.DARK,
+  },
+  previewLocRow: {
+    marginTop: 2,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  previewLoc: {
+    fontSize: rf(9.5),
+    fontWeight: '500',
+    color: COLORS.MUTED,
+  },
   diseaseTag: {
     height: 22,
     paddingHorizontal: 10,
@@ -1186,8 +1504,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF7ED',
     justifyContent: 'center',
   },
-  diseaseTagText: {fontSize: rf(9.5), fontWeight: '900', color: COLORS.ORANGE},
-
+  diseaseTagText: {
+    fontSize: rf(9.5),
+    fontWeight: '900',
+    color: COLORS.ORANGE,
+  },
   previewTitle: {
     marginTop: 12,
     fontSize: rf(13.5),
@@ -1202,14 +1523,17 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: COLORS.DARK,
   },
-
   previewImageWrap: {
     marginTop: 12,
     position: 'relative',
     borderRadius: 10,
     overflow: 'hidden',
   },
-  previewImg: {width: '100%', height: 220, backgroundColor: '#F1F5F9'},
+  previewImg: {
+    width: '100%',
+    height: 220,
+    backgroundColor: '#F1F5F9',
+  },
   areaMarkedBadge: {
     position: 'absolute',
     top: 10,
@@ -1222,8 +1546,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 4,
   },
-
-  hashtagRow: {marginTop: 12, flexDirection: 'row', flexWrap: 'wrap', gap: 6},
+  hashtagRow: {
+    marginTop: 12,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+  },
   hashChip: {
     height: 26,
     paddingHorizontal: 10,
@@ -1231,8 +1559,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#EAFBF0',
     justifyContent: 'center',
   },
-  hashChipText: {fontSize: rf(10), fontWeight: '900', color: COLORS.DARK_GREEN},
-
+  hashChipText: {
+    fontSize: rf(10),
+    fontWeight: '900',
+    color: COLORS.DARK_GREEN,
+  },
   aiSuggestBox: {
     marginTop: 12,
     padding: 10,
@@ -1242,8 +1573,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
   },
-  aiSuggestText: {fontSize: rf(10.5), fontWeight: '900', color: COLORS.DARK_GREEN},
-
+  aiSuggestText: {
+    fontSize: rf(10.5),
+    fontWeight: '900',
+    color: COLORS.DARK_GREEN,
+  },
   previewFooter: {
     marginTop: 12,
     paddingTop: 12,
@@ -1252,9 +1586,16 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 16,
   },
-  previewFooterItem: {flexDirection: 'row', alignItems: 'center', gap: 4},
-  previewFooterText: {fontSize: rf(10), fontWeight: '600', color: COLORS.MUTED},
-
+  previewFooterItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  previewFooterText: {
+    fontSize: rf(10),
+    fontWeight: '600',
+    color: COLORS.MUTED,
+  },
   editBtn: {
     marginTop: 12,
     height: 46,
@@ -1267,9 +1608,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 6,
   },
-  editBtnText: {fontSize: rf(12), fontWeight: '900', color: COLORS.DARK},
-
-  // Step 5 - Success
+  editBtnText: {
+    fontSize: rf(12),
+    fontWeight: '900',
+    color: COLORS.DARK,
+  },
   successHeader: {
     height: 52,
     borderBottomWidth: 1,
@@ -1278,8 +1621,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: '#FFFFFF',
   },
-  successHeaderTitle: {fontSize: rf(13), fontWeight: '900', color: COLORS.DARK},
-
+  successHeaderTitle: {
+    fontSize: rf(13),
+    fontWeight: '900',
+    color: COLORS.DARK,
+  },
   successScroll: {
     paddingHorizontal: PAGE_PADDING,
     paddingTop: 30,
@@ -1332,7 +1678,6 @@ const styles = StyleSheet.create({
     color: COLORS.MUTED,
     paddingHorizontal: 12,
   },
-
   statsRow: {
     marginTop: 24,
     flexDirection: 'row',
@@ -1348,8 +1693,16 @@ const styles = StyleSheet.create({
     borderColor: COLORS.BORDER,
     alignItems: 'center',
   },
-  statValueGreen: {fontSize: rf(15), fontWeight: '900', color: COLORS.DARK_GREEN},
-  statValueOrange: {fontSize: rf(15), fontWeight: '900', color: COLORS.ORANGE},
+  statValueGreen: {
+    fontSize: rf(15),
+    fontWeight: '900',
+    color: COLORS.DARK_GREEN,
+  },
+  statValueOrange: {
+    fontSize: rf(15),
+    fontWeight: '900',
+    color: COLORS.ORANGE,
+  },
   statLabel: {
     marginTop: 4,
     textAlign: 'center',
@@ -1358,7 +1711,6 @@ const styles = StyleSheet.create({
     color: COLORS.MUTED,
     lineHeight: rf(13),
   },
-
   primaryBtnFull: {
     marginTop: 24,
     alignSelf: 'stretch',
@@ -1371,7 +1723,10 @@ const styles = StyleSheet.create({
     shadowColor: COLORS.DARK_GREEN,
     shadowOpacity: 0.3,
     shadowRadius: 10,
-    shadowOffset: {width: 0, height: 5},
+    shadowOffset: {
+      width: 0,
+      height: 5,
+    },
     elevation: 5,
   },
   secondaryBtnFull: {
@@ -1386,9 +1741,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  secondaryBtnText: {fontSize: rf(12.5), fontWeight: '900', color: COLORS.DARK},
-
-  // ============ Footer (Primary CTA) ============
+  secondaryBtnText: {
+    fontSize: rf(12.5),
+    fontWeight: '900',
+    color: COLORS.DARK,
+  },
   footer: {
     position: 'absolute',
     left: 0,
@@ -1410,8 +1767,15 @@ const styles = StyleSheet.create({
     shadowColor: COLORS.DARK_GREEN,
     shadowOpacity: 0.3,
     shadowRadius: 10,
-    shadowOffset: {width: 0, height: 5},
+    shadowOffset: {
+      width: 0,
+      height: 5,
+    },
     elevation: 5,
   },
-  primaryBtnText: {fontSize: rf(13), fontWeight: '900', color: '#FFFFFF'},
+  primaryBtnText: {
+    fontSize: rf(13),
+    fontWeight: '900',
+    color: '#FFFFFF',
+  },
 });

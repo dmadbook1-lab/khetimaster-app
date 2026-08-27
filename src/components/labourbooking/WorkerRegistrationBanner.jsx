@@ -7,15 +7,12 @@ import {
   ImageBackground,
   Dimensions,
 } from 'react-native';
-import {Briefcase} from 'lucide-react-native';
-
-const {width} = Dimensions.get('window');
-
+import { Briefcase } from 'lucide-react-native';
+const { width } = Dimensions.get('window');
 const rf = size => {
   const scale = width / 390;
   return Math.max(size - 1, Math.min(size * scale, size + 2));
 };
-
 export default function WorkerRegistrationBanner({
   onRegisterPress,
   onFreeBadgePress,
@@ -25,10 +22,9 @@ export default function WorkerRegistrationBanner({
       source={require('../../assets/labour/hero3.png')}
       style={styles.banner}
       imageStyle={styles.bannerImage}
-      resizeMode="cover">
-
+      resizeMode="cover"
+    >
       <View style={styles.content}>
-
         <View style={styles.textContainer}>
           <Text style={styles.title}>Looking for Work?</Text>
 
@@ -39,12 +35,9 @@ export default function WorkerRegistrationBanner({
           <TouchableOpacity
             activeOpacity={0.9}
             onPress={onRegisterPress}
-            style={styles.button}>
-            <Briefcase
-              size={16}
-              color="#FFFFFF"
-              strokeWidth={2.3}
-            />
+            style={styles.button}
+          >
+            <Briefcase size={16} color="#FFFFFF" strokeWidth={2.3} />
 
             <Text style={styles.buttonText}>Find Work</Text>
           </TouchableOpacity>
@@ -53,7 +46,6 @@ export default function WorkerRegistrationBanner({
     </ImageBackground>
   );
 }
-
 const styles = StyleSheet.create({
   banner: {
     marginTop: 14,
@@ -61,18 +53,15 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     overflow: 'hidden',
   },
-
   bannerImage: {
     borderRadius: 18,
   },
-
   content: {
     flex: 1,
     paddingHorizontal: 16,
     paddingVertical: 14,
     justifyContent: 'center',
   },
-
   badge: {
     position: 'absolute',
     top: 12,
@@ -84,25 +73,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   badgeText: {
     color: '#166534',
     fontSize: rf(10),
     fontWeight: '800',
   },
-
   textContainer: {
     marginLeft: width * 0.36,
     justifyContent: 'center',
   },
-
   title: {
     color: '#1F2937',
     fontSize: rf(18),
     fontWeight: '900',
     lineHeight: rf(22),
   },
-
   subtitle: {
     marginTop: 6,
     color: '#6B7280',
@@ -111,7 +96,6 @@ const styles = StyleSheet.create({
     lineHeight: rf(16),
     width: '90%',
   },
-
   button: {
     marginTop: 14,
     alignSelf: 'flex-start',
@@ -122,7 +106,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-
   buttonText: {
     color: '#FFFFFF',
     fontSize: rf(13),

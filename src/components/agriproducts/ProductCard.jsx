@@ -1,21 +1,26 @@
 import React from 'react';
-import {View, Text, Image, TouchableOpacity, StyleSheet, Dimensions} from 'react-native';
-import {Heart, ShoppingCart, Star} from 'lucide-react-native';
-
-const {width} = Dimensions.get('window');
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  StyleSheet,
+  Dimensions,
+} from 'react-native';
+import { Heart, ShoppingCart, Star } from 'lucide-react-native';
+const { width } = Dimensions.get('window');
 const GREEN = '#16883E';
-
 const rf = size => {
   const scale = width / 390;
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
-
-export default function ProductCard({product, compact = false, onPress}) {
+export default function ProductCard({ product, compact = false, onPress }) {
   return (
     <TouchableOpacity
       activeOpacity={0.9}
       onPress={onPress}
-      style={[styles.card, compact && styles.compactCard]}>
+      style={[styles.card, compact && styles.compactCard]}
+    >
       {!!product.badge && (
         <View style={styles.badge}>
           <Text style={styles.badgeText}>{product.badge}</Text>
@@ -45,10 +50,14 @@ export default function ProductCard({product, compact = false, onPress}) {
 
       <View style={styles.priceRow}>
         <Text style={styles.price}>{product.price}</Text>
-        {!!product.discount && <Text style={styles.discount}>{product.discount}</Text>}
+        {!!product.discount && (
+          <Text style={styles.discount}>{product.discount}</Text>
+        )}
       </View>
 
-      {!!product.oldPrice && <Text style={styles.oldPrice}>{product.oldPrice}</Text>}
+      {!!product.oldPrice && (
+        <Text style={styles.oldPrice}>{product.oldPrice}</Text>
+      )}
 
       {!compact && (
         <TouchableOpacity activeOpacity={0.9} style={styles.cartBtn}>
@@ -65,7 +74,6 @@ export default function ProductCard({product, compact = false, onPress}) {
     </TouchableOpacity>
   );
 }
-
 const styles = StyleSheet.create({
   card: {
     width: (width - width * 0.074 - 16) / 2,
@@ -75,19 +83,19 @@ const styles = StyleSheet.create({
     padding: 14,
     borderWidth: 1,
     borderColor: '#EEF2F7',
-
     shadowColor: '#0F172A',
     shadowOpacity: 0.06,
     shadowRadius: 12,
-    shadowOffset: {width: 0, height: 6},
+    shadowOffset: {
+      width: 0,
+      height: 6,
+    },
     elevation: 3,
   },
-
   compactCard: {
     width: width * 0.36,
     minHeight: 242,
   },
-
   badge: {
     position: 'absolute',
     left: 12,
@@ -100,13 +108,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   badgeText: {
     color: '#FFFFFF',
     fontSize: rf(8),
     fontWeight: '900',
   },
-
   heartBtn: {
     position: 'absolute',
     top: 10,
@@ -119,24 +125,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   image: {
     width: '100%',
     height: 112,
     marginTop: 18,
   },
-
   compactImage: {
     height: 106,
   },
-
   brand: {
     marginTop: 10,
     fontSize: rf(9),
     fontWeight: '900',
     color: '#CBD5E1',
   },
-
   name: {
     marginTop: 2,
     fontSize: rf(14),
@@ -144,45 +146,38 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     color: '#111827',
   },
-
   ratingRow: {
     marginTop: 7,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 3,
   },
-
   rating: {
     fontSize: rf(11),
     fontWeight: '900',
     color: '#111827',
   },
-
   reviews: {
     fontSize: rf(10),
     fontWeight: '700',
     color: '#94A3B8',
   },
-
   priceRow: {
     marginTop: 7,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
   },
-
   price: {
     fontSize: rf(18),
     fontWeight: '900',
     color: '#111827',
   },
-
   discount: {
     fontSize: rf(10),
     fontWeight: '900',
     color: GREEN,
   },
-
   oldPrice: {
     marginTop: 4,
     fontSize: rf(11),
@@ -190,7 +185,6 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     textDecorationLine: 'line-through',
   },
-
   cartBtn: {
     marginTop: 14,
     height: 38,
@@ -202,13 +196,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 6,
   },
-
   cartText: {
     fontSize: rf(12),
     fontWeight: '900',
     color: GREEN,
   },
-
   compactCartBtn: {
     marginTop: 12,
     height: 34,
@@ -217,7 +209,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   compactCartText: {
     fontSize: rf(11),
     fontWeight: '900',

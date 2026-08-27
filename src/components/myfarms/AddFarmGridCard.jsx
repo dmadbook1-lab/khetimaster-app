@@ -1,20 +1,26 @@
 import React from 'react';
-import {View, Text, TouchableOpacity, StyleSheet, Dimensions} from 'react-native';
-import {Plus} from 'lucide-react-native';
-
-const {width} = Dimensions.get('window');
-
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Dimensions,
+} from 'react-native';
+import { Plus } from 'lucide-react-native';
+const { width } = Dimensions.get('window');
 const CARD_WIDTH = (width - width * 0.11 - 16) / 2;
 const GREEN = '#16883E';
-
 const rf = size => {
   const scale = width / 390;
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
-
-export default function AddFarmGridCard({onPress}) {
+export default function AddFarmGridCard({ onPress }) {
   return (
-    <TouchableOpacity activeOpacity={0.88} onPress={onPress} style={styles.card}>
+    <TouchableOpacity
+      activeOpacity={0.88}
+      onPress={onPress}
+      style={styles.card}
+    >
       <View style={styles.circle}>
         <Plus size={25} color={GREEN} strokeWidth={2.7} />
       </View>
@@ -24,7 +30,6 @@ export default function AddFarmGridCard({onPress}) {
     </TouchableOpacity>
   );
 }
-
 const styles = StyleSheet.create({
   card: {
     width: CARD_WIDTH,
@@ -37,7 +42,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   circle: {
     width: 54,
     height: 54,
@@ -47,13 +51,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 13,
   },
-
   title: {
     fontSize: rf(14),
     fontWeight: '900',
     color: GREEN,
   },
-
   desc: {
     marginTop: 6,
     fontSize: rf(10),

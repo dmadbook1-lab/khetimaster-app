@@ -1,16 +1,25 @@
 import React from 'react';
-import {View, Text, StyleSheet, Dimensions} from 'react-native';
-import {Zap, RefreshCcw, Search, Clock} from 'lucide-react-native';
-
-const {width} = Dimensions.get('window');
-
+import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import { Zap, RefreshCcw, Search, Clock } from 'lucide-react-native';
+const { width } = Dimensions.get('window');
 const items = [
-  {Icon: Zap, title: 'Rich in Nitrogen &\nPhosphorus'},
-  {Icon: RefreshCcw, title: 'Improves Root\nGrowth'},
-  {Icon: Search, title: 'Suitable for Irrigated\nCrops'},
-  {Icon: Clock, title: 'Long-lasting\nNutrition'},
+  {
+    Icon: Zap,
+    title: 'Rich in Nitrogen &\nPhosphorus',
+  },
+  {
+    Icon: RefreshCcw,
+    title: 'Improves Root\nGrowth',
+  },
+  {
+    Icon: Search,
+    title: 'Suitable for Irrigated\nCrops',
+  },
+  {
+    Icon: Clock,
+    title: 'Long-lasting\nNutrition',
+  },
 ];
-
 export default function ProductBenefits() {
   return (
     <View style={styles.wrapper}>
@@ -19,7 +28,6 @@ export default function ProductBenefits() {
       <View style={styles.grid}>
         {items.map((item, index) => {
           const Icon = item.Icon;
-
           return (
             <View key={index} style={styles.card}>
               <View style={styles.iconBox}>
@@ -34,18 +42,15 @@ export default function ProductBenefits() {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   wrapper: {
     marginTop: 28,
   },
-
   sectionTitle: {
     fontSize: 16,
     fontWeight: '900',
     color: '#111827',
   },
-
   grid: {
     marginTop: 14,
     flexDirection: 'row',
@@ -53,7 +58,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     rowGap: 12,
   },
-
   card: {
     width: (width - width * 0.074 - 12) / 2,
     height: 94,
@@ -61,7 +65,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#F8FAFC',
     padding: 14,
   },
-
   iconBox: {
     width: 34,
     height: 34,
@@ -70,7 +73,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   title: {
     marginTop: 10,
     fontSize: 11,

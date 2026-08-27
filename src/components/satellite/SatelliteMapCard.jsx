@@ -1,8 +1,7 @@
 import React from 'react';
-import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
-import {Plus, Minus} from 'lucide-react-native';
-
-export default function SatelliteMapCard({farm}) {
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { Plus, Minus } from 'lucide-react-native';
+export default function SatelliteMapCard({ farm }) {
   return (
     <View style={styles.card}>
       <View style={styles.glowOne} />
@@ -40,7 +39,6 @@ export default function SatelliteMapCard({farm}) {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   card: {
     height: 306,
@@ -50,10 +48,12 @@ const styles = StyleSheet.create({
     shadowColor: '#064E2E',
     shadowOpacity: 0.22,
     shadowRadius: 18,
-    shadowOffset: {width: 0, height: 10},
+    shadowOffset: {
+      width: 0,
+      height: 10,
+    },
     elevation: 8,
   },
-
   glowOne: {
     position: 'absolute',
     width: 220,
@@ -63,7 +63,6 @@ const styles = StyleSheet.create({
     top: 70,
     left: 58,
   },
-
   glowTwo: {
     position: 'absolute',
     width: 240,
@@ -73,7 +72,6 @@ const styles = StyleSheet.create({
     right: -40,
     bottom: -50,
   },
-
   patchOne: {
     position: 'absolute',
     left: 34,
@@ -82,9 +80,12 @@ const styles = StyleSheet.create({
     height: 84,
     borderRadius: 8,
     backgroundColor: 'rgba(20,184,166,0.14)',
-    transform: [{rotate: '12deg'}],
+    transform: [
+      {
+        rotate: '12deg',
+      },
+    ],
   },
-
   patchTwo: {
     position: 'absolute',
     right: 52,
@@ -93,9 +94,12 @@ const styles = StyleSheet.create({
     height: 90,
     borderRadius: 8,
     backgroundColor: 'rgba(20,184,166,0.13)',
-    transform: [{rotate: '-7deg'}],
+    transform: [
+      {
+        rotate: '-7deg',
+      },
+    ],
   },
-
   liveBadge: {
     position: 'absolute',
     top: 18,
@@ -108,20 +112,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
   },
-
   liveDot: {
     width: 6,
     height: 6,
     borderRadius: 3,
     backgroundColor: '#BBF7D0',
   },
-
   liveText: {
     fontSize: 10,
     fontWeight: '900',
     color: '#FFFFFF',
   },
-
   compass: {
     position: 'absolute',
     right: 18,
@@ -133,7 +134,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   compassText: {
     fontSize: 10,
     lineHeight: 11,
@@ -141,7 +141,6 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     textAlign: 'center',
   },
-
   boundary: {
     position: 'absolute',
     left: '27%',
@@ -158,7 +157,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.5,
     shadowRadius: 18,
   },
-
   farmLabel: {
     height: 24,
     borderRadius: 8,
@@ -166,13 +164,11 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.48)',
     justifyContent: 'center',
   },
-
   farmLabelText: {
     color: '#FFFFFF',
     fontSize: 10,
     fontWeight: '900',
   },
-
   scaleLine: {
     position: 'absolute',
     left: 16,
@@ -181,7 +177,6 @@ const styles = StyleSheet.create({
     height: 2,
     backgroundColor: '#FFFFFF',
   },
-
   scaleText: {
     position: 'absolute',
     left: 16,
@@ -190,14 +185,12 @@ const styles = StyleSheet.create({
     fontSize: 10,
     fontWeight: '700',
   },
-
   zoomBox: {
     position: 'absolute',
     right: 16,
     bottom: 16,
     gap: 8,
   },
-
   zoomBtn: {
     width: 41,
     height: 41,

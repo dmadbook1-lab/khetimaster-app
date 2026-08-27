@@ -1,13 +1,11 @@
 import React from 'react';
-import {View, StyleSheet, StatusBar, ScrollView} from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
-
+import { View, StyleSheet, StatusBar, ScrollView } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import CommunityHeader from '../../components/community/CommunityHeader';
 import CommunityTabs from '../../components/community/CommunityTabs';
 import VideoCard from '../../components/community/VideoCard';
-import {COLORS, PAGE_PADDING} from '../../components/community/theme';
-import {COMMUNITY_IMAGES} from '../../components/community/communityImages';
-
+import { COLORS, PAGE_PADDING } from '../../components/community/theme';
+import { COMMUNITY_IMAGES } from '../../components/community/communityImages';
 const VIDEOS = [
   {
     id: 'v1',
@@ -37,20 +35,20 @@ const VIDEOS = [
     duration: '3:12',
   },
 ];
-
-export default function VideosScreen({navigation, embedded = false}) {
+export default function VideosScreen({ navigation, embedded = false }) {
   const content = (
     <ScrollView
       showsVerticalScrollIndicator={false}
-      contentContainerStyle={styles.scrollContent}>
-      {VIDEOS.map(v => <VideoCard key={v.id} item={v} />)}
+      contentContainerStyle={styles.scrollContent}
+    >
+      {VIDEOS.map(v => (
+        <VideoCard key={v.id} item={v} />
+      ))}
     </ScrollView>
   );
-
   if (embedded) {
     return <View style={styles.embeddedContainer}>{content}</View>;
   }
-
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
@@ -62,9 +60,11 @@ export default function VideosScreen({navigation, embedded = false}) {
     </SafeAreaView>
   );
 }
-
 const styles = StyleSheet.create({
-  safeArea: {flex: 1, backgroundColor: '#FFFFFF'},
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
   scrollContent: {
     paddingHorizontal: PAGE_PADDING,
     paddingTop: 14,

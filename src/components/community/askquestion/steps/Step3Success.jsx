@@ -1,4 +1,4 @@
-import React, {useEffect, useRef} from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -15,47 +15,122 @@ import {
   Clock,
   Sparkles,
 } from 'lucide-react-native';
-
 import PrimaryButton from '../PrimaryButton';
 import SecondaryButton from '../SecondaryButton';
-import {COLORS, rf, PAGE_PADDING} from '../../theme';
-
+import { COLORS, rf, PAGE_PADDING } from '../../theme';
 const STATS = [
-  {value: '1.2K+', label: 'Farmers\nnearby', color: COLORS.DARK_GREEN, icon: Users},
-  {value: '~2 hrs', label: 'Avg. response\ntime', color: COLORS.ORANGE, icon: Clock},
-  {value: 'AI', label: 'Analysis\nready', color: COLORS.DARK_GREEN, icon: Sparkles},
+  {
+    value: '1.2K+',
+    label: 'Farmers\nnearby',
+    color: COLORS.DARK_GREEN,
+    icon: Users,
+  },
+  {
+    value: '~2 hrs',
+    label: 'Avg. response\ntime',
+    color: COLORS.ORANGE,
+    icon: Clock,
+  },
+  {
+    value: 'AI',
+    label: 'Analysis\nready',
+    color: COLORS.DARK_GREEN,
+    icon: Sparkles,
+  },
 ];
-
 const CONFETTI = [
-  {top: 20, left: 30, color: COLORS.ORANGE, size: 10, rotate: '0deg'},
-  {top: 40, right: 40, color: COLORS.DARK_GREEN, size: 12, rotate: '45deg'},
-  {top: 10, right: 90, color: COLORS.ORANGE, size: 8, rotate: '20deg'},
-  {bottom: 30, left: 20, color: COLORS.ORANGE, size: 10, rotate: '45deg'},
-  {bottom: 50, right: 20, color: COLORS.DARK_GREEN, size: 11, rotate: '30deg'},
-  {top: 60, left: 10, color: COLORS.DARK_GREEN, size: 8, rotate: '15deg'},
-  {bottom: 20, left: 90, color: COLORS.ORANGE, size: 9, rotate: '60deg'},
-  {top: 80, right: 10, color: COLORS.ORANGE, size: 7, rotate: '20deg'},
+  {
+    top: 20,
+    left: 30,
+    color: COLORS.ORANGE,
+    size: 10,
+    rotate: '0deg',
+  },
+  {
+    top: 40,
+    right: 40,
+    color: COLORS.DARK_GREEN,
+    size: 12,
+    rotate: '45deg',
+  },
+  {
+    top: 10,
+    right: 90,
+    color: COLORS.ORANGE,
+    size: 8,
+    rotate: '20deg',
+  },
+  {
+    bottom: 30,
+    left: 20,
+    color: COLORS.ORANGE,
+    size: 10,
+    rotate: '45deg',
+  },
+  {
+    bottom: 50,
+    right: 20,
+    color: COLORS.DARK_GREEN,
+    size: 11,
+    rotate: '30deg',
+  },
+  {
+    top: 60,
+    left: 10,
+    color: COLORS.DARK_GREEN,
+    size: 8,
+    rotate: '15deg',
+  },
+  {
+    bottom: 20,
+    left: 90,
+    color: COLORS.ORANGE,
+    size: 9,
+    rotate: '60deg',
+  },
+  {
+    top: 80,
+    right: 10,
+    color: COLORS.ORANGE,
+    size: 7,
+    rotate: '20deg',
+  },
 ];
-
-// Star / sparkle burst around the circle
 const STARS = [
-  {top: 8, left: 60, char: '★', color: COLORS.ORANGE, size: 12},
-  {top: 25, right: 25, char: '★', color: COLORS.DARK_GREEN, size: 14},
-  {bottom: 45, left: 40, char: '✦', color: COLORS.DARK_GREEN, size: 10},
-  {top: 55, left: 8, char: '✦', color: COLORS.ORANGE, size: 11},
+  {
+    top: 8,
+    left: 60,
+    char: '★',
+    color: COLORS.ORANGE,
+    size: 12,
+  },
+  {
+    top: 25,
+    right: 25,
+    char: '★',
+    color: COLORS.DARK_GREEN,
+    size: 14,
+  },
+  {
+    bottom: 45,
+    left: 40,
+    char: '✦',
+    color: COLORS.DARK_GREEN,
+    size: 10,
+  },
+  {
+    top: 55,
+    left: 8,
+    char: '✦',
+    color: COLORS.ORANGE,
+    size: 11,
+  },
 ];
-
-export default function Step3Success({
-  onViewDiscussion,
-  onBackToCommunity,
-}) {
-  // Animations
+export default function Step3Success({ onViewDiscussion, onBackToCommunity }) {
   const scaleAnim = useRef(new Animated.Value(0)).current;
   const opacityAnim = useRef(new Animated.Value(0)).current;
   const pulseAnim = useRef(new Animated.Value(1)).current;
-
   useEffect(() => {
-    // Check-circle "pop-in" bounce
     Animated.sequence([
       Animated.timing(scaleAnim, {
         toValue: 1.15,
@@ -69,16 +144,12 @@ export default function Step3Success({
         useNativeDriver: true,
       }),
     ]).start();
-
-    // Text fade-in
     Animated.timing(opacityAnim, {
       toValue: 1,
       duration: 600,
       delay: 300,
       useNativeDriver: true,
     }).start();
-
-    // Subtle pulsing outer ring
     Animated.loop(
       Animated.sequence([
         Animated.timing(pulseAnim, {
@@ -96,20 +167,20 @@ export default function Step3Success({
       ]),
     ).start();
   }, [scaleAnim, opacityAnim, pulseAnim]);
-
   return (
     <View style={styles.flex}>
-      {/* Top Header Bar */}
+      {}
       <View style={styles.headerBar}>
         <Text style={styles.headerTitle}>KhetiMaster Community</Text>
       </View>
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scroll}>
-        {/* Success Circle Area */}
+        contentContainerStyle={styles.scroll}
+      >
+        {}
         <View style={styles.circleWrap}>
-          {/* Confetti bits */}
+          {}
           {CONFETTI.map((c, i) => (
             <View
               key={`c-${i}`}
@@ -123,13 +194,17 @@ export default function Step3Success({
                   width: c.size,
                   height: c.size,
                   backgroundColor: c.color,
-                  transform: [{rotate: c.rotate}],
+                  transform: [
+                    {
+                      rotate: c.rotate,
+                    },
+                  ],
                 },
               ]}
             />
           ))}
 
-          {/* Stars */}
+          {}
           {STARS.map((s, i) => (
             <Text
               key={`s-${i}`}
@@ -143,35 +218,57 @@ export default function Step3Success({
                   color: s.color,
                   fontSize: s.size,
                 },
-              ]}>
+              ]}
+            >
               {s.char}
             </Text>
           ))}
 
-          {/* Pulsing ring */}
+          {}
           <Animated.View
-            style={[styles.pulseRing, {transform: [{scale: pulseAnim}]}]}
+            style={[
+              styles.pulseRing,
+              {
+                transform: [
+                  {
+                    scale: pulseAnim,
+                  },
+                ],
+              },
+            ]}
           />
 
-          {/* Outer soft circle */}
+          {}
           <View style={styles.outerCircle}>
-            {/* Inner dark green with check */}
+            {}
             <Animated.View
               style={[
                 styles.innerCircle,
-                {transform: [{scale: scaleAnim}]},
-              ]}>
+                {
+                  transform: [
+                    {
+                      scale: scaleAnim,
+                    },
+                  ],
+                },
+              ]}
+            >
               <Check size={rf(40)} color="#FFFFFF" strokeWidth={3.5} />
             </Animated.View>
 
-            {/* Little "stem" below the circle (like the design) */}
+            {}
             <View style={styles.circleStem} />
             <View style={styles.circleShadow} />
           </View>
         </View>
 
-        {/* Title + Subtitle */}
-        <Animated.View style={{opacity: opacityAnim, alignItems: 'center'}}>
+        {}
+        <Animated.View
+          style={{
+            opacity: opacityAnim,
+            alignItems: 'center',
+          }}
+        >
           <Text style={styles.title}>
             Your question has been{'\n'}shared successfully!
           </Text>
@@ -181,11 +278,18 @@ export default function Step3Success({
           </Text>
         </Animated.View>
 
-        {/* Stats Grid */}
+        {}
         <View style={styles.statsRow}>
           {STATS.map((s, i) => (
             <View key={i} style={styles.statCard}>
-              <Text style={[styles.statValue, {color: s.color}]}>
+              <Text
+                style={[
+                  styles.statValue,
+                  {
+                    color: s.color,
+                  },
+                ]}
+              >
                 {s.value}
               </Text>
               <Text style={styles.statLabel}>{s.label}</Text>
@@ -193,7 +297,7 @@ export default function Step3Success({
           ))}
         </View>
 
-        {/* CTA Buttons */}
+        {}
         <View style={styles.ctaWrap}>
           <PrimaryButton
             label="View Discussion"
@@ -201,7 +305,11 @@ export default function Step3Success({
             onPress={onViewDiscussion}
           />
 
-          <View style={{height: 10}} />
+          <View
+            style={{
+              height: 10,
+            }}
+          />
 
           <SecondaryButton
             label="Back to Community"
@@ -213,10 +321,11 @@ export default function Step3Success({
     </View>
   );
 }
-
 const styles = StyleSheet.create({
-  flex: {flex: 1, backgroundColor: '#FFFFFF'},
-
+  flex: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
   headerBar: {
     height: 52,
     borderBottomWidth: 1,
@@ -225,16 +334,17 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: '#FFFFFF',
   },
-  headerTitle: {fontSize: rf(13.5), fontWeight: '900', color: COLORS.DARK},
-
+  headerTitle: {
+    fontSize: rf(13.5),
+    fontWeight: '900',
+    color: COLORS.DARK,
+  },
   scroll: {
     paddingHorizontal: PAGE_PADDING,
     paddingTop: 30,
     paddingBottom: 40,
     alignItems: 'center',
   },
-
-  // Circle area
   circleWrap: {
     width: 240,
     height: 240,
@@ -277,7 +387,10 @@ const styles = StyleSheet.create({
     shadowColor: COLORS.DARK_GREEN,
     shadowOpacity: 0.35,
     shadowRadius: 14,
-    shadowOffset: {width: 0, height: 6},
+    shadowOffset: {
+      width: 0,
+      height: 6,
+    },
     elevation: 8,
   },
   circleStem: {
@@ -297,8 +410,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#E5E7EB',
     opacity: 0.6,
   },
-
-  // Text block
   title: {
     marginTop: 26,
     textAlign: 'center',
@@ -316,8 +427,6 @@ const styles = StyleSheet.create({
     color: COLORS.MUTED,
     paddingHorizontal: 20,
   },
-
-  // Stats
   statsRow: {
     marginTop: 28,
     alignSelf: 'stretch',
@@ -347,8 +456,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: COLORS.MUTED,
   },
-
-  // CTA
   ctaWrap: {
     marginTop: 28,
     alignSelf: 'stretch',

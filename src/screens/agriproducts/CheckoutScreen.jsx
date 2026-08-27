@@ -1,4 +1,4 @@
-import React, {useMemo, useState} from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   View,
   Text,
@@ -10,7 +10,7 @@ import {
   Image,
   Alert,
 } from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
 import {
   ArrowLeft,
@@ -35,24 +35,19 @@ import {
   Share2,
   Headphones,
 } from 'lucide-react-native';
-
-const {width, height} = Dimensions.get('window');
-
+const { width, height } = Dimensions.get('window');
 const GREEN = '#16B64B';
 const DARK_GREEN = '#16883E';
 const DARK = '#121A2B';
 const MUTED = '#7A8497';
 const PAGE_BG = '#F7F8F7';
 const BORDER = '#EDF0EE';
-
 const PAGE_PADDING = width * 0.035;
 const isSmall = width < 370;
-
 const rf = size => {
   const scale = width / 390;
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
-
 const PAYMENT_METHODS = [
   {
     id: 'upi',
@@ -103,7 +98,6 @@ const PAYMENT_METHODS = [
     iconBg: '#FFF7ED',
   },
 ];
-
 const ORDER_ITEMS = [
   {
     id: '1',
@@ -127,13 +121,10 @@ const ORDER_ITEMS = [
     image: require('../../assets/bazar/confidor.jpg'),
   },
 ];
-
 const formatINR = value => `₹${Number(value).toLocaleString('en-IN')}`;
-
-export default function CheckoutScreen({navigation}) {
+export default function CheckoutScreen({ navigation }) {
   const [selectedPayment, setSelectedPayment] = useState('upi');
   const [showOrderItems, setShowOrderItems] = useState(true);
-
   const itemsTotal = useMemo(
     () =>
       ORDER_ITEMS.reduce(
@@ -142,27 +133,22 @@ export default function CheckoutScreen({navigation}) {
       ),
     [],
   );
-
   const subtotal = 5469;
   const discount = 389;
   const delivery = 0;
   const gst = 254;
   const grandTotal = subtotal - discount + delivery + gst;
-
- const handlePlaceOrder = () => {
-  const selectedMethod = PAYMENT_METHODS.find(
-    method => method.id === selectedPayment,
-  );
-
-  navigation.replace('OrderSuccess', {
-    orderId: '#KM458921',
-    totalAmount: grandTotal,
-    savedAmount: discount,
-    paymentMethod:
-      selectedMethod?.title || 'Cash on Delivery',
-  });
-};
-
+  const handlePlaceOrder = () => {
+    const selectedMethod = PAYMENT_METHODS.find(
+      method => method.id === selectedPayment,
+    );
+    navigation.replace('OrderSuccess', {
+      orderId: '#KM458921',
+      totalAmount: grandTotal,
+      savedAmount: discount,
+      paymentMethod: selectedMethod?.title || 'Cash on Delivery',
+    });
+  };
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
@@ -171,7 +157,8 @@ export default function CheckoutScreen({navigation}) {
         <TouchableOpacity
           activeOpacity={0.8}
           onPress={() => navigation.goBack()}
-          style={styles.backButton}>
+          style={styles.backButton}
+        >
           <ArrowLeft size={rf(22)} color={DARK} strokeWidth={2.4} />
         </TouchableOpacity>
 
@@ -182,7 +169,8 @@ export default function CheckoutScreen({navigation}) {
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}>
+        contentContainerStyle={styles.scrollContent}
+      >
         <DeliveryAddressCard />
 
         <ExpectedDeliveryCard />
@@ -227,20 +215,21 @@ export default function CheckoutScreen({navigation}) {
       </ScrollView>
 
       <View style={styles.bottomBar}>
-        <TouchableOpacity
-          activeOpacity={0.9}
-          onPress={handlePlaceOrder}>
+        <TouchableOpacity activeOpacity={0.9} onPress={handlePlaceOrder}>
           <LinearGradient
             colors={['#14B84A', '#13AF47']}
-            start={{x: 0, y: 0}}
-            end={{x: 1, y: 0}}
-            style={styles.placeOrderButton}>
+            start={{
+              x: 0,
+              y: 0,
+            }}
+            end={{
+              x: 1,
+              y: 0,
+            }}
+            style={styles.placeOrderButton}
+          >
             <View style={styles.placeOrderLeft}>
-              <LockKeyhole
-                size={rf(20)}
-                color="#FFFFFF"
-                strokeWidth={2.5}
-              />
+              <LockKeyhole size={rf(20)} color="#FFFFFF" strokeWidth={2.5} />
 
               <Text style={styles.placeOrderText}>Place Order</Text>
             </View>
@@ -250,9 +239,7 @@ export default function CheckoutScreen({navigation}) {
                 {formatINR(grandTotal).replace('₹', '')}
               </Text>
 
-              <Text style={styles.placeOrderTax}>
-                Incl. taxes & delivery
-              </Text>
+              <Text style={styles.placeOrderTax}>Incl. taxes & delivery</Text>
             </View>
           </LinearGradient>
         </TouchableOpacity>
@@ -260,25 +247,14 @@ export default function CheckoutScreen({navigation}) {
     </SafeAreaView>
   );
 }
-
 function CheckoutProgress() {
   return (
     <View style={styles.progressContainer}>
-      <ProgressStep
-        number="✓"
-        label="Cart"
-        completed
-        active={false}
-      />
+      <ProgressStep number="✓" label="Cart" completed active={false} />
 
       <View style={[styles.progressLine, styles.completedLine]} />
 
-      <ProgressStep
-        number="2"
-        label="Checkout"
-        completed={false}
-        active
-      />
+      <ProgressStep number="2" label="Checkout" completed={false} active />
 
       <View style={styles.progressLine} />
 
@@ -291,17 +267,11 @@ function CheckoutProgress() {
 
       <View style={styles.progressLine} />
 
-      <ProgressStep
-        number="4"
-        label="Done"
-        completed={false}
-        active={false}
-      />
+      <ProgressStep number="4" label="Done" completed={false} active={false} />
     </View>
   );
 }
-
-function ProgressStep({number, label, completed, active}) {
+function ProgressStep({ number, label, completed, active }) {
   return (
     <View style={styles.progressStep}>
       <View
@@ -309,12 +279,14 @@ function ProgressStep({number, label, completed, active}) {
           styles.progressCircle,
           completed && styles.completedCircle,
           active && styles.activeCircle,
-        ]}>
+        ]}
+      >
         <Text
           style={[
             styles.progressNumber,
             (completed || active) && styles.activeProgressNumber,
-          ]}>
+          ]}
+        >
           {number}
         </Text>
       </View>
@@ -324,23 +296,19 @@ function ProgressStep({number, label, completed, active}) {
           styles.progressLabel,
           active && styles.activeProgressLabel,
           completed && styles.completedProgressLabel,
-        ]}>
+        ]}
+      >
         {label}
       </Text>
     </View>
   );
 }
-
 function DeliveryAddressCard() {
   return (
     <View style={styles.addressCard}>
       <View style={styles.addressHeader}>
         <View style={styles.addressIconBox}>
-          <MapPin
-            size={rf(20)}
-            color={DARK_GREEN}
-            strokeWidth={2.2}
-          />
+          <MapPin size={rf(20)} color={DARK_GREEN} strokeWidth={2.2} />
         </View>
 
         <Text style={styles.addressHeading}>Delivery Address</Text>
@@ -353,7 +321,8 @@ function DeliveryAddressCard() {
               'Address selection screen can be opened here.',
             )
           }
-          style={styles.changeButton}>
+          style={styles.changeButton}
+        >
           <Text style={styles.changeButtonText}>Change</Text>
         </TouchableOpacity>
       </View>
@@ -377,16 +346,11 @@ function DeliveryAddressCard() {
     </View>
   );
 }
-
 function ExpectedDeliveryCard() {
   return (
     <View style={styles.deliveryCard}>
       <View style={styles.deliveryIconBox}>
-        <Truck
-          size={rf(22)}
-          color="#3B82F6"
-          strokeWidth={2.2}
-        />
+        <Truck size={rf(22)} color="#3B82F6" strokeWidth={2.2} />
       </View>
 
       <View style={styles.deliveryDetails}>
@@ -397,9 +361,7 @@ function ExpectedDeliveryCard() {
           2026
         </Text>
 
-        <Text style={styles.deliveryLocation}>
-          Aurangabad, Maharashtra
-        </Text>
+        <Text style={styles.deliveryLocation}>Aurangabad, Maharashtra</Text>
       </View>
 
       <View style={styles.freeDeliveryBadge}>
@@ -409,47 +371,28 @@ function ExpectedDeliveryCard() {
     </View>
   );
 }
-
-function OrderItemsCard({
-  expanded,
-  onToggle,
-  items,
-  itemsTotal,
-}) {
+function OrderItemsCard({ expanded, onToggle, items, itemsTotal }) {
   return (
     <View style={styles.orderCard}>
       <TouchableOpacity
         activeOpacity={0.85}
         onPress={onToggle}
-        style={styles.orderCardHeader}>
+        style={styles.orderCardHeader}
+      >
         <View style={styles.packageIconBox}>
-          <Package
-            size={rf(17)}
-            color={DARK_GREEN}
-            strokeWidth={2.3}
-          />
+          <Package size={rf(17)} color={DARK_GREEN} strokeWidth={2.3} />
         </View>
 
-        <Text style={styles.orderCountText}>
-          {items.length} Items in Order
-        </Text>
+        <Text style={styles.orderCountText}>{items.length} Items in Order</Text>
 
         <Text style={styles.orderTotal}>
           {formatINR(itemsTotal).replace('₹', '')}
         </Text>
 
         {expanded ? (
-          <ChevronUp
-            size={rf(18)}
-            color={DARK}
-            strokeWidth={2.3}
-          />
+          <ChevronUp size={rf(18)} color={DARK} strokeWidth={2.3} />
         ) : (
-          <ChevronDown
-            size={rf(18)}
-            color={DARK}
-            strokeWidth={2.3}
-          />
+          <ChevronDown size={rf(18)} color={DARK} strokeWidth={2.3} />
         )}
       </TouchableOpacity>
 
@@ -460,9 +403,9 @@ function OrderItemsCard({
               key={item.id}
               style={[
                 styles.orderItem,
-                index === items.length - 1 &&
-                  styles.lastOrderItem,
-              ]}>
+                index === items.length - 1 && styles.lastOrderItem,
+              ]}
+            >
               <View style={styles.orderImageBox}>
                 <Image
                   source={item.image}
@@ -472,9 +415,7 @@ function OrderItemsCard({
               </View>
 
               <View style={styles.orderItemDetails}>
-                <Text
-                  numberOfLines={1}
-                  style={styles.orderItemName}>
+                <Text numberOfLines={1} style={styles.orderItemName}>
                   {item.name}
                 </Text>
 
@@ -484,10 +425,7 @@ function OrderItemsCard({
               </View>
 
               <Text style={styles.orderItemPrice}>
-                {formatINR(item.quantity * item.unitPrice).replace(
-                  '₹',
-                  '',
-                )}
+                {formatINR(item.quantity * item.unitPrice).replace('₹', '')}
               </Text>
             </View>
           ))}
@@ -496,28 +434,28 @@ function OrderItemsCard({
     </View>
   );
 }
-
 function AIInsightsCard() {
   return (
     <LinearGradient
       colors={['#0D9440', '#15A84A']}
-      start={{x: 0, y: 0}}
-      end={{x: 1, y: 1}}
-      style={styles.aiCard}>
+      start={{
+        x: 0,
+        y: 0,
+      }}
+      end={{
+        x: 1,
+        y: 1,
+      }}
+      style={styles.aiCard}
+    >
       <View style={styles.aiCircleLarge} />
       <View style={styles.aiCircleSmall} />
 
       <View style={styles.aiHeader}>
         <View style={styles.aiBadge}>
-          <Sparkles
-            size={rf(12)}
-            color="#FFFFFF"
-            strokeWidth={2.5}
-          />
+          <Sparkles size={rf(12)} color="#FFFFFF" strokeWidth={2.5} />
 
-          <Text style={styles.aiBadgeText}>
-            AI PURCHASE SUMMARY
-          </Text>
+          <Text style={styles.aiBadgeText}>AI PURCHASE SUMMARY</Text>
         </View>
 
         <View style={styles.matchCircle}>
@@ -529,29 +467,20 @@ function AIInsightsCard() {
       <Text style={styles.aiTitle}>Perfect for Soybean Crop</Text>
 
       <Text style={styles.aiDescription}>
-        Suitable for your Soybean crop at the current
-        vegetative stage. This combination ensures balanced
-        nutrition and optimal protection throughout the growth
-        cycle.
+        Suitable for your Soybean crop at the current vegetative stage. This
+        combination ensures balanced nutrition and optimal protection throughout
+        the growth cycle.
       </Text>
 
       <View style={styles.aiTagRow}>
         <View style={styles.aiTag}>
-          <Shield
-            size={rf(11)}
-            color="#FFFFFF"
-            strokeWidth={2.2}
-          />
+          <Shield size={rf(11)} color="#FFFFFF" strokeWidth={2.2} />
 
           <Text style={styles.aiTagText}>Improved Nutrition</Text>
         </View>
 
         <View style={styles.aiTag}>
-          <ArrowLeftRight
-            size={rf(11)}
-            color="#FFFFFF"
-            strokeWidth={2.2}
-          />
+          <ArrowLeftRight size={rf(11)} color="#FFFFFF" strokeWidth={2.2} />
 
           <Text style={styles.aiTagText}>Better Growth</Text>
         </View>
@@ -559,11 +488,7 @@ function AIInsightsCard() {
 
       <View style={styles.aiTagSecondRow}>
         <View style={styles.aiTag}>
-          <Shield
-            size={rf(11)}
-            color="#FFFFFF"
-            strokeWidth={2.2}
-          />
+          <Shield size={rf(11)} color="#FFFFFF" strokeWidth={2.2} />
 
           <Text style={styles.aiTagText}>Crop Compatible</Text>
         </View>
@@ -571,23 +496,22 @@ function AIInsightsCard() {
     </LinearGradient>
   );
 }
-
-function PaymentMethodCard({method, selected, onPress}) {
+function PaymentMethodCard({ method, selected, onPress }) {
   const Icon = method.icon;
-
   return (
     <TouchableOpacity
       activeOpacity={0.87}
       onPress={onPress}
-      style={[
-        styles.paymentCard,
-        selected && styles.selectedPaymentCard,
-      ]}>
+      style={[styles.paymentCard, selected && styles.selectedPaymentCard]}
+    >
       <View
         style={[
           styles.paymentIconBox,
-          {backgroundColor: selected ? '#FFFFFF' : method.iconBg},
-        ]}>
+          {
+            backgroundColor: selected ? '#FFFFFF' : method.iconBg,
+          },
+        ]}
+      >
         <Icon
           size={rf(22)}
           color={selected ? GREEN : method.iconColor}
@@ -597,10 +521,8 @@ function PaymentMethodCard({method, selected, onPress}) {
 
       <View style={styles.paymentDetails}>
         <Text
-          style={[
-            styles.paymentTitle,
-            selected && styles.selectedPaymentTitle,
-          ]}>
+          style={[styles.paymentTitle, selected && styles.selectedPaymentTitle]}
+        >
           {method.title}
         </Text>
 
@@ -609,29 +531,19 @@ function PaymentMethodCard({method, selected, onPress}) {
           style={[
             styles.paymentSubtitle,
             selected && styles.selectedPaymentSubtitle,
-          ]}>
+          ]}
+        >
           {method.subtitle}
         </Text>
       </View>
 
-      <View
-        style={[
-          styles.radioOuter,
-          selected && styles.selectedRadioOuter,
-        ]}>
+      <View style={[styles.radioOuter, selected && styles.selectedRadioOuter]}>
         {selected && <View style={styles.radioInner} />}
       </View>
     </TouchableOpacity>
   );
 }
-
-function BillSummaryCard({
-  subtotal,
-  discount,
-  delivery,
-  gst,
-  grandTotal,
-}) {
+function BillSummaryCard({ subtotal, discount, delivery, gst, grandTotal }) {
   return (
     <View style={styles.billCard}>
       <View style={styles.billContent}>
@@ -652,66 +564,46 @@ function BillSummaryCard({
           valueStyle={styles.discountValue}
         />
 
-        <BillRow
-          label="GST (5%)"
-          value={formatINR(gst).replace('₹', '')}
-        />
+        <BillRow label="GST (5%)" value={formatINR(gst).replace('₹', '')} />
 
         <View style={styles.billDivider} />
 
         <View style={styles.grandTotalRow}>
           <Text style={styles.grandTotalLabel}>Grand Total</Text>
 
-          <Text style={styles.grandTotalValue}>
-            {formatINR(grandTotal)}
-          </Text>
+          <Text style={styles.grandTotalValue}>{formatINR(grandTotal)}</Text>
         </View>
       </View>
 
       <View style={styles.savingsBar}>
-        <Sparkles
-          size={rf(14)}
-          color={DARK_GREEN}
-          strokeWidth={2.4}
-        />
+        <Sparkles size={rf(14)} color={DARK_GREEN} strokeWidth={2.4} />
 
         <Text style={styles.savingsText}>
-          You’re saving{' '}
-          <Text style={styles.savingsAmount}>389</Text> on this
+          You’re saving <Text style={styles.savingsAmount}>389</Text> on this
           order 🎉
         </Text>
       </View>
     </View>
   );
 }
-
-function BillRow({label, value, valueStyle}) {
+function BillRow({ label, value, valueStyle }) {
   return (
     <View style={styles.billRow}>
       <Text style={styles.billLabel}>{label}</Text>
 
-      <Text style={[styles.billValue, valueStyle]}>
-        {value}
-      </Text>
+      <Text style={[styles.billValue, valueStyle]}>{value}</Text>
     </View>
   );
 }
-
 function SecureCheckoutCard() {
   return (
     <View style={styles.secureCard}>
       <View style={styles.secureHeader}>
         <View style={styles.secureHeaderIcon}>
-          <Shield
-            size={rf(18)}
-            color={DARK_GREEN}
-            strokeWidth={2.3}
-          />
+          <Shield size={rf(18)} color={DARK_GREEN} strokeWidth={2.3} />
         </View>
 
-        <Text style={styles.secureTitle}>
-          Secure Checkout Guarantee
-        </Text>
+        <Text style={styles.secureTitle}>Secure Checkout Guarantee</Text>
       </View>
 
       <View style={styles.secureFeatures}>
@@ -750,26 +642,18 @@ function SecureCheckoutCard() {
     </View>
   );
 }
-
-function SecureFeature({
-  Icon,
-  iconColor,
-  iconBg,
-  lineOne,
-  lineTwo,
-}) {
+function SecureFeature({ Icon, iconColor, iconBg, lineOne, lineTwo }) {
   return (
     <View style={styles.secureFeature}>
       <View
         style={[
           styles.secureFeatureIcon,
-          {backgroundColor: iconBg},
-        ]}>
-        <Icon
-          size={rf(19)}
-          color={iconColor}
-          strokeWidth={2.2}
-        />
+          {
+            backgroundColor: iconBg,
+          },
+        ]}
+      >
+        <Icon size={rf(19)} color={iconColor} strokeWidth={2.2} />
       </View>
 
       <Text style={styles.secureFeatureText}>
@@ -779,13 +663,11 @@ function SecureFeature({
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: '#FFFFFF',
   },
-
   header: {
     height: 57,
     paddingHorizontal: width * 0.038,
@@ -793,14 +675,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
   },
-
   backButton: {
     width: 38,
     height: 38,
     alignItems: 'flex-start',
     justifyContent: 'center',
   },
-
   headerTitle: {
     marginLeft: 5,
     fontSize: rf(20),
@@ -809,7 +689,6 @@ const styles = StyleSheet.create({
     color: DARK,
     letterSpacing: -0.35,
   },
-
   progressContainer: {
     height: 51,
     paddingHorizontal: width * 0.035,
@@ -819,12 +698,10 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: '#F1F3F2',
   },
-
   progressStep: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-
   progressCircle: {
     width: 22,
     height: 22,
@@ -835,61 +712,50 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   completedCircle: {
     backgroundColor: '#168D43',
     borderColor: '#168D43',
   },
-
   activeCircle: {
     backgroundColor: '#168D43',
     borderColor: '#168D43',
   },
-
   progressNumber: {
     fontSize: rf(10),
     fontWeight: '900',
     color: '#C6CDD7',
   },
-
   activeProgressNumber: {
     color: '#FFFFFF',
   },
-
   progressLabel: {
     marginLeft: 5,
     fontSize: rf(10),
     fontWeight: '700',
     color: '#B4BBC7',
   },
-
   activeProgressLabel: {
     color: '#168D43',
     fontWeight: '900',
   },
-
   completedProgressLabel: {
     color: '#697386',
   },
-
   progressLine: {
     flex: 1,
     height: 1.5,
     marginHorizontal: 6,
     backgroundColor: '#E5E8EC',
   },
-
   completedLine: {
     backgroundColor: '#168D43',
   },
-
   scrollContent: {
     paddingHorizontal: PAGE_PADDING,
     paddingTop: 13,
     paddingBottom: height * 0.14,
     backgroundColor: PAGE_BG,
   },
-
   sectionHeading: {
     marginTop: 17,
     marginBottom: 10,
@@ -900,7 +766,6 @@ const styles = StyleSheet.create({
     color: DARK,
     letterSpacing: -0.2,
   },
-
   addressCard: {
     minHeight: 154,
     borderRadius: 8,
@@ -909,19 +774,19 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
     borderColor: '#F0F2F0',
-
     shadowColor: '#111827',
     shadowOpacity: 0.025,
     shadowRadius: 6,
-    shadowOffset: {width: 0, height: 3},
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
     elevation: 1,
   },
-
   addressHeader: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-
   addressIconBox: {
     width: 31,
     height: 31,
@@ -930,7 +795,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   addressHeading: {
     flex: 1,
     marginLeft: 11,
@@ -938,7 +802,6 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     color: DARK,
   },
-
   changeButton: {
     height: 31,
     borderRadius: 7,
@@ -947,26 +810,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   changeButtonText: {
     fontSize: rf(12),
     fontWeight: '900',
     color: '#FFFFFF',
   },
-
   addressContent: {
     marginTop: 13,
     flexDirection: 'row',
   },
-
   addressSpacer: {
     width: 42,
   },
-
   addressDetails: {
     flex: 1,
   },
-
   homeFarmBadge: {
     alignSelf: 'flex-start',
     height: 18,
@@ -976,20 +834,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   homeFarmText: {
     fontSize: rf(8),
     fontWeight: '900',
     color: '#168D43',
   },
-
   farmName: {
     marginTop: 7,
     fontSize: rf(14),
     fontWeight: '900',
     color: '#394154',
   },
-
   addressText: {
     marginTop: 3,
     fontSize: rf(12),
@@ -997,7 +852,6 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: MUTED,
   },
-
   deliveryCard: {
     minHeight: 95,
     marginTop: 12,
@@ -1009,7 +863,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-
   deliveryIconBox: {
     width: 40,
     height: 40,
@@ -1018,18 +871,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   deliveryDetails: {
     flex: 1,
     marginLeft: 11,
   },
-
   deliveryLabel: {
     fontSize: rf(10),
     fontWeight: '600',
     color: MUTED,
   },
-
   deliveryDate: {
     marginTop: 3,
     fontSize: rf(14),
@@ -1037,14 +887,12 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     color: DARK,
   },
-
   deliveryLocation: {
     marginTop: 2,
     fontSize: rf(10),
     fontWeight: '600',
     color: MUTED,
   },
-
   freeDeliveryBadge: {
     height: 24,
     borderRadius: 12,
@@ -1054,19 +902,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 4,
   },
-
   rupeeSmall: {
     fontSize: rf(10),
     fontWeight: '900',
     color: '#168D43',
   },
-
   freeDeliveryText: {
     fontSize: rf(9),
     fontWeight: '900',
     color: '#168D43',
   },
-
   orderCard: {
     borderRadius: 8,
     backgroundColor: '#FFFFFF',
@@ -1074,14 +919,12 @@ const styles = StyleSheet.create({
     borderColor: '#F0F2F0',
     overflow: 'hidden',
   },
-
   orderCardHeader: {
     height: 52,
     paddingHorizontal: 13,
     flexDirection: 'row',
     alignItems: 'center',
   },
-
   packageIconBox: {
     width: 22,
     height: 22,
@@ -1090,7 +933,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   orderCountText: {
     flex: 1,
     marginLeft: 8,
@@ -1098,19 +940,16 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     color: DARK,
   },
-
   orderTotal: {
     marginRight: 8,
     fontSize: rf(13),
     fontWeight: '900',
     color: '#168D43',
   },
-
   orderItemsBody: {
     paddingHorizontal: 13,
     paddingBottom: 8,
   },
-
   orderItem: {
     minHeight: 68,
     borderTopWidth: 1,
@@ -1118,11 +957,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-
   lastOrderItem: {
     paddingBottom: 4,
   },
-
   orderImageBox: {
     width: 50,
     height: 50,
@@ -1133,37 +970,31 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   orderImage: {
     width: '87%',
     height: '87%',
   },
-
   orderItemDetails: {
     flex: 1,
     marginLeft: 12,
   },
-
   orderItemName: {
     fontSize: rf(12),
     fontWeight: '900',
     color: '#20283A',
   },
-
   orderItemMeta: {
     marginTop: 4,
     fontSize: rf(10),
     fontWeight: '600',
     color: MUTED,
   },
-
   orderItemPrice: {
     marginLeft: 7,
     fontSize: rf(12),
     fontWeight: '900',
     color: DARK,
   },
-
   aiCard: {
     minHeight: 290,
     borderRadius: 11,
@@ -1171,14 +1002,15 @@ const styles = StyleSheet.create({
     paddingTop: 17,
     paddingBottom: 19,
     overflow: 'hidden',
-
     shadowColor: '#0D9440',
     shadowOpacity: 0.18,
     shadowRadius: 10,
-    shadowOffset: {width: 0, height: 6},
+    shadowOffset: {
+      width: 0,
+      height: 6,
+    },
     elevation: 5,
   },
-
   aiCircleLarge: {
     position: 'absolute',
     width: 128,
@@ -1188,7 +1020,6 @@ const styles = StyleSheet.create({
     top: -45,
     backgroundColor: 'rgba(255,255,255,0.07)',
   },
-
   aiCircleSmall: {
     position: 'absolute',
     width: 69,
@@ -1199,13 +1030,11 @@ const styles = StyleSheet.create({
     borderWidth: 3,
     borderColor: 'rgba(255,255,255,0.18)',
   },
-
   aiHeader: {
     height: 54,
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-
   aiBadge: {
     alignSelf: 'flex-start',
     height: 24,
@@ -1218,14 +1047,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
   },
-
   aiBadgeText: {
     fontSize: rf(8),
     fontWeight: '900',
     color: '#FFFFFF',
     letterSpacing: 0.25,
   },
-
   matchCircle: {
     width: 59,
     height: 59,
@@ -1235,20 +1062,17 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: 'rgba(255,255,255,0.65)',
   },
-
   matchPercent: {
     fontSize: rf(17),
     lineHeight: rf(19),
     fontWeight: '900',
     color: '#FFFFFF',
   },
-
   matchText: {
     fontSize: rf(7),
     fontWeight: '900',
     color: '#FFFFFF',
   },
-
   aiTitle: {
     marginTop: 23,
     fontSize: rf(19),
@@ -1256,7 +1080,6 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     color: '#FFFFFF',
   },
-
   aiDescription: {
     marginTop: 10,
     maxWidth: '91%',
@@ -1265,18 +1088,15 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: 'rgba(255,255,255,0.83)',
   },
-
   aiTagRow: {
     marginTop: 18,
     flexDirection: 'row',
     gap: 8,
   },
-
   aiTagSecondRow: {
     marginTop: 7,
     flexDirection: 'row',
   },
-
   aiTag: {
     minHeight: 25,
     borderRadius: 13,
@@ -1288,17 +1108,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
   },
-
   aiTagText: {
     fontSize: rf(8),
     fontWeight: '800',
     color: '#FFFFFF',
   },
-
   paymentList: {
     gap: 9,
   },
-
   paymentCard: {
     minHeight: 70,
     borderRadius: 9,
@@ -1308,25 +1125,27 @@ const styles = StyleSheet.create({
     borderColor: '#EBEEEC',
     flexDirection: 'row',
     alignItems: 'center',
-
     shadowColor: '#111827',
     shadowOpacity: 0.025,
     shadowRadius: 6,
-    shadowOffset: {width: 0, height: 3},
+    shadowOffset: {
+      width: 0,
+      height: 3,
+    },
     elevation: 1,
   },
-
   selectedPaymentCard: {
     backgroundColor: '#11BE4D',
     borderColor: '#11BE4D',
-
     shadowColor: '#11BE4D',
     shadowOpacity: 0.22,
     shadowRadius: 9,
-    shadowOffset: {width: 0, height: 5},
+    shadowOffset: {
+      width: 0,
+      height: 5,
+    },
     elevation: 4,
   },
-
   paymentIconBox: {
     width: 42,
     height: 42,
@@ -1334,33 +1153,27 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   paymentDetails: {
     flex: 1,
     marginLeft: 13,
   },
-
   paymentTitle: {
     fontSize: rf(14),
     fontWeight: '900',
     color: '#20283A',
   },
-
   selectedPaymentTitle: {
     color: '#FFFFFF',
   },
-
   paymentSubtitle: {
     marginTop: 3,
     fontSize: rf(10),
     fontWeight: '500',
     color: MUTED,
   },
-
   selectedPaymentSubtitle: {
     color: 'rgba(255,255,255,0.79)',
   },
-
   radioOuter: {
     width: 21,
     height: 21,
@@ -1370,18 +1183,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   selectedRadioOuter: {
     borderColor: '#FFFFFF',
   },
-
   radioInner: {
     width: 11,
     height: 11,
     borderRadius: 6,
     backgroundColor: '#FFFFFF',
   },
-
   billCard: {
     borderRadius: 8,
     backgroundColor: '#FFFFFF',
@@ -1389,35 +1199,29 @@ const styles = StyleSheet.create({
     borderColor: '#F0F2F0',
     overflow: 'hidden',
   },
-
   billContent: {
     paddingHorizontal: 14,
     paddingTop: 15,
     paddingBottom: 13,
   },
-
   billRow: {
     marginBottom: 12,
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-
   billLabel: {
     fontSize: rf(12),
     fontWeight: '500',
     color: MUTED,
   },
-
   billValue: {
     fontSize: rf(12),
     fontWeight: '900',
     color: DARK,
   },
-
   discountValue: {
     color: '#168D43',
   },
-
   billDivider: {
     height: 1,
     marginTop: 1,
@@ -1426,25 +1230,21 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: '#E5E8EC',
   },
-
   grandTotalRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-
   grandTotalLabel: {
     fontSize: rf(14),
     fontWeight: '900',
     color: DARK,
   },
-
   grandTotalValue: {
     fontSize: rf(19),
     fontWeight: '900',
     color: '#168D43',
   },
-
   savingsBar: {
     minHeight: 37,
     backgroundColor: '#EAFBF0',
@@ -1453,17 +1253,14 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 7,
   },
-
   savingsText: {
     fontSize: rf(10),
     fontWeight: '700',
     color: '#168D43',
   },
-
   savingsAmount: {
     fontWeight: '900',
   },
-
   secureCard: {
     minHeight: 145,
     marginTop: 13,
@@ -1474,12 +1271,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#F0F2F0',
   },
-
   secureHeader: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-
   secureHeaderIcon: {
     width: 28,
     height: 28,
@@ -1488,25 +1283,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   secureTitle: {
     marginLeft: 9,
     fontSize: rf(12),
     fontWeight: '900',
     color: DARK,
   },
-
   secureFeatures: {
     marginTop: 18,
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-
   secureFeature: {
     width: '23%',
     alignItems: 'center',
   },
-
   secureFeatureIcon: {
     width: 39,
     height: 39,
@@ -1514,7 +1305,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   secureFeatureText: {
     marginTop: 7,
     fontSize: rf(8),
@@ -1523,7 +1313,6 @@ const styles = StyleSheet.create({
     color: '#4A5365',
     textAlign: 'center',
   },
-
   bottomBar: {
     position: 'absolute',
     left: 0,
@@ -1536,7 +1325,6 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: '#EDF0EE',
   },
-
   placeOrderButton: {
     height: 63,
     borderRadius: 10,
@@ -1544,37 +1332,34 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-
     shadowColor: '#12AF47',
     shadowOpacity: 0.25,
     shadowRadius: 10,
-    shadowOffset: {width: 0, height: 6},
+    shadowOffset: {
+      width: 0,
+      height: 6,
+    },
     elevation: 6,
   },
-
   placeOrderLeft: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
   },
-
   placeOrderText: {
     fontSize: rf(18),
     fontWeight: '900',
     color: '#FFFFFF',
   },
-
   placeOrderPriceBox: {
     alignItems: 'flex-end',
   },
-
   placeOrderPrice: {
     fontSize: rf(18),
     lineHeight: rf(21),
     fontWeight: '900',
     color: '#FFFFFF',
   },
-
   placeOrderTax: {
     marginTop: 1,
     fontSize: rf(8),

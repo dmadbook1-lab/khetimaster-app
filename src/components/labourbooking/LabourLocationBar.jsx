@@ -1,26 +1,33 @@
 import React from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, Dimensions} from 'react-native';
-import {MapPin} from 'lucide-react-native';
-
-const {width} = Dimensions.get('window');
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Dimensions,
+} from 'react-native';
+import { MapPin } from 'lucide-react-native';
+const { width } = Dimensions.get('window');
 const rf = size => {
   const scale = width / 390;
   return Math.max(size, Math.min(size * scale, size + 3));
 };
-
-export default function LabourLocationBar({onChangePress}) {
+export default function LabourLocationBar({ onChangePress }) {
   return (
     <View style={styles.row}>
       <MapPin size={rf(16)} color="#16A34A" strokeWidth={2.4} />
       <Text style={styles.location}>Aurangabad, Maharashtra</Text>
 
-      <TouchableOpacity activeOpacity={0.85} onPress={onChangePress} style={styles.btn}>
+      <TouchableOpacity
+        activeOpacity={0.85}
+        onPress={onChangePress}
+        style={styles.btn}
+      >
         <Text style={styles.btnText}>Change Location</Text>
       </TouchableOpacity>
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   row: {
     marginTop: 8,

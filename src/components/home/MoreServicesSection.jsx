@@ -1,4 +1,3 @@
-// components/home/MoreServicesSection.js
 import React from 'react';
 import {
   View,
@@ -8,16 +7,13 @@ import {
   Image,
   Dimensions,
 } from 'react-native';
-
-const {width} = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 const DARK = '#111827';
-
 const rf = size => {
   const scale = width / 390;
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
-
-export default function MoreServicesSection({navigation}) {
+export default function MoreServicesSection({ navigation }) {
   const topRow = [
     {
       title: 'Reels',
@@ -35,7 +31,6 @@ export default function MoreServicesSection({navigation}) {
       onPress: () => navigation?.navigate('Traders'),
     },
   ];
-
   const bottomRow = [
     {
       title: 'Insurance',
@@ -48,13 +43,13 @@ export default function MoreServicesSection({navigation}) {
       onPress: () => navigation?.navigate('Community'),
     },
   ];
-
   const renderPill = (item, style) => (
     <TouchableOpacity
       key={item.title}
       activeOpacity={0.85}
       onPress={item.onPress}
-      style={[styles.pill, style]}>
+      style={[styles.pill, style]}
+    >
       <View style={styles.iconWrap}>
         <Image source={item.image} style={styles.icon} resizeMode="cover" />
       </View>
@@ -63,19 +58,24 @@ export default function MoreServicesSection({navigation}) {
       </Text>
     </TouchableOpacity>
   );
-
   return (
     <View style={styles.container}>
       <View style={styles.row}>
         {topRow.map(item => renderPill(item, styles.thirdPill))}
       </View>
-      <View style={[styles.row, {marginTop: 10}]}>
+      <View
+        style={[
+          styles.row,
+          {
+            marginTop: 10,
+          },
+        ]}
+      >
         {bottomRow.map(item => renderPill(item, styles.halfPill))}
       </View>
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     marginTop: 22,
@@ -95,7 +95,10 @@ const styles = StyleSheet.create({
     shadowColor: '#0F172A',
     shadowOpacity: 0.08,
     shadowRadius: 10,
-    shadowOffset: {width: 0, height: 4},
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
     elevation: 3,
   },
   thirdPill: {

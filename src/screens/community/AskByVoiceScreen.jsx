@@ -1,4 +1,4 @@
-import React, {useCallback, useEffect, useRef, useState} from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   View,
   Text,
@@ -11,8 +11,8 @@ import {
   Easing,
   BackHandler,
 } from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import {useFocusEffect} from '@react-navigation/native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { useFocusEffect } from '@react-navigation/native';
 import {
   ArrowLeft,
   Mic,
@@ -23,36 +23,43 @@ import {
   Search,
   ArrowRight,
 } from 'lucide-react-native';
-
-import {COLORS, rf, PAGE_PADDING} from '../../components/community/theme';
-import {COMMUNITY_IMAGES} from '../../components/community/communityImages';
-
+import { COLORS, rf, PAGE_PADDING } from '../../components/community/theme';
+import { COMMUNITY_IMAGES } from '../../components/community/communityImages';
 const TOTAL_STEPS = 3;
-
 const HERO_IMG = COMMUNITY_IMAGES.community9;
-
 const LANGUAGES = [
-  {id: 'marathi', label: 'मराठी', sub: 'Marathi'},
-  {id: 'hindi', label: 'हिन्दी', sub: 'Hindi'},
-  {id: 'english', label: 'English', sub: 'English'},
-  {id: 'auto', label: null, sub: 'Auto Detect', icon: Search},
+  {
+    id: 'marathi',
+    label: 'मराठी',
+    sub: 'Marathi',
+  },
+  {
+    id: 'hindi',
+    label: 'हिन्दी',
+    sub: 'Hindi',
+  },
+  {
+    id: 'english',
+    label: 'English',
+    sub: 'English',
+  },
+  {
+    id: 'auto',
+    label: null,
+    sub: 'Auto Detect',
+    icon: Search,
+  },
 ];
-
-// Wave bar heights (random-looking but static)
 const WAVE_BARS = [
-  8, 14, 22, 30, 40, 32, 26, 38, 44, 34, 24, 30, 42, 38, 28, 20, 14, 10,
-  16, 24, 34, 30, 22, 14,
+  8, 14, 22, 30, 40, 32, 26, 38, 44, 34, 24, 30, 42, 38, 28, 20, 14, 10, 16, 24,
+  34, 30, 22, 14,
 ];
-
-export default function AskByVoiceScreen({navigation}) {
+export default function AskByVoiceScreen({ navigation }) {
   const [step, setStep] = useState(1);
   const [seconds, setSeconds] = useState(23);
   const [isRecording, setIsRecording] = useState(true);
   const [selectedLang, setSelectedLang] = useState('hindi');
-
-  // Ripple animation around record button
   const ripple = useRef(new Animated.Value(0)).current;
-
   useEffect(() => {
     if (isRecording) {
       Animated.loop(
@@ -67,14 +74,11 @@ export default function AskByVoiceScreen({navigation}) {
       ripple.stopAnimation();
     }
   }, [isRecording, ripple]);
-
-  // Timer
   useEffect(() => {
     if (!isRecording) return;
     const t = setInterval(() => setSeconds(s => s + 1), 1000);
     return () => clearInterval(t);
   }, [isRecording]);
-
   const handleBack = useCallback(() => {
     if (step > 1) {
       setStep(step - 1);
@@ -83,39 +87,48 @@ export default function AskByVoiceScreen({navigation}) {
     navigation?.goBack();
     return true;
   }, [step, navigation]);
-
   useFocusEffect(
     useCallback(() => {
       const sub = BackHandler.addEventListener('hardwareBackPress', handleBack);
       return () => sub.remove();
     }, [handleBack]),
   );
-
-  const rippleScale = ripple.interpolate({inputRange: [0, 1], outputRange: [1, 2.2]});
-  const rippleOpacity = ripple.interpolate({inputRange: [0, 1], outputRange: [0.5, 0]});
-
+  const rippleScale = ripple.interpolate({
+    inputRange: [0, 1],
+    outputRange: [1, 2.2],
+  });
+  const rippleOpacity = ripple.interpolate({
+    inputRange: [0, 1],
+    outputRange: [0.5, 0],
+  });
   const formatTime = s => {
-    const m = Math.floor(s / 60).toString().padStart(2, '0');
+    const m = Math.floor(s / 60)
+      .toString()
+      .padStart(2, '0');
     const sec = (s % 60).toString().padStart(2, '0');
     return `${m}:${sec}`;
   };
-
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
 
-      {/* Back button */}
+      {}
       <View style={styles.topBar}>
         <TouchableOpacity
           activeOpacity={0.7}
           onPress={handleBack}
-          style={styles.backRow}>
-          <ArrowLeft size={rf(15)} color={COLORS.DARK_GREEN} strokeWidth={2.5} />
+          style={styles.backRow}
+        >
+          <ArrowLeft
+            size={rf(15)}
+            color={COLORS.DARK_GREEN}
+            strokeWidth={2.5}
+          />
           <Text style={styles.backText}>Back</Text>
         </TouchableOpacity>
       </View>
 
-      {/* Title */}
+      {}
       <View style={styles.titleRow}>
         <View style={styles.titleIconCircle}>
           <Mic size={rf(18)} color={COLORS.DARK_GREEN} strokeWidth={2.3} />
@@ -123,9 +136,11 @@ export default function AskByVoiceScreen({navigation}) {
         <Text style={styles.titleText}>Ask by Voice</Text>
       </View>
 
-      {/* Progress */}
+      {}
       <View style={styles.progressRow}>
-        {Array.from({length: TOTAL_STEPS}).map((_, i) => (
+        {Array.from({
+          length: TOTAL_STEPS,
+        }).map((_, i) => (
           <View
             key={i}
             style={[styles.progressSeg, i < step && styles.progressSegActive]}
@@ -135,22 +150,23 @@ export default function AskByVoiceScreen({navigation}) {
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scroll}>
-        {/* Hero image */}
+        contentContainerStyle={styles.scroll}
+      >
+        {}
         <Image source={HERO_IMG} style={styles.heroImg} />
 
-        {/* Copy */}
+        {}
         <Text style={styles.heroTitle}>Speak your farming question.</Text>
         <Text style={styles.heroSub}>
           Explain your farming problem in your own language. AI will convert it
           to text.
         </Text>
 
-        {/* Recorder Card */}
+        {}
         <View style={styles.recorderCard}>
           <Text style={styles.timer}>{formatTime(seconds)}</Text>
 
-          {/* Wave bars */}
+          {}
           <View style={styles.waveRow}>
             {WAVE_BARS.map((h, i) => (
               <View
@@ -166,13 +182,17 @@ export default function AskByVoiceScreen({navigation}) {
             ))}
           </View>
 
-          {/* Record button with ripple */}
+          {}
           <View style={styles.recBtnWrap}>
             <Animated.View
               style={[
                 styles.ripple,
                 {
-                  transform: [{scale: rippleScale}],
+                  transform: [
+                    {
+                      scale: rippleScale,
+                    },
+                  ],
                   opacity: rippleOpacity,
                 },
               ]}
@@ -180,7 +200,8 @@ export default function AskByVoiceScreen({navigation}) {
             <TouchableOpacity
               activeOpacity={0.85}
               onPress={() => setIsRecording(r => !r)}
-              style={styles.recBtn}>
+              style={styles.recBtn}
+            >
               {isRecording ? (
                 <Square
                   size={rf(20)}
@@ -194,7 +215,7 @@ export default function AskByVoiceScreen({navigation}) {
             </TouchableOpacity>
           </View>
 
-          {/* Control row */}
+          {}
           <View style={styles.ctrlRow}>
             <TouchableOpacity activeOpacity={0.7} style={styles.ctrlItem}>
               <View style={styles.ctrlCircle}>
@@ -206,7 +227,8 @@ export default function AskByVoiceScreen({navigation}) {
             <TouchableOpacity
               activeOpacity={0.7}
               onPress={() => setIsRecording(r => !r)}
-              style={styles.ctrlItem}>
+              style={styles.ctrlItem}
+            >
               <View style={styles.ctrlCircle}>
                 <Pause size={rf(14)} color={COLORS.MUTED} strokeWidth={2.3} />
               </View>
@@ -215,16 +237,27 @@ export default function AskByVoiceScreen({navigation}) {
 
             <TouchableOpacity activeOpacity={0.7} style={styles.ctrlItem}>
               <View style={[styles.ctrlCircle, styles.ctrlCircleDone]}>
-                <Check size={rf(14)} color={COLORS.DARK_GREEN} strokeWidth={3} />
+                <Check
+                  size={rf(14)}
+                  color={COLORS.DARK_GREEN}
+                  strokeWidth={3}
+                />
               </View>
-              <Text style={[styles.ctrlLabel, {color: COLORS.DARK_GREEN}]}>
+              <Text
+                style={[
+                  styles.ctrlLabel,
+                  {
+                    color: COLORS.DARK_GREEN,
+                  },
+                ]}
+              >
                 Done
               </Text>
             </TouchableOpacity>
           </View>
         </View>
 
-        {/* Language Selector */}
+        {}
         <Text style={styles.langLabel}>SELECT LANGUAGE</Text>
         <View style={styles.langRow}>
           {LANGUAGES.map(l => {
@@ -235,13 +268,17 @@ export default function AskByVoiceScreen({navigation}) {
                 key={l.id}
                 activeOpacity={0.85}
                 onPress={() => setSelectedLang(l.id)}
-                style={[styles.langCard, active && styles.langCardActive]}>
+                style={[styles.langCard, active && styles.langCardActive]}
+              >
                 {l.label ? (
                   <Text
                     style={[
                       styles.langLabelBig,
-                      active && {color: '#FFFFFF'},
-                    ]}>
+                      active && {
+                        color: '#FFFFFF',
+                      },
+                    ]}
+                  >
                     {l.label}
                   </Text>
                 ) : (
@@ -256,8 +293,11 @@ export default function AskByVoiceScreen({navigation}) {
                 <Text
                   style={[
                     styles.langSub,
-                    active && {color: 'rgba(255,255,255,0.9)'},
-                  ]}>
+                    active && {
+                      color: 'rgba(255,255,255,0.9)',
+                    },
+                  ]}
+                >
                   {l.sub}
                 </Text>
               </TouchableOpacity>
@@ -266,12 +306,13 @@ export default function AskByVoiceScreen({navigation}) {
         </View>
       </ScrollView>
 
-      {/* Footer CTA */}
+      {}
       <View style={styles.footer}>
         <TouchableOpacity
           activeOpacity={0.9}
           onPress={() => navigation?.navigate('AIAnswer')}
-          style={styles.primaryBtn}>
+          style={styles.primaryBtn}
+        >
           <Text style={styles.primaryText}>Continue to Review</Text>
           <ArrowRight size={rf(15)} color="#FFFFFF" strokeWidth={2.5} />
         </TouchableOpacity>
@@ -279,14 +320,26 @@ export default function AskByVoiceScreen({navigation}) {
     </SafeAreaView>
   );
 }
-
 const styles = StyleSheet.create({
-  safeArea: {flex: 1, backgroundColor: '#FFFFFF'},
-
-  topBar: {paddingHorizontal: PAGE_PADDING, paddingTop: 6},
-  backRow: {flexDirection: 'row', alignItems: 'center', gap: 4, paddingVertical: 6},
-  backText: {fontSize: rf(13), fontWeight: '700', color: COLORS.DARK_GREEN},
-
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
+  topBar: {
+    paddingHorizontal: PAGE_PADDING,
+    paddingTop: 6,
+  },
+  backRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    paddingVertical: 6,
+  },
+  backText: {
+    fontSize: rf(13),
+    fontWeight: '700',
+    color: COLORS.DARK_GREEN,
+  },
   titleRow: {
     marginTop: 6,
     paddingHorizontal: PAGE_PADDING,
@@ -302,26 +355,35 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  titleText: {fontSize: rf(19), fontWeight: '900', color: COLORS.DARK},
-
+  titleText: {
+    fontSize: rf(19),
+    fontWeight: '900',
+    color: COLORS.DARK,
+  },
   progressRow: {
     marginTop: 14,
     paddingHorizontal: PAGE_PADDING,
     flexDirection: 'row',
     gap: 6,
   },
-  progressSeg: {flex: 1, height: 4, borderRadius: 2, backgroundColor: '#E5E7EB'},
-  progressSegActive: {backgroundColor: COLORS.DARK_GREEN},
-
-  scroll: {paddingBottom: 130},
-
+  progressSeg: {
+    flex: 1,
+    height: 4,
+    borderRadius: 2,
+    backgroundColor: '#E5E7EB',
+  },
+  progressSegActive: {
+    backgroundColor: COLORS.DARK_GREEN,
+  },
+  scroll: {
+    paddingBottom: 130,
+  },
   heroImg: {
     marginTop: 16,
     width: '100%',
     height: 220,
     backgroundColor: '#F1F5F9',
   },
-
   heroTitle: {
     marginTop: 22,
     paddingHorizontal: PAGE_PADDING,
@@ -337,7 +399,6 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: COLORS.MUTED,
   },
-
   recorderCard: {
     marginTop: 20,
     marginHorizontal: PAGE_PADDING,
@@ -348,8 +409,11 @@ const styles = StyleSheet.create({
     borderColor: COLORS.BORDER,
     alignItems: 'center',
   },
-  timer: {fontSize: rf(15), fontWeight: '700', color: COLORS.DARK},
-
+  timer: {
+    fontSize: rf(15),
+    fontWeight: '700',
+    color: COLORS.DARK,
+  },
   waveRow: {
     marginTop: 14,
     height: 46,
@@ -362,7 +426,6 @@ const styles = StyleSheet.create({
     borderRadius: 2,
     backgroundColor: COLORS.DARK_GREEN,
   },
-
   recBtnWrap: {
     marginTop: 20,
     width: 78,
@@ -387,17 +450,22 @@ const styles = StyleSheet.create({
     shadowColor: COLORS.DARK_GREEN,
     shadowOpacity: 0.4,
     shadowRadius: 12,
-    shadowOffset: {width: 0, height: 6},
+    shadowOffset: {
+      width: 0,
+      height: 6,
+    },
     elevation: 6,
   },
-
   ctrlRow: {
     marginTop: 20,
     flexDirection: 'row',
     justifyContent: 'space-around',
     alignSelf: 'stretch',
   },
-  ctrlItem: {alignItems: 'center', gap: 6},
+  ctrlItem: {
+    alignItems: 'center',
+    gap: 6,
+  },
   ctrlCircle: {
     width: 44,
     height: 44,
@@ -406,9 +474,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  ctrlCircleDone: {backgroundColor: '#EAFBF0'},
-  ctrlLabel: {fontSize: rf(10.5), fontWeight: '700', color: COLORS.MUTED},
-
+  ctrlCircleDone: {
+    backgroundColor: '#EAFBF0',
+  },
+  ctrlLabel: {
+    fontSize: rf(10.5),
+    fontWeight: '700',
+    color: COLORS.MUTED,
+  },
   langLabel: {
     marginTop: 24,
     marginBottom: 12,
@@ -439,9 +512,16 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.DARK_GREEN,
     borderColor: COLORS.DARK_GREEN,
   },
-  langLabelBig: {fontSize: rf(14), fontWeight: '900', color: COLORS.DARK},
-  langSub: {fontSize: rf(10), fontWeight: '600', color: COLORS.MUTED},
-
+  langLabelBig: {
+    fontSize: rf(14),
+    fontWeight: '900',
+    color: COLORS.DARK,
+  },
+  langSub: {
+    fontSize: rf(10),
+    fontWeight: '600',
+    color: COLORS.MUTED,
+  },
   footer: {
     position: 'absolute',
     left: 0,
@@ -464,8 +544,15 @@ const styles = StyleSheet.create({
     shadowColor: COLORS.DARK_GREEN,
     shadowOpacity: 0.3,
     shadowRadius: 10,
-    shadowOffset: {width: 0, height: 5},
+    shadowOffset: {
+      width: 0,
+      height: 5,
+    },
     elevation: 5,
   },
-  primaryText: {fontSize: rf(13.5), fontWeight: '900', color: '#FFFFFF'},
+  primaryText: {
+    fontSize: rf(13.5),
+    fontWeight: '900',
+    color: '#FFFFFF',
+  },
 });

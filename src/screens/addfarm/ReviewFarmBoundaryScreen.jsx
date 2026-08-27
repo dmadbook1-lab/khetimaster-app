@@ -1,5 +1,3 @@
-// src/screens/ReviewFarmBoundaryScreen.jsx
-
 import React from 'react';
 import {
   View,
@@ -11,8 +9,8 @@ import {
   ImageBackground,
   ScrollView,
 } from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import Svg, {Circle, Polygon} from 'react-native-svg';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Svg, { Circle, Polygon } from 'react-native-svg';
 import {
   ArrowLeft,
   Share2,
@@ -28,36 +26,33 @@ import {
   RotateCcw,
   CheckCircle2,
 } from 'lucide-react-native';
-
-const {width, height} = Dimensions.get('window');
-
+const { width, height } = Dimensions.get('window');
 const GREEN = '#16883E';
 const LIGHT_GREEN = '#ECFDF5';
 const BORDER_GREEN = '#BBF7D0';
 const DARK = '#111827';
 const MUTED = '#64748B';
 const ORANGE = '#F97316';
-
 const isSmall = width < 360;
-
 const rf = size => {
   const scale = width / 390;
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
-
-export default function ReviewFarmBoundaryScreen({navigation}) {
+export default function ReviewFarmBoundaryScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}>
+        contentContainerStyle={styles.scrollContent}
+      >
         <View style={styles.header}>
           <TouchableOpacity
             activeOpacity={0.8}
             style={styles.circleBtn}
-            onPress={() => navigation.goBack()}>
+            onPress={() => navigation.goBack()}
+          >
             <ArrowLeft size={rf(22)} color="#1F2937" strokeWidth={2.3} />
           </TouchableOpacity>
 
@@ -75,7 +70,8 @@ export default function ReviewFarmBoundaryScreen({navigation}) {
           <ImageBackground
             source={require('../../assets/images/farm-satellite.png')}
             style={styles.mapImage}
-            resizeMode="cover">
+            resizeMode="cover"
+          >
             <Svg width="100%" height="100%" style={StyleSheet.absoluteFill}>
               <Polygon
                 points="96,52 198,18 318,56 350,158 286,214 158,214 82,158"
@@ -127,9 +123,7 @@ export default function ReviewFarmBoundaryScreen({navigation}) {
 
             <View style={styles.accuracyPill}>
               <View style={styles.orangeDot} />
-              <Text style={styles.accuracyText}>
-                GPS Accuracy — Excellent
-              </Text>
+              <Text style={styles.accuracyText}>GPS Accuracy — Excellent</Text>
             </View>
           </ImageBackground>
         </View>
@@ -153,21 +147,9 @@ export default function ReviewFarmBoundaryScreen({navigation}) {
           <View style={styles.divider} />
 
           <View style={styles.infoGrid}>
-            <InfoItem
-              Icon={Database}
-              label="Crop"
-              value="Soybean"
-            />
-            <InfoItem
-              Icon={Expand}
-              label="Area"
-              value="2.34 Acres"
-            />
-            <InfoItem
-              Icon={MapPin}
-              label="Boundary Points"
-              value="42 Points"
-            />
+            <InfoItem Icon={Database} label="Crop" value="Soybean" />
+            <InfoItem Icon={Expand} label="Area" value="2.34 Acres" />
+            <InfoItem Icon={MapPin} label="Boundary Points" value="42 Points" />
             <InfoItem
               Icon={Navigation}
               label="Method"
@@ -195,20 +177,15 @@ export default function ReviewFarmBoundaryScreen({navigation}) {
         </View>
 
         <View style={styles.actionRow}>
-          <ActionCard
-            Icon={Pencil}
-            title="Edit Boundary"
-          />
-          <ActionCard
-            Icon={RotateCcw}
-            title="Remap Farm"
-          />
+          <ActionCard Icon={Pencil} title="Edit Boundary" />
+          <ActionCard Icon={RotateCcw} title="Remap Farm" />
         </View>
 
         <TouchableOpacity
           activeOpacity={0.9}
           style={styles.confirmButton}
-          onPress={() => navigation.navigate('SmartFarmScreen')}>
+          onPress={() => navigation.navigate('SmartFarmScreen')}
+        >
           <CheckCircle2 size={rf(22)} color="#FFFFFF" strokeWidth={2.5} />
           <Text style={styles.confirmText}>Confirm Farm</Text>
         </TouchableOpacity>
@@ -216,15 +193,15 @@ export default function ReviewFarmBoundaryScreen({navigation}) {
         <TouchableOpacity
           activeOpacity={0.75}
           style={styles.backTracking}
-          onPress={() => navigation.goBack()}>
+          onPress={() => navigation.goBack()}
+        >
           <Text style={styles.backTrackingText}>← Back to Tracking</Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>
   );
 }
-
-const InfoItem = ({Icon, label, value}) => {
+const InfoItem = ({ Icon, label, value }) => {
   return (
     <View style={styles.infoItem}>
       <View style={styles.infoIconCircle}>
@@ -238,8 +215,7 @@ const InfoItem = ({Icon, label, value}) => {
     </View>
   );
 };
-
-const ActionCard = ({Icon, title}) => {
+const ActionCard = ({ Icon, title }) => {
   return (
     <TouchableOpacity activeOpacity={0.85} style={styles.actionCard}>
       <View style={styles.actionIconCircle}>
@@ -249,25 +225,21 @@ const ActionCard = ({Icon, title}) => {
     </TouchableOpacity>
   );
 };
-
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: '#FFFFFF',
   },
-
   scrollContent: {
     paddingHorizontal: width * 0.055,
     paddingBottom: 34,
   },
-
   header: {
     height: 74,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-
   circleBtn: {
     width: 42,
     height: 42,
@@ -278,18 +250,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   headerCenter: {
     alignItems: 'center',
   },
-
   brandText: {
     fontSize: rf(10),
     color: '#94A3B8',
     fontWeight: '900',
     letterSpacing: 1.5,
   },
-
   title: {
     marginTop: 3,
     fontSize: rf(20),
@@ -297,7 +266,6 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     letterSpacing: -0.4,
   },
-
   mapCard: {
     height: height * 0.315,
     borderRadius: 26,
@@ -306,15 +274,16 @@ const styles = StyleSheet.create({
     shadowColor: '#0F172A',
     shadowOpacity: 0.08,
     shadowRadius: 16,
-    shadowOffset: {width: 0, height: 8},
+    shadowOffset: {
+      width: 0,
+      height: 8,
+    },
     elevation: 4,
   },
-
   mapImage: {
     width: '100%',
     height: '100%',
   },
-
   zoomControls: {
     position: 'absolute',
     top: 16,
@@ -326,22 +295,22 @@ const styles = StyleSheet.create({
     shadowColor: '#000',
     shadowOpacity: 0.12,
     shadowRadius: 10,
-    shadowOffset: {width: 0, height: 5},
+    shadowOffset: {
+      width: 0,
+      height: 5,
+    },
     elevation: 5,
   },
-
   zoomBtn: {
     width: 44,
     height: 44,
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   zoomDivider: {
     height: 1,
     backgroundColor: '#E5E7EB',
   },
-
   accuracyPill: {
     position: 'absolute',
     left: 18,
@@ -355,10 +324,12 @@ const styles = StyleSheet.create({
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 10,
-    shadowOffset: {width: 0, height: 5},
+    shadowOffset: {
+      width: 0,
+      height: 5,
+    },
     elevation: 4,
   },
-
   orangeDot: {
     width: 10,
     height: 10,
@@ -366,13 +337,11 @@ const styles = StyleSheet.create({
     backgroundColor: ORANGE,
     marginRight: 8,
   },
-
   accuracyText: {
     fontSize: rf(12),
     color: '#475569',
     fontWeight: '900',
   },
-
   detailsCard: {
     marginTop: 24,
     borderRadius: 28,
@@ -382,12 +351,10 @@ const styles = StyleSheet.create({
     paddingHorizontal: width * 0.06,
     paddingVertical: 24,
   },
-
   farmHeader: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-
   mainIconCircle: {
     width: 50,
     height: 50,
@@ -396,18 +363,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   farmNameWrap: {
     flex: 1,
     marginLeft: 16,
   },
-
   label: {
     fontSize: rf(11),
     color: '#94A3B8',
     fontWeight: '800',
   },
-
   farmName: {
     marginTop: 4,
     fontSize: rf(20),
@@ -415,7 +379,6 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     letterSpacing: -0.35,
   },
-
   activePill: {
     height: 32,
     paddingHorizontal: 18,
@@ -426,31 +389,26 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   activeText: {
     fontSize: rf(12),
     color: GREEN,
     fontWeight: '900',
   },
-
   divider: {
     height: 1,
     backgroundColor: '#F1F5F9',
     marginVertical: 24,
   },
-
   infoGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     rowGap: 24,
   },
-
   infoItem: {
     width: '50%',
     flexDirection: 'row',
     alignItems: 'center',
   },
-
   infoIconCircle: {
     width: 36,
     height: 36,
@@ -459,18 +417,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   infoTextWrap: {
     marginLeft: 12,
     flex: 1,
   },
-
   infoLabel: {
     fontSize: rf(10.5),
     color: '#94A3B8',
     fontWeight: '800',
   },
-
   infoValue: {
     marginTop: 4,
     fontSize: rf(14.5),
@@ -478,7 +433,6 @@ const styles = StyleSheet.create({
     color: DARK,
     fontWeight: '900',
   },
-
   accuracyCard: {
     marginTop: 24,
     borderRadius: 26,
@@ -489,7 +443,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-
   accuracyIcon: {
     width: 54,
     height: 54,
@@ -498,23 +451,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   accuracyContent: {
     flex: 1,
     marginLeft: 16,
   },
-
   accuracyTitleRow: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-
   accuracyTitle: {
     fontSize: rf(15),
     color: GREEN,
     fontWeight: '900',
   },
-
   greenTinyDot: {
     width: 7,
     height: 7,
@@ -522,7 +471,6 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     backgroundColor: GREEN,
   },
-
   accuracyDesc: {
     marginTop: 8,
     fontSize: rf(12.5),
@@ -530,13 +478,11 @@ const styles = StyleSheet.create({
     color: '#475569',
     fontWeight: '600',
   },
-
   actionRow: {
     marginTop: 24,
     flexDirection: 'row',
     gap: 16,
   },
-
   actionCard: {
     flex: 1,
     height: 106,
@@ -547,7 +493,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   actionIconCircle: {
     width: 40,
     height: 40,
@@ -557,13 +502,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 12,
   },
-
   actionTitle: {
     fontSize: rf(13),
     color: DARK,
     fontWeight: '900',
   },
-
   confirmButton: {
     marginTop: 32,
     height: 68,
@@ -576,21 +519,21 @@ const styles = StyleSheet.create({
     shadowColor: '#16A34A',
     shadowOpacity: 0.24,
     shadowRadius: 18,
-    shadowOffset: {width: 0, height: 10},
+    shadowOffset: {
+      width: 0,
+      height: 10,
+    },
     elevation: 8,
   },
-
   confirmText: {
     fontSize: rf(19),
     color: '#FFFFFF',
     fontWeight: '900',
   },
-
   backTracking: {
     marginTop: 24,
     alignSelf: 'center',
   },
-
   backTrackingText: {
     fontSize: rf(15),
     color: MUTED,

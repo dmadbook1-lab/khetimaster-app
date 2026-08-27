@@ -7,27 +7,20 @@ import {
   Dimensions,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import {
-  IndianRupee,
-  CheckCircle2,
-  Clock3,
-} from 'lucide-react-native';
-
+import { IndianRupee, CheckCircle2, Clock3 } from 'lucide-react-native';
 const { width } = Dimensions.get('window');
-
 const rf = size => {
   const scale = width / 390;
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
-
 export default function MachineryHeroBanner() {
   return (
     <ImageBackground
       source={require('../../assets/machinery/machinery-hero.png')}
       style={styles.banner}
       imageStyle={styles.bannerImage}
-      resizeMode="cover">
-
+      resizeMode="cover"
+    >
       <LinearGradient
         colors={[
           'rgba(13, 88, 44, 0.78)',
@@ -36,8 +29,14 @@ export default function MachineryHeroBanner() {
           'rgba(38, 150, 72, 0.08)',
         ]}
         locations={[0, 0.42, 0.72, 1]}
-        start={{ x: 0, y: 0.5 }}
-        end={{ x: 1, y: 0.5 }}
+        start={{
+          x: 0,
+          y: 0.5,
+        }}
+        end={{
+          x: 1,
+          y: 0.5,
+        }}
         style={StyleSheet.absoluteFill}
       />
 
@@ -49,38 +48,21 @@ export default function MachineryHeroBanner() {
         </Text>
 
         <View style={styles.features}>
-          <Feature
-            Icon={IndianRupee}
-            title="Best"
-            subtitle="Price"
-          />
+          <Feature Icon={IndianRupee} title="Best" subtitle="Price" />
 
-          <Feature
-            Icon={CheckCircle2}
-            title="Verified"
-            subtitle="Owners"
-          />
+          <Feature Icon={CheckCircle2} title="Verified" subtitle="Owners" />
 
-          <Feature
-            Icon={Clock3}
-            title="Better"
-            subtitle="Availability"
-          />
+          <Feature Icon={Clock3} title="Better" subtitle="Availability" />
         </View>
       </View>
     </ImageBackground>
   );
 }
-
 function Feature({ Icon, title, subtitle }) {
   return (
     <View style={styles.feature}>
       <View style={styles.iconCircle}>
-        <Icon
-          size={rf(14)}
-          color="#F7C948"
-          strokeWidth={2.2}
-        />
+        <Icon size={rf(14)} color="#F7C948" strokeWidth={2.2} />
       </View>
 
       <Text style={styles.label}>{title}</Text>
@@ -88,7 +70,6 @@ function Feature({ Icon, title, subtitle }) {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   banner: {
     height: 182,
@@ -96,11 +77,9 @@ const styles = StyleSheet.create({
     borderRadius: 17,
     overflow: 'hidden',
   },
-
   bannerImage: {
     borderRadius: 17,
   },
-
   content: {
     flex: 1,
     justifyContent: 'space-between',
@@ -108,7 +87,6 @@ const styles = StyleSheet.create({
     paddingTop: 18,
     paddingBottom: 16,
   },
-
   title: {
     width: '56%',
     color: '#FFFFFF',
@@ -117,19 +95,16 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     letterSpacing: -0.3,
   },
-
   features: {
     flexDirection: 'row',
     alignItems: 'flex-start',
     marginTop: 8,
   },
-
   feature: {
     width: 62,
     alignItems: 'center',
     marginRight: 10,
   },
-
   iconCircle: {
     width: 31,
     height: 31,
@@ -140,7 +115,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 6,
   },
-
   label: {
     color: '#FFFFFF',
     fontSize: rf(9.2),

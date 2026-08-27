@@ -1,9 +1,7 @@
 import React from 'react';
-import {View, Text, StyleSheet, Dimensions} from 'react-native';
-import {BadgeCheck, ChevronRight} from 'lucide-react-native';
-
-const {width} = Dimensions.get('window');
-
+import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import { BadgeCheck, ChevronRight } from 'lucide-react-native';
+const { width } = Dimensions.get('window');
 export default function AIRecommendedCard() {
   return (
     <View style={styles.card}>
@@ -41,7 +39,6 @@ export default function AIRecommendedCard() {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   card: {
     marginTop: 30,
@@ -51,20 +48,17 @@ const styles = StyleSheet.create({
     padding: 20,
     overflow: 'hidden',
   },
-
   badge: {
     fontSize: 10,
     color: '#DCFCE7',
     fontWeight: '900',
   },
-
   title: {
     marginTop: 16,
     fontSize: 17,
     fontWeight: '900',
     color: '#FFFFFF',
   },
-
   desc: {
     marginTop: 10,
     fontSize: 12,
@@ -72,56 +66,47 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#FFFFFF',
   },
-
   bottom: {
     marginTop: 18,
     flexDirection: 'row',
     alignItems: 'flex-end',
   },
-
   progressBox: {
     flex: 1,
   },
-
   confidence: {
     fontSize: 9,
     fontWeight: '800',
     color: '#DCFCE7',
   },
-
   track: {
     marginTop: 6,
     height: 5,
     borderRadius: 3,
     backgroundColor: 'rgba(255,255,255,0.28)',
   },
-
   fill: {
     width: '92%',
     height: '100%',
     borderRadius: 3,
     backgroundColor: '#FFFFFF',
   },
-
   percent: {
     marginLeft: 8,
     color: '#FFFFFF',
     fontSize: 12,
     fontWeight: '900',
   },
-
   learnRow: {
     marginLeft: 8,
     flexDirection: 'row',
     alignItems: 'center',
   },
-
   learn: {
     color: '#FFFFFF',
     fontSize: 11,
     fontWeight: '900',
   },
-
   bgIcon: {
     position: 'absolute',
     top: 12,

@@ -1,6 +1,4 @@
-// src/screens/LanguageScreen.jsx
-
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -11,24 +9,31 @@ import {
   Dimensions,
   ScrollView,
 } from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
-import {Check, ShieldCheck} from 'lucide-react-native';
-
-const {width, height} = Dimensions.get('window');
-
+import { Check, ShieldCheck } from 'lucide-react-native';
+const { width, height } = Dimensions.get('window');
 const GREEN = '#178C45';
 const DARK = '#171B20';
-
 const languages = [
-  {id: 'mr', label: 'मराठी', flag: '🇮🇳'},
-  {id: 'hi', label: 'हिंदी', flag: '🇮🇳'},
-  {id: 'en', label: 'English', flag: '🇬🇧'},
+  {
+    id: 'mr',
+    label: 'मराठी',
+    flag: '🇮🇳',
+  },
+  {
+    id: 'hi',
+    label: 'हिंदी',
+    flag: '🇮🇳',
+  },
+  {
+    id: 'en',
+    label: 'English',
+    flag: '🇬🇧',
+  },
 ];
-
-const LanguageScreen = ({navigation}) => {
+const LanguageScreen = ({ navigation }) => {
   const [selected, setSelected] = useState('en');
-
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
@@ -37,8 +42,9 @@ const LanguageScreen = ({navigation}) => {
         style={styles.scroll}
         contentContainerStyle={styles.scrollContent}
         showsVerticalScrollIndicator={false}
-        bounces={false}>
-        {/* Hero Image */}
+        bounces={false}
+      >
+        {}
         <View style={styles.imageWrapper}>
           <Image
             source={require('../../assets/images/language.png')}
@@ -47,7 +53,7 @@ const LanguageScreen = ({navigation}) => {
           />
         </View>
 
-        {/* Rounded Card */}
+        {}
         <View style={styles.contentCard}>
           <Text style={styles.title}>
             Choose Your{'\n'}
@@ -61,13 +67,13 @@ const LanguageScreen = ({navigation}) => {
           <View style={styles.list}>
             {languages.map(item => {
               const active = selected === item.id;
-
               return (
                 <TouchableOpacity
                   key={item.id}
                   activeOpacity={0.85}
                   onPress={() => setSelected(item.id)}
-                  style={[styles.langCard, active && styles.activeCard]}>
+                  style={[styles.langCard, active && styles.activeCard]}
+                >
                   <View style={styles.langLeft}>
                     <Text style={styles.flag}>{item.flag}</Text>
                     <Text style={styles.langText}>{item.label}</Text>
@@ -85,12 +91,20 @@ const LanguageScreen = ({navigation}) => {
 
           <TouchableOpacity
             activeOpacity={0.9}
-            onPress={() => navigation.replace('Login')}>
+            onPress={() => navigation.replace('Login')}
+          >
             <LinearGradient
               colors={['#178C45', '#25C866']}
-              start={{x: 0, y: 0}}
-              end={{x: 1, y: 0}}
-              style={styles.button}>
+              start={{
+                x: 0,
+                y: 0,
+              }}
+              end={{
+                x: 1,
+                y: 0,
+              }}
+              style={styles.button}
+            >
               <Text style={styles.buttonText}>Continue</Text>
               <Text style={styles.arrow}>→</Text>
             </LinearGradient>
@@ -107,35 +121,28 @@ const LanguageScreen = ({navigation}) => {
     </SafeAreaView>
   );
 };
-
 export default LanguageScreen;
-
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: '#FFFFFF',
   },
-
   scroll: {
     flex: 1,
     backgroundColor: '#FFFFFF',
   },
-
   scrollContent: {
     flexGrow: 1,
     paddingBottom: 24,
   },
-
   imageWrapper: {
     width: width,
     height: height * 0.42,
   },
-
   heroImage: {
     width: '100%',
     height: '100%',
   },
-
   contentCard: {
     marginTop: -36,
     backgroundColor: '#FFFFFF',
@@ -145,7 +152,6 @@ const styles = StyleSheet.create({
     paddingTop: 38,
     paddingBottom: 28,
     minHeight: height * 0.62,
-
     shadowColor: '#000',
     shadowOpacity: 0.05,
     shadowRadius: 12,
@@ -155,7 +161,6 @@ const styles = StyleSheet.create({
     },
     elevation: 6,
   },
-
   title: {
     fontSize: 30,
     lineHeight: 37,
@@ -164,11 +169,9 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     letterSpacing: -0.5,
   },
-
   greenText: {
     color: '#23A85B',
   },
-
   subtitle: {
     marginTop: 12,
     fontSize: 15,
@@ -176,11 +179,9 @@ const styles = StyleSheet.create({
     color: '#4B5563',
     textAlign: 'center',
   },
-
   list: {
     marginTop: 28,
   },
-
   langCard: {
     height: 70,
     borderRadius: 18,
@@ -193,28 +194,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-
   activeCard: {
     borderColor: GREEN,
     backgroundColor: '#EFFBF4',
   },
-
   langLeft: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-
   flag: {
     fontSize: 22,
     marginRight: 20,
   },
-
   langText: {
     fontSize: 18,
     color: '#252A31',
     fontWeight: '800',
   },
-
   checkCircle: {
     width: 28,
     height: 28,
@@ -223,7 +219,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   button: {
     marginTop: 18,
     height: 62,
@@ -231,7 +226,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     flexDirection: 'row',
-
     shadowColor: GREEN,
     shadowOpacity: 0.25,
     shadowRadius: 16,
@@ -241,26 +235,22 @@ const styles = StyleSheet.create({
     },
     elevation: 8,
   },
-
   buttonText: {
     fontSize: 18,
     fontWeight: '800',
     color: '#FFFFFF',
   },
-
   arrow: {
     marginLeft: 12,
     fontSize: 26,
     color: '#FFFFFF',
   },
-
   noteRow: {
     marginTop: 22,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   noteText: {
     marginLeft: 8,
     fontSize: 13,

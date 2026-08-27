@@ -1,7 +1,6 @@
 import React from 'react';
-import {View, Text, StyleSheet, ScrollView} from 'react-native';
-import {Wheat, Leaf, Send, Search} from 'lucide-react-native';
-
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { Wheat, Leaf, Send, Search } from 'lucide-react-native';
 import StepHeader from '../StepHeader';
 import AnalyzingCard from '../AnalyzingCard';
 import YourQuestionCard from '../YourQuestionCard';
@@ -11,9 +10,7 @@ import ImproveQuestionCard from '../ImproveQuestionCard';
 import FooterBar from '../FooterBar';
 import PrimaryButton from '../PrimaryButton';
 import SecondaryButton from '../SecondaryButton';
-
-import {COLORS, rf, PAGE_PADDING} from '../../theme';
-
+import { COLORS, rf, PAGE_PADDING } from '../../theme';
 const SIMILAR = [
   {
     id: 's1',
@@ -37,7 +34,6 @@ const SIMILAR = [
     expertAnswer: true,
   },
 ];
-
 export default function Step2AIReview({
   step,
   totalSteps,
@@ -56,22 +52,33 @@ export default function Step2AIReview({
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scroll}>
-        {/* Analyzing */}
+        contentContainerStyle={styles.scroll}
+      >
+        {}
         <AnalyzingCard progress={72} />
 
-        {/* Your question card */}
-        <View style={{marginTop: 12}}>
+        {}
+        <View
+          style={{
+            marginTop: 12,
+          }}
+        >
           <YourQuestionCard
             title="Why are my wheat leaves turning yellow at the tips?"
             tags={[
-              {label: 'Wheat', icon: Wheat},
-              {label: 'Plant Health', icon: Leaf},
+              {
+                label: 'Wheat',
+                icon: Wheat,
+              },
+              {
+                label: 'Plant Health',
+                icon: Leaf,
+              },
             ]}
           />
         </View>
 
-        {/* Similar Questions Section */}
+        {}
         <View style={styles.similarHeader}>
           <View style={styles.similarTitleWrap}>
             <View style={styles.bar} />
@@ -86,13 +93,21 @@ export default function Step2AIReview({
           <SimilarQuestionCard key={item.id} item={item} />
         ))}
 
-        {/* AI Diagnosis (dark green) */}
-        <View style={{marginTop: 4}}>
+        {}
+        <View
+          style={{
+            marginTop: 4,
+          }}
+        >
           <AIDiagnosisCard onViewAdvice={() => {}} />
         </View>
 
-        {/* Improve Question */}
-        <View style={{marginTop: 12}}>
+        {}
+        <View
+          style={{
+            marginTop: 12,
+          }}
+        >
           <ImproveQuestionCard
             original="Why are my wheat leaves turning yellow at the tips?"
             improved="My wheat crop (Punjab, Rabi season) has yellowing at leaf tips starting from older leaves upward. Soil test shows pH 7.2. Applied urea 3 weeks ago. Could this be nitrogen deficiency or early leaf spot?"
@@ -108,11 +123,15 @@ export default function Step2AIReview({
     </View>
   );
 }
-
 const styles = StyleSheet.create({
-  flex: {flex: 1, backgroundColor: COLORS.PAGE_BG},
-  scroll: {padding: PAGE_PADDING, paddingBottom: 30},
-
+  flex: {
+    flex: 1,
+    backgroundColor: COLORS.PAGE_BG,
+  },
+  scroll: {
+    padding: PAGE_PADDING,
+    paddingBottom: 30,
+  },
   similarHeader: {
     marginTop: 18,
     marginBottom: 10,
@@ -120,9 +139,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  similarTitleWrap: {flexDirection: 'row', alignItems: 'center', gap: 8},
-  bar: {width: 3, height: 18, borderRadius: 2, backgroundColor: COLORS.ORANGE},
-  similarTitle: {fontSize: rf(13.5), fontWeight: '900', color: COLORS.DARK},
+  similarTitleWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  bar: {
+    width: 3,
+    height: 18,
+    borderRadius: 2,
+    backgroundColor: COLORS.ORANGE,
+  },
+  similarTitle: {
+    fontSize: rf(13.5),
+    fontWeight: '900',
+    color: COLORS.DARK,
+  },
   resultPill: {
     height: 22,
     paddingHorizontal: 10,
@@ -130,5 +162,9 @@ const styles = StyleSheet.create({
     backgroundColor: '#F1F5F9',
     justifyContent: 'center',
   },
-  resultText: {fontSize: rf(9.5), fontWeight: '900', color: COLORS.MUTED},
+  resultText: {
+    fontSize: rf(9.5),
+    fontWeight: '900',
+    color: COLORS.MUTED,
+  },
 });

@@ -1,9 +1,7 @@
 import React from 'react';
-import {View, Text, Image, StyleSheet, Dimensions} from 'react-native';
-import {Star} from 'lucide-react-native';
-
-const {width} = Dimensions.get('window');
-
+import { View, Text, Image, StyleSheet, Dimensions } from 'react-native';
+import { Star } from 'lucide-react-native';
+const { width } = Dimensions.get('window');
 const products = [
   {
     name: 'IFFCO Urea',
@@ -22,7 +20,6 @@ const products = [
     image: require('../../assets/bazar/product3.jpg'),
   },
 ];
-
 export default function SimilarProducts() {
   return (
     <View style={styles.wrapper}>
@@ -31,7 +28,11 @@ export default function SimilarProducts() {
       <View style={styles.row}>
         {products.map((item, index) => (
           <View key={index} style={styles.card}>
-            <Image source={item.image} style={styles.image} resizeMode="cover" />
+            <Image
+              source={item.image}
+              style={styles.image}
+              resizeMode="cover"
+            />
 
             <Text style={styles.name}>{item.name}</Text>
             <Text style={styles.brand}>{item.brand}</Text>
@@ -51,7 +52,6 @@ export default function SimilarProducts() {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   wrapper: {
     marginTop: 36,
@@ -59,19 +59,16 @@ const styles = StyleSheet.create({
     borderTopWidth: 8,
     borderTopColor: '#F8FAFC',
   },
-
   sectionTitle: {
     fontSize: 16,
     fontWeight: '900',
     color: '#111827',
   },
-
   row: {
     marginTop: 16,
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-
   card: {
     width: (width - width * 0.074 - 12) / 2,
     borderRadius: 12,
@@ -80,45 +77,38 @@ const styles = StyleSheet.create({
     borderColor: '#EEF2F7',
     padding: 12,
   },
-
   image: {
     width: '100%',
     height: 122,
     borderRadius: 8,
   },
-
   name: {
     marginTop: 12,
     fontSize: 12,
     fontWeight: '900',
     color: '#111827',
   },
-
   brand: {
     marginTop: 2,
     fontSize: 10,
     fontWeight: '700',
     color: '#64748B',
   },
-
   priceRow: {
     marginTop: 10,
     flexDirection: 'row',
     gap: 8,
   },
-
   price: {
     fontSize: 14,
     fontWeight: '900',
     color: '#16A34A',
   },
-
   old: {
     fontSize: 11,
     color: '#CBD5E1',
     textDecorationLine: 'line-through',
   },
-
   ratingPill: {
     marginTop: 10,
     height: 22,
@@ -130,7 +120,6 @@ const styles = StyleSheet.create({
     alignSelf: 'flex-start',
     gap: 4,
   },
-
   rating: {
     fontSize: 9,
     fontWeight: '900',

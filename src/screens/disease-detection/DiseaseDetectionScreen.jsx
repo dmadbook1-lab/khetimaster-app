@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -9,7 +9,7 @@ import {
   TouchableOpacity,
   Alert,
 } from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
 import {
   ArrowLeft,
@@ -31,9 +31,7 @@ import {
   Sparkles,
   ScanSearch,
 } from 'lucide-react-native';
-
-const {width} = Dimensions.get('window');
-
+const { width } = Dimensions.get('window');
 const GREEN = '#16A34A';
 const DARK_GREEN = '#16883E';
 const BRIGHT_GREEN = '#1FC45A';
@@ -44,21 +42,33 @@ const PAGE_BG = '#FAFBFA';
 const ORANGE = '#F97316';
 const BLUE = '#3B82F6';
 const PURPLE = '#A855F7';
-
 const PAGE_PADDING = width * 0.037;
-
 const rf = size => {
   const scale = width / 390;
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
-
 const PHOTO_TIPS = [
-  {id: 'daylight', title: 'Capture in daylight', Icon: Sun},
-  {id: 'focus', title: 'Focus on affected area', Icon: Focus},
-  {id: 'blur', title: 'Avoid blurry photos', Icon: Square},
-  {id: 'oneleaf', title: 'One leaf per photo', Icon: Globe},
+  {
+    id: 'daylight',
+    title: 'Capture in daylight',
+    Icon: Sun,
+  },
+  {
+    id: 'focus',
+    title: 'Focus on affected area',
+    Icon: Focus,
+  },
+  {
+    id: 'blur',
+    title: 'Avoid blurry photos',
+    Icon: Square,
+  },
+  {
+    id: 'oneleaf',
+    title: 'One leaf per photo',
+    Icon: Globe,
+  },
 ];
-
 const HOW_IT_WORKS = [
   {
     id: '01',
@@ -97,38 +107,56 @@ const HOW_IT_WORKS = [
     bg: '#FFF7ED',
   },
 ];
-
 const SUPPORTED_CROPS = [
-  {id: 'cotton', name: 'Cotton', emoji: '🌸', selected: true},
-  {id: 'soybean', name: 'Soybean', emoji: '🫘'},
-  {id: 'rice', name: 'Rice', emoji: '🌾'},
-  {id: 'wheat', name: 'Wheat', emoji: '🌱'},
-  {id: 'tomato', name: 'Tomato', emoji: '🍅'},
-  {id: 'chilli', name: 'Chilli', emoji: '🌶️'},
+  {
+    id: 'cotton',
+    name: 'Cotton',
+    emoji: '🌸',
+    selected: true,
+  },
+  {
+    id: 'soybean',
+    name: 'Soybean',
+    emoji: '🫘',
+  },
+  {
+    id: 'rice',
+    name: 'Rice',
+    emoji: '🌾',
+  },
+  {
+    id: 'wheat',
+    name: 'Wheat',
+    emoji: '🌱',
+  },
+  {
+    id: 'tomato',
+    name: 'Tomato',
+    emoji: '🍅',
+  },
+  {
+    id: 'chilli',
+    name: 'Chilli',
+    emoji: '🌶️',
+  },
 ];
-
-export default function DiseaseDetectionScreen({navigation}) {
+export default function DiseaseDetectionScreen({ navigation }) {
   const [selectedCrop, setSelectedCrop] = useState('cotton');
-
   const handleBack = () => {
     if (navigation?.canGoBack()) {
       navigation.goBack();
       return;
     }
   };
-
   const handleTakePhoto = () => {
     Alert.alert('Take Photo', 'Camera will open here.');
   };
-
   const handleGallery = () => {
     Alert.alert('Gallery', 'Gallery will open here.');
   };
-
- const handleStartDetection = () => {
-  navigation.navigate('UploadCropPhoto');
-};
-
+  const handleStartDetection = () => {
+    navigation.navigate('UploadCropPhoto');
+  };
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
@@ -137,7 +165,8 @@ export default function DiseaseDetectionScreen({navigation}) {
         <TouchableOpacity
           activeOpacity={0.8}
           onPress={handleBack}
-          style={styles.iconButton}>
+          style={styles.iconButton}
+        >
           <ArrowLeft size={rf(20)} color={DARK} strokeWidth={2.4} />
         </TouchableOpacity>
 
@@ -156,13 +185,21 @@ export default function DiseaseDetectionScreen({navigation}) {
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}>
-        {/* Hero Card */}
+        contentContainerStyle={styles.scrollContent}
+      >
+        {}
         <LinearGradient
           colors={['#158B3D', '#18A84A']}
-          start={{x: 0, y: 0}}
-          end={{x: 1, y: 1}}
-          style={styles.heroCard}>
+          start={{
+            x: 0,
+            y: 0,
+          }}
+          end={{
+            x: 1,
+            y: 1,
+          }}
+          style={styles.heroCard}
+        >
           <Sparkles
             size={rf(90)}
             color="rgba(255,255,255,0.10)"
@@ -181,9 +218,7 @@ export default function DiseaseDetectionScreen({navigation}) {
             </View>
           </View>
 
-          <Text style={styles.heroTitle}>
-            AI Crop Disease{'\n'}Detection
-          </Text>
+          <Text style={styles.heroTitle}>AI Crop Disease{'\n'}Detection</Text>
 
           <Text style={styles.heroSubtitle}>
             Upload a photo of your crop and receive instant disease
@@ -205,7 +240,7 @@ export default function DiseaseDetectionScreen({navigation}) {
           </View>
         </LinearGradient>
 
-        {/* Upload Card */}
+        {}
         <View style={styles.uploadCard}>
           <View style={styles.uploadIconWrap}>
             <View style={styles.uploadIconCircle}>
@@ -232,7 +267,8 @@ export default function DiseaseDetectionScreen({navigation}) {
             <TouchableOpacity
               activeOpacity={0.9}
               onPress={handleTakePhoto}
-              style={styles.takePhotoButton}>
+              style={styles.takePhotoButton}
+            >
               <Camera size={rf(15)} color="#FFFFFF" strokeWidth={2.3} />
               <Text style={styles.takePhotoButtonText}>Take Photo</Text>
             </TouchableOpacity>
@@ -240,14 +276,15 @@ export default function DiseaseDetectionScreen({navigation}) {
             <TouchableOpacity
               activeOpacity={0.9}
               onPress={handleGallery}
-              style={styles.galleryButton}>
+              style={styles.galleryButton}
+            >
               <ImageIcon size={rf(15)} color={DARK_GREEN} strokeWidth={2.3} />
               <Text style={styles.galleryButtonText}>Gallery</Text>
             </TouchableOpacity>
           </View>
         </View>
 
-        {/* Photo Tips */}
+        {}
         <View style={styles.tipsCard}>
           <View style={styles.tipsHeader}>
             <View style={styles.tipsHeaderIcon}>
@@ -276,7 +313,7 @@ export default function DiseaseDetectionScreen({navigation}) {
           </View>
         </View>
 
-        {/* How It Works */}
+        {}
         <View style={styles.howCard}>
           <View style={styles.howHeader}>
             <Text style={styles.howTitle}>How It Works</Text>
@@ -293,8 +330,11 @@ export default function DiseaseDetectionScreen({navigation}) {
                     <View
                       style={[
                         styles.howIconBox,
-                        {backgroundColor: item.bg},
-                      ]}>
+                        {
+                          backgroundColor: item.bg,
+                        },
+                      ]}
+                    >
                       <Icon
                         size={rf(17)}
                         color={item.color}
@@ -309,15 +349,16 @@ export default function DiseaseDetectionScreen({navigation}) {
                       <View
                         style={[
                           styles.stepBadge,
-                          {backgroundColor: item.color},
-                        ]}>
+                          {
+                            backgroundColor: item.color,
+                          },
+                        ]}
+                      >
                         <Text style={styles.stepBadgeText}>{item.step}</Text>
                       </View>
                       <Text style={styles.howStepTitle}>{item.title}</Text>
                     </View>
-                    <Text style={styles.howStepSubtitle}>
-                      {item.subtitle}
-                    </Text>
+                    <Text style={styles.howStepSubtitle}>{item.subtitle}</Text>
                   </View>
                 </View>
               );
@@ -325,7 +366,7 @@ export default function DiseaseDetectionScreen({navigation}) {
           </View>
         </View>
 
-        {/* Supported Crops */}
+        {}
         <View style={styles.cropsHeader}>
           <Text style={styles.cropsTitle}>Supported Crops</Text>
           <TouchableOpacity activeOpacity={0.7}>
@@ -341,16 +382,15 @@ export default function DiseaseDetectionScreen({navigation}) {
                 key={crop.id}
                 activeOpacity={0.85}
                 onPress={() => setSelectedCrop(crop.id)}
-                style={[
-                  styles.cropPill,
-                  isSelected && styles.selectedCropPill,
-                ]}>
+                style={[styles.cropPill, isSelected && styles.selectedCropPill]}
+              >
                 <Text style={styles.cropEmoji}>{crop.emoji}</Text>
                 <Text
                   style={[
                     styles.cropName,
                     isSelected && styles.selectedCropName,
-                  ]}>
+                  ]}
+                >
                   {crop.name}
                 </Text>
               </TouchableOpacity>
@@ -368,7 +408,8 @@ export default function DiseaseDetectionScreen({navigation}) {
         <TouchableOpacity
           activeOpacity={0.9}
           onPress={handleStartDetection}
-          style={styles.detectButton}>
+          style={styles.detectButton}
+        >
           <ScanSearch size={rf(18)} color="#FFFFFF" strokeWidth={2.4} />
           <Text style={styles.detectButtonText}>Start Detection</Text>
         </TouchableOpacity>
@@ -376,13 +417,11 @@ export default function DiseaseDetectionScreen({navigation}) {
     </SafeAreaView>
   );
 }
-
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: '#FFFFFF',
   },
-
   header: {
     height: 61,
     paddingHorizontal: PAGE_PADDING,
@@ -392,7 +431,6 @@ const styles = StyleSheet.create({
     borderBottomColor: '#EEF1F2',
     backgroundColor: '#FFFFFF',
   },
-
   iconButton: {
     width: 39,
     height: 39,
@@ -401,27 +439,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   headerTextBox: {
     flex: 1,
     marginHorizontal: 12,
     alignItems: 'center',
   },
-
   headerTitle: {
     fontSize: rf(17),
     lineHeight: rf(21),
     fontWeight: '900',
     color: DARK,
   },
-
   headerSubtitle: {
     marginTop: 2,
     fontSize: rf(9),
     fontWeight: '500',
     color: MUTED,
   },
-
   bellDot: {
     position: 'absolute',
     top: 9,
@@ -433,33 +467,27 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: '#FFFFFF',
   },
-
   scrollContent: {
     paddingHorizontal: PAGE_PADDING,
     paddingTop: 12,
     paddingBottom: 105,
     backgroundColor: PAGE_BG,
   },
-
-  // Hero card
   heroCard: {
     borderRadius: 12,
     padding: 16,
     overflow: 'hidden',
   },
-
   heroSparkle: {
     position: 'absolute',
     right: -10,
     bottom: 10,
   },
-
   heroTopRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-
   liveBadge: {
     height: 22,
     paddingHorizontal: 9,
@@ -469,20 +497,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
   },
-
   liveDot: {
     width: 6,
     height: 6,
     borderRadius: 3,
     backgroundColor: BRIGHT_GREEN,
   },
-
   liveBadgeText: {
     fontSize: rf(7),
     fontWeight: '900',
     color: '#FFFFFF',
   },
-
   scanIconBox: {
     width: 38,
     height: 38,
@@ -492,7 +517,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   heroTitle: {
     marginTop: 18,
     fontSize: rf(22),
@@ -500,7 +524,6 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     color: '#FFFFFF',
   },
-
   heroSubtitle: {
     marginTop: 8,
     fontSize: rf(10),
@@ -508,14 +531,12 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: '#D1FAE5',
   },
-
   heroFooter: {
     marginTop: 18,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
   },
-
   heroFooterIcon: {
     width: 20,
     height: 20,
@@ -524,14 +545,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   heroFooterText: {
     fontSize: rf(9),
     fontWeight: '800',
     color: '#FFFFFF',
   },
-
-  // Upload card
   uploadCard: {
     marginTop: 16,
     borderRadius: 12,
@@ -541,14 +559,12 @@ const styles = StyleSheet.create({
     borderColor: BORDER,
     alignItems: 'center',
   },
-
   uploadIconWrap: {
     width: 68,
     height: 68,
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   uploadIconCircle: {
     width: 62,
     height: 62,
@@ -557,7 +573,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   uploadPlusBadge: {
     position: 'absolute',
     top: 2,
@@ -571,14 +586,12 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: '#FFFFFF',
   },
-
   uploadTitle: {
     marginTop: 12,
     fontSize: rf(15),
     fontWeight: '900',
     color: DARK,
   },
-
   uploadSubtitle: {
     marginTop: 6,
     fontSize: rf(10),
@@ -588,7 +601,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     paddingHorizontal: 10,
   },
-
   dropZone: {
     width: '100%',
     minHeight: 110,
@@ -603,20 +615,17 @@ const styles = StyleSheet.create({
     padding: 14,
     gap: 8,
   },
-
   dropZoneText: {
     fontSize: rf(9),
     fontWeight: '500',
     color: MUTED,
   },
-
   uploadButtonRow: {
     width: '100%',
     marginTop: 14,
     flexDirection: 'row',
     gap: 10,
   },
-
   takePhotoButton: {
     flex: 1,
     height: 46,
@@ -627,13 +636,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 7,
   },
-
   takePhotoButtonText: {
     fontSize: rf(11),
     fontWeight: '900',
     color: '#FFFFFF',
   },
-
   galleryButton: {
     flex: 1,
     height: 46,
@@ -646,14 +653,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 7,
   },
-
   galleryButtonText: {
     fontSize: rf(11),
     fontWeight: '900',
     color: DARK_GREEN,
   },
-
-  // Tips card
   tipsCard: {
     marginTop: 16,
     borderRadius: 12,
@@ -662,13 +666,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: BORDER,
   },
-
   tipsHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
   },
-
   tipsHeaderIcon: {
     width: 28,
     height: 28,
@@ -676,15 +678,17 @@ const styles = StyleSheet.create({
     backgroundColor: ORANGE,
     alignItems: 'center',
     justifyContent: 'center',
-    transform: [{rotate: '45deg'}],
+    transform: [
+      {
+        rotate: '45deg',
+      },
+    ],
   },
-
   tipsHeaderTitle: {
     fontSize: rf(14),
     fontWeight: '900',
     color: DARK,
   },
-
   tipsGrid: {
     marginTop: 12,
     flexDirection: 'row',
@@ -692,7 +696,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     rowGap: 8,
   },
-
   tipItem: {
     width: '48.5%',
     minHeight: 46,
@@ -704,7 +707,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 9,
   },
-
   tipIconCircle: {
     width: 26,
     height: 26,
@@ -713,7 +715,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   tipText: {
     flex: 1,
     fontSize: rf(9),
@@ -721,8 +722,6 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     color: DARK,
   },
-
-  // How it works
   howCard: {
     marginTop: 16,
     borderRadius: 12,
@@ -731,39 +730,32 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: BORDER,
   },
-
   howHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-
   howTitle: {
     fontSize: rf(15),
     fontWeight: '900',
     color: DARK,
   },
-
   howSteps: {
     fontSize: rf(9),
     fontWeight: '900',
     color: DARK_GREEN,
   },
-
   howList: {
     marginTop: 12,
   },
-
   howRow: {
     flexDirection: 'row',
     alignItems: 'flex-start',
   },
-
   howIconColumn: {
     width: 34,
     alignItems: 'center',
   },
-
   howIconBox: {
     width: 34,
     height: 34,
@@ -771,7 +763,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   howConnector: {
     width: 1.5,
     height: 22,
@@ -780,19 +771,16 @@ const styles = StyleSheet.create({
     borderLeftWidth: 1.5,
     borderLeftColor: '#D9DEE3',
   },
-
   howTextBox: {
     flex: 1,
     marginLeft: 12,
     paddingBottom: 18,
   },
-
   howTitleRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
   },
-
   stepBadge: {
     minWidth: 22,
     height: 18,
@@ -801,27 +789,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   stepBadgeText: {
     fontSize: rf(7),
     fontWeight: '900',
     color: '#FFFFFF',
   },
-
   howStepTitle: {
     fontSize: rf(12),
     fontWeight: '900',
     color: DARK,
   },
-
   howStepSubtitle: {
     marginTop: 3,
     fontSize: rf(9),
     fontWeight: '500',
     color: MUTED,
   },
-
-  // Supported crops
   cropsHeader: {
     marginTop: 19,
     marginBottom: 10,
@@ -829,25 +812,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-
   cropsTitle: {
     fontSize: rf(15),
     fontWeight: '900',
     color: DARK,
   },
-
   cropsViewAll: {
     fontSize: rf(10),
     fontWeight: '900',
     color: DARK_GREEN,
   },
-
   cropsGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 8,
   },
-
   cropPill: {
     height: 34,
     paddingHorizontal: 14,
@@ -859,27 +838,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
   },
-
   selectedCropPill: {
     backgroundColor: '#EAFBF0',
     borderColor: '#BBF0CC',
   },
-
   cropEmoji: {
     fontSize: rf(13),
   },
-
   cropName: {
     fontSize: rf(10),
     fontWeight: '900',
     color: DARK,
   },
-
   selectedCropName: {
     color: DARK_GREEN,
   },
-
-  // Bottom bar
   bottomBar: {
     position: 'absolute',
     left: 0,
@@ -892,7 +865,6 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: BORDER,
   },
-
   detectButton: {
     height: 52,
     borderRadius: 10,
@@ -902,7 +874,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 9,
   },
-
   detectButtonText: {
     fontSize: rf(13),
     fontWeight: '900',

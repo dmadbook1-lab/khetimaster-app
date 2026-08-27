@@ -1,30 +1,40 @@
 import React from 'react';
-import {View, Text, StyleSheet, Dimensions} from 'react-native';
-import {stats} from './data';
-
-const {width} = Dimensions.get('window');
+import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import { stats } from './data';
+const { width } = Dimensions.get('window');
 const CARD_WIDTH = (width - width * 0.11 - 14) / 2;
-
 const rf = size => {
   const scale = width / 390;
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
-
 export default function FarmOverviewStats() {
   return (
     <View style={styles.wrapper}>
       {stats.map((item, index) => {
         const Icon = item.Icon;
-
         return (
           <View key={index} style={styles.card}>
-            <View style={[styles.iconBox, {backgroundColor: item.bg}]}>
+            <View
+              style={[
+                styles.iconBox,
+                {
+                  backgroundColor: item.bg,
+                },
+              ]}
+            >
               <Icon size={22} color={item.color} strokeWidth={2.4} />
             </View>
 
             <Text style={styles.label}>{item.label}</Text>
             <Text style={styles.value}>{item.value}</Text>
-            <Text style={[styles.status, {color: item.color}]}>
+            <Text
+              style={[
+                styles.status,
+                {
+                  color: item.color,
+                },
+              ]}
+            >
               {item.status}
             </Text>
           </View>
@@ -33,7 +43,6 @@ export default function FarmOverviewStats() {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   wrapper: {
     marginTop: 22,
@@ -51,7 +60,10 @@ const styles = StyleSheet.create({
     shadowColor: '#0F172A',
     shadowOpacity: 0.06,
     shadowRadius: 12,
-    shadowOffset: {width: 0, height: 6},
+    shadowOffset: {
+      width: 0,
+      height: 6,
+    },
     elevation: 3,
   },
   iconBox: {

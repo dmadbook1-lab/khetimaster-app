@@ -1,15 +1,29 @@
 import React from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, ScrollView, Dimensions} from 'react-native';
-
-const {width} = Dimensions.get('window');
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  Dimensions,
+} from 'react-native';
+const { width } = Dimensions.get('window');
 const rf = size => {
   const scale = width / 390;
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
-
-export default function LabourCategories({categories, activeCategory, onChange, onSeeAllPress}) {
+export default function LabourCategories({
+  categories,
+  activeCategory,
+  onChange,
+  onSeeAllPress,
+}) {
   return (
-    <View style={{marginTop: 18}}>
+    <View
+      style={{
+        marginTop: 18,
+      }}
+    >
       <View style={styles.headerRow}>
         <Text style={styles.title}>Categories</Text>
         <TouchableOpacity activeOpacity={0.8} onPress={onSeeAllPress}>
@@ -17,7 +31,13 @@ export default function LabourCategories({categories, activeCategory, onChange, 
         </TouchableOpacity>
       </View>
 
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={{marginTop: 10}}>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        style={{
+          marginTop: 10,
+        }}
+      >
         {categories.map(cat => {
           const active = cat.id === activeCategory;
           return (
@@ -25,9 +45,12 @@ export default function LabourCategories({categories, activeCategory, onChange, 
               key={cat.id}
               activeOpacity={0.85}
               onPress={() => onChange(cat.id)}
-              style={[styles.pill, active && styles.activePill]}>
+              style={[styles.pill, active && styles.activePill]}
+            >
               <Text style={styles.emoji}>{cat.icon}</Text>
-              <Text style={[styles.label, active && styles.activeLabel]}>{cat.label}</Text>
+              <Text style={[styles.label, active && styles.activeLabel]}>
+                {cat.label}
+              </Text>
             </TouchableOpacity>
           );
         })}
@@ -35,7 +58,6 @@ export default function LabourCategories({categories, activeCategory, onChange, 
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   headerRow: {
     flexDirection: 'row',

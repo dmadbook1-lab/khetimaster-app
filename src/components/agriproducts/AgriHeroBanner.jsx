@@ -7,24 +7,21 @@ import {
   StyleSheet,
   Dimensions,
 } from 'react-native';
-import {Zap} from 'lucide-react-native';
-
-const {width} = Dimensions.get('window');
-
+import { Zap } from 'lucide-react-native';
+const { width } = Dimensions.get('window');
 const isSmall = width < 370;
-
 const rf = size => {
   const scale = width / 390;
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
-
 export default function AgriHeroBanner() {
   return (
     <ImageBackground
       source={require('../../assets/bazar/bazar-hero.png')}
       style={styles.banner}
       imageStyle={styles.bannerImage}
-      resizeMode="cover">
+      resizeMode="cover"
+    >
       <View style={styles.overlay} />
 
       <View style={styles.fastBadge}>
@@ -48,7 +45,6 @@ export default function AgriHeroBanner() {
     </ImageBackground>
   );
 }
-
 const styles = StyleSheet.create({
   banner: {
     marginTop: 20,
@@ -57,16 +53,13 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     backgroundColor: '#14532D',
   },
-
   bannerImage: {
     borderRadius: 20,
   },
-
   overlay: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: 'rgba(0,0,0,0.34)',
   },
-
   fastBadge: {
     position: 'absolute',
     top: 12,
@@ -79,13 +72,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 4,
   },
-
   fastText: {
     fontSize: rf(10),
     fontWeight: '900',
     color: '#16883E',
   },
-
   content: {
     flex: 1,
     justifyContent: 'flex-end',
@@ -94,7 +85,6 @@ const styles = StyleSheet.create({
     paddingBottom: 18,
     width: isSmall ? '84%' : '78%',
   },
-
   title: {
     fontSize: rf(isSmall ? 20 : 22),
     lineHeight: rf(isSmall ? 24 : 27),
@@ -102,10 +92,12 @@ const styles = StyleSheet.create({
     color: '#FFFFFF',
     letterSpacing: -0.45,
     textShadowColor: 'rgba(0,0,0,0.35)',
-    textShadowOffset: {width: 0, height: 1},
+    textShadowOffset: {
+      width: 0,
+      height: 1,
+    },
     textShadowRadius: 4,
   },
-
   subtitle: {
     marginTop: 7,
     fontSize: rf(11),
@@ -113,7 +105,6 @@ const styles = StyleSheet.create({
     fontWeight: '800',
     color: 'rgba(255,255,255,0.92)',
   },
-
   button: {
     marginTop: 13,
     height: 34,
@@ -124,7 +115,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   buttonText: {
     fontSize: rf(12),
     fontWeight: '900',

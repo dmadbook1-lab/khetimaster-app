@@ -1,14 +1,14 @@
 import React from 'react';
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
-import {Search, ChevronDown} from 'lucide-react-native';
-import {COLORS, rf} from '../theme';
-
-export default function DropdownField({value, onPress}) {
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { Search, ChevronDown } from 'lucide-react-native';
+import { COLORS, rf } from '../theme';
+export default function DropdownField({ value, onPress }) {
   return (
     <TouchableOpacity
       activeOpacity={0.85}
       onPress={onPress}
-      style={styles.wrap}>
+      style={styles.wrap}
+    >
       <Search size={rf(14)} color={COLORS.MUTED} strokeWidth={2.3} />
       <Text style={styles.value}>{value}</Text>
       <ChevronDown size={rf(15)} color={COLORS.MUTED} strokeWidth={2.3} />
@@ -16,7 +16,6 @@ export default function DropdownField({value, onPress}) {
     </TouchableOpacity>
   );
 }
-
 const styles = StyleSheet.create({
   wrap: {
     height: 48,
@@ -29,5 +28,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 10,
   },
-  value: {flex: 1, fontSize: rf(12), fontWeight: '700', color: COLORS.DARK},
+  value: {
+    flex: 1,
+    fontSize: rf(12),
+    fontWeight: '700',
+    color: COLORS.DARK,
+  },
 });

@@ -1,21 +1,25 @@
 import React from 'react';
-import {View, Text, TouchableOpacity, StyleSheet, Dimensions} from 'react-native';
-import {ArrowLeft, Heart, Share2, ShoppingCart} from 'lucide-react-native';
-
-const {width} = Dimensions.get('window');
-
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Dimensions,
+} from 'react-native';
+import { ArrowLeft, Heart, Share2, ShoppingCart } from 'lucide-react-native';
+const { width } = Dimensions.get('window');
 const rf = size => {
   const scale = width / 390;
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
-
-export default function ProductDetailsHeader({navigation}) {
+export default function ProductDetailsHeader({ navigation }) {
   return (
     <View style={styles.header}>
       <TouchableOpacity
         activeOpacity={0.8}
         onPress={() => navigation.goBack()}
-        style={styles.backBtn}>
+        style={styles.backBtn}
+      >
         <ArrowLeft size={22} color="#111827" strokeWidth={2.5} />
       </TouchableOpacity>
 
@@ -40,7 +44,6 @@ export default function ProductDetailsHeader({navigation}) {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   header: {
     height: 58,
@@ -48,7 +51,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-
   backBtn: {
     width: 38,
     height: 38,
@@ -57,7 +59,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   title: {
     flex: 1,
     marginLeft: 12,
@@ -65,12 +66,10 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     color: '#111827',
   },
-
   actions: {
     flexDirection: 'row',
     gap: 8,
   },
-
   iconBtn: {
     width: 38,
     height: 38,
@@ -79,7 +78,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   badge: {
     position: 'absolute',
     right: 1,
@@ -91,7 +89,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   badgeText: {
     fontSize: rf(9),
     color: '#FFFFFF',

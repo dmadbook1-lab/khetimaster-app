@@ -1,19 +1,21 @@
-import React, {useState} from 'react';
-import {View, Text, TouchableOpacity, StyleSheet, Dimensions} from 'react-native';
-import {Star, Minus, Plus, Zap} from 'lucide-react-native';
-
-const {width} = Dimensions.get('window');
+import React, { useState } from 'react';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Dimensions,
+} from 'react-native';
+import { Star, Minus, Plus, Zap } from 'lucide-react-native';
+const { width } = Dimensions.get('window');
 const GREEN = '#16883E';
-
 const rf = size => {
   const scale = width / 390;
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
-
-export default function ProductInfoSection({product}) {
+export default function ProductInfoSection({ product }) {
   const [selectedPack, setSelectedPack] = useState('50 kg');
   const [qty, setQty] = useState(1);
-
   return (
     <View style={styles.wrapper}>
       <View style={styles.brandRow}>
@@ -21,7 +23,9 @@ export default function ProductInfoSection({product}) {
         <Text style={styles.category}>Fertilizer</Text>
       </View>
 
-      <Text style={styles.title}>{product?.name || 'IFFCO DAP Fertilizer'}</Text>
+      <Text style={styles.title}>
+        {product?.name || 'IFFCO DAP Fertilizer'}
+      </Text>
 
       <View style={styles.ratingRow}>
         <View style={styles.ratingPill}>
@@ -46,13 +50,13 @@ export default function ProductInfoSection({product}) {
       <View style={styles.packRow}>
         {['5 kg', '50 kg', '100 kg'].map(size => {
           const active = selectedPack === size;
-
           return (
             <TouchableOpacity
               key={size}
               activeOpacity={0.8}
               onPress={() => setSelectedPack(size)}
-              style={[styles.packChip, active && styles.activePack]}>
+              style={[styles.packChip, active && styles.activePack]}
+            >
               <Text style={[styles.packText, active && styles.activePackText]}>
                 {size}
               </Text>
@@ -65,13 +69,17 @@ export default function ProductInfoSection({product}) {
         <View style={styles.qtyBox}>
           <TouchableOpacity
             onPress={() => setQty(Math.max(1, qty - 1))}
-            style={styles.qtyBtn}>
+            style={styles.qtyBtn}
+          >
             <Minus size={16} color="#64748B" />
           </TouchableOpacity>
 
           <Text style={styles.qty}>{qty}</Text>
 
-          <TouchableOpacity onPress={() => setQty(qty + 1)} style={styles.qtyBtn}>
+          <TouchableOpacity
+            onPress={() => setQty(qty + 1)}
+            style={styles.qtyBtn}
+          >
             <Plus size={16} color={GREEN} />
           </TouchableOpacity>
         </View>
@@ -84,18 +92,15 @@ export default function ProductInfoSection({product}) {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   wrapper: {
     marginTop: 20,
   },
-
   brandRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
   },
-
   brandTag: {
     paddingHorizontal: 8,
     paddingVertical: 3,
@@ -105,13 +110,11 @@ const styles = StyleSheet.create({
     fontSize: rf(9),
     fontWeight: '900',
   },
-
   category: {
     fontSize: rf(11),
     fontWeight: '700',
     color: '#CBD5E1',
   },
-
   title: {
     marginTop: 8,
     fontSize: rf(20),
@@ -119,13 +122,11 @@ const styles = StyleSheet.create({
     color: '#111827',
     letterSpacing: -0.45,
   },
-
   ratingRow: {
     marginTop: 10,
     flexDirection: 'row',
     alignItems: 'center',
   },
-
   ratingPill: {
     height: 24,
     borderRadius: 7,
@@ -135,38 +136,32 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 4,
   },
-
   ratingText: {
     fontSize: rf(12),
     fontWeight: '900',
     color: '#92400E',
   },
-
   meta: {
     marginLeft: 8,
     fontSize: rf(12),
     fontWeight: '700',
     color: '#64748B',
   },
-
   dot: {
     marginLeft: 8,
     color: '#CBD5E1',
   },
-
   priceRow: {
     marginTop: 16,
     flexDirection: 'row',
     alignItems: 'flex-end',
   },
-
   price: {
     fontSize: rf(28),
     lineHeight: rf(32),
     fontWeight: '900',
     color: GREEN,
   },
-
   oldPrice: {
     marginLeft: 12,
     fontSize: rf(18),
@@ -174,27 +169,23 @@ const styles = StyleSheet.create({
     color: '#94A3B8',
     textDecorationLine: 'line-through',
   },
-
   save: {
     marginTop: 4,
     fontSize: rf(12),
     fontWeight: '800',
     color: '#EF4444',
   },
-
   label: {
     marginTop: 22,
     fontSize: rf(13),
     fontWeight: '900',
     color: '#111827',
   },
-
   packRow: {
     marginTop: 10,
     flexDirection: 'row',
     gap: 10,
   },
-
   packChip: {
     height: 30,
     paddingHorizontal: 14,
@@ -204,29 +195,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   activePack: {
     backgroundColor: GREEN,
     borderColor: GREEN,
   },
-
   packText: {
     fontSize: rf(11),
     fontWeight: '800',
     color: '#64748B',
   },
-
   activePackText: {
     color: '#FFFFFF',
   },
-
   qtyRow: {
     marginTop: 16,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-
   qtyBox: {
     height: 34,
     borderRadius: 17,
@@ -235,14 +221,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 8,
   },
-
   qtyBtn: {
     width: 28,
     height: 28,
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   qty: {
     minWidth: 24,
     textAlign: 'center',
@@ -250,7 +234,6 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     color: '#111827',
   },
-
   deliveryPill: {
     height: 30,
     borderRadius: 15,
@@ -260,7 +243,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 5,
   },
-
   deliveryText: {
     fontSize: rf(10),
     fontWeight: '900',

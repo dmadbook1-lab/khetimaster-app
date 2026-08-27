@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -6,29 +6,16 @@ import {
   TouchableOpacity,
   Dimensions,
 } from 'react-native';
-import {
-  Menu,
-  Bot,
-  ChevronDown,
-  Trash2,
-} from 'lucide-react-native';
-
-const {width} = Dimensions.get('window');
-
+import { Menu, Bot, ChevronDown, Trash2 } from 'lucide-react-native';
+const { width } = Dimensions.get('window');
 const GREEN = '#16883E';
 const DARK = '#151D2D';
 const MUTED = '#7F8A9D';
 const BORDER = '#E8EDF1';
-
 const rf = size => {
   const scale = width / 390;
-
-  return Math.max(
-    size - 2,
-    Math.min(size * scale, size + 2),
-  );
+  return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
-
 const LANGUAGES = [
   {
     id: 'en',
@@ -46,79 +33,56 @@ const LANGUAGES = [
     label: 'Marathi',
   },
 ];
-
-export default function AIGuruHeader({
-  navigation,
-  onClearChat,
-}) {
-  const [activeLanguage, setActiveLanguage] =
-    useState('en');
-
+export default function AIGuruHeader({ navigation, onClearChat }) {
+  const [activeLanguage, setActiveLanguage] = useState('en');
   const handleMenuPress = () => {
     navigation.navigate('Sidebar');
   };
-
   const handleLanguagePress = languageId => {
     setActiveLanguage(languageId);
   };
-
   return (
     <View style={styles.header}>
       <TouchableOpacity
         activeOpacity={0.8}
         onPress={handleMenuPress}
-        style={styles.menuButton}>
-        <Menu
-          size={rf(24)}
-          color={DARK}
-          strokeWidth={2.3}
-        />
+        style={styles.menuButton}
+      >
+        <Menu size={rf(24)} color={DARK} strokeWidth={2.3} />
       </TouchableOpacity>
 
       <View style={styles.titleArea}>
         <View style={styles.titleRow}>
           <View style={styles.aiIconBox}>
-            <Bot
-              size={rf(15)}
-              color="#FFFFFF"
-              strokeWidth={2.4}
-            />
+            <Bot size={rf(15)} color="#FFFFFF" strokeWidth={2.4} />
           </View>
 
-          <Text style={styles.title}>
-            AI Guru
-          </Text>
+          <Text style={styles.title}>AI Guru</Text>
         </View>
 
-        <Text style={styles.subtitle}>
-          YOUR SMART FARMING ASSISTANT
-        </Text>
+        <Text style={styles.subtitle}>YOUR SMART FARMING ASSISTANT</Text>
       </View>
 
       <View style={styles.rightActions}>
         <View style={styles.languageSelector}>
           {LANGUAGES.map(language => {
-            const selected =
-              activeLanguage === language.id;
-
+            const selected = activeLanguage === language.id;
             return (
               <TouchableOpacity
                 key={language.id}
                 activeOpacity={0.8}
-                onPress={() =>
-                  handleLanguagePress(language.id)
-                }
+                onPress={() => handleLanguagePress(language.id)}
                 style={[
                   styles.languageItem,
-                  selected &&
-                    styles.selectedLanguageItem,
-                ]}>
+                  selected && styles.selectedLanguageItem,
+                ]}
+              >
                 <Text
                   style={[
                     styles.languageText,
-                    selected &&
-                      styles.selectedLanguageText,
-                  ]}>
+                    selected && styles.selectedLanguageText,
+                  ]}
+                >
                   {language.short}
                 </Text>
               </TouchableOpacity>
@@ -129,18 +93,14 @@ export default function AIGuruHeader({
         <TouchableOpacity
           activeOpacity={0.8}
           onPress={onClearChat}
-          style={styles.clearButton}>
-          <Trash2
-            size={rf(17)}
-            color="#EF4444"
-            strokeWidth={2.2}
-          />
+          style={styles.clearButton}
+        >
+          <Trash2 size={rf(17)} color="#EF4444" strokeWidth={2.2} />
         </TouchableOpacity>
       </View>
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   header: {
     minHeight: 65,
@@ -149,7 +109,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#FFFFFF',
   },
-
   menuButton: {
     width: 42,
     height: 42,
@@ -159,7 +118,6 @@ const styles = StyleSheet.create({
     borderColor: BORDER,
     alignItems: 'center',
     justifyContent: 'center',
-
     shadowColor: '#0F172A',
     shadowOpacity: 0.05,
     shadowRadius: 8,
@@ -169,17 +127,14 @@ const styles = StyleSheet.create({
     },
     elevation: 2,
   },
-
   titleArea: {
     flex: 1,
     marginLeft: 13,
   },
-
   titleRow: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-
   aiIconBox: {
     width: 23,
     height: 23,
@@ -188,7 +143,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   title: {
     marginLeft: 7,
     fontSize: rf(18),
@@ -197,7 +151,6 @@ const styles = StyleSheet.create({
     color: DARK,
     letterSpacing: -0.3,
   },
-
   subtitle: {
     marginTop: 3,
     fontSize: rf(8),
@@ -206,13 +159,11 @@ const styles = StyleSheet.create({
     color: MUTED,
     letterSpacing: 1.25,
   },
-
   rightActions: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 7,
   },
-
   languageSelector: {
     height: 36,
     borderRadius: 18,
@@ -223,7 +174,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-
   languageItem: {
     minWidth: 27,
     height: 28,
@@ -231,21 +181,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   selectedLanguageItem: {
     backgroundColor: GREEN,
   },
-
   languageText: {
     fontSize: rf(9),
     fontWeight: '800',
     color: '#9AA4B2',
   },
-
   selectedLanguageText: {
     color: '#FFFFFF',
   },
-
   clearButton: {
     width: 35,
     height: 35,

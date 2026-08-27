@@ -1,5 +1,3 @@
-// src/screens/WalkAroundScreen.jsx
-
 import React from 'react';
 import {
   View,
@@ -11,7 +9,7 @@ import {
   Dimensions,
   ScrollView,
 } from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
 import {
   ArrowLeft,
@@ -24,34 +22,31 @@ import {
   Battery,
   Radio,
 } from 'lucide-react-native';
-
-const {width, height} = Dimensions.get('window');
-
+const { width, height } = Dimensions.get('window');
 const GREEN = '#16A34A';
 const DARK = '#111827';
 const MUTED = '#64748B';
-
 const isSmall = width < 360;
 const isShort = height < 700;
-
 const rf = size => {
   const scale = width / 390;
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
-
-export default function WalkAroundScreen({navigation}) {
+export default function WalkAroundScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}>
+        contentContainerStyle={styles.scrollContent}
+      >
         <View style={styles.header}>
           <TouchableOpacity
             activeOpacity={0.8}
             style={styles.circleBtn}
-            onPress={() => navigation.goBack()}>
+            onPress={() => navigation.goBack()}
+          >
             <ArrowLeft size={rf(22)} color="#1F2937" strokeWidth={2.2} />
           </TouchableOpacity>
 
@@ -82,11 +77,7 @@ export default function WalkAroundScreen({navigation}) {
 
           <View style={styles.gpsCard}>
             <View style={styles.gpsIconWrap}>
-              <Navigation
-                size={rf(29)}
-                color="#10B981"
-                strokeWidth={2.3}
-              />
+              <Navigation size={rf(29)} color="#10B981" strokeWidth={2.3} />
 
               <View style={styles.checkBadge}>
                 <Text style={styles.checkText}>✓</Text>
@@ -101,10 +92,38 @@ export default function WalkAroundScreen({navigation}) {
             </View>
 
             <View style={styles.signalWrap}>
-              <View style={[styles.signalBar, {height: 11}]} />
-              <View style={[styles.signalBar, {height: 16}]} />
-              <View style={[styles.signalBar, {height: 22}]} />
-              <View style={[styles.signalBar, {height: 28}]} />
+              <View
+                style={[
+                  styles.signalBar,
+                  {
+                    height: 11,
+                  },
+                ]}
+              />
+              <View
+                style={[
+                  styles.signalBar,
+                  {
+                    height: 16,
+                  },
+                ]}
+              />
+              <View
+                style={[
+                  styles.signalBar,
+                  {
+                    height: 22,
+                  },
+                ]}
+              />
+              <View
+                style={[
+                  styles.signalBar,
+                  {
+                    height: 28,
+                  },
+                ]}
+              />
             </View>
           </View>
 
@@ -132,7 +151,9 @@ export default function WalkAroundScreen({navigation}) {
               <View style={[styles.tipIconBox, styles.tipIconOrange]}>
                 <Battery size={rf(22)} color="#F97316" strokeWidth={2.4} />
               </View>
-              <Text style={styles.tipText}>Ensure sufficient battery charge</Text>
+              <Text style={styles.tipText}>
+                Ensure sufficient battery charge
+              </Text>
             </View>
           </View>
         </View>
@@ -141,12 +162,20 @@ export default function WalkAroundScreen({navigation}) {
       <View style={styles.bottomBar}>
         <TouchableOpacity
           activeOpacity={0.9}
-          onPress={() => navigation.navigate('WalkAroundTrackingScreen')}>
+          onPress={() => navigation.navigate('WalkAroundTrackingScreen')}
+        >
           <LinearGradient
             colors={['#15803D', '#2ECC71']}
-            start={{x: 0, y: 0}}
-            end={{x: 1, y: 0}}
-            style={styles.startButton}>
+            start={{
+              x: 0,
+              y: 0,
+            }}
+            end={{
+              x: 1,
+              y: 0,
+            }}
+            style={styles.startButton}
+          >
             <MapPin size={rf(21)} color="#FFFFFF" strokeWidth={2.5} />
             <Text style={styles.startText}>Start GPS Mapping</Text>
           </LinearGradient>
@@ -157,7 +186,8 @@ export default function WalkAroundScreen({navigation}) {
           <Text style={styles.manualText}>Or use manual boundary instead</Text>
           <TouchableOpacity
             activeOpacity={0.75}
-            onPress={() => navigation.navigate('Mapscreen')}>
+            onPress={() => navigation.navigate('Mapscreen')}
+          >
             <Text style={styles.tapText}>Tap here</Text>
           </TouchableOpacity>
         </View>
@@ -165,17 +195,14 @@ export default function WalkAroundScreen({navigation}) {
     </SafeAreaView>
   );
 }
-
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: '#FFFFFF',
   },
-
   scrollContent: {
     paddingBottom: height * 0.18,
   },
-
   header: {
     height: isSmall ? 68 : 78,
     paddingHorizontal: width * 0.045,
@@ -183,7 +210,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-
   circleBtn: {
     width: width * 0.092,
     height: width * 0.092,
@@ -198,7 +224,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   stepPill: {
     height: isSmall ? 30 : 32,
     paddingHorizontal: width * 0.04,
@@ -210,33 +235,28 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
   },
-
   stepDot: {
     width: 10,
     height: 10,
     borderRadius: 5,
     backgroundColor: '#F97316',
   },
-
   stepText: {
     fontSize: rf(12),
     color: '#EA580C',
     fontWeight: '900',
     letterSpacing: 0.3,
   },
-
   heroImage: {
     width: '100%',
     height: isShort ? height * 0.31 : height * 0.335,
     borderBottomLeftRadius: 0,
     borderBottomRightRadius: 0,
   },
-
   content: {
     paddingHorizontal: width * 0.045,
     alignItems: 'center',
   },
-
   title: {
     marginTop: isShort ? 26 : 32,
     fontSize: rf(23),
@@ -246,7 +266,6 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     letterSpacing: -0.35,
   },
-
   subtitle: {
     marginTop: 14,
     fontSize: rf(15),
@@ -255,7 +274,6 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     textAlign: 'center',
   },
-
   gpsCard: {
     width: '100%',
     marginTop: isShort ? 26 : 34,
@@ -268,7 +286,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-
   gpsIconWrap: {
     width: isSmall ? 48 : 56,
     height: isSmall ? 48 : 56,
@@ -277,7 +294,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   checkBadge: {
     position: 'absolute',
     top: -2,
@@ -291,25 +307,21 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: '#ECFDF5',
   },
-
   checkText: {
     fontSize: 11,
     color: '#FFFFFF',
     fontWeight: '900',
     marginTop: -1,
   },
-
   gpsTextWrap: {
     flex: 1,
     marginLeft: width * 0.035,
   },
-
   gpsTitle: {
     fontSize: rf(15),
     color: '#064E3B',
     fontWeight: '900',
   },
-
   gpsSub: {
     marginTop: 3,
     fontSize: rf(12),
@@ -317,7 +329,6 @@ const styles = StyleSheet.create({
     color: '#10B981',
     fontWeight: '700',
   },
-
   signalWrap: {
     width: 30,
     height: 34,
@@ -325,13 +336,11 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
     justifyContent: 'space-between',
   },
-
   signalBar: {
     width: 4,
     borderRadius: 10,
     backgroundColor: '#10B981',
   },
-
   tipsCard: {
     width: '100%',
     marginTop: 24,
@@ -345,23 +354,23 @@ const styles = StyleSheet.create({
     shadowColor: '#0F172A',
     shadowOpacity: 0.04,
     shadowRadius: 14,
-    shadowOffset: {width: 0, height: 6},
+    shadowOffset: {
+      width: 0,
+      height: 6,
+    },
     elevation: 2,
   },
-
   tipsHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
     marginBottom: 22,
   },
-
   tipsTitle: {
     fontSize: rf(16),
     color: '#1F2937',
     fontWeight: '900',
   },
-
   tipItem: {
     width: '100%',
     minHeight: isSmall ? 58 : 64,
@@ -371,20 +380,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: 14,
   },
-
   tipGreen: {
     backgroundColor: '#F0FDF4',
   },
-
   tipBlue: {
     backgroundColor: '#F3F8FF',
   },
-
   tipOrange: {
     backgroundColor: '#FFF8F1',
     marginBottom: 0,
   },
-
   tipIconBox: {
     width: isSmall ? 40 : 42,
     height: isSmall ? 40 : 42,
@@ -392,19 +397,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   tipIconGreen: {
     backgroundColor: '#DCFCE7',
   },
-
   tipIconBlue: {
     backgroundColor: '#DBEAFE',
   },
-
   tipIconOrange: {
     backgroundColor: '#FFEDD5',
   },
-
   tipText: {
     flex: 1,
     marginLeft: width * 0.035,
@@ -413,7 +414,6 @@ const styles = StyleSheet.create({
     color: '#334155',
     fontWeight: '700',
   },
-
   bottomBar: {
     position: 'absolute',
     left: 0,
@@ -424,7 +424,6 @@ const styles = StyleSheet.create({
     paddingTop: 14,
     paddingBottom: isSmall ? 12 : 16,
   },
-
   startButton: {
     height: isSmall ? 54 : 56,
     borderRadius: 18,
@@ -435,17 +434,18 @@ const styles = StyleSheet.create({
     shadowColor: '#16A34A',
     shadowOpacity: 0.28,
     shadowRadius: 18,
-    shadowOffset: {width: 0, height: 10},
+    shadowOffset: {
+      width: 0,
+      height: 10,
+    },
     elevation: 8,
   },
-
   startText: {
     fontSize: rf(16),
     color: '#FFFFFF',
     fontWeight: '900',
     letterSpacing: 0.2,
   },
-
   manualRow: {
     marginTop: 18,
     flexDirection: 'row',
@@ -453,13 +453,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 8,
   },
-
   manualText: {
     fontSize: rf(13),
     color: '#64748B',
     fontWeight: '700',
   },
-
   tapText: {
     fontSize: rf(13),
     color: '#15803D',

@@ -7,28 +7,16 @@ import {
   Dimensions,
   Keyboard,
 } from 'react-native';
-import {
-  Mic,
-  Send,
-  Paperclip,
-} from 'lucide-react-native';
-
-const {width} = Dimensions.get('window');
-
+import { Mic, Send, Paperclip } from 'lucide-react-native';
+const { width } = Dimensions.get('window');
 const GREEN = '#16883E';
 const DARK = '#172033';
 const MUTED = '#94A3B8';
 const BORDER = '#E3E8EC';
-
 const rf = size => {
   const scale = width / 390;
-
-  return Math.max(
-    size - 2,
-    Math.min(size * scale, size + 2),
-  );
+  return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
-
 export default function ChatComposer({
   value,
   onChangeText,
@@ -37,28 +25,22 @@ export default function ChatComposer({
   onAttachmentPress,
 }) {
   const canSend = value.trim().length > 0;
-
   const handleSend = () => {
     if (!canSend) {
       return;
     }
-
     Keyboard.dismiss();
     onSend();
   };
-
   return (
     <View style={styles.container}>
       <View style={styles.composer}>
         <TouchableOpacity
           activeOpacity={0.8}
           onPress={onAttachmentPress}
-          style={styles.smallButton}>
-          <Paperclip
-            size={rf(19)}
-            color={MUTED}
-            strokeWidth={2.3}
-          />
+          style={styles.smallButton}
+        >
+          <Paperclip size={rf(19)} color={MUTED} strokeWidth={2.3} />
         </TouchableOpacity>
 
         <TextInput
@@ -75,12 +57,9 @@ export default function ChatComposer({
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={onVoicePress}
-            style={styles.smallButton}>
-            <Mic
-              size={rf(20)}
-              color={GREEN}
-              strokeWidth={2.4}
-            />
+            style={styles.smallButton}
+          >
+            <Mic size={rf(20)} color={GREEN} strokeWidth={2.4} />
           </TouchableOpacity>
         )}
 
@@ -88,19 +67,15 @@ export default function ChatComposer({
           <TouchableOpacity
             activeOpacity={0.86}
             onPress={handleSend}
-            style={styles.sendButton}>
-            <Send
-              size={rf(18)}
-              color="#FFFFFF"
-              strokeWidth={2.5}
-            />
+            style={styles.sendButton}
+          >
+            <Send size={rf(18)} color="#FFFFFF" strokeWidth={2.5} />
           </TouchableOpacity>
         )}
       </View>
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: width * 0.037,
@@ -110,7 +85,6 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: '#EEF1F3',
   },
-
   composer: {
     minHeight: 52,
     maxHeight: 115,
@@ -121,7 +95,6 @@ const styles = StyleSheet.create({
     borderColor: BORDER,
     flexDirection: 'row',
     alignItems: 'flex-end',
-
     shadowColor: '#0F172A',
     shadowOpacity: 0.06,
     shadowRadius: 10,
@@ -131,14 +104,12 @@ const styles = StyleSheet.create({
     },
     elevation: 3,
   },
-
   smallButton: {
     width: 39,
     height: 50,
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   input: {
     flex: 1,
     minHeight: 50,
@@ -152,7 +123,6 @@ const styles = StyleSheet.create({
     color: DARK,
     textAlignVertical: 'top',
   },
-
   sendButton: {
     width: 40,
     height: 40,

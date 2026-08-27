@@ -1,8 +1,14 @@
 import React from 'react';
-import {ScrollView, StyleSheet, View, TouchableOpacity, Text, Dimensions} from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import {MessageSquare, ChevronRight} from 'lucide-react-native';
-
+import {
+  ScrollView,
+  StyleSheet,
+  View,
+  TouchableOpacity,
+  Text,
+  Dimensions,
+} from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { MessageSquare, ChevronRight } from 'lucide-react-native';
 import FarmOverviewHeader from '../../components/farmoverview/FarmOverviewHeader';
 import FarmHeroCard from '../../components/farmoverview/FarmHeroCard';
 import FarmMetricCards from '../../components/farmoverview/FarmMetricCards';
@@ -10,24 +16,21 @@ import FarmAIRecommendation from '../../components/farmoverview/FarmAIRecommenda
 import FarmWeatherCard from '../../components/farmoverview/FarmWeatherCard';
 import FarmQuickActions from '../../components/farmoverview/FarmQuickActions';
 import FarmRecentActivity from '../../components/farmoverview/FarmRecentActivity';
-
-const {width} = Dimensions.get('window');
-
+const { width } = Dimensions.get('window');
 const GREEN = '#16883E';
-
-export default function FarmOverviewScreen({navigation, route}) {
+export default function FarmOverviewScreen({ navigation, route }) {
   const farm = route?.params?.farm || {
     title: 'Patil Farm',
     crop: 'Soybean',
     area: '2.34 Acres',
     image: require('../../assets/homescreen/farm2.jpg'),
   };
-
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}>
+        contentContainerStyle={styles.scrollContent}
+      >
         <FarmOverviewHeader
           title={farm.title}
           onBack={() => navigation.goBack()}
@@ -42,7 +45,11 @@ export default function FarmOverviewScreen({navigation, route}) {
         <FarmWeatherCard />
 
         <FarmQuickActions
-          onSatellite={() => navigation.navigate('SatelliteView', {farm})}
+          onSatellite={() =>
+            navigation.navigate('SatelliteView', {
+              farm,
+            })
+          }
         />
 
         <FarmRecentActivity />
@@ -58,18 +65,15 @@ export default function FarmOverviewScreen({navigation, route}) {
     </SafeAreaView>
   );
 }
-
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: '#F8FAFC',
   },
-
   scrollContent: {
     paddingHorizontal: width * 0.037,
     paddingBottom: 116,
   },
-
   bottomBar: {
     position: 'absolute',
     left: 0,
@@ -82,7 +86,6 @@ const styles = StyleSheet.create({
     borderTopWidth: 1,
     borderTopColor: '#F1F5F9',
   },
-
   askButton: {
     height: 56,
     borderRadius: 14,
@@ -94,10 +97,12 @@ const styles = StyleSheet.create({
     shadowColor: GREEN,
     shadowOpacity: 0.25,
     shadowRadius: 14,
-    shadowOffset: {width: 0, height: 7},
+    shadowOffset: {
+      width: 0,
+      height: 7,
+    },
     elevation: 8,
   },
-
   askText: {
     color: '#FFFFFF',
     fontSize: 16,

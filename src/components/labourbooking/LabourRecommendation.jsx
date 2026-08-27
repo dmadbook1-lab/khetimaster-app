@@ -1,21 +1,32 @@
 import React from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, Dimensions} from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Dimensions,
+} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import {Sparkles, ArrowRight} from 'lucide-react-native';
-
-const {width} = Dimensions.get('window');
+import { Sparkles, ArrowRight } from 'lucide-react-native';
+const { width } = Dimensions.get('window');
 const rf = size => {
   const scale = width / 390;
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
-
-export default function LabourRecommendation({onViewPress}) {
+export default function LabourRecommendation({ onViewPress }) {
   return (
     <LinearGradient
       colors={['#158B3D', '#18A84A']}
-      start={{x: 0, y: 0}}
-      end={{x: 1, y: 1}}
-      style={styles.card}>
+      start={{
+        x: 0,
+        y: 0,
+      }}
+      end={{
+        x: 1,
+        y: 1,
+      }}
+      style={styles.card}
+    >
       <View style={styles.badge}>
         <Sparkles size={rf(11)} color="#FFFFFF" strokeWidth={2.4} />
         <Text style={styles.badgeText}>AI RECOMMENDATION</Text>
@@ -23,17 +34,21 @@ export default function LabourRecommendation({onViewPress}) {
 
       <Text style={styles.title}>Best worker for your farm</Text>
       <Text style={styles.subtitle}>
-        Based on your crop, area & season, we recommend Ram Pawar (Harvesting expert).
+        Based on your crop, area & season, we recommend Ram Pawar (Harvesting
+        expert).
       </Text>
 
-      <TouchableOpacity activeOpacity={0.9} onPress={onViewPress} style={styles.btn}>
+      <TouchableOpacity
+        activeOpacity={0.9}
+        onPress={onViewPress}
+        style={styles.btn}
+      >
         <Text style={styles.btnText}>View Details</Text>
         <ArrowRight size={rf(13)} color="#16A34A" strokeWidth={2.6} />
       </TouchableOpacity>
     </LinearGradient>
   );
 }
-
 const styles = StyleSheet.create({
   card: {
     marginTop: 18,

@@ -1,15 +1,12 @@
 import React from 'react';
-import {View, Text, StyleSheet, Dimensions} from 'react-native';
-import {HeartPulse} from 'lucide-react-native';
-
-const {width} = Dimensions.get('window');
+import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import { HeartPulse } from 'lucide-react-native';
+const { width } = Dimensions.get('window');
 const GREEN = '#16883E';
-
 const rf = size => {
   const scale = width / 390;
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
-
 export default function FarmHealthSummary() {
   return (
     <View style={styles.card}>
@@ -30,7 +27,6 @@ export default function FarmHealthSummary() {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   card: {
     marginHorizontal: width * 0.055,
@@ -44,7 +40,10 @@ const styles = StyleSheet.create({
     shadowColor: '#0F172A',
     shadowOpacity: 0.09,
     shadowRadius: 16,
-    shadowOffset: {width: 0, height: 8},
+    shadowOffset: {
+      width: 0,
+      height: 8,
+    },
     elevation: 5,
   },
   left: {

@@ -1,9 +1,7 @@
 import React from 'react';
-import {View, Text, StyleSheet} from 'react-native';
-import {Zap, Cloud, Plus, ChevronRight} from 'lucide-react-native';
-
+import { View, Text, StyleSheet } from 'react-native';
+import { Zap, Cloud, Plus, ChevronRight } from 'lucide-react-native';
 const GREEN = '#16A34A';
-
 const items = [
   {
     Icon: Zap,
@@ -25,7 +23,6 @@ const items = [
     desc: 'Patil Farm has been successfully added.',
   },
 ];
-
 export default function FarmRecentActivity() {
   return (
     <View style={styles.wrapper}>
@@ -37,9 +34,11 @@ export default function FarmRecentActivity() {
       <View style={styles.card}>
         {items.map((item, index) => {
           const Icon = item.Icon;
-
           return (
-            <View key={index} style={[styles.item, index !== items.length - 1 && styles.border]}>
+            <View
+              key={index}
+              style={[styles.item, index !== items.length - 1 && styles.border]}
+            >
               <View style={styles.lineDot} />
 
               <View style={[styles.iconBox, item.solid && styles.solidIcon]}>
@@ -53,7 +52,9 @@ export default function FarmRecentActivity() {
               <View style={styles.textBox}>
                 <Text style={styles.time}>{item.time}</Text>
                 <Text style={styles.itemTitle}>{item.title}</Text>
-                <Text numberOfLines={1} style={styles.desc}>{item.desc}</Text>
+                <Text numberOfLines={1} style={styles.desc}>
+                  {item.desc}
+                </Text>
               </View>
 
               <ChevronRight size={22} color="#CBD5E1" strokeWidth={2.2} />
@@ -64,30 +65,25 @@ export default function FarmRecentActivity() {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   wrapper: {
     marginTop: 26,
   },
-
   sectionRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-
   title: {
     fontSize: 17,
     fontWeight: '900',
     color: '#111827',
   },
-
   viewAll: {
     fontSize: 13,
     fontWeight: '900',
     color: '#16883E',
   },
-
   card: {
     marginTop: 16,
     borderRadius: 22,
@@ -96,22 +92,22 @@ const styles = StyleSheet.create({
     shadowColor: '#0F172A',
     shadowOpacity: 0.06,
     shadowRadius: 12,
-    shadowOffset: {width: 0, height: 6},
+    shadowOffset: {
+      width: 0,
+      height: 6,
+    },
     elevation: 3,
   },
-
   item: {
     minHeight: 82,
     paddingHorizontal: 16,
     flexDirection: 'row',
     alignItems: 'center',
   },
-
   border: {
     borderBottomWidth: 1,
     borderBottomColor: '#F1F5F9',
   },
-
   lineDot: {
     position: 'absolute',
     left: 15,
@@ -121,7 +117,6 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     backgroundColor: '#CBD5E1',
   },
-
   iconBox: {
     width: 48,
     height: 48,
@@ -131,29 +126,24 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginRight: 15,
   },
-
   solidIcon: {
     backgroundColor: GREEN,
   },
-
   textBox: {
     flex: 1,
   },
-
   time: {
     fontSize: 10,
     fontWeight: '900',
     color: '#98A2B3',
     letterSpacing: 0.4,
   },
-
   itemTitle: {
     marginTop: 2,
     fontSize: 14,
     fontWeight: '900',
     color: '#111827',
   },
-
   desc: {
     marginTop: 2,
     fontSize: 12,

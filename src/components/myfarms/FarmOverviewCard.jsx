@@ -1,14 +1,11 @@
 import React from 'react';
-import {View, Text, StyleSheet, Dimensions} from 'react-native';
-import {MapPin, Globe2, Heart, AlertTriangle} from 'lucide-react-native';
-
-const {width} = Dimensions.get('window');
-
+import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import { MapPin, Globe2, Heart, AlertTriangle } from 'lucide-react-native';
+const { width } = Dimensions.get('window');
 const rf = size => {
   const scale = width / 390;
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
-
 export default function FarmOverviewCard() {
   return (
     <View style={styles.card}>
@@ -32,8 +29,7 @@ export default function FarmOverviewCard() {
     </View>
   );
 }
-
-function OverviewItem({Icon, value, label}) {
+function OverviewItem({ Icon, value, label }) {
   return (
     <View style={styles.statItem}>
       <View style={styles.iconBox}>
@@ -45,7 +41,6 @@ function OverviewItem({Icon, value, label}) {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   card: {
     marginTop: 28,
@@ -55,7 +50,6 @@ const styles = StyleSheet.create({
     padding: 22,
     overflow: 'hidden',
   },
-
   circleOne: {
     position: 'absolute',
     right: -54,
@@ -65,7 +59,6 @@ const styles = StyleSheet.create({
     borderRadius: 90,
     backgroundColor: 'rgba(255,255,255,0.10)',
   },
-
   circleTwo: {
     position: 'absolute',
     right: 18,
@@ -75,20 +68,17 @@ const styles = StyleSheet.create({
     borderRadius: 46,
     backgroundColor: 'rgba(255,255,255,0.10)',
   },
-
   topRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-
   title: {
     fontSize: rf(18),
     fontWeight: '800',
     color: '#FFFFFF',
     letterSpacing: -0.3,
   },
-
   seasonPill: {
     paddingHorizontal: 13,
     height: 30,
@@ -97,24 +87,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   seasonText: {
     fontSize: rf(12),
     color: '#FFFFFF',
     fontWeight: '800',
   },
-
   statsRow: {
     marginTop: 28,
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-
   statItem: {
     alignItems: 'center',
     width: '24%',
   },
-
   iconBox: {
     width: 42,
     height: 42,
@@ -124,14 +110,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: 8,
   },
-
   value: {
     fontSize: rf(20),
     lineHeight: rf(24),
     fontWeight: '900',
     color: '#FFFFFF',
   },
-
   label: {
     marginTop: 3,
     fontSize: rf(9),

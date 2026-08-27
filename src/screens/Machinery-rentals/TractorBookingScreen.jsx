@@ -1,4 +1,4 @@
-import React, {useMemo, useState} from 'react';
+import React, { useMemo, useState } from 'react';
 import {
   ScrollView,
   StyleSheet,
@@ -6,8 +6,7 @@ import {
   StatusBar,
   Alert,
 } from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
-
+import { SafeAreaView } from 'react-native-safe-area-context';
 import TractorBookingHeader from '../../components/tractorbooking/TractorBookingHeader';
 import BookingLocationBar from '../../components/tractorbooking/BookingLocationBar';
 import MachineryHeroBanner from '../../components/tractorbooking/MachineryHeroBanner';
@@ -17,36 +16,28 @@ import MachineryCategories from '../../components/tractorbooking/MachineryCatego
 import MachineryRecommendation from '../../components/tractorbooking/MachineryRecommendation';
 import AvailableMachinery from '../../components/tractorbooking/AvailableMachinery';
 import RecentBookings from '../../components/tractorbooking/RecentBookings';
-
 import {
   MACHINERY_CATEGORIES,
   AVAILABLE_MACHINERY,
   RECENT_BOOKINGS,
 } from '../../components/tractorbooking/machineryData';
-
-const {width} = Dimensions.get('window');
-
-export default function TractorBookingScreen({navigation}) {
+const { width } = Dimensions.get('window');
+export default function TractorBookingScreen({ navigation }) {
   const [activeCategory, setActiveCategory] = useState('tractor');
   const [searchText, setSearchText] = useState('');
   const [machines, setMachines] = useState(AVAILABLE_MACHINERY);
-
   const filteredMachines = useMemo(() => {
     const search = searchText.trim().toLowerCase();
-
     return machines.filter(machine => {
       const categoryMatched =
         activeCategory === 'all' || machine.category === activeCategory;
-
       const searchMatched =
         !search ||
         machine.name.toLowerCase().includes(search) ||
         machine.owner.toLowerCase().includes(search);
-
       return categoryMatched && searchMatched;
     });
   }, [activeCategory, searchText, machines]);
-
   const handleFavouritePress = machine => {
     setMachines(currentMachines =>
       currentMachines.map(item =>
@@ -59,19 +50,16 @@ export default function TractorBookingScreen({navigation}) {
       ),
     );
   };
-
   const handleMachinePress = machine => {
     navigation.navigate('MachineryDetails', {
       machine,
     });
   };
-
   const handleBookPress = machine => {
     navigation.navigate('MachineryBooking', {
       machine,
     });
   };
-
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
@@ -79,7 +67,8 @@ export default function TractorBookingScreen({navigation}) {
       <ScrollView
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
-        contentContainerStyle={styles.scrollContent}>
+        contentContainerStyle={styles.scrollContent}
+      >
         <TractorBookingHeader
           navigation={navigation}
           onNotificationPress={() =>
@@ -102,18 +91,18 @@ export default function TractorBookingScreen({navigation}) {
         <MachineryHeroBanner
           onBookPress={() => {
             const recommendedMachine = machines[0];
-
             navigation.navigate('MachineryBooking', {
               machine: recommendedMachine,
             });
           }}
         />
 
-  
-       <OwnerRegistrationBanner
-  onRegisterPress={() => navigation.navigate('ProvideServiceStep1')}
-  onFreeBadgePress={() => Alert.alert('Free Registration','मोफत नोंदणी - कोणताही खर्च नाही')}
-/>
+        <OwnerRegistrationBanner
+          onRegisterPress={() => navigation.navigate('ProvideServiceStep1')}
+          onFreeBadgePress={() =>
+            Alert.alert('Free Registration', 'मोफत नोंदणी - कोणताही खर्च नाही')
+          }
+        />
 
         <MachinerySearchBar
           value={searchText}
@@ -185,13 +174,11 @@ export default function TractorBookingScreen({navigation}) {
     </SafeAreaView>
   );
 }
-
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: '#FFFFFF',
   },
-
   scrollContent: {
     paddingHorizontal: width * 0.037,
     paddingTop: 2,

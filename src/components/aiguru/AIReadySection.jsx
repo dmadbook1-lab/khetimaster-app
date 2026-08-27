@@ -7,28 +7,16 @@ import {
   TouchableOpacity,
   Dimensions,
 } from 'react-native';
-import {
-  Mic,
-} from 'lucide-react-native';
-
-const {width} = Dimensions.get('window');
-
+import { Mic } from 'lucide-react-native';
+const { width } = Dimensions.get('window');
 const GREEN = '#16883E';
 const DARK = '#1B1B1B';
 const MUTED = '#768195';
-
 const rf = size => {
   const scale = width / 390;
-
-  return Math.max(
-    size - 2,
-    Math.min(size * scale, size + 2),
-  );
+  return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
-
-export default function AIReadySection({
-  onVoicePress,
-}) {
+export default function AIReadySection({ onVoicePress }) {
   return (
     <View style={styles.container}>
       <View style={styles.aiVisualWrapper}>
@@ -45,9 +33,7 @@ export default function AIReadySection({
         </View>
       </View>
 
-      <Text style={styles.title}>
-        AI Guru 
-      </Text>
+      <Text style={styles.title}>AI Guru</Text>
 
       <Text style={styles.description}>
         Ask me about crops, weather, diseases,{'\n'}
@@ -58,35 +44,27 @@ export default function AIReadySection({
       <TouchableOpacity
         activeOpacity={0.86}
         onPress={onVoicePress}
-        style={styles.micButton}>
-        <Mic
-          size={rf(28)}
-          color="#FFFFFF"
-          strokeWidth={2.4}
-        />
+        style={styles.micButton}
+      >
+        <Mic size={rf(28)} color="#FFFFFF" strokeWidth={2.4} />
       </TouchableOpacity>
 
-      <Text style={styles.voiceLabel}>
-        Tap to Speak
-      </Text>
+      <Text style={styles.voiceLabel}>Tap to Speak</Text>
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
     paddingTop: 38,
     paddingBottom: 25,
   },
-
   aiVisualWrapper: {
     width: 165,
     height: 165,
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   ringOuter: {
     position: 'absolute',
     width: 160,
@@ -95,7 +73,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#CDEFD8',
   },
-
   ringMiddle: {
     position: 'absolute',
     width: 130,
@@ -104,7 +81,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#BEE9CD',
   },
-
   ringInner: {
     position: 'absolute',
     width: 103,
@@ -113,7 +89,6 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: '#80D79E',
   },
-
   imageCircle: {
     width: 96,
     height: 96,
@@ -123,12 +98,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     overflow: 'hidden',
   },
-
   aiImage: {
     width: 94,
     height: 94,
   },
-
   title: {
     marginTop: 18,
     fontSize: rf(24),
@@ -137,7 +110,6 @@ const styles = StyleSheet.create({
     color: DARK,
     letterSpacing: -0.45,
   },
-
   description: {
     marginTop: 9,
     fontSize: rf(13),
@@ -146,7 +118,6 @@ const styles = StyleSheet.create({
     color: MUTED,
     textAlign: 'center',
   },
-
   micButton: {
     width: 65,
     height: 65,
@@ -155,7 +126,6 @@ const styles = StyleSheet.create({
     backgroundColor: GREEN,
     alignItems: 'center',
     justifyContent: 'center',
-
     shadowColor: GREEN,
     shadowOpacity: 0.28,
     shadowRadius: 14,
@@ -165,7 +135,6 @@ const styles = StyleSheet.create({
     },
     elevation: 7,
   },
-
   voiceLabel: {
     marginTop: 12,
     fontSize: rf(12),

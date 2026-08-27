@@ -1,4 +1,4 @@
-import React, {useEffect, useRef} from 'react';
+import React, { useEffect, useRef } from 'react';
 import {
   View,
   Text,
@@ -10,20 +10,16 @@ import {
   ScrollView,
   Animated,
 } from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
-import {Cloud, Wheat, Bot, ArrowRight} from 'lucide-react-native';
-
-const {width, height} = Dimensions.get('window');
-
+import { Cloud, Wheat, Bot, ArrowRight } from 'lucide-react-native';
+const { width, height } = Dimensions.get('window');
 const GREEN = '#159447';
-
-const ProfileFarmScreen = ({navigation}) => {
+const ProfileFarmScreen = ({ navigation }) => {
   const fade = useRef(new Animated.Value(0)).current;
   const slide = useRef(new Animated.Value(26)).current;
   const scale = useRef(new Animated.Value(0.98)).current;
   const buttonScale = useRef(new Animated.Value(1)).current;
-
   useEffect(() => {
     Animated.parallel([
       Animated.timing(fade, {
@@ -44,7 +40,6 @@ const ProfileFarmScreen = ({navigation}) => {
       }),
     ]).start();
   }, [fade, slide, scale]);
-
   const handleAddFarm = () => {
     Animated.sequence([
       Animated.spring(buttonScale, {
@@ -61,7 +56,6 @@ const ProfileFarmScreen = ({navigation}) => {
       navigation.navigate('FarmDetailsScreen');
     });
   };
-
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
@@ -69,27 +63,37 @@ const ProfileFarmScreen = ({navigation}) => {
       <ScrollView
         showsVerticalScrollIndicator={false}
         bounces={false}
-        contentContainerStyle={styles.scrollContent}>
-     <Animated.Image
-  source={require('../../assets/images/profile2.png')}
-  style={[
-    styles.heroImage,
-    {
-      opacity: fade,
-      transform: [{scale}],
-    },
-  ]}
-  resizeMode="stretch"
-/>
+        contentContainerStyle={styles.scrollContent}
+      >
+        <Animated.Image
+          source={require('../../assets/images/profile2.png')}
+          style={[
+            styles.heroImage,
+            {
+              opacity: fade,
+              transform: [
+                {
+                  scale,
+                },
+              ],
+            },
+          ]}
+          resizeMode="stretch"
+        />
 
         <Animated.View
           style={[
             styles.contentCard,
             {
               opacity: fade,
-              transform: [{translateY: slide}],
+              transform: [
+                {
+                  translateY: slide,
+                },
+              ],
             },
-          ]}>
+          ]}
+        >
           <Text style={styles.title}>Add Your First Farm</Text>
 
           <Text style={styles.subtitle}>
@@ -117,13 +121,28 @@ const ProfileFarmScreen = ({navigation}) => {
             />
           </View>
 
-          <Animated.View style={{transform: [{scale: buttonScale}]}}>
+          <Animated.View
+            style={{
+              transform: [
+                {
+                  scale: buttonScale,
+                },
+              ],
+            }}
+          >
             <TouchableOpacity activeOpacity={0.9} onPress={handleAddFarm}>
               <LinearGradient
                 colors={['#15883F', '#2BD070']}
-                start={{x: 0, y: 0}}
-                end={{x: 1, y: 0}}
-                style={styles.button}>
+                start={{
+                  x: 0,
+                  y: 0,
+                }}
+                end={{
+                  x: 1,
+                  y: 0,
+                }}
+                style={styles.button}
+              >
                 <Text style={styles.buttonText}>Add My Farm</Text>
                 <ArrowRight size={25} color="#FFFFFF" strokeWidth={2.6} />
               </LinearGradient>
@@ -132,7 +151,8 @@ const ProfileFarmScreen = ({navigation}) => {
 
           <TouchableOpacity
             activeOpacity={0.75}
-            onPress={() => navigation.replace('Home')}>
+            onPress={() => navigation.replace('Home')}
+          >
             <Text style={styles.laterText}>I’ll Do It Later</Text>
           </TouchableOpacity>
         </Animated.View>
@@ -140,18 +160,24 @@ const ProfileFarmScreen = ({navigation}) => {
     </SafeAreaView>
   );
 };
-
-const FeatureCard = ({icon, bg, title}) => {
+const FeatureCard = ({ icon, bg, title }) => {
   return (
     <View style={styles.featureCard}>
-      <View style={[styles.iconCircle, {backgroundColor: bg}]}>{icon}</View>
+      <View
+        style={[
+          styles.iconCircle,
+          {
+            backgroundColor: bg,
+          },
+        ]}
+      >
+        {icon}
+      </View>
       <Text style={styles.featureText}>{title}</Text>
     </View>
   );
 };
-
 export default ProfileFarmScreen;
-
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
@@ -162,11 +188,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     paddingBottom: 26,
   },
-heroImage: {
-  width: width + 2,
-  height: height * 0.34,
-  marginLeft: -1,
-},
+  heroImage: {
+    width: width + 2,
+    height: height * 0.34,
+    marginLeft: -1,
+  },
   contentCard: {
     marginTop: -10,
     backgroundColor: '#FFFFFF',
@@ -237,7 +263,10 @@ heroImage: {
     shadowColor: GREEN,
     shadowOpacity: 0.25,
     shadowRadius: 16,
-    shadowOffset: {width: 0, height: 9},
+    shadowOffset: {
+      width: 0,
+      height: 9,
+    },
     elevation: 8,
   },
   buttonText: {

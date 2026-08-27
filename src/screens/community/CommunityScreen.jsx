@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   BackHandler,
   View,
@@ -8,9 +8,8 @@ import {
   ScrollView,
   TouchableOpacity,
 } from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import {Video, Camera, HelpCircle, Mic} from 'lucide-react-native';
-
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { Video, Camera, HelpCircle, Mic } from 'lucide-react-native';
 import CommunityHeader from '../../components/community/CommunityHeader';
 import CommunityTabs from '../../components/community/CommunityTabs';
 import PostCard from '../../components/community/PostCard';
@@ -21,16 +20,38 @@ import VideosScreen from './VideosScreen';
 import QuestionsScreen from './QuestionsScreen';
 import ExpertsScreen from './ExpertsScreen';
 import DiseaseScreen from './DiseaseScreen';
-import {COLORS, rf, PAGE_PADDING} from '../../components/community/theme';
-import {COMMUNITY_IMAGES} from '../../components/community/communityImages';
-
+import { COLORS, rf, PAGE_PADDING } from '../../components/community/theme';
+import { COMMUNITY_IMAGES } from '../../components/community/communityImages';
 const QUICK_ACTIONS = [
-  {id: 'reel', title: 'Share Reel', Icon: Video, color: COLORS.DARK_GREEN, bg: '#EAFBF0'},
-  {id: 'photo', title: 'Ask with Photo', Icon: Camera, color: COLORS.ORANGE, bg: '#FFF7ED'},
-  {id: 'q', title: 'Ask Question', Icon: HelpCircle, color: COLORS.BLUE, bg: '#EFF6FF'},
-  {id: 'voice', title: 'Ask by Voice', Icon: Mic, color: COLORS.PURPLE, bg: '#F5F3FF'},
+  {
+    id: 'reel',
+    title: 'Share Reel',
+    Icon: Video,
+    color: COLORS.DARK_GREEN,
+    bg: '#EAFBF0',
+  },
+  {
+    id: 'photo',
+    title: 'Ask with Photo',
+    Icon: Camera,
+    color: COLORS.ORANGE,
+    bg: '#FFF7ED',
+  },
+  {
+    id: 'q',
+    title: 'Ask Question',
+    Icon: HelpCircle,
+    color: COLORS.BLUE,
+    bg: '#EFF6FF',
+  },
+  {
+    id: 'voice',
+    title: 'Ask by Voice',
+    Icon: Mic,
+    color: COLORS.PURPLE,
+    bg: '#F5F3FF',
+  },
 ];
-
 const POSTS = [
   {
     id: 'p1',
@@ -48,7 +69,6 @@ const POSTS = [
     comments: '42',
   },
 ];
-
 const QUESTIONS = [
   {
     id: 'q1',
@@ -65,7 +85,6 @@ const QUESTIONS = [
     views: '3.2K',
   },
 ];
-
 const EXPERT_TIPS = [
   {
     id: 't1',
@@ -77,7 +96,6 @@ const EXPERT_TIPS = [
     category: 'Crop Nutrition',
   },
 ];
-
 const POSTS_2 = [
   {
     id: 'p2',
@@ -95,7 +113,6 @@ const POSTS_2 = [
     comments: '118',
   },
 ];
-
 const SUCCESS_STORIES = [
   {
     id: 's1',
@@ -112,33 +129,29 @@ const SUCCESS_STORIES = [
     comments: '67',
   },
 ];
-
-export default function CommunityScreen({navigation}) {
+export default function CommunityScreen({ navigation }) {
   const [activeTab, setActiveTab] = useState('Community');
   const [tabHistory, setTabHistory] = useState(['Community']);
-
   const handleTabChange = routeName => {
     if (routeName === activeTab) return;
-
     setTabHistory(prev => [...prev, activeTab]);
     setActiveTab(routeName);
   };
-
   useEffect(() => {
-    const backHandler = BackHandler.addEventListener('hardwareBackPress', () => {
-      if (activeTab !== 'Community') {
-        const previousTab = tabHistory[tabHistory.length - 1] || 'Community';
-        setActiveTab(previousTab);
-        setTabHistory(prev => prev.slice(0, -1));
-        return true;
-      }
-
-      return false;
-    });
-
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      () => {
+        if (activeTab !== 'Community') {
+          const previousTab = tabHistory[tabHistory.length - 1] || 'Community';
+          setActiveTab(previousTab);
+          setTabHistory(prev => prev.slice(0, -1));
+          return true;
+        }
+        return false;
+      },
+    );
     return () => backHandler.remove();
   }, [activeTab, tabHistory]);
-
   const renderTabContent = () => {
     switch (activeTab) {
       case 'Videos':
@@ -153,8 +166,9 @@ export default function CommunityScreen({navigation}) {
         return (
           <ScrollView
             showsVerticalScrollIndicator={false}
-            contentContainerStyle={styles.scrollContent}>
-            {/* Quick Actions */}
+            contentContainerStyle={styles.scrollContent}
+          >
+            {}
             <View style={styles.actionsRow}>
               {QUICK_ACTIONS.map(item => {
                 const Icon = item.Icon;
@@ -162,11 +176,30 @@ export default function CommunityScreen({navigation}) {
                   <TouchableOpacity
                     key={item.id}
                     activeOpacity={0.85}
-                    style={styles.actionCol}>
-                    <View style={[styles.actionCircle, {backgroundColor: item.bg}]}> 
-                      <Icon size={rf(20)} color={item.color} strokeWidth={2.3} />
+                    style={styles.actionCol}
+                  >
+                    <View
+                      style={[
+                        styles.actionCircle,
+                        {
+                          backgroundColor: item.bg,
+                        },
+                      ]}
+                    >
+                      <Icon
+                        size={rf(20)}
+                        color={item.color}
+                        strokeWidth={2.3}
+                      />
                     </View>
-                    <Text style={[styles.actionLabel, {color: item.color}]}> 
+                    <Text
+                      style={[
+                        styles.actionLabel,
+                        {
+                          color: item.color,
+                        },
+                      ]}
+                    >
                       {item.title}
                     </Text>
                   </TouchableOpacity>
@@ -174,7 +207,7 @@ export default function CommunityScreen({navigation}) {
               })}
             </View>
 
-            {/* Section header */}
+            {}
             <View style={styles.sectionHeader}>
               <View style={styles.sectionTitleWrap}>
                 <View style={styles.sectionBar} />
@@ -185,16 +218,25 @@ export default function CommunityScreen({navigation}) {
               </TouchableOpacity>
             </View>
 
-            {POSTS.map(p => <PostCard key={p.id} post={p} />)}
-            {QUESTIONS.map(q => <QuestionCard key={q.id} item={q} />)}
-            {EXPERT_TIPS.map(t => <ExpertTipCard key={t.id} tip={t} />)}
-            {POSTS_2.map(p => <PostCard key={p.id} post={p} />)}
-            {SUCCESS_STORIES.map(s => <SuccessStoryCard key={s.id} story={s} />)}
+            {POSTS.map(p => (
+              <PostCard key={p.id} post={p} />
+            ))}
+            {QUESTIONS.map(q => (
+              <QuestionCard key={q.id} item={q} />
+            ))}
+            {EXPERT_TIPS.map(t => (
+              <ExpertTipCard key={t.id} tip={t} />
+            ))}
+            {POSTS_2.map(p => (
+              <PostCard key={p.id} post={p} />
+            ))}
+            {SUCCESS_STORIES.map(s => (
+              <SuccessStoryCard key={s.id} story={s} />
+            ))}
           </ScrollView>
         );
     }
   };
-
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
@@ -210,18 +252,31 @@ export default function CommunityScreen({navigation}) {
     </SafeAreaView>
   );
 }
-
 const styles = StyleSheet.create({
-  safeArea: {flex: 1, backgroundColor: '#FFFFFF'},
-  contentContainer: {flex: 1, backgroundColor: COLORS.PAGE_BG},
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
+  contentContainer: {
+    flex: 1,
+    backgroundColor: COLORS.PAGE_BG,
+  },
   scrollContent: {
     paddingHorizontal: PAGE_PADDING,
     paddingTop: 14,
     paddingBottom: 120,
     backgroundColor: COLORS.PAGE_BG,
   },
-  actionsRow: {flexDirection: 'row', justifyContent: 'space-between', gap: 8},
-  actionCol: {flex: 1, alignItems: 'center', gap: 6},
+  actionsRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    gap: 8,
+  },
+  actionCol: {
+    flex: 1,
+    alignItems: 'center',
+    gap: 6,
+  },
   actionCircle: {
     width: 52,
     height: 52,
@@ -229,7 +284,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  actionLabel: {fontSize: rf(10), fontWeight: '900'},
+  actionLabel: {
+    fontSize: rf(10),
+    fontWeight: '900',
+  },
   sectionHeader: {
     marginTop: 22,
     marginBottom: 12,
@@ -237,8 +295,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  sectionTitleWrap: {flexDirection: 'row', alignItems: 'center', gap: 8},
-  sectionBar: {width: 3, height: 18, borderRadius: 2, backgroundColor: COLORS.DARK_GREEN},
-  sectionTitle: {fontSize: rf(15), fontWeight: '900', color: COLORS.DARK},
-  seeAll: {fontSize: rf(11), fontWeight: '900', color: COLORS.DARK_GREEN},
+  sectionTitleWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  sectionBar: {
+    width: 3,
+    height: 18,
+    borderRadius: 2,
+    backgroundColor: COLORS.DARK_GREEN,
+  },
+  sectionTitle: {
+    fontSize: rf(15),
+    fontWeight: '900',
+    color: COLORS.DARK,
+  },
+  seeAll: {
+    fontSize: rf(11),
+    fontWeight: '900',
+    color: COLORS.DARK_GREEN,
+  },
 });

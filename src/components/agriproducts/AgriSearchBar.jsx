@@ -1,15 +1,18 @@
 import React from 'react';
-import {View, TextInput, TouchableOpacity, StyleSheet, Dimensions} from 'react-native';
-import {Search, Mic, SlidersHorizontal} from 'lucide-react-native';
-
-const {width} = Dimensions.get('window');
+import {
+  View,
+  TextInput,
+  TouchableOpacity,
+  StyleSheet,
+  Dimensions,
+} from 'react-native';
+import { Search, Mic, SlidersHorizontal } from 'lucide-react-native';
+const { width } = Dimensions.get('window');
 const GREEN = '#16883E';
-
 const rf = size => {
   const scale = width / 390;
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
-
 export default function AgriSearchBar() {
   return (
     <View style={styles.row}>
@@ -31,7 +34,6 @@ export default function AgriSearchBar() {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   row: {
     marginTop: 16,
@@ -39,7 +41,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 10,
   },
-
   searchBox: {
     flex: 1,
     borderRadius: 13,
@@ -50,7 +51,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-
   input: {
     flex: 1,
     marginHorizontal: 8,
@@ -59,7 +59,6 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: '#111827',
   },
-
   filterBtn: {
     width: 48,
     height: 48,

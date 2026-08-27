@@ -1,18 +1,38 @@
 import React from 'react';
-import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import {Bot} from 'lucide-react-native';
-import {COLORS, rf} from './theme';
-
-export default function AIInsightBanner({label, title, desc, ctaLabel, onPress, iconColor = COLORS.ORANGE}) {
+import { Bot } from 'lucide-react-native';
+import { COLORS, rf } from './theme';
+export default function AIInsightBanner({
+  label,
+  title,
+  desc,
+  ctaLabel,
+  onPress,
+  iconColor = COLORS.ORANGE,
+}) {
   return (
     <LinearGradient
       colors={['#22A957', '#158B3D']}
-      start={{x: 0, y: 0}}
-      end={{x: 1, y: 1}}
-      style={styles.wrap}>
+      start={{
+        x: 0,
+        y: 0,
+      }}
+      end={{
+        x: 1,
+        y: 1,
+      }}
+      style={styles.wrap}
+    >
       <View style={styles.headerRow}>
-        <View style={[styles.iconBox, {backgroundColor: iconColor}]}>
+        <View
+          style={[
+            styles.iconBox,
+            {
+              backgroundColor: iconColor,
+            },
+          ]}
+        >
           <Bot size={rf(15)} color="#FFFFFF" strokeWidth={2.3} />
         </View>
         <Text style={styles.label}>{label}</Text>
@@ -22,17 +42,28 @@ export default function AIInsightBanner({label, title, desc, ctaLabel, onPress, 
       {desc && <Text style={styles.desc}>{desc}</Text>}
 
       {ctaLabel && (
-        <TouchableOpacity activeOpacity={0.9} onPress={onPress} style={styles.ctaBtn}>
+        <TouchableOpacity
+          activeOpacity={0.9}
+          onPress={onPress}
+          style={styles.ctaBtn}
+        >
           <Text style={styles.ctaText}>{ctaLabel}</Text>
         </TouchableOpacity>
       )}
     </LinearGradient>
   );
 }
-
 const styles = StyleSheet.create({
-  wrap: {padding: 16, borderRadius: 16, overflow: 'hidden'},
-  headerRow: {flexDirection: 'row', alignItems: 'center', gap: 8},
+  wrap: {
+    padding: 16,
+    borderRadius: 16,
+    overflow: 'hidden',
+  },
+  headerRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
   iconBox: {
     width: 32,
     height: 32,
@@ -68,5 +99,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  ctaText: {fontSize: rf(12), fontWeight: '900', color: COLORS.DARK_GREEN},
+  ctaText: {
+    fontSize: rf(12),
+    fontWeight: '900',
+    color: COLORS.DARK_GREEN,
+  },
 });

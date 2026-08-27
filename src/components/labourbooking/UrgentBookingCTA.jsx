@@ -1,14 +1,18 @@
 import React from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, Dimensions} from 'react-native';
-import {Users} from 'lucide-react-native';
-
-const {width} = Dimensions.get('window');
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Dimensions,
+} from 'react-native';
+import { Users } from 'lucide-react-native';
+const { width } = Dimensions.get('window');
 const rf = size => {
   const scale = width / 390;
   return Math.max(size, Math.min(size * scale, size + 3));
 };
-
-export default function UrgentBookingCTA({onPress}) {
+export default function UrgentBookingCTA({ onPress }) {
   return (
     <View style={styles.card}>
       <View style={styles.iconBox}>
@@ -20,13 +24,16 @@ export default function UrgentBookingCTA({onPress}) {
         <Text style={styles.subtitle}>We can help you.</Text>
       </View>
 
-      <TouchableOpacity activeOpacity={0.9} onPress={onPress} style={styles.btn}>
+      <TouchableOpacity
+        activeOpacity={0.9}
+        onPress={onPress}
+        style={styles.btn}
+      >
         <Text style={styles.btnText}>Urgent Booking</Text>
       </TouchableOpacity>
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   card: {
     marginTop: 16,

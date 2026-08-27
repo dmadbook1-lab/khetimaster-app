@@ -1,11 +1,5 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  ScrollView,
-  TextInput,
-} from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TextInput } from 'react-native';
 import {
   Camera,
   Video,
@@ -15,7 +9,6 @@ import {
   BadgeCheck,
   ArrowRight,
 } from 'lucide-react-native';
-
 import StepHeader from '../StepHeader';
 import HeroBanner from '../HeroBanner';
 import SectionLabel from '../SectionLabel';
@@ -27,9 +20,7 @@ import VisibilityCard from '../VisibilityCard';
 import AIAssistBanner from '../AIAssistBanner';
 import FooterBar from '../FooterBar';
 import PrimaryButton from '../PrimaryButton';
-
-import {COLORS, rf, PAGE_PADDING} from '../../theme';
-
+import { COLORS, rf, PAGE_PADDING } from '../../theme';
 const STAGES = ['Seedling', 'Vegetative', 'Flowering', 'Fruiting', 'Harvest'];
 const CATEGORIES = [
   'Disease',
@@ -41,7 +32,12 @@ const CATEGORIES = [
   'Government',
 ];
 const VISIBILITY = [
-  {id: 'Public', label: 'Public', sub: 'Everyone can\nanswer', icon: Globe},
+  {
+    id: 'Public',
+    label: 'Public',
+    sub: 'Everyone can\nanswer',
+    icon: Globe,
+  },
   {
     id: 'Nearby Farmers',
     label: 'Nearby\nFarmers',
@@ -55,7 +51,6 @@ const VISIBILITY = [
     icon: BadgeCheck,
   },
 ];
-
 export default function Step1AskQuestion({
   step,
   totalSteps,
@@ -75,13 +70,14 @@ export default function Step1AskQuestion({
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scroll}>
+        contentContainerStyle={styles.scroll}
+      >
         <HeroBanner
           title="What do you need help with?"
           subtitle="Describe your farming problem and let the community help you."
         />
 
-        {/* Question Title */}
+        {}
         <SectionLabel>Question Title</SectionLabel>
         <View style={styles.inputBox}>
           <TextInput
@@ -93,8 +89,14 @@ export default function Step1AskQuestion({
           />
         </View>
 
-        {/* Description */}
-        <SectionLabel style={{marginTop: 18}}>Description</SectionLabel>
+        {}
+        <SectionLabel
+          style={{
+            marginTop: 18,
+          }}
+        >
+          Description
+        </SectionLabel>
         <View style={[styles.inputBox, styles.textarea]}>
           <TextInput
             value={formData.description}
@@ -103,16 +105,28 @@ export default function Step1AskQuestion({
             placeholderTextColor={COLORS.MUTED}
             multiline
             maxLength={1000}
-            style={[styles.input, {textAlignVertical: 'top', minHeight: 90}]}
+            style={[
+              styles.input,
+              {
+                textAlignVertical: 'top',
+                minHeight: 90,
+              },
+            ]}
           />
           <Text style={styles.counter}>
             {(formData.description || '').length} / 1000
           </Text>
         </View>
 
-        {/* Media */}
+        {}
         <View style={styles.mediaHeader}>
-          <SectionLabel style={{marginBottom: 0}}>Add Media</SectionLabel>
+          <SectionLabel
+            style={{
+              marginBottom: 0,
+            }}
+          >
+            Add Media
+          </SectionLabel>
           <Text style={styles.mediaSub}>Up to 5 photos</Text>
         </View>
         <View style={styles.mediaRow}>
@@ -121,20 +135,38 @@ export default function Step1AskQuestion({
           <MediaButton label="Record Voice" icon={Mic} disabled />
         </View>
 
-        {/* Crop */}
-        <SectionLabel style={{marginTop: 18}}>Crop</SectionLabel>
+        {}
+        <SectionLabel
+          style={{
+            marginTop: 18,
+          }}
+        >
+          Crop
+        </SectionLabel>
         <DropdownField value={formData.crop} onPress={() => {}} />
 
-        {/* Growth Stage */}
-        <SectionLabel style={{marginTop: 18}}>Growth Stage</SectionLabel>
+        {}
+        <SectionLabel
+          style={{
+            marginTop: 18,
+          }}
+        >
+          Growth Stage
+        </SectionLabel>
         <ChipGroup
           options={STAGES}
           value={formData.stage}
           onChange={v => updateField('stage', v)}
         />
 
-        {/* Category */}
-        <SectionLabel style={{marginTop: 18}}>Category</SectionLabel>
+        {}
+        <SectionLabel
+          style={{
+            marginTop: 18,
+          }}
+        >
+          Category
+        </SectionLabel>
         <ChipGroup
           options={CATEGORIES}
           value={formData.categories}
@@ -142,39 +174,64 @@ export default function Step1AskQuestion({
           multi
         />
 
-        {/* Location */}
-        <SectionLabel style={{marginTop: 18}}>Location</SectionLabel>
+        {}
+        <SectionLabel
+          style={{
+            marginTop: 18,
+          }}
+        >
+          Location
+        </SectionLabel>
         <LocationField
           location={formData.location}
           sub="Current location · India"
           onChange={() => {}}
         />
 
-        {/* Visibility */}
-        <SectionLabel style={{marginTop: 18}}>Visibility</SectionLabel>
+        {}
+        <SectionLabel
+          style={{
+            marginTop: 18,
+          }}
+        >
+          Visibility
+        </SectionLabel>
         <VisibilityCard
           options={VISIBILITY}
           value={formData.visibility}
           onChange={v => updateField('visibility', v)}
         />
 
-        {/* AI Assist */}
-        <View style={{marginTop: 18}}>
+        {}
+        <View
+          style={{
+            marginTop: 18,
+          }}
+        >
           <AIAssistBanner />
         </View>
       </ScrollView>
 
       <FooterBar>
-        <PrimaryButton label="Continue" icon={ArrowRight} iconRight onPress={onContinue} />
+        <PrimaryButton
+          label="Continue"
+          icon={ArrowRight}
+          iconRight
+          onPress={onContinue}
+        />
       </FooterBar>
     </View>
   );
 }
-
 const styles = StyleSheet.create({
-  flex: {flex: 1, backgroundColor: COLORS.PAGE_BG},
-  scroll: {padding: PAGE_PADDING, paddingBottom: 30},
-
+  flex: {
+    flex: 1,
+    backgroundColor: COLORS.PAGE_BG,
+  },
+  scroll: {
+    padding: PAGE_PADDING,
+    paddingBottom: 30,
+  },
   inputBox: {
     borderRadius: 24,
     borderWidth: 1,
@@ -184,8 +241,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     minHeight: 48,
   },
-  input: {fontSize: rf(12), color: COLORS.DARK, padding: 0, paddingVertical: 12},
-  textarea: {borderRadius: 16, paddingBottom: 8},
+  input: {
+    fontSize: rf(12),
+    color: COLORS.DARK,
+    padding: 0,
+    paddingVertical: 12,
+  },
+  textarea: {
+    borderRadius: 16,
+    paddingBottom: 8,
+  },
   counter: {
     alignSelf: 'flex-end',
     marginTop: 4,
@@ -193,7 +258,6 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: COLORS.MUTED,
   },
-
   mediaHeader: {
     marginTop: 18,
     marginBottom: 10,
@@ -201,6 +265,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  mediaSub: {fontSize: rf(10.5), fontWeight: '600', color: COLORS.MUTED},
-  mediaRow: {flexDirection: 'row', gap: 10},
+  mediaSub: {
+    fontSize: rf(10.5),
+    fontWeight: '600',
+    color: COLORS.MUTED,
+  },
+  mediaRow: {
+    flexDirection: 'row',
+    gap: 10,
+  },
 });

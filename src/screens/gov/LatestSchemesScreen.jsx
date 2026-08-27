@@ -1,5 +1,4 @@
-// LatestSchemesScreen.js
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -9,7 +8,7 @@ import {
   TouchableOpacity,
   TextInput,
 } from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   ArrowLeft,
   Bell,
@@ -24,12 +23,9 @@ import {
   Star,
   AlertCircle,
 } from 'lucide-react-native';
-
-import {COLORS, rf, PAGE_PADDING} from '../../components/gov/theme';
-import {GOV_ROUTES} from '../../constants/govRoutes';
-
+import { COLORS, rf, PAGE_PADDING } from '../../components/gov/theme';
+import { GOV_ROUTES } from '../../constants/govRoutes';
 const CHIPS = ['All', 'Central', 'State', 'Subsidies'];
-
 const SCHEMES = [
   {
     id: 's1',
@@ -39,8 +35,16 @@ const SCHEMES = [
     iconBg: '#DCFCE7',
     iconColor: COLORS.DARK_GREEN,
     tags: [
-      {label: 'Central', bg: '#DBEAFE', color: COLORS.BLUE},
-      {label: 'Eligible', bg: '#DCFCE7', color: COLORS.DARK_GREEN},
+      {
+        label: 'Central',
+        bg: '#DBEAFE',
+        color: COLORS.BLUE,
+      },
+      {
+        label: 'Eligible',
+        bg: '#DCFCE7',
+        color: COLORS.DARK_GREEN,
+      },
     ],
   },
   {
@@ -51,8 +55,16 @@ const SCHEMES = [
     iconBg: '#FFEDD5',
     iconColor: COLORS.ORANGE,
     tags: [
-      {label: 'Insurance', bg: '#DBEAFE', color: COLORS.BLUE},
-      {label: 'Recommended', bg: '#DCFCE7', color: COLORS.DARK_GREEN},
+      {
+        label: 'Insurance',
+        bg: '#DBEAFE',
+        color: COLORS.BLUE,
+      },
+      {
+        label: 'Recommended',
+        bg: '#DCFCE7',
+        color: COLORS.DARK_GREEN,
+      },
     ],
   },
   {
@@ -63,8 +75,16 @@ const SCHEMES = [
     iconBg: '#FEF3C7',
     iconColor: COLORS.YELLOW,
     tags: [
-      {label: 'Loan', bg: '#FFEDD5', color: COLORS.ORANGE},
-      {label: 'Available', bg: '#DCFCE7', color: COLORS.DARK_GREEN},
+      {
+        label: 'Loan',
+        bg: '#FFEDD5',
+        color: COLORS.ORANGE,
+      },
+      {
+        label: 'Available',
+        bg: '#DCFCE7',
+        color: COLORS.DARK_GREEN,
+      },
     ],
   },
   {
@@ -75,8 +95,16 @@ const SCHEMES = [
     iconBg: '#DCFCE7',
     iconColor: COLORS.DARK_GREEN,
     tags: [
-      {label: 'Soil', bg: '#FFEDD5', color: COLORS.ORANGE},
-      {label: 'Available', bg: '#DCFCE7', color: COLORS.DARK_GREEN},
+      {
+        label: 'Soil',
+        bg: '#FFEDD5',
+        color: COLORS.ORANGE,
+      },
+      {
+        label: 'Available',
+        bg: '#DCFCE7',
+        color: COLORS.DARK_GREEN,
+      },
     ],
   },
   {
@@ -87,8 +115,16 @@ const SCHEMES = [
     iconBg: '#DBEAFE',
     iconColor: COLORS.BLUE,
     tags: [
-      {label: 'Subsidy', bg: '#DBEAFE', color: COLORS.BLUE},
-      {label: 'Available', bg: '#DCFCE7', color: COLORS.DARK_GREEN},
+      {
+        label: 'Subsidy',
+        bg: '#DBEAFE',
+        color: COLORS.BLUE,
+      },
+      {
+        label: 'Available',
+        bg: '#DCFCE7',
+        color: COLORS.DARK_GREEN,
+      },
     ],
   },
   {
@@ -99,28 +135,40 @@ const SCHEMES = [
     iconBg: '#FFEDD5',
     iconColor: COLORS.ORANGE,
     tags: [
-      {label: 'Energy', bg: '#FFEDD5', color: COLORS.ORANGE},
-      {label: 'New', bg: '#FFE4E6', color: COLORS.RED},
+      {
+        label: 'Energy',
+        bg: '#FFEDD5',
+        color: COLORS.ORANGE,
+      },
+      {
+        label: 'New',
+        bg: '#FFE4E6',
+        color: COLORS.RED,
+      },
     ],
   },
 ];
-
-export default function LatestSchemesScreen({navigation}) {
+export default function LatestSchemesScreen({ navigation }) {
   const [chip, setChip] = useState('All');
-
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
 
-      {/* Header */}
+      {}
       <View style={styles.header}>
         <TouchableOpacity
           onPress={() => navigation?.goBack()}
           activeOpacity={0.8}
-          style={styles.iconBtn}>
+          style={styles.iconBtn}
+        >
           <ArrowLeft size={rf(18)} color={COLORS.DARK} strokeWidth={2.5} />
         </TouchableOpacity>
-        <View style={{flex: 1, alignItems: 'center'}}>
+        <View
+          style={{
+            flex: 1,
+            alignItems: 'center',
+          }}
+        >
           <Text style={styles.headerTitle}>Latest Agriculture Schemes</Text>
         </View>
         <TouchableOpacity activeOpacity={0.8} style={styles.iconBtn}>
@@ -131,8 +179,9 @@ export default function LatestSchemesScreen({navigation}) {
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scroll}>
-        {/* Search */}
+        contentContainerStyle={styles.scroll}
+      >
+        {}
         <View style={styles.searchRow}>
           <View style={styles.searchBox}>
             <Search size={rf(16)} color={COLORS.MUTED} strokeWidth={2.3} />
@@ -143,15 +192,20 @@ export default function LatestSchemesScreen({navigation}) {
             />
           </View>
           <TouchableOpacity activeOpacity={0.85} style={styles.filterBtn}>
-            <SlidersHorizontal size={rf(16)} color="#FFFFFF" strokeWidth={2.4} />
+            <SlidersHorizontal
+              size={rf(16)}
+              color="#FFFFFF"
+              strokeWidth={2.4}
+            />
           </TouchableOpacity>
         </View>
 
-        {/* Chips */}
+        {}
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.chipsRow}>
+          contentContainerStyle={styles.chipsRow}
+        >
           {CHIPS.map(c => {
             const active = chip === c;
             return (
@@ -159,8 +213,11 @@ export default function LatestSchemesScreen({navigation}) {
                 key={c}
                 activeOpacity={0.85}
                 onPress={() => setChip(c)}
-                style={[styles.chip, active && styles.chipActive]}>
-                <Text style={[styles.chipText, active && styles.chipTextActive]}>
+                style={[styles.chip, active && styles.chipActive]}
+              >
+                <Text
+                  style={[styles.chipText, active && styles.chipTextActive]}
+                >
                   {c}
                 </Text>
               </TouchableOpacity>
@@ -168,7 +225,7 @@ export default function LatestSchemesScreen({navigation}) {
           })}
         </ScrollView>
 
-        {/* Hero - Most Popular */}
+        {}
         <View style={styles.popularHero}>
           <View style={styles.heroTopRow}>
             <View style={styles.heroPillOrange}>
@@ -180,70 +237,146 @@ export default function LatestSchemesScreen({navigation}) {
           </View>
           <Text style={styles.popularHeroTitle}>PM-KISAN Samman Nidhi</Text>
           <Text style={styles.popularHeroDesc}>
-            Direct income support of{'\n'}₹6,000/year to all eligible{'\n'}landholding farmers across{'\n'}India.
+            Direct income support of{'\n'}₹6,000/year to all eligible{'\n'}
+            landholding farmers across{'\n'}India.
           </Text>
           <TouchableOpacity
             activeOpacity={0.9}
-            onPress={() => navigation?.navigate(GOV_ROUTES.SCHEME_DETAIL, {id: 's1'})}
-            style={styles.popularHeroBtn}>
+            onPress={() =>
+              navigation?.navigate(GOV_ROUTES.SCHEME_DETAIL, {
+                id: 's1',
+              })
+            }
+            style={styles.popularHeroBtn}
+          >
             <Text style={styles.popularHeroBtnText}>View Details →</Text>
           </TouchableOpacity>
 
-          {/* Decorative icons */}
+          {}
           <View style={styles.heroDecoIcon}>
-            <AlertCircle size={rf(22)} color="rgba(255,255,255,0.4)" strokeWidth={2.4} />
+            <AlertCircle
+              size={rf(22)}
+              color="rgba(255,255,255,0.4)"
+              strokeWidth={2.4}
+            />
           </View>
           <View style={styles.heroDecoBars}>
-            <View style={[styles.heroBar, {height: 30}]} />
-            <View style={[styles.heroBar, {height: 42}]} />
-            <View style={[styles.heroBar, {height: 20}]} />
-            <View style={[styles.heroBar, {height: 36}]} />
+            <View
+              style={[
+                styles.heroBar,
+                {
+                  height: 30,
+                },
+              ]}
+            />
+            <View
+              style={[
+                styles.heroBar,
+                {
+                  height: 42,
+                },
+              ]}
+            />
+            <View
+              style={[
+                styles.heroBar,
+                {
+                  height: 20,
+                },
+              ]}
+            />
+            <View
+              style={[
+                styles.heroBar,
+                {
+                  height: 36,
+                },
+              ]}
+            />
           </View>
         </View>
 
-        {/* All Schemes Header */}
+        {}
         <View style={styles.sectionHead}>
           <Text style={styles.sectionTitle}>All Schemes</Text>
           <Text style={styles.sectionCount}>{SCHEMES.length} schemes</Text>
         </View>
 
-        {/* Scheme Cards */}
+        {}
         {SCHEMES.map(s => {
           const Icon = s.icon;
           return (
             <TouchableOpacity
               key={s.id}
               activeOpacity={0.9}
-              onPress={() => navigation?.navigate(GOV_ROUTES.SCHEME_DETAIL, {id: s.id})}
-              style={styles.sCard}>
-              <View style={[styles.sIcon, {backgroundColor: s.iconBg}]}>
+              onPress={() =>
+                navigation?.navigate(GOV_ROUTES.SCHEME_DETAIL, {
+                  id: s.id,
+                })
+              }
+              style={styles.sCard}
+            >
+              <View
+                style={[
+                  styles.sIcon,
+                  {
+                    backgroundColor: s.iconBg,
+                  },
+                ]}
+              >
                 <Icon size={rf(20)} color={s.iconColor} strokeWidth={2.3} />
               </View>
-              <View style={{flex: 1}}>
+              <View
+                style={{
+                  flex: 1,
+                }}
+              >
                 <Text style={styles.sName}>{s.name}</Text>
                 <Text style={styles.sDesc}>{s.desc}</Text>
                 <View style={styles.sTagsRow}>
                   {s.tags.map((t, i) => (
                     <View
                       key={i}
-                      style={[styles.sTag, {backgroundColor: t.bg}]}>
-                      <Text style={[styles.sTagText, {color: t.color}]}>
+                      style={[
+                        styles.sTag,
+                        {
+                          backgroundColor: t.bg,
+                        },
+                      ]}
+                    >
+                      <Text
+                        style={[
+                          styles.sTagText,
+                          {
+                            color: t.color,
+                          },
+                        ]}
+                      >
                         {t.label}
                       </Text>
                     </View>
                   ))}
                 </View>
               </View>
-              <ChevronRight size={rf(16)} color={COLORS.MUTED} strokeWidth={2.4} />
+              <ChevronRight
+                size={rf(16)}
+                color={COLORS.MUTED}
+                strokeWidth={2.4}
+              />
             </TouchableOpacity>
           );
         })}
 
-        {/* AI Recommendation */}
+        {}
         <View style={styles.aiCard}>
           <View style={styles.aiHead}>
             <View style={styles.aiIconBox}>
-              <Star size={rf(17)} color="#FFFFFF" strokeWidth={2.4} fill="#FFFFFF" />
+              <Star
+                size={rf(17)}
+                color="#FFFFFF"
+                strokeWidth={2.4}
+                fill="#FFFFFF"
+              />
             </View>
             <Text style={styles.aiTitle}>AI Recommendation</Text>
           </View>
@@ -264,7 +397,8 @@ export default function LatestSchemesScreen({navigation}) {
           <TouchableOpacity
             activeOpacity={0.9}
             onPress={() => navigation?.navigate(GOV_ROUTES.ELIGIBILITY_CHECK)}
-            style={styles.aiBtn}>
+            style={styles.aiBtn}
+          >
             <Text style={styles.aiBtnText}>Check Eligibility</Text>
           </TouchableOpacity>
         </View>
@@ -272,11 +406,16 @@ export default function LatestSchemesScreen({navigation}) {
     </SafeAreaView>
   );
 }
-
 const styles = StyleSheet.create({
-  safeArea: {flex: 1, backgroundColor: COLORS.PAGE_BG},
-  scroll: {padding: PAGE_PADDING, paddingBottom: 30, gap: 14},
-
+  safeArea: {
+    flex: 1,
+    backgroundColor: COLORS.PAGE_BG,
+  },
+  scroll: {
+    padding: PAGE_PADDING,
+    paddingBottom: 30,
+    gap: 14,
+  },
   header: {
     paddingHorizontal: PAGE_PADDING,
     paddingTop: 6,
@@ -307,9 +446,16 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: '#FFFFFF',
   },
-  headerTitle: {fontSize: rf(17), fontWeight: '900', color: COLORS.DARK},
-
-  searchRow: {flexDirection: 'row', gap: 8, alignItems: 'center'},
+  headerTitle: {
+    fontSize: rf(17),
+    fontWeight: '900',
+    color: COLORS.DARK,
+  },
+  searchRow: {
+    flexDirection: 'row',
+    gap: 8,
+    alignItems: 'center',
+  },
   searchBox: {
     flex: 1,
     height: 48,
@@ -320,7 +466,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
   },
-  searchInput: {flex: 1, fontSize: rf(13), color: COLORS.DARK, padding: 0},
+  searchInput: {
+    flex: 1,
+    fontSize: rf(13),
+    color: COLORS.DARK,
+    padding: 0,
+  },
   filterBtn: {
     width: 48,
     height: 48,
@@ -329,8 +480,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
-  chipsRow: {gap: 8, paddingVertical: 2},
+  chipsRow: {
+    gap: 8,
+    paddingVertical: 2,
+  },
   chip: {
     height: 38,
     paddingHorizontal: 20,
@@ -340,11 +493,18 @@ const styles = StyleSheet.create({
     borderColor: COLORS.BORDER,
     justifyContent: 'center',
   },
-  chipActive: {backgroundColor: COLORS.DARK_GREEN, borderColor: COLORS.DARK_GREEN},
-  chipText: {fontSize: rf(12.5), fontWeight: '900', color: COLORS.DARK},
-  chipTextActive: {color: '#FFFFFF'},
-
-  // Popular Hero - increased min height so bars/icons don't overlap
+  chipActive: {
+    backgroundColor: COLORS.DARK_GREEN,
+    borderColor: COLORS.DARK_GREEN,
+  },
+  chipText: {
+    fontSize: rf(12.5),
+    fontWeight: '900',
+    color: COLORS.DARK,
+  },
+  chipTextActive: {
+    color: '#FFFFFF',
+  },
   popularHero: {
     padding: 20,
     borderRadius: 16,
@@ -353,7 +513,10 @@ const styles = StyleSheet.create({
     position: 'relative',
     minHeight: 260,
   },
-  heroTopRow: {flexDirection: 'row', gap: 6},
+  heroTopRow: {
+    flexDirection: 'row',
+    gap: 6,
+  },
   heroPillOrange: {
     paddingHorizontal: 10,
     height: 24,
@@ -368,7 +531,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#0B7A2E',
     justifyContent: 'center',
   },
-  heroPillText: {fontSize: rf(10), fontWeight: '900', color: '#FFFFFF', letterSpacing: 0.5},
+  heroPillText: {
+    fontSize: rf(10),
+    fontWeight: '900',
+    color: '#FFFFFF',
+    letterSpacing: 0.5,
+  },
   popularHeroTitle: {
     marginTop: 14,
     fontSize: rf(19),
@@ -391,7 +559,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFFFFF',
     justifyContent: 'center',
   },
-  popularHeroBtnText: {fontSize: rf(13), fontWeight: '900', color: COLORS.DARK},
+  popularHeroBtnText: {
+    fontSize: rf(13),
+    fontWeight: '900',
+    color: COLORS.DARK,
+  },
   heroDecoIcon: {
     position: 'absolute',
     top: 44,
@@ -416,15 +588,21 @@ const styles = StyleSheet.create({
     borderRadius: 2,
     backgroundColor: 'rgba(255,255,255,0.25)',
   },
-
   sectionHead: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  sectionTitle: {fontSize: rf(17), fontWeight: '900', color: COLORS.DARK},
-  sectionCount: {fontSize: rf(12), fontWeight: '600', color: COLORS.MUTED},
-
+  sectionTitle: {
+    fontSize: rf(17),
+    fontWeight: '900',
+    color: COLORS.DARK,
+  },
+  sectionCount: {
+    fontSize: rf(12),
+    fontWeight: '600',
+    color: COLORS.MUTED,
+  },
   sCard: {
     padding: 16,
     borderRadius: 14,
@@ -443,18 +621,33 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  sName: {fontSize: rf(14.5), fontWeight: '900', color: COLORS.DARK},
-  sDesc: {marginTop: 5, fontSize: rf(12), fontWeight: '500', color: COLORS.MUTED, lineHeight: rf(16)},
-  sTagsRow: {marginTop: 10, flexDirection: 'row', gap: 6},
+  sName: {
+    fontSize: rf(14.5),
+    fontWeight: '900',
+    color: COLORS.DARK,
+  },
+  sDesc: {
+    marginTop: 5,
+    fontSize: rf(12),
+    fontWeight: '500',
+    color: COLORS.MUTED,
+    lineHeight: rf(16),
+  },
+  sTagsRow: {
+    marginTop: 10,
+    flexDirection: 'row',
+    gap: 6,
+  },
   sTag: {
     paddingHorizontal: 10,
     height: 24,
     borderRadius: 12,
     justifyContent: 'center',
   },
-  sTagText: {fontSize: rf(10.5), fontWeight: '900'},
-
-  // AI Recommendation
+  sTagText: {
+    fontSize: rf(10.5),
+    fontWeight: '900',
+  },
   aiCard: {
     marginTop: 6,
     padding: 18,
@@ -463,7 +656,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#BBF7D0',
   },
-  aiHead: {flexDirection: 'row', alignItems: 'center', gap: 10},
+  aiHead: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
   aiIconBox: {
     width: 38,
     height: 38,
@@ -472,9 +669,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  aiTitle: {fontSize: rf(15.5), fontWeight: '900', color: COLORS.DARK},
-  aiDesc: {marginTop: 12, fontSize: rf(13), fontWeight: '500', color: COLORS.DARK, lineHeight: rf(18)},
-  aiPillsRow: {marginTop: 14, flexDirection: 'row', flexWrap: 'wrap', gap: 8},
+  aiTitle: {
+    fontSize: rf(15.5),
+    fontWeight: '900',
+    color: COLORS.DARK,
+  },
+  aiDesc: {
+    marginTop: 12,
+    fontSize: rf(13),
+    fontWeight: '500',
+    color: COLORS.DARK,
+    lineHeight: rf(18),
+  },
+  aiPillsRow: {
+    marginTop: 14,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 8,
+  },
   aiPill: {
     paddingHorizontal: 16,
     height: 38,
@@ -482,7 +694,11 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.DARK_GREEN,
     justifyContent: 'center',
   },
-  aiPillText: {fontSize: rf(12), fontWeight: '900', color: '#FFFFFF'},
+  aiPillText: {
+    fontSize: rf(12),
+    fontWeight: '900',
+    color: '#FFFFFF',
+  },
   aiBtn: {
     marginTop: 16,
     height: 52,
@@ -491,5 +707,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  aiBtnText: {fontSize: rf(14), fontWeight: '900', color: '#FFFFFF'},
+  aiBtnText: {
+    fontSize: rf(14),
+    fontWeight: '900',
+    color: '#FFFFFF',
+  },
 });

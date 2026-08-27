@@ -6,18 +6,13 @@ import {
   StyleSheet,
   Dimensions,
 } from 'react-native';
-
 import MachineryCard from './MachineryCard';
-
-const {width} = Dimensions.get('window');
-
+const { width } = Dimensions.get('window');
 const GREEN = '#16883E';
-
 const rf = size => {
   const scale = width / 390;
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
-
 export default function AvailableMachinery({
   machines,
   onSeeAllPress,
@@ -30,9 +25,7 @@ export default function AvailableMachinery({
       <View style={styles.header}>
         <Text style={styles.title}>Available Near You</Text>
 
-        <TouchableOpacity
-          activeOpacity={0.8}
-          onPress={onSeeAllPress}>
+        <TouchableOpacity activeOpacity={0.8} onPress={onSeeAllPress}>
           <Text style={styles.seeAll}>See All</Text>
         </TouchableOpacity>
       </View>
@@ -49,25 +42,21 @@ export default function AvailableMachinery({
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   wrapper: {
     marginTop: 20,
   },
-
   header: {
     marginBottom: 13,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-
   title: {
     fontSize: rf(16),
     fontWeight: '900',
     color: '#121A2B',
   },
-
   seeAll: {
     fontSize: rf(11),
     fontWeight: '900',

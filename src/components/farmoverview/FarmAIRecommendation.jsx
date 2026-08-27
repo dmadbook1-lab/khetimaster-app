@@ -1,13 +1,19 @@
 import React from 'react';
-import {View, Text, ImageBackground, TouchableOpacity, StyleSheet} from 'react-native';
-import {Info, ChevronRight} from 'lucide-react-native';
-
+import {
+  View,
+  Text,
+  ImageBackground,
+  TouchableOpacity,
+  StyleSheet,
+} from 'react-native';
+import { Info, ChevronRight } from 'lucide-react-native';
 export default function FarmAIRecommendation() {
   return (
     <ImageBackground
       source={require('../../assets/images/advisory.png')}
       style={styles.card}
-      imageStyle={styles.image}>
+      imageStyle={styles.image}
+    >
       <View style={styles.overlay} />
 
       <View style={styles.content}>
@@ -32,7 +38,6 @@ export default function FarmAIRecommendation() {
     </ImageBackground>
   );
 }
-
 const styles = StyleSheet.create({
   card: {
     height: 206,
@@ -40,27 +45,22 @@ const styles = StyleSheet.create({
     borderRadius: 28,
     overflow: 'hidden',
   },
-
   image: {
     borderRadius: 28,
   },
-
   overlay: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: 'rgba(20,83,45,0.58)',
   },
-
   content: {
     padding: 20,
     width: '68%',
   },
-
   titleRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
   },
-
   infoCircle: {
     width: 29,
     height: 29,
@@ -69,14 +69,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   title: {
     color: '#FFFFFF',
     fontSize: 16,
     lineHeight: 18,
     fontWeight: '900',
   },
-
   desc: {
     marginTop: 18,
     color: '#FFFFFF',
@@ -84,7 +82,6 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     fontWeight: '600',
   },
-
   button: {
     marginTop: 18,
     height: 36,
@@ -96,7 +93,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 5,
   },
-
   buttonText: {
     color: '#166534',
     fontSize: 12,

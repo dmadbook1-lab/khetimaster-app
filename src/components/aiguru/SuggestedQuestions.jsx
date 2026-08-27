@@ -11,23 +11,15 @@ import {
   MessageSquareText,
   ArrowUpRight,
 } from 'lucide-react-native';
-
-const {width} = Dimensions.get('window');
-
+const { width } = Dimensions.get('window');
 const GREEN = '#16883E';
 const DARK = '#202020';
 const MUTED = '#8B95A5';
 const BORDER = '#E9EDF1';
-
 const rf = size => {
   const scale = width / 390;
-
-  return Math.max(
-    size - 2,
-    Math.min(size * scale, size + 2),
-  );
+  return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
-
 const DEFAULT_QUESTIONS = [
   'Will my crop need irrigation?',
   'Any disease risk this week?',
@@ -35,7 +27,6 @@ const DEFAULT_QUESTIONS = [
   'Weather forecast for my farm?',
   'Current mandi prices?',
 ];
-
 export default function SuggestedQuestions({
   questions = DEFAULT_QUESTIONS,
   onQuestionPress,
@@ -43,15 +34,9 @@ export default function SuggestedQuestions({
   return (
     <View style={styles.container}>
       <View style={styles.header}>
-        <Lightbulb
-          size={rf(15)}
-          color={MUTED}
-          strokeWidth={2.2}
-        />
+        <Lightbulb size={rf(15)} color={MUTED} strokeWidth={2.2} />
 
-        <Text style={styles.headerText}>
-          SUGGESTED
-        </Text>
+        <Text style={styles.headerText}>SUGGESTED</Text>
       </View>
 
       <View style={styles.questions}>
@@ -59,41 +44,28 @@ export default function SuggestedQuestions({
           <TouchableOpacity
             key={question}
             activeOpacity={0.82}
-            onPress={() =>
-              onQuestionPress(question)
-            }
-            style={styles.questionButton}>
-            <MessageSquareText
-              size={rf(15)}
-              color={DARK}
-              strokeWidth={2.1}
-            />
+            onPress={() => onQuestionPress(question)}
+            style={styles.questionButton}
+          >
+            <MessageSquareText size={rf(15)} color={DARK} strokeWidth={2.1} />
 
-            <Text
-              numberOfLines={1}
-              style={styles.questionText}>
+            <Text numberOfLines={1} style={styles.questionText}>
               {question}
             </Text>
 
-            <ArrowUpRight
-              size={rf(15)}
-              color={GREEN}
-              strokeWidth={2.2}
-            />
+            <ArrowUpRight size={rf(15)} color={GREEN} strokeWidth={2.2} />
           </TouchableOpacity>
         ))}
       </View>
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: width * 0.037,
     paddingTop: 8,
     paddingBottom: 15,
   },
-
   header: {
     marginLeft: 5,
     marginBottom: 11,
@@ -101,18 +73,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
   },
-
   headerText: {
     fontSize: rf(9),
     fontWeight: '900',
     color: MUTED,
     letterSpacing: 0.8,
   },
-
   questions: {
     gap: 8,
   },
-
   questionButton: {
     minHeight: 43,
     borderRadius: 22,
@@ -122,7 +91,6 @@ const styles = StyleSheet.create({
     borderColor: BORDER,
     flexDirection: 'row',
     alignItems: 'center',
-
     shadowColor: '#0F172A',
     shadowOpacity: 0.035,
     shadowRadius: 7,
@@ -132,7 +100,6 @@ const styles = StyleSheet.create({
     },
     elevation: 2,
   },
-
   questionText: {
     flex: 1,
     marginHorizontal: 10,

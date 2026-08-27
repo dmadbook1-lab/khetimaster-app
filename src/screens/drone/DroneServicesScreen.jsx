@@ -1,4 +1,3 @@
-// screens/drone/DroneServicesScreen.js
 import React from 'react';
 import {
   View,
@@ -12,7 +11,7 @@ import {
   Dimensions,
   StatusBar,
 } from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
 import {
   ArrowLeft,
@@ -35,26 +34,39 @@ import {
   Shield,
 } from 'lucide-react-native';
 import BottomTabBar from '../../common/BottomTabBar';
-
-const {width} = Dimensions.get('window');
+const { width } = Dimensions.get('window');
 const GREEN = '#16A34A';
 const DARK_GREEN = '#15803D';
 const DARK = '#111827';
 const MUTED = '#64748B';
 const BORDER = '#E5E7EB';
-
 const rf = size => {
   const scale = width / 390;
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
-
 const CATEGORIES = [
-  {id: 'pesticide', label: 'Pesticide\nSpraying', Icon: Calendar, active: true},
-  {id: 'fertilizer', label: 'Liquid\nFertilizer', Icon: FlaskConical},
-  {id: 'micro', label: 'Micronutrient\nSpray', Icon: Sparkles},
-  {id: 'survey', label: 'Crop Survey', Icon: Grid3x3},
+  {
+    id: 'pesticide',
+    label: 'Pesticide\nSpraying',
+    Icon: Calendar,
+    active: true,
+  },
+  {
+    id: 'fertilizer',
+    label: 'Liquid\nFertilizer',
+    Icon: FlaskConical,
+  },
+  {
+    id: 'micro',
+    label: 'Micronutrient\nSpray',
+    Icon: Sparkles,
+  },
+  {
+    id: 'survey',
+    label: 'Crop Survey',
+    Icon: Grid3x3,
+  },
 ];
-
 const OPERATORS = [
   {
     id: '1',
@@ -85,22 +97,47 @@ const OPERATORS = [
     certified: true,
   },
 ];
-
 const BENEFITS = [
-  {Icon: Droplet, color: '#3B82F6', bg: '#EFF6FF', title: 'Saves Water', desc: 'Up to 90% less water vs\nmanual spraying'},
-  {Icon: Check, color: GREEN, bg: '#ECFDF5', title: 'Uniform Spraying', desc: 'RTK GPS ensures even\ncoverage'},
-  {Icon: Zap, color: '#F97316', bg: '#FFF7ED', title: 'Fast Operation', desc: '10 acres/hour, done in\nminutes'},
-  {Icon: Shield, color: '#9333EA', bg: '#FAF5FF', title: 'Reduced Exposure', desc: 'Zero chemical contact\nfor farmers'},
+  {
+    Icon: Droplet,
+    color: '#3B82F6',
+    bg: '#EFF6FF',
+    title: 'Saves Water',
+    desc: 'Up to 90% less water vs\nmanual spraying',
+  },
+  {
+    Icon: Check,
+    color: GREEN,
+    bg: '#ECFDF5',
+    title: 'Uniform Spraying',
+    desc: 'RTK GPS ensures even\ncoverage',
+  },
+  {
+    Icon: Zap,
+    color: '#F97316',
+    bg: '#FFF7ED',
+    title: 'Fast Operation',
+    desc: '10 acres/hour, done in\nminutes',
+  },
+  {
+    Icon: Shield,
+    color: '#9333EA',
+    bg: '#FAF5FF',
+    title: 'Reduced Exposure',
+    desc: 'Zero chemical contact\nfor farmers',
+  },
 ];
-
-export default function DroneServicesScreen({navigation}) {
+export default function DroneServicesScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
 
-      {/* Header */}
+      {}
       <View style={styles.header}>
-        <TouchableOpacity onPress={() => navigation.goBack()} style={styles.iconBtn}>
+        <TouchableOpacity
+          onPress={() => navigation.goBack()}
+          style={styles.iconBtn}
+        >
           <ArrowLeft size={rf(22)} color={DARK} strokeWidth={2.4} />
         </TouchableOpacity>
         <Text style={styles.headerTitle}>Drone Services</Text>
@@ -110,17 +147,24 @@ export default function DroneServicesScreen({navigation}) {
         </TouchableOpacity>
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
-        {/* Location */}
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+      >
+        {}
         <View style={styles.locationBar}>
           <MapPin size={rf(15)} color={GREEN} strokeWidth={2.4} />
           <Text style={styles.locationText}>Aurangabad, Maharashtra</Text>
-          <View style={{flex: 1}} />
+          <View
+            style={{
+              flex: 1,
+            }}
+          />
           <Text style={styles.changeText}>Change</Text>
           <ChevronDown size={rf(14)} color={GREEN} strokeWidth={2.4} />
         </View>
 
-        {/* Search */}
+        {}
         <View style={styles.searchRow}>
           <View style={styles.searchBox}>
             <Search size={rf(17)} color={MUTED} strokeWidth={2.2} />
@@ -132,15 +176,22 @@ export default function DroneServicesScreen({navigation}) {
             <Mic size={rf(17)} color={MUTED} strokeWidth={2.2} />
           </View>
           <TouchableOpacity style={styles.filterBtn}>
-            <SlidersHorizontal size={rf(17)} color="#FFFFFF" strokeWidth={2.4} />
+            <SlidersHorizontal
+              size={rf(17)}
+              color="#FFFFFF"
+              strokeWidth={2.4}
+            />
           </TouchableOpacity>
         </View>
 
-        {/* Hero Banner */}
+        {}
         <ImageBackground
           source={require('../../assets/drone/hero.jpg')}
           style={styles.heroBanner}
-          imageStyle={{borderRadius: 18}}>
+          imageStyle={{
+            borderRadius: 18,
+          }}
+        >
           <LinearGradient
             colors={['rgba(21,128,61,0.85)', 'rgba(21,128,61,0.5)']}
             style={StyleSheet.absoluteFill}
@@ -151,18 +202,20 @@ export default function DroneServicesScreen({navigation}) {
           </View>
           <Text style={styles.heroTitle}>Smart Drone{'\n'}Services</Text>
           <Text style={styles.heroDesc}>
-            Precision spraying for{'\n'}healthier crops with trained{'\n'}drone operators.
+            Precision spraying for{'\n'}healthier crops with trained{'\n'}drone
+            operators.
           </Text>
           <TouchableOpacity
             activeOpacity={0.9}
             onPress={() => navigation.navigate('BookDroneService')}
-            style={styles.heroBtn}>
+            style={styles.heroBtn}
+          >
             <Calendar size={rf(14)} color={DARK_GREEN} strokeWidth={2.4} />
             <Text style={styles.heroBtnText}>Book Drone Service</Text>
           </TouchableOpacity>
         </ImageBackground>
 
-        {/* Categories */}
+        {}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Service Categories</Text>
           <Text style={styles.seeAll}>See All</Text>
@@ -173,14 +226,21 @@ export default function DroneServicesScreen({navigation}) {
             return (
               <TouchableOpacity
                 key={c.id}
-                style={[styles.catCard, c.active && styles.catCardActive]}>
+                style={[styles.catCard, c.active && styles.catCardActive]}
+              >
                 <Icon
                   size={rf(22)}
                   color={c.active ? '#FFFFFF' : DARK}
                   strokeWidth={2.2}
                 />
                 <Text
-                  style={[styles.catLabel, c.active && {color: '#FFFFFF'}]}>
+                  style={[
+                    styles.catLabel,
+                    c.active && {
+                      color: '#FFFFFF',
+                    },
+                  ]}
+                >
                   {c.label}
                 </Text>
               </TouchableOpacity>
@@ -188,17 +248,22 @@ export default function DroneServicesScreen({navigation}) {
           })}
         </View>
 
-        {/* AI Recommendation Card */}
-        <LinearGradient
-          colors={['#16A34A', '#15803D']}
-          style={styles.aiCard}>
+        {}
+        <LinearGradient colors={['#16A34A', '#15803D']} style={styles.aiCard}>
           <View style={styles.aiHeader}>
             <View style={styles.aiIconWrap}>
               <Sparkles size={rf(18)} color="#FFFFFF" strokeWidth={2.4} />
             </View>
-            <View style={{flex: 1, marginLeft: 10}}>
+            <View
+              style={{
+                flex: 1,
+                marginLeft: 10,
+              }}
+            >
               <Text style={styles.aiTitle}>AI Spray Recommendation</Text>
-              <Text style={styles.aiSubtitle}>Based on crop health & weather</Text>
+              <Text style={styles.aiSubtitle}>
+                Based on crop health & weather
+              </Text>
             </View>
             <View style={styles.livePill}>
               <View style={styles.liveDot} />
@@ -239,14 +304,15 @@ export default function DroneServicesScreen({navigation}) {
             <TouchableOpacity
               activeOpacity={0.9}
               onPress={() => navigation.navigate('BookDroneService')}
-              style={styles.aiViewBtn}>
+              style={styles.aiViewBtn}
+            >
               <Text style={styles.aiViewText}>View Recommendation</Text>
               <ArrowRight size={rf(14)} color={DARK_GREEN} strokeWidth={2.4} />
             </TouchableOpacity>
           </View>
         </LinearGradient>
 
-        {/* Available Operators */}
+        {}
         <View style={styles.sectionHeader}>
           <Text style={styles.sectionTitle}>Available Operators</Text>
           <Text style={styles.seeAll}>See All</Text>
@@ -256,9 +322,21 @@ export default function DroneServicesScreen({navigation}) {
           <TouchableOpacity
             key={op.id}
             activeOpacity={0.9}
-            onPress={() => navigation.navigate('DroneServiceDetails', {operator: op})}
-            style={styles.opCard}>
-            <ImageBackground source={op.image} style={styles.opImage} imageStyle={{borderTopLeftRadius: 16, borderTopRightRadius: 16}}>
+            onPress={() =>
+              navigation.navigate('DroneServiceDetails', {
+                operator: op,
+              })
+            }
+            style={styles.opCard}
+          >
+            <ImageBackground
+              source={op.image}
+              style={styles.opImage}
+              imageStyle={{
+                borderTopLeftRadius: 16,
+                borderTopRightRadius: 16,
+              }}
+            >
               <View style={styles.opDistPill}>
                 <MapPin size={rf(10)} color="#FFFFFF" strokeWidth={2.4} />
                 <Text style={styles.opDistText}>{op.distance}</Text>
@@ -276,7 +354,11 @@ export default function DroneServicesScreen({navigation}) {
             </ImageBackground>
 
             <View style={styles.opBody}>
-              <View style={{flex: 1}}>
+              <View
+                style={{
+                  flex: 1,
+                }}
+              >
                 <Text style={styles.opPilot}>{op.pilot}</Text>
                 <View style={styles.opRoleRow}>
                   <Text style={styles.opRole}>{op.role}</Text>
@@ -286,9 +368,18 @@ export default function DroneServicesScreen({navigation}) {
                   </View>
                 </View>
               </View>
-              <View style={{alignItems: 'flex-end'}}>
+              <View
+                style={{
+                  alignItems: 'flex-end',
+                }}
+              >
                 <View style={styles.ratingRow}>
-                  <Star size={rf(13)} color="#F59E0B" fill="#F59E0B" strokeWidth={1.5} />
+                  <Star
+                    size={rf(13)}
+                    color="#F59E0B"
+                    fill="#F59E0B"
+                    strokeWidth={1.5}
+                  />
                   <Text style={styles.ratingText}>{op.rating}</Text>
                   <Text style={styles.reviewText}>({op.reviews})</Text>
                 </View>
@@ -304,8 +395,13 @@ export default function DroneServicesScreen({navigation}) {
               </View>
               <TouchableOpacity
                 activeOpacity={0.9}
-                onPress={() => navigation.navigate('BookDroneService', {operator: op})}
-                style={styles.bookNowBtn}>
+                onPress={() =>
+                  navigation.navigate('BookDroneService', {
+                    operator: op,
+                  })
+                }
+                style={styles.bookNowBtn}
+              >
                 <Calendar size={rf(13)} color="#FFFFFF" strokeWidth={2.4} />
                 <Text style={styles.bookNowText}>Book Now</Text>
               </TouchableOpacity>
@@ -313,8 +409,16 @@ export default function DroneServicesScreen({navigation}) {
           </TouchableOpacity>
         ))}
 
-        {/* Why Drone Services */}
-        <Text style={[styles.sectionTitle, {marginTop: 22, marginBottom: 14}]}>
+        {}
+        <Text
+          style={[
+            styles.sectionTitle,
+            {
+              marginTop: 22,
+              marginBottom: 14,
+            },
+          ]}
+        >
           Why Drone Services?
         </Text>
         <View style={styles.benefitsGrid}>
@@ -322,7 +426,14 @@ export default function DroneServicesScreen({navigation}) {
             const Icon = b.Icon;
             return (
               <View key={b.title} style={styles.benefitCard}>
-                <View style={[styles.benefitIcon, {backgroundColor: b.bg}]}>
+                <View
+                  style={[
+                    styles.benefitIcon,
+                    {
+                      backgroundColor: b.bg,
+                    },
+                  ]}
+                >
                   <Icon size={rf(18)} color={b.color} strokeWidth={2.4} />
                 </View>
                 <Text style={styles.benefitTitle}>{b.title}</Text>
@@ -337,26 +448,40 @@ export default function DroneServicesScreen({navigation}) {
     </SafeAreaView>
   );
 }
-
-const AIStat = ({label, value}) => (
+const AIStat = ({ label, value }) => (
   <View style={styles.aiStatBox}>
     <Text style={styles.aiStatLabel}>{label}</Text>
     <Text style={styles.aiStatValue}>{value}</Text>
   </View>
 );
-
-const AIMetric = ({value, unit, label}) => (
-  <View style={{flex: 1, alignItems: 'center'}}>
+const AIMetric = ({ value, unit, label }) => (
+  <View
+    style={{
+      flex: 1,
+      alignItems: 'center',
+    }}
+  >
     <Text style={styles.aiMetricValue}>
       {value}
-      {unit && <Text style={{fontSize: rf(11)}}> {unit}</Text>}
+      {unit && (
+        <Text
+          style={{
+            fontSize: rf(11),
+          }}
+        >
+          {' '}
+          {unit}
+        </Text>
+      )}
     </Text>
     <Text style={styles.aiMetricLabel}>{label}</Text>
   </View>
 );
-
 const styles = StyleSheet.create({
-  safeArea: {flex: 1, backgroundColor: '#FFFFFF'},
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
   header: {
     height: 56,
     flexDirection: 'row',
@@ -384,8 +509,15 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: '#FFFFFF',
   },
-  headerTitle: {fontSize: rf(19), fontWeight: '900', color: DARK},
-  scrollContent: {paddingHorizontal: width * 0.037, paddingBottom: 110},
+  headerTitle: {
+    fontSize: rf(19),
+    fontWeight: '900',
+    color: DARK,
+  },
+  scrollContent: {
+    paddingHorizontal: width * 0.037,
+    paddingBottom: 110,
+  },
   locationBar: {
     marginTop: 6,
     height: 42,
@@ -396,9 +528,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     gap: 6,
   },
-  locationText: {fontSize: rf(12), fontWeight: '700', color: DARK},
-  changeText: {fontSize: rf(12), fontWeight: '800', color: GREEN, marginRight: 4},
-  searchRow: {marginTop: 12, flexDirection: 'row', gap: 8},
+  locationText: {
+    fontSize: rf(12),
+    fontWeight: '700',
+    color: DARK,
+  },
+  changeText: {
+    fontSize: rf(12),
+    fontWeight: '800',
+    color: GREEN,
+    marginRight: 4,
+  },
+  searchRow: {
+    marginTop: 12,
+    flexDirection: 'row',
+    gap: 8,
+  },
   searchBox: {
     flex: 1,
     height: 48,
@@ -409,7 +554,12 @@ const styles = StyleSheet.create({
     paddingHorizontal: 14,
     gap: 10,
   },
-  searchInput: {flex: 1, fontSize: rf(13), color: DARK, padding: 0},
+  searchInput: {
+    flex: 1,
+    fontSize: rf(13),
+    color: DARK,
+    padding: 0,
+  },
   filterBtn: {
     width: 48,
     height: 48,
@@ -436,9 +586,27 @@ const styles = StyleSheet.create({
     borderRadius: 11,
     backgroundColor: 'rgba(255,255,255,0.28)',
   },
-  heroPillText: {fontSize: rf(9), fontWeight: '900', color: '#FFFFFF', letterSpacing: 0.4},
-  heroTitle: {marginTop: 10, fontSize: rf(22), fontWeight: '900', color: '#FFFFFF', lineHeight: rf(28)},
-  heroDesc: {marginTop: 6, fontSize: rf(11), color: '#FFFFFF', lineHeight: rf(15), opacity: 0.95, fontWeight: '600'},
+  heroPillText: {
+    fontSize: rf(9),
+    fontWeight: '900',
+    color: '#FFFFFF',
+    letterSpacing: 0.4,
+  },
+  heroTitle: {
+    marginTop: 10,
+    fontSize: rf(22),
+    fontWeight: '900',
+    color: '#FFFFFF',
+    lineHeight: rf(28),
+  },
+  heroDesc: {
+    marginTop: 6,
+    fontSize: rf(11),
+    color: '#FFFFFF',
+    lineHeight: rf(15),
+    opacity: 0.95,
+    fontWeight: '600',
+  },
   heroBtn: {
     marginTop: 10,
     alignSelf: 'flex-start',
@@ -450,7 +618,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
   },
-  heroBtnText: {fontSize: rf(12), fontWeight: '900', color: DARK_GREEN},
+  heroBtnText: {
+    fontSize: rf(12),
+    fontWeight: '900',
+    color: DARK_GREEN,
+  },
   sectionHeader: {
     marginTop: 22,
     marginBottom: 12,
@@ -458,9 +630,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  sectionTitle: {fontSize: rf(16), fontWeight: '900', color: DARK},
-  seeAll: {fontSize: rf(12), fontWeight: '900', color: GREEN},
-  catRow: {flexDirection: 'row', gap: 9},
+  sectionTitle: {
+    fontSize: rf(16),
+    fontWeight: '900',
+    color: DARK,
+  },
+  seeAll: {
+    fontSize: rf(12),
+    fontWeight: '900',
+    color: GREEN,
+  },
+  catRow: {
+    flexDirection: 'row',
+    gap: 9,
+  },
   catCard: {
     flex: 1,
     aspectRatio: 0.95,
@@ -471,10 +654,25 @@ const styles = StyleSheet.create({
     padding: 8,
     gap: 6,
   },
-  catCardActive: {backgroundColor: DARK_GREEN},
-  catLabel: {fontSize: rf(10), fontWeight: '800', color: DARK, textAlign: 'center', lineHeight: rf(13)},
-  aiCard: {marginTop: 20, padding: 16, borderRadius: 18},
-  aiHeader: {flexDirection: 'row', alignItems: 'center'},
+  catCardActive: {
+    backgroundColor: DARK_GREEN,
+  },
+  catLabel: {
+    fontSize: rf(10),
+    fontWeight: '800',
+    color: DARK,
+    textAlign: 'center',
+    lineHeight: rf(13),
+  },
+  aiCard: {
+    marginTop: 20,
+    padding: 16,
+    borderRadius: 18,
+  },
+  aiHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   aiIconWrap: {
     width: 36,
     height: 36,
@@ -483,8 +681,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  aiTitle: {fontSize: rf(14), fontWeight: '900', color: '#FFFFFF'},
-  aiSubtitle: {marginTop: 2, fontSize: rf(10), color: 'rgba(255,255,255,0.85)', fontWeight: '600'},
+  aiTitle: {
+    fontSize: rf(14),
+    fontWeight: '900',
+    color: '#FFFFFF',
+  },
+  aiSubtitle: {
+    marginTop: 2,
+    fontSize: rf(10),
+    color: 'rgba(255,255,255,0.85)',
+    fontWeight: '600',
+  },
   livePill: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -494,17 +701,66 @@ const styles = StyleSheet.create({
     borderRadius: 11,
     backgroundColor: 'rgba(255,255,255,0.2)',
   },
-  liveDot: {width: 6, height: 6, borderRadius: 3, backgroundColor: '#4ADE80'},
-  liveText: {fontSize: rf(9), fontWeight: '900', color: '#FFFFFF'},
-  aiGrid: {flexDirection: 'row', gap: 8, marginTop: 10},
-  aiStatBox: {flex: 1, padding: 10, borderRadius: 10, backgroundColor: 'rgba(255,255,255,0.15)'},
-  aiStatLabel: {fontSize: rf(9), fontWeight: '700', color: 'rgba(255,255,255,0.8)'},
-  aiStatValue: {marginTop: 2, fontSize: rf(13), fontWeight: '900', color: '#FFFFFF'},
-  aiDateCard: {marginTop: 10, padding: 12, borderRadius: 10, backgroundColor: 'rgba(255,255,255,0.15)'},
-  aiDateLabel: {fontSize: rf(9), fontWeight: '700', color: 'rgba(255,255,255,0.85)'},
-  aiDateRow: {marginTop: 3, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'},
-  aiDateValue: {fontSize: rf(15), fontWeight: '900', color: '#FFFFFF'},
-  aiDateTime: {fontSize: rf(12), fontWeight: '800', color: '#FEF08A'},
+  liveDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#4ADE80',
+  },
+  liveText: {
+    fontSize: rf(9),
+    fontWeight: '900',
+    color: '#FFFFFF',
+  },
+  aiGrid: {
+    flexDirection: 'row',
+    gap: 8,
+    marginTop: 10,
+  },
+  aiStatBox: {
+    flex: 1,
+    padding: 10,
+    borderRadius: 10,
+    backgroundColor: 'rgba(255,255,255,0.15)',
+  },
+  aiStatLabel: {
+    fontSize: rf(9),
+    fontWeight: '700',
+    color: 'rgba(255,255,255,0.8)',
+  },
+  aiStatValue: {
+    marginTop: 2,
+    fontSize: rf(13),
+    fontWeight: '900',
+    color: '#FFFFFF',
+  },
+  aiDateCard: {
+    marginTop: 10,
+    padding: 12,
+    borderRadius: 10,
+    backgroundColor: 'rgba(255,255,255,0.15)',
+  },
+  aiDateLabel: {
+    fontSize: rf(9),
+    fontWeight: '700',
+    color: 'rgba(255,255,255,0.85)',
+  },
+  aiDateRow: {
+    marginTop: 3,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  aiDateValue: {
+    fontSize: rf(15),
+    fontWeight: '900',
+    color: '#FFFFFF',
+  },
+  aiDateTime: {
+    fontSize: rf(12),
+    fontWeight: '800',
+    color: '#FEF08A',
+  },
   aiMetrics: {
     marginTop: 12,
     flexDirection: 'row',
@@ -514,12 +770,38 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: 'rgba(255,255,255,0.2)',
   },
-  aiVDivider: {width: 1, height: 26, backgroundColor: 'rgba(255,255,255,0.25)'},
-  aiMetricValue: {fontSize: rf(16), fontWeight: '900', color: '#FFFFFF'},
-  aiMetricLabel: {marginTop: 2, fontSize: rf(8), fontWeight: '700', color: 'rgba(255,255,255,0.85)'},
-  aiCostRow: {marginTop: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'},
-  aiCostLabel: {fontSize: rf(10), color: 'rgba(255,255,255,0.85)', fontWeight: '600'},
-  aiCostValue: {fontSize: rf(22), fontWeight: '900', color: '#FFFFFF'},
+  aiVDivider: {
+    width: 1,
+    height: 26,
+    backgroundColor: 'rgba(255,255,255,0.25)',
+  },
+  aiMetricValue: {
+    fontSize: rf(16),
+    fontWeight: '900',
+    color: '#FFFFFF',
+  },
+  aiMetricLabel: {
+    marginTop: 2,
+    fontSize: rf(8),
+    fontWeight: '700',
+    color: 'rgba(255,255,255,0.85)',
+  },
+  aiCostRow: {
+    marginTop: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  aiCostLabel: {
+    fontSize: rf(10),
+    color: 'rgba(255,255,255,0.85)',
+    fontWeight: '600',
+  },
+  aiCostValue: {
+    fontSize: rf(22),
+    fontWeight: '900',
+    color: '#FFFFFF',
+  },
   aiViewBtn: {
     height: 40,
     paddingHorizontal: 14,
@@ -529,7 +811,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
   },
-  aiViewText: {fontSize: rf(12), fontWeight: '900', color: DARK_GREEN},
+  aiViewText: {
+    fontSize: rf(12),
+    fontWeight: '900',
+    color: DARK_GREEN,
+  },
   opCard: {
     marginBottom: 14,
     borderRadius: 16,
@@ -538,7 +824,11 @@ const styles = StyleSheet.create({
     borderColor: BORDER,
     overflow: 'hidden',
   },
-  opImage: {height: 160, padding: 12, justifyContent: 'flex-start'},
+  opImage: {
+    height: 160,
+    padding: 12,
+    justifyContent: 'flex-start',
+  },
   opDistPill: {
     position: 'absolute',
     top: 10,
@@ -551,7 +841,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 4,
   },
-  opDistText: {fontSize: rf(10), fontWeight: '800', color: '#FFFFFF'},
+  opDistText: {
+    fontSize: rf(10),
+    fontWeight: '800',
+    color: '#FFFFFF',
+  },
   opAvailPill: {
     position: 'absolute',
     top: 10,
@@ -564,24 +858,110 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 5,
   },
-  opAvailDot: {width: 6, height: 6, borderRadius: 3, backgroundColor: GREEN},
-  opAvailText: {fontSize: rf(10), fontWeight: '800', color: DARK},
-  opInitialWrap: {position: 'absolute', bottom: 10, left: 10, flexDirection: 'row', alignItems: 'center', gap: 8},
-  opInitial: {width: 32, height: 32, borderRadius: 16, backgroundColor: GREEN, alignItems: 'center', justifyContent: 'center'},
-  opInitialText: {fontSize: rf(12), fontWeight: '900', color: '#FFFFFF'},
-  opNameOnImg: {fontSize: rf(14), fontWeight: '900', color: '#FFFFFF'},
-  opBody: {padding: 14, flexDirection: 'row', alignItems: 'center'},
-  opPilot: {fontSize: rf(15), fontWeight: '900', color: DARK},
-  opRoleRow: {marginTop: 3, flexDirection: 'row', alignItems: 'center', gap: 7},
-  opRole: {fontSize: rf(11), color: MUTED, fontWeight: '600'},
-  dgcaPill: {flexDirection: 'row', alignItems: 'center', gap: 3, paddingHorizontal: 6, height: 18, borderRadius: 9, backgroundColor: '#ECFDF5'},
-  dgcaText: {fontSize: rf(9), fontWeight: '900', color: GREEN},
-  ratingRow: {flexDirection: 'row', alignItems: 'center', gap: 3},
-  ratingText: {fontSize: rf(13), fontWeight: '900', color: DARK},
-  reviewText: {fontSize: rf(11), color: MUTED, fontWeight: '600'},
-  opFooter: {paddingHorizontal: 14, paddingBottom: 14, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'},
-  opPrice: {fontSize: rf(18), fontWeight: '900', color: GREEN},
-  opUnit: {fontSize: rf(11), color: MUTED, fontWeight: '600'},
+  opAvailDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: GREEN,
+  },
+  opAvailText: {
+    fontSize: rf(10),
+    fontWeight: '800',
+    color: DARK,
+  },
+  opInitialWrap: {
+    position: 'absolute',
+    bottom: 10,
+    left: 10,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  opInitial: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: GREEN,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  opInitialText: {
+    fontSize: rf(12),
+    fontWeight: '900',
+    color: '#FFFFFF',
+  },
+  opNameOnImg: {
+    fontSize: rf(14),
+    fontWeight: '900',
+    color: '#FFFFFF',
+  },
+  opBody: {
+    padding: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  opPilot: {
+    fontSize: rf(15),
+    fontWeight: '900',
+    color: DARK,
+  },
+  opRoleRow: {
+    marginTop: 3,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 7,
+  },
+  opRole: {
+    fontSize: rf(11),
+    color: MUTED,
+    fontWeight: '600',
+  },
+  dgcaPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+    paddingHorizontal: 6,
+    height: 18,
+    borderRadius: 9,
+    backgroundColor: '#ECFDF5',
+  },
+  dgcaText: {
+    fontSize: rf(9),
+    fontWeight: '900',
+    color: GREEN,
+  },
+  ratingRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+  },
+  ratingText: {
+    fontSize: rf(13),
+    fontWeight: '900',
+    color: DARK,
+  },
+  reviewText: {
+    fontSize: rf(11),
+    color: MUTED,
+    fontWeight: '600',
+  },
+  opFooter: {
+    paddingHorizontal: 14,
+    paddingBottom: 14,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  opPrice: {
+    fontSize: rf(18),
+    fontWeight: '900',
+    color: GREEN,
+  },
+  opUnit: {
+    fontSize: rf(11),
+    color: MUTED,
+    fontWeight: '600',
+  },
   bookNowBtn: {
     height: 40,
     paddingHorizontal: 16,
@@ -591,8 +971,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
   },
-  bookNowText: {fontSize: rf(12), fontWeight: '900', color: '#FFFFFF'},
-  benefitsGrid: {flexDirection: 'row', flexWrap: 'wrap', gap: 10},
+  bookNowText: {
+    fontSize: rf(12),
+    fontWeight: '900',
+    color: '#FFFFFF',
+  },
+  benefitsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 10,
+  },
   benefitCard: {
     width: (width - width * 0.074 - 10) / 2,
     padding: 14,
@@ -601,7 +989,24 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: BORDER,
   },
-  benefitIcon: {width: 36, height: 36, borderRadius: 10, alignItems: 'center', justifyContent: 'center'},
-  benefitTitle: {marginTop: 10, fontSize: rf(13), fontWeight: '900', color: DARK},
-  benefitDesc: {marginTop: 3, fontSize: rf(10), color: MUTED, lineHeight: rf(14), fontWeight: '500'},
+  benefitIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  benefitTitle: {
+    marginTop: 10,
+    fontSize: rf(13),
+    fontWeight: '900',
+    color: DARK,
+  },
+  benefitDesc: {
+    marginTop: 3,
+    fontSize: rf(10),
+    color: MUTED,
+    lineHeight: rf(14),
+    fontWeight: '500',
+  },
 });

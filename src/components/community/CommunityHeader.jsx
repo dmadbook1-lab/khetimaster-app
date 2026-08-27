@@ -1,9 +1,8 @@
 import React from 'react';
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
-import {Menu, Search, Bell} from 'lucide-react-native';
-import {COLORS, rf, PAGE_PADDING} from './theme';
-
-export default function CommunityHeader({navigation}) {
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { Menu, Search, Bell } from 'lucide-react-native';
+import { COLORS, rf, PAGE_PADDING } from './theme';
+export default function CommunityHeader({ navigation }) {
   return (
     <View style={styles.header}>
       <TouchableOpacity activeOpacity={0.8} style={styles.iconBtn}>
@@ -28,7 +27,6 @@ export default function CommunityHeader({navigation}) {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   header: {
     minHeight: 68,
@@ -48,8 +46,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  textBox: {flex: 1, alignItems: 'center'},
-  title: {fontSize: rf(18), fontWeight: '900', color: COLORS.DARK},
+  textBox: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  title: {
+    fontSize: rf(18),
+    fontWeight: '900',
+    color: COLORS.DARK,
+  },
   subtitle: {
     marginTop: 2,
     fontSize: rf(8.5),
@@ -71,5 +76,9 @@ const styles = StyleSheet.create({
     borderWidth: 1.5,
     borderColor: '#FFFFFF',
   },
-  badgeText: {fontSize: rf(8), fontWeight: '900', color: '#FFFFFF'},
+  badgeText: {
+    fontSize: rf(8),
+    fontWeight: '900',
+    color: '#FFFFFF',
+  },
 });

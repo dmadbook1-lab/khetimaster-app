@@ -1,32 +1,59 @@
 import React from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, Dimensions} from 'react-native';
-
-const {width} = Dimensions.get('window');
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Dimensions,
+} from 'react-native';
+const { width } = Dimensions.get('window');
 const DARK = '#111827';
-
 const rf = size => {
   const scale = width / 390;
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
-
-export default function UpdateCard({Icon, title, text, color, bg, border}) {
+export default function UpdateCard({ Icon, title, text, color, bg, border }) {
   return (
     <TouchableOpacity
       activeOpacity={0.9}
-      style={[styles.updateCard, {backgroundColor: bg, borderColor: border}]}>
+      style={[
+        styles.updateCard,
+        {
+          backgroundColor: bg,
+          borderColor: border,
+        },
+      ]}
+    >
       <View style={styles.updateIconBox}>
         <Icon size={25} color={color} strokeWidth={2.3} />
       </View>
 
       <View style={styles.updateContent}>
-        <Text style={[styles.updateTitle, {color}]}>{title}</Text>
+        <Text
+          style={[
+            styles.updateTitle,
+            {
+              color,
+            },
+          ]}
+        >
+          {title}
+        </Text>
         <Text style={styles.updateText}>{text}</Text>
-        <Text style={[styles.updateLink, {color}]}>View Details →</Text>
+        <Text
+          style={[
+            styles.updateLink,
+            {
+              color,
+            },
+          ]}
+        >
+          View Details →
+        </Text>
       </View>
     </TouchableOpacity>
   );
 }
-
 const styles = StyleSheet.create({
   updateCard: {
     minHeight: 108,

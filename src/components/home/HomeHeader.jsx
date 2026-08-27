@@ -7,27 +7,20 @@ import {
   StyleSheet,
   Dimensions,
 } from 'react-native';
-import {useNavigation} from '@react-navigation/native';
-import {Menu, Bell} from 'lucide-react-native';
-
-const {width} = Dimensions.get('window');
-
+import { useNavigation } from '@react-navigation/native';
+import { Menu, Bell } from 'lucide-react-native';
+const { width } = Dimensions.get('window');
 const DARK = '#111827';
-
 export default function HomeHeader() {
   const navigation = useNavigation();
-
   return (
     <View style={styles.header}>
       <TouchableOpacity
         activeOpacity={0.8}
         style={styles.headerIcon}
-        onPress={() => navigation.navigate('Sidebar')}>
-        <Menu
-          size={25}
-          color={DARK}
-          strokeWidth={2.3}
-        />
+        onPress={() => navigation.navigate('Sidebar')}
+      >
+        <Menu size={25} color={DARK} strokeWidth={2.3} />
       </TouchableOpacity>
 
       <Image
@@ -39,14 +32,9 @@ export default function HomeHeader() {
       <TouchableOpacity
         activeOpacity={0.8}
         style={styles.headerIcon}
-        onPress={() => {
-          // navigation.navigate('Notifications');
-        }}>
-        <Bell
-          size={22}
-          color={DARK}
-          strokeWidth={2.2}
-        />
+        onPress={() => {}}
+      >
+        <Bell size={22} color={DARK} strokeWidth={2.2} />
 
         <View style={styles.badgeCount}>
           <Text style={styles.badgeCountText}>3</Text>
@@ -55,7 +43,6 @@ export default function HomeHeader() {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   header: {
     height: 72,
@@ -63,19 +50,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-
   headerIcon: {
     width: 42,
     height: 42,
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   logo: {
     width: width * 0.33,
     height: 52,
   },
-
   badgeCount: {
     position: 'absolute',
     top: 6,
@@ -87,7 +71,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   badgeCountText: {
     fontSize: 10,
     color: '#FFFFFF',

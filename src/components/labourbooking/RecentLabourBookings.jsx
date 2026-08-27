@@ -1,15 +1,28 @@
 import React from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, Image, Dimensions} from 'react-native';
-
-const {width} = Dimensions.get('window');
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Image,
+  Dimensions,
+} from 'react-native';
+const { width } = Dimensions.get('window');
 const rf = size => {
   const scale = width / 390;
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
-
-export default function RecentLabourBookings({bookings, onSeeAllPress, onPress}) {
+export default function RecentLabourBookings({
+  bookings,
+  onSeeAllPress,
+  onPress,
+}) {
   return (
-    <View style={{marginTop: 20}}>
+    <View
+      style={{
+        marginTop: 20,
+      }}
+    >
       <View style={styles.headerRow}>
         <Text style={styles.title}>Recent Bookings</Text>
         <TouchableOpacity activeOpacity={0.8} onPress={onSeeAllPress}>
@@ -22,7 +35,8 @@ export default function RecentLabourBookings({bookings, onSeeAllPress, onPress})
           key={booking.id}
           activeOpacity={0.88}
           onPress={() => onPress(booking)}
-          style={styles.card}>
+          style={styles.card}
+        >
           <Image source={booking.image} style={styles.image} />
 
           <View style={styles.content}>
@@ -38,7 +52,6 @@ export default function RecentLabourBookings({bookings, onSeeAllPress, onPress})
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   headerRow: {
     flexDirection: 'row',

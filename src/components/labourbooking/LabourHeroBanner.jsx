@@ -8,23 +8,20 @@ import {
   Dimensions,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
-import {ArrowRight} from 'lucide-react-native';
-
-const {width} = Dimensions.get('window');
-
+import { ArrowRight } from 'lucide-react-native';
+const { width } = Dimensions.get('window');
 const rf = size => {
   const scale = width / 390;
   return Math.max(size, Math.min(size * scale, size + 3));
 };
-
-export default function LabourHeroBanner({onBookPress}) {
+export default function LabourHeroBanner({ onBookPress }) {
   return (
     <ImageBackground
       source={require('../../assets/labour/hero.png')}
       style={styles.banner}
       imageStyle={styles.bannerImage}
-      resizeMode="cover">
-
+      resizeMode="cover"
+    >
       <LinearGradient
         colors={[
           'rgba(12,71,33,0.88)',
@@ -33,8 +30,14 @@ export default function LabourHeroBanner({onBookPress}) {
           'rgba(23,112,52,0)',
         ]}
         locations={[0, 0.42, 0.72, 1]}
-        start={{x: 0, y: 0.5}}
-        end={{x: 1, y: 0.5}}
+        start={{
+          x: 0,
+          y: 0.5,
+        }}
+        end={{
+          x: 1,
+          y: 0.5,
+        }}
         style={StyleSheet.absoluteFill}
       />
 
@@ -48,20 +51,16 @@ export default function LabourHeroBanner({onBookPress}) {
         <TouchableOpacity
           activeOpacity={0.9}
           onPress={onBookPress}
-          style={styles.btn}>
+          style={styles.btn}
+        >
           <Text style={styles.btnText}>Find Workers</Text>
 
-          <ArrowRight
-            size={18}
-            color="#111827"
-            strokeWidth={2.6}
-          />
+          <ArrowRight size={18} color="#111827" strokeWidth={2.6} />
         </TouchableOpacity>
       </View>
     </ImageBackground>
   );
 }
-
 const styles = StyleSheet.create({
   banner: {
     marginTop: 10,
@@ -69,18 +68,15 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     overflow: 'hidden',
   },
-
   bannerImage: {
     borderRadius: 18,
   },
-
   content: {
     flex: 1,
     justifyContent: 'space-between',
     paddingHorizontal: 18,
     paddingVertical: 16,
   },
-
   title: {
     width: '55%',
     fontSize: rf(18),
@@ -88,7 +84,6 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     color: '#FFFFFF',
   },
-
   btn: {
     alignSelf: 'flex-start',
     height: 38,
@@ -98,7 +93,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-
   btnText: {
     fontSize: rf(13),
     fontWeight: '900',

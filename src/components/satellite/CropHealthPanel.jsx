@@ -1,7 +1,6 @@
 import React from 'react';
-import {View, Text, StyleSheet} from 'react-native';
-import {Check} from 'lucide-react-native';
-
+import { View, Text, StyleSheet } from 'react-native';
+import { Check } from 'lucide-react-native';
 export default function CropHealthPanel() {
   return (
     <View style={styles.card}>
@@ -25,7 +24,6 @@ export default function CropHealthPanel() {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   card: {
     marginTop: 20,
@@ -38,10 +36,12 @@ const styles = StyleSheet.create({
     shadowColor: '#22C55E',
     shadowOpacity: 0.24,
     shadowRadius: 20,
-    shadowOffset: {width: 0, height: 12},
+    shadowOffset: {
+      width: 0,
+      height: 12,
+    },
     elevation: 8,
   },
-
   circle: {
     width: 98,
     height: 98,
@@ -51,32 +51,27 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   percent: {
     color: '#FFFFFF',
     fontSize: 28,
     fontWeight: '900',
     letterSpacing: -0.6,
   },
-
   textBox: {
     marginLeft: 28,
     flex: 1,
   },
-
   labelRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
   },
-
   label: {
     color: '#DCFCE7',
     fontSize: 13,
     fontWeight: '900',
     letterSpacing: 0.8,
   },
-
   title: {
     marginTop: 8,
     color: '#FFFFFF',
@@ -85,21 +80,18 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     letterSpacing: -0.5,
   },
-
   updatedRow: {
     marginTop: 9,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 7,
   },
-
   dot: {
     width: 6,
     height: 6,
     borderRadius: 3,
     backgroundColor: '#4ADE80',
   },
-
   updated: {
     color: '#DCFCE7',
     fontSize: 12,

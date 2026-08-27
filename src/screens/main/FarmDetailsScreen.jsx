@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -10,7 +10,7 @@ import {
   ScrollView,
   Dimensions,
 } from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
 import {
   ArrowLeft,
@@ -28,29 +28,38 @@ import {
   Tractor,
   Leaf,
 } from 'lucide-react-native';
-
-const {width, height} = Dimensions.get('window');
-
+const { width, height } = Dimensions.get('window');
 const GREEN = '#159447';
 const DARK = '#111827';
 const GREY = '#6B7280';
-
 const isSmall = width < 360;
 const isShort = height < 700;
-
 const rf = size => {
   const scale = width / 390;
   return Math.max(size - 3, Math.min(size * scale, size + 2));
 };
-
 const crops = [
-  {name: 'Wheat', Icon: Wheat},
-  {name: 'Soybean', Icon: Sprout},
-  {name: 'Cotton', Icon: Leaf},
-  {name: 'Tomato', Icon: Sprout},
-  {name: 'Maize', Icon: Wheat},
+  {
+    name: 'Wheat',
+    Icon: Wheat,
+  },
+  {
+    name: 'Soybean',
+    Icon: Sprout,
+  },
+  {
+    name: 'Cotton',
+    Icon: Leaf,
+  },
+  {
+    name: 'Tomato',
+    Icon: Sprout,
+  },
+  {
+    name: 'Maize',
+    Icon: Wheat,
+  },
 ];
-
 const irrigationOptions = [
   {
     key: 'drip',
@@ -77,21 +86,23 @@ const irrigationOptions = [
     Icon: Sun,
   },
 ];
-
-export default function FarmDetailsScreen({navigation}) {
+export default function FarmDetailsScreen({ navigation }) {
   const [unit, setUnit] = useState('Acres');
   const [selectedCrop, setSelectedCrop] = useState('Wheat');
   const [irrigation, setIrrigation] = useState('drip');
-
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}>
+        contentContainerStyle={styles.scrollContent}
+      >
         <View style={styles.header}>
-          <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
+          <TouchableOpacity
+            style={styles.backBtn}
+            onPress={() => navigation.goBack()}
+          >
             <ArrowLeft size={22} color={DARK} />
           </TouchableOpacity>
 
@@ -115,12 +126,12 @@ export default function FarmDetailsScreen({navigation}) {
           <View style={styles.progressFill} />
         </View>
 
-      <View style={styles.titleWrap}>
-  <Text style={styles.title}>
-    Tell Us About{'\n'}
-    <Text style={styles.greenText}>Your Farm 🌾</Text>
-  </Text>
-</View>
+        <View style={styles.titleWrap}>
+          <Text style={styles.title}>
+            Tell Us About{'\n'}
+            <Text style={styles.greenText}>Your Farm 🌾</Text>
+          </Text>
+        </View>
 
         <Text style={styles.subtitle}>
           Add basic farm details to start monitoring your crops.
@@ -144,16 +155,18 @@ export default function FarmDetailsScreen({navigation}) {
         </TouchableOpacity>
 
         <View style={styles.chipsWrap}>
-          {crops.map(({name, Icon}) => {
+          {crops.map(({ name, Icon }) => {
             const active = selectedCrop === name;
-
             return (
               <TouchableOpacity
                 key={name}
                 onPress={() => setSelectedCrop(name)}
-                style={[styles.chip, active && styles.activeChip]}>
+                style={[styles.chip, active && styles.activeChip]}
+              >
                 <Icon size={15} color={active ? GREEN : GREY} />
-                <Text style={[styles.chipText, active && styles.activeChipText]}>
+                <Text
+                  style={[styles.chipText, active && styles.activeChipText]}
+                >
                   {name}
                 </Text>
               </TouchableOpacity>
@@ -178,8 +191,14 @@ export default function FarmDetailsScreen({navigation}) {
               <TouchableOpacity
                 key={item}
                 onPress={() => setUnit(item)}
-                style={[styles.unitBtn, unit === item && styles.unitBtnActive]}>
-                <Text style={[styles.unitText, unit === item && styles.unitTextActive]}>
+                style={[styles.unitBtn, unit === item && styles.unitBtnActive]}
+              >
+                <Text
+                  style={[
+                    styles.unitText,
+                    unit === item && styles.unitTextActive,
+                  ]}
+                >
                   {item}
                 </Text>
               </TouchableOpacity>
@@ -189,22 +208,30 @@ export default function FarmDetailsScreen({navigation}) {
 
         <Text style={styles.label}>Irrigation Type</Text>
         <View style={styles.irrigationGrid}>
-          {irrigationOptions.map(({key, title, sub, Icon}) => {
+          {irrigationOptions.map(({ key, title, sub, Icon }) => {
             const active = irrigation === key;
-
             return (
               <TouchableOpacity
                 key={key}
                 activeOpacity={0.85}
                 onPress={() => setIrrigation(key)}
-                style={[styles.irrigationCard, active && styles.irrigationActive]}>
+                style={[
+                  styles.irrigationCard,
+                  active && styles.irrigationActive,
+                ]}
+              >
                 {active && (
                   <View style={styles.checkCircle}>
                     <Check size={15} color="#FFFFFF" strokeWidth={4} />
                   </View>
                 )}
 
-                <View style={[styles.irrigationIconBox, active && styles.irrigationIconBoxActive]}>
+                <View
+                  style={[
+                    styles.irrigationIconBox,
+                    active && styles.irrigationIconBoxActive,
+                  ]}
+                >
                   <Icon size={24} color={active ? GREEN : '#6B7280'} />
                 </View>
 
@@ -226,12 +253,20 @@ export default function FarmDetailsScreen({navigation}) {
       <View style={styles.bottomBar}>
         <TouchableOpacity
           activeOpacity={0.9}
-          onPress={() => navigation.navigate('FarmMappingScreen')}>
+          onPress={() => navigation.navigate('FarmMappingScreen')}
+        >
           <LinearGradient
             colors={['#12833B', '#2ECC71']}
-            start={{x: 0, y: 0}}
-            end={{x: 1, y: 0}}
-            style={styles.button}>
+            start={{
+              x: 0,
+              y: 0,
+            }}
+            end={{
+              x: 1,
+              y: 0,
+            }}
+            style={styles.button}
+          >
             <Text style={styles.buttonText}>Continue to Mapping</Text>
             <ArrowRight size={24} color="#FFFFFF" />
           </LinearGradient>
@@ -240,11 +275,12 @@ export default function FarmDetailsScreen({navigation}) {
     </SafeAreaView>
   );
 }
-
 const cardWidth = (width - (isSmall ? 40 : 44)) / 2;
-
 const styles = StyleSheet.create({
-  safeArea: {flex: 1, backgroundColor: '#FFFFFF'},
+  safeArea: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
   scrollContent: {
     paddingHorizontal: isSmall ? 14 : 16,
     paddingBottom: 112,
@@ -279,7 +315,9 @@ const styles = StyleSheet.create({
     width: isSmall ? 112 : 132,
     height: 30,
   },
-  headerSpace: {width: 42},
+  headerSpace: {
+    width: 42,
+  },
   progressTop: {
     marginTop: 10,
     flexDirection: 'row',
@@ -313,9 +351,9 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end',
   },
   greenText: {
-  color: GREEN,
-  fontWeight: '900',
-},
+    color: GREEN,
+    fontWeight: '900',
+  },
   title: {
     fontSize: isSmall ? 29 : 32,
     lineHeight: isSmall ? 36 : 40,

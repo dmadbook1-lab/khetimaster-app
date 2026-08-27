@@ -1,14 +1,23 @@
 import React from 'react';
-import {View, TextInput, StyleSheet, TouchableOpacity, Dimensions} from 'react-native';
-import {Search, Mic, SlidersHorizontal} from 'lucide-react-native';
-
-const {width} = Dimensions.get('window');
+import {
+  View,
+  TextInput,
+  StyleSheet,
+  TouchableOpacity,
+  Dimensions,
+} from 'react-native';
+import { Search, Mic, SlidersHorizontal } from 'lucide-react-native';
+const { width } = Dimensions.get('window');
 const rf = size => {
   const scale = width / 390;
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
-
-export default function LabourSearchBar({value, onChangeText, onMicPress, onFilterPress}) {
+export default function LabourSearchBar({
+  value,
+  onChangeText,
+  onMicPress,
+  onFilterPress,
+}) {
   return (
     <View style={styles.row}>
       <View style={styles.searchBox}>
@@ -25,13 +34,16 @@ export default function LabourSearchBar({value, onChangeText, onMicPress, onFilt
         </TouchableOpacity>
       </View>
 
-      <TouchableOpacity activeOpacity={0.85} onPress={onFilterPress} style={styles.filterBtn}>
+      <TouchableOpacity
+        activeOpacity={0.85}
+        onPress={onFilterPress}
+        style={styles.filterBtn}
+      >
         <SlidersHorizontal size={rf(16)} color="#FFFFFF" strokeWidth={2.4} />
       </TouchableOpacity>
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   row: {
     marginTop: 14,

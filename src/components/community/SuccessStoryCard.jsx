@@ -1,13 +1,15 @@
 import React from 'react';
-import {View, Text, StyleSheet, Image, TouchableOpacity} from 'react-native';
-import {ArrowRight, Heart, MessageCircle} from 'lucide-react-native';
-import {COLORS, rf} from './theme';
-import {resolveCommunityImageSource} from './communityImages';
-
-export default function SuccessStoryCard({story}) {
+import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { ArrowRight, Heart, MessageCircle } from 'lucide-react-native';
+import { COLORS, rf } from './theme';
+import { resolveCommunityImageSource } from './communityImages';
+export default function SuccessStoryCard({ story }) {
   return (
     <View style={styles.successCard}>
-      <Image source={resolveCommunityImageSource(story.image)} style={styles.successImage} />
+      <Image
+        source={resolveCommunityImageSource(story.image)}
+        style={styles.successImage}
+      />
 
       <View style={styles.successBadge}>
         <Text style={styles.successBadgePlus}>+</Text>
@@ -27,19 +29,37 @@ export default function SuccessStoryCard({story}) {
       <View style={styles.successMetricsRow}>
         <View style={styles.metricBox}>
           <Text style={styles.metricLabel}>BEFORE</Text>
-          <Text style={[styles.metricValue, {color: COLORS.RED}]}>
+          <Text
+            style={[
+              styles.metricValue,
+              {
+                color: COLORS.RED,
+              },
+            ]}
+          >
             {story.before}
           </Text>
           <Text style={styles.metricUnit}>{story.unit}</Text>
         </View>
 
         <View style={styles.arrowCircle}>
-          <ArrowRight size={rf(16)} color={COLORS.DARK_GREEN} strokeWidth={2.6} />
+          <ArrowRight
+            size={rf(16)}
+            color={COLORS.DARK_GREEN}
+            strokeWidth={2.6}
+          />
         </View>
 
         <View style={styles.metricBox}>
           <Text style={styles.metricLabel}>AFTER</Text>
-          <Text style={[styles.metricValue, {color: COLORS.DARK_GREEN}]}>
+          <Text
+            style={[
+              styles.metricValue,
+              {
+                color: COLORS.DARK_GREEN,
+              },
+            ]}
+          >
             {story.after}
           </Text>
           <Text style={styles.metricUnit}>{story.unit}</Text>
@@ -65,7 +85,11 @@ export default function SuccessStoryCard({story}) {
           <MessageCircle size={rf(14)} color={COLORS.MUTED} strokeWidth={2.2} />
           <Text style={styles.actionText}>{story.comments}</Text>
         </View>
-        <View style={{flex: 1}} />
+        <View
+          style={{
+            flex: 1,
+          }}
+        />
         <TouchableOpacity activeOpacity={0.9} style={styles.readStoryBtn}>
           <Text style={styles.readStoryBtnText}>Read Story</Text>
         </TouchableOpacity>
@@ -73,7 +97,6 @@ export default function SuccessStoryCard({story}) {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   successCard: {
     marginTop: 6,
@@ -84,7 +107,10 @@ const styles = StyleSheet.create({
     borderColor: COLORS.BORDER,
     overflow: 'hidden',
   },
-  successImage: {width: '100%', height: 200},
+  successImage: {
+    width: '100%',
+    height: 200,
+  },
   successBadge: {
     position: 'absolute',
     top: 12,
@@ -97,9 +123,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 4,
   },
-  successBadgePlus: {fontSize: rf(12), fontWeight: '900', color: '#FFFFFF'},
-  successBadgeText: {fontSize: rf(10), fontWeight: '900', color: '#FFFFFF'},
-
+  successBadgePlus: {
+    fontSize: rf(12),
+    fontWeight: '900',
+    color: '#FFFFFF',
+  },
+  successBadgeText: {
+    fontSize: rf(10),
+    fontWeight: '900',
+    color: '#FFFFFF',
+  },
   successAuthor: {
     position: 'absolute',
     top: 155,
@@ -118,14 +151,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  avatarText: {fontSize: rf(20)},
-  successAuthorName: {fontSize: rf(11), fontWeight: '900', color: '#FFFFFF'},
+  avatarText: {
+    fontSize: rf(20),
+  },
+  successAuthorName: {
+    fontSize: rf(11),
+    fontWeight: '900',
+    color: '#FFFFFF',
+  },
   successAuthorLoc: {
     fontSize: rf(9),
     fontWeight: '600',
     color: 'rgba(255,255,255,0.85)',
   },
-
   successMetricsRow: {
     marginTop: 20,
     marginHorizontal: 14,
@@ -147,8 +185,17 @@ const styles = StyleSheet.create({
     color: COLORS.MUTED,
     letterSpacing: 0.5,
   },
-  metricValue: {marginTop: 4, fontSize: rf(24), fontWeight: '900'},
-  metricUnit: {marginTop: 2, fontSize: rf(9), fontWeight: '600', color: COLORS.MUTED},
+  metricValue: {
+    marginTop: 4,
+    fontSize: rf(24),
+    fontWeight: '900',
+  },
+  metricUnit: {
+    marginTop: 2,
+    fontSize: rf(9),
+    fontWeight: '600',
+    color: COLORS.MUTED,
+  },
   arrowCircle: {
     width: 32,
     height: 32,
@@ -157,7 +204,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   costSavedBox: {
     marginTop: 12,
     marginHorizontal: 14,
@@ -176,9 +222,14 @@ const styles = StyleSheet.create({
     color: COLORS.RED,
     letterSpacing: 0.5,
   },
-  costSavedValue: {fontSize: rf(15), fontWeight: '900', color: COLORS.RED},
-
-  successBody: {padding: 14},
+  costSavedValue: {
+    fontSize: rf(15),
+    fontWeight: '900',
+    color: COLORS.RED,
+  },
+  successBody: {
+    padding: 14,
+  },
   successTitle: {
     fontSize: rf(13),
     lineHeight: rf(18),
@@ -192,7 +243,6 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: COLORS.MUTED,
   },
-
   successFooter: {
     paddingHorizontal: 14,
     paddingBottom: 14,
@@ -207,7 +257,11 @@ const styles = StyleSheet.create({
     gap: 5,
     padding: 4,
   },
-  actionText: {fontSize: rf(11), fontWeight: '700', color: COLORS.MUTED},
+  actionText: {
+    fontSize: rf(11),
+    fontWeight: '700',
+    color: COLORS.MUTED,
+  },
   readStoryBtn: {
     height: 36,
     paddingHorizontal: 18,
@@ -215,5 +269,9 @@ const styles = StyleSheet.create({
     backgroundColor: COLORS.DARK_GREEN,
     justifyContent: 'center',
   },
-  readStoryBtnText: {fontSize: rf(11), fontWeight: '900', color: '#FFFFFF'},
+  readStoryBtnText: {
+    fontSize: rf(11),
+    fontWeight: '900',
+    color: '#FFFFFF',
+  },
 });

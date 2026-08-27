@@ -1,22 +1,15 @@
 import React from 'react';
-import {
-  TouchableOpacity,
-  Image,
-  StyleSheet,
-  Dimensions,
-} from 'react-native';
-import {useNavigation} from '@react-navigation/native';
-
-const {width} = Dimensions.get('window');
-
+import { TouchableOpacity, Image, StyleSheet, Dimensions } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+const { width } = Dimensions.get('window');
 export default function AIAdvisoryCard() {
   const navigation = useNavigation();
-
   return (
     <TouchableOpacity
       activeOpacity={0.9}
       onPress={() => navigation.navigate('AIGuru')}
-      style={styles.cardContainer}>
+      style={styles.cardContainer}
+    >
       <Image
         source={require('../../assets/homescreen/aibanner.png')}
         style={styles.bannerImage}
@@ -25,7 +18,6 @@ export default function AIAdvisoryCard() {
     </TouchableOpacity>
   );
 }
-
 const styles = StyleSheet.create({
   cardContainer: {
     marginTop: 30,

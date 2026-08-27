@@ -1,14 +1,16 @@
 import React from 'react';
-import {View, Text, StyleSheet, Image} from 'react-native';
-import {Play, Video, Eye, BadgeCheck} from 'lucide-react-native';
-import {COLORS, rf} from './theme';
-import {resolveCommunityImageSource} from './communityImages';
-
-export default function VideoCard({item}) {
+import { View, Text, StyleSheet, Image } from 'react-native';
+import { Play, Video, Eye, BadgeCheck } from 'lucide-react-native';
+import { COLORS, rf } from './theme';
+import { resolveCommunityImageSource } from './communityImages';
+export default function VideoCard({ item }) {
   return (
     <View style={styles.videoCard}>
       <View style={styles.videoImageWrap}>
-        <Image source={resolveCommunityImageSource(item.image)} style={styles.videoImage} />
+        <Image
+          source={resolveCommunityImageSource(item.image)}
+          style={styles.videoImage}
+        />
         <View style={styles.videoTag}>
           <Video size={rf(11)} color="#FFFFFF" strokeWidth={2.3} />
           <Text style={styles.videoTagText}>Video</Text>
@@ -36,15 +38,29 @@ export default function VideoCard({item}) {
           <Text style={styles.videoMetaDot}>·</Text>
           <View style={styles.videoMetaItem}>
             {item.verified ? (
-              <BadgeCheck size={rf(11)} color={COLORS.DARK_GREEN} strokeWidth={2.4} />
+              <BadgeCheck
+                size={rf(11)}
+                color={COLORS.DARK_GREEN}
+                strokeWidth={2.4}
+              />
             ) : (
-              <Text style={{fontSize: rf(11)}}>🎓</Text>
+              <Text
+                style={{
+                  fontSize: rf(11),
+                }}
+              >
+                🎓
+              </Text>
             )}
             <Text
               style={[
                 styles.videoMetaText,
-                item.verified && {color: COLORS.DARK_GREEN, fontWeight: '900'},
-              ]}>
+                item.verified && {
+                  color: COLORS.DARK_GREEN,
+                  fontWeight: '900',
+                },
+              ]}
+            >
               {item.author}
             </Text>
           </View>
@@ -53,7 +69,6 @@ export default function VideoCard({item}) {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   videoCard: {
     marginBottom: 12,
@@ -63,8 +78,14 @@ const styles = StyleSheet.create({
     borderColor: COLORS.BORDER,
     overflow: 'hidden',
   },
-  videoImageWrap: {height: 200, position: 'relative'},
-  videoImage: {width: '100%', height: '100%'},
+  videoImageWrap: {
+    height: 200,
+    position: 'relative',
+  },
+  videoImage: {
+    width: '100%',
+    height: '100%',
+  },
   videoTag: {
     position: 'absolute',
     top: 10,
@@ -77,7 +98,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 4,
   },
-  videoTagText: {fontSize: rf(9), fontWeight: '900', color: '#FFFFFF'},
+  videoTagText: {
+    fontSize: rf(9),
+    fontWeight: '900',
+    color: '#FFFFFF',
+  },
   videoPlay: {
     position: 'absolute',
     top: '50%',
@@ -101,11 +126,38 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.55)',
     justifyContent: 'center',
   },
-  videoDurationText: {fontSize: rf(9), fontWeight: '900', color: '#FFFFFF'},
-  videoBody: {padding: 12},
-  videoTitle: {fontSize: rf(13), lineHeight: rf(17), fontWeight: '900', color: COLORS.DARK},
-  videoMetaRow: {marginTop: 5, flexDirection: 'row', alignItems: 'center', gap: 5},
-  videoMetaItem: {flexDirection: 'row', alignItems: 'center', gap: 3},
-  videoMetaText: {fontSize: rf(10), fontWeight: '600', color: COLORS.MUTED},
-  videoMetaDot: {fontSize: rf(9), color: COLORS.MUTED},
+  videoDurationText: {
+    fontSize: rf(9),
+    fontWeight: '900',
+    color: '#FFFFFF',
+  },
+  videoBody: {
+    padding: 12,
+  },
+  videoTitle: {
+    fontSize: rf(13),
+    lineHeight: rf(17),
+    fontWeight: '900',
+    color: COLORS.DARK,
+  },
+  videoMetaRow: {
+    marginTop: 5,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+  },
+  videoMetaItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+  },
+  videoMetaText: {
+    fontSize: rf(10),
+    fontWeight: '600',
+    color: COLORS.MUTED,
+  },
+  videoMetaDot: {
+    fontSize: rf(9),
+    color: COLORS.MUTED,
+  },
 });

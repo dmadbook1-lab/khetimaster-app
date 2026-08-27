@@ -1,7 +1,6 @@
 import React from 'react';
-import {View, Text, StyleSheet} from 'react-native';
-import {ChevronRight} from 'lucide-react-native';
-
+import { View, Text, StyleSheet } from 'react-native';
+import { ChevronRight } from 'lucide-react-native';
 const guide = [
   {
     title: 'Dosage',
@@ -20,7 +19,6 @@ const guide = [
     text: 'Store in a cool, dry place. Wear gloves during handling. Keep away from direct sunlight.',
   },
 ];
-
 export default function ApplicationGuide() {
   return (
     <View style={styles.wrapper}>
@@ -45,30 +43,25 @@ export default function ApplicationGuide() {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   wrapper: {
     marginTop: 30,
   },
-
   sectionTitle: {
     fontSize: 16,
     fontWeight: '900',
     color: '#111827',
   },
-
   list: {
     marginTop: 14,
     backgroundColor: '#FFFFFF',
   },
-
   row: {
     paddingVertical: 18,
     flexDirection: 'row',
     borderBottomWidth: 1,
     borderBottomColor: '#F1F5F9',
   },
-
   numberCircle: {
     width: 28,
     height: 28,
@@ -78,23 +71,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginRight: 14,
   },
-
   number: {
     color: '#FFFFFF',
     fontSize: 12,
     fontWeight: '900',
   },
-
   textBox: {
     flex: 1,
   },
-
   title: {
     fontSize: 15,
     fontWeight: '900',
     color: '#111827',
   },
-
   desc: {
     marginTop: 6,
     fontSize: 11,

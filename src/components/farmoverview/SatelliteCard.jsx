@@ -7,19 +7,15 @@ import {
   StyleSheet,
   Dimensions,
 } from 'react-native';
-import {useNavigation} from '@react-navigation/native';
-import {ArrowRight} from 'lucide-react-native';
-
-const {width} = Dimensions.get('window');
-
+import { useNavigation } from '@react-navigation/native';
+import { ArrowRight } from 'lucide-react-native';
+const { width } = Dimensions.get('window');
 const CARD_WIDTH = (width - width * 0.11 - 14) / 2;
 const IMAGE_SIZE = width < 360 ? 108 : 128;
-
 const rf = size => {
   const scale = width / 390;
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
-
 const services = [
   {
     title: 'Labour Booking',
@@ -56,16 +52,13 @@ const services = [
     route: null,
   },
 ];
-
 export default function ServicesGrid() {
   const navigation = useNavigation();
-
   const handlePress = item => {
     if (item.route === 'AgriProducts') {
       navigation.navigate('AgriProducts');
     }
   };
-
   return (
     <View style={styles.wrapper}>
       <View style={styles.sectionRow}>
@@ -79,10 +72,23 @@ export default function ServicesGrid() {
             key={index}
             activeOpacity={0.78}
             onPress={() => handlePress(item)}
-            style={[styles.card, {backgroundColor: item.bg}]}>
-            
+            style={[
+              styles.card,
+              {
+                backgroundColor: item.bg,
+              },
+            ]}
+          >
             {!!item.badge && (
-              <View pointerEvents="none" style={[styles.badge, {backgroundColor: item.color}]}>
+              <View
+                pointerEvents="none"
+                style={[
+                  styles.badge,
+                  {
+                    backgroundColor: item.color,
+                  },
+                ]}
+              >
                 <Text style={styles.badgeText}>{item.badge}</Text>
               </View>
             )}
@@ -104,8 +110,23 @@ export default function ServicesGrid() {
               resizeMode="contain"
             />
 
-            <View pointerEvents="none" style={[styles.exploreBtn, {borderColor: item.color}]}>
-              <Text style={[styles.exploreText, {color: item.color}]}>
+            <View
+              pointerEvents="none"
+              style={[
+                styles.exploreBtn,
+                {
+                  borderColor: item.color,
+                },
+              ]}
+            >
+              <Text
+                style={[
+                  styles.exploreText,
+                  {
+                    color: item.color,
+                  },
+                ]}
+              >
                 Explore
               </Text>
               <ArrowRight size={13} color={item.color} strokeWidth={2.7} />
@@ -116,31 +137,26 @@ export default function ServicesGrid() {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   wrapper: {
     marginTop: 34,
   },
-
   sectionRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-
   sectionTitle: {
     fontSize: rf(20),
     color: '#111827',
     fontWeight: '900',
     letterSpacing: -0.35,
   },
-
   seeAll: {
     fontSize: rf(12),
     color: '#16883E',
     fontWeight: '900',
   },
-
   grid: {
     marginTop: 18,
     flexDirection: 'row',
@@ -148,7 +164,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     rowGap: 16,
   },
-
   card: {
     width: CARD_WIDTH,
     height: 154,
@@ -160,21 +175,21 @@ const styles = StyleSheet.create({
     shadowColor: '#0F172A',
     shadowOpacity: 0.06,
     shadowRadius: 12,
-    shadowOffset: {width: 0, height: 6},
+    shadowOffset: {
+      width: 0,
+      height: 6,
+    },
     elevation: 3,
   },
-
   textBox: {
     width: '76%',
     zIndex: 2,
   },
-
   cardTitle: {
     fontSize: rf(13),
     color: '#111827',
     fontWeight: '900',
   },
-
   cardDesc: {
     marginTop: 5,
     fontSize: rf(10),
@@ -182,7 +197,6 @@ const styles = StyleSheet.create({
     color: '#475467',
     fontWeight: '700',
   },
-
   image: {
     position: 'absolute',
     right: -16,
@@ -191,7 +205,6 @@ const styles = StyleSheet.create({
     height: IMAGE_SIZE,
     zIndex: 1,
   },
-
   exploreBtn: {
     position: 'absolute',
     left: 16,
@@ -206,12 +219,10 @@ const styles = StyleSheet.create({
     gap: 4,
     zIndex: 3,
   },
-
   exploreText: {
     fontSize: rf(9),
     fontWeight: '900',
   },
-
   badge: {
     position: 'absolute',
     top: 14,
@@ -223,7 +234,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     zIndex: 5,
   },
-
   badgeText: {
     fontSize: rf(8),
     color: '#FFFFFF',

@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text, StyleSheet} from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import {
   CheckCircle,
   BadgeCheck,
@@ -8,9 +8,8 @@ import {
   Eye,
   Leaf,
 } from 'lucide-react-native';
-import {COLORS, rf} from './theme';
-
-export default function QuestionCard({item}) {
+import { COLORS, rf } from './theme';
+export default function QuestionCard({ item }) {
   return (
     <View style={styles.postCard}>
       <View style={styles.postHeader}>
@@ -72,7 +71,6 @@ export default function QuestionCard({item}) {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   postCard: {
     padding: 14,
@@ -96,9 +94,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  avatarText: {fontSize: rf(20)},
-  postUserBox: {flex: 1},
-  userName: {fontSize: rf(12), fontWeight: '900', color: COLORS.DARK},
+  avatarText: {
+    fontSize: rf(20),
+  },
+  postUserBox: {
+    flex: 1,
+  },
+  userName: {
+    fontSize: rf(12),
+    fontWeight: '900',
+    color: COLORS.DARK,
+  },
   userLocation: {
     marginTop: 2,
     fontSize: rf(9.5),
@@ -112,9 +118,16 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFEDD5',
     justifyContent: 'center',
   },
-  diseaseTagText: {fontSize: rf(9), fontWeight: '900', color: COLORS.ORANGE},
-
-  qRow: {marginTop: 12, flexDirection: 'row', gap: 8},
+  diseaseTagText: {
+    fontSize: rf(9),
+    fontWeight: '900',
+    color: COLORS.ORANGE,
+  },
+  qRow: {
+    marginTop: 12,
+    flexDirection: 'row',
+    gap: 8,
+  },
   qIconBox: {
     marginTop: 2,
     width: 20,
@@ -138,8 +151,12 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: COLORS.MUTED,
   },
-
-  tagsRow: {marginTop: 10, flexDirection: 'row', gap: 8, flexWrap: 'wrap'},
+  tagsRow: {
+    marginTop: 10,
+    flexDirection: 'row',
+    gap: 8,
+    flexWrap: 'wrap',
+  },
   soybeanTag: {
     height: 26,
     paddingHorizontal: 10,
@@ -149,7 +166,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 5,
   },
-  soybeanTagText: {fontSize: rf(10), fontWeight: '900', color: COLORS.DARK_GREEN},
+  soybeanTagText: {
+    fontSize: rf(10),
+    fontWeight: '900',
+    color: COLORS.DARK_GREEN,
+  },
   expertTag: {
     height: 26,
     paddingHorizontal: 10,
@@ -159,8 +180,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 5,
   },
-  expertTagText: {fontSize: rf(10), fontWeight: '900', color: COLORS.BLUE},
-
+  expertTagText: {
+    fontSize: rf(10),
+    fontWeight: '900',
+    color: COLORS.BLUE,
+  },
   qStatsRow: {
     marginTop: 12,
     paddingTop: 10,
@@ -176,5 +200,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-  qStatText: {fontSize: rf(11), fontWeight: '700', color: COLORS.MUTED},
+  qStatText: {
+    fontSize: rf(11),
+    fontWeight: '700',
+    color: COLORS.MUTED,
+  },
 });

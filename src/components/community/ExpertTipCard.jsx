@@ -1,9 +1,8 @@
 import React from 'react';
-import {View, Text, StyleSheet, TouchableOpacity} from 'react-native';
-import {Award, BadgeCheck, Sprout, ArrowRight} from 'lucide-react-native';
-import {COLORS, rf} from './theme';
-
-export default function ExpertTipCard({tip}) {
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { Award, BadgeCheck, Sprout, ArrowRight } from 'lucide-react-native';
+import { COLORS, rf } from './theme';
+export default function ExpertTipCard({ tip }) {
   return (
     <View style={styles.expertTipCard}>
       <View style={styles.expertTipHeader}>
@@ -15,7 +14,14 @@ export default function ExpertTipCard({tip}) {
       </View>
 
       <View style={styles.expertRow}>
-        <View style={[styles.avatar, {backgroundColor: '#F3E8FF'}]}>
+        <View
+          style={[
+            styles.avatar,
+            {
+              backgroundColor: '#F3E8FF',
+            },
+          ]}
+        >
           <Text style={styles.avatarText}>{tip.emoji || '👨‍⚕️'}</Text>
         </View>
         <View style={styles.expertTextBox}>
@@ -47,7 +53,6 @@ export default function ExpertTipCard({tip}) {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   expertTipCard: {
     padding: 14,
@@ -73,9 +78,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 5,
   },
-  expertTipBadgeText: {fontSize: rf(9), fontWeight: '900', color: COLORS.DARK_GREEN},
-  timeAgo: {fontSize: rf(9.5), fontWeight: '600', color: COLORS.MUTED},
-
+  expertTipBadgeText: {
+    fontSize: rf(9),
+    fontWeight: '900',
+    color: COLORS.DARK_GREEN,
+  },
+  timeAgo: {
+    fontSize: rf(9.5),
+    fontWeight: '600',
+    color: COLORS.MUTED,
+  },
   expertRow: {
     marginTop: 12,
     flexDirection: 'row',
@@ -89,15 +101,23 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  avatarText: {fontSize: rf(20)},
-  expertTextBox: {flex: 1},
+  avatarText: {
+    fontSize: rf(20),
+  },
+  expertTextBox: {
+    flex: 1,
+  },
   expertNameRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
     flexWrap: 'wrap',
   },
-  userName: {fontSize: rf(12), fontWeight: '900', color: COLORS.DARK},
+  userName: {
+    fontSize: rf(12),
+    fontWeight: '900',
+    color: COLORS.DARK,
+  },
   userLocation: {
     marginTop: 2,
     fontSize: rf(9.5),
@@ -113,8 +133,11 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     backgroundColor: '#EFF6FF',
   },
-  verifiedText: {fontSize: rf(7.5), fontWeight: '900', color: COLORS.BLUE},
-
+  verifiedText: {
+    fontSize: rf(7.5),
+    fontWeight: '900',
+    color: COLORS.BLUE,
+  },
   expertTipTitle: {
     marginTop: 12,
     fontSize: rf(13),
@@ -129,7 +152,6 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: COLORS.MUTED,
   },
-
   expertTipFooter: {
     marginTop: 12,
     flexDirection: 'row',
@@ -145,7 +167,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 5,
   },
-  cropNutritionText: {fontSize: rf(10), fontWeight: '900', color: COLORS.DARK_GREEN},
+  cropNutritionText: {
+    fontSize: rf(10),
+    fontWeight: '900',
+    color: COLORS.DARK_GREEN,
+  },
   readTipBtn: {
     height: 32,
     paddingHorizontal: 14,
@@ -155,5 +181,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
   },
-  readTipBtnText: {fontSize: rf(10.5), fontWeight: '900', color: '#FFFFFF'},
+  readTipBtnText: {
+    fontSize: rf(10.5),
+    fontWeight: '900',
+    color: '#FFFFFF',
+  },
 });

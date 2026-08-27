@@ -1,10 +1,14 @@
 import React from 'react';
-import {View, Text, TouchableOpacity, StyleSheet, Dimensions} from 'react-native';
-import {ShoppingCart, Zap} from 'lucide-react-native';
-
-const {width} = Dimensions.get('window');
-
-export default function ProductDetailsScreen({navigation}) {
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Dimensions,
+} from 'react-native';
+import { ShoppingCart, Zap } from 'lucide-react-native';
+const { width } = Dimensions.get('window');
+export default function ProductDetailsScreen({ navigation }) {
   return (
     <View style={styles.bar}>
       <TouchableOpacity activeOpacity={0.9} style={styles.cartBtn}>
@@ -12,17 +16,17 @@ export default function ProductDetailsScreen({navigation}) {
         <Text style={styles.cartText}>Add to Cart</Text>
       </TouchableOpacity>
 
-     <TouchableOpacity
-  activeOpacity={0.9}
-  style={styles.buyBtn}
-  onPress={() => navigation.navigate('Checkout')}>
-  <Zap size={18} color="#FFFFFF" />
-  <Text style={styles.buyText}>Buy Now</Text>
-</TouchableOpacity>
+      <TouchableOpacity
+        activeOpacity={0.9}
+        style={styles.buyBtn}
+        onPress={() => navigation.navigate('Checkout')}
+      >
+        <Zap size={18} color="#FFFFFF" />
+        <Text style={styles.buyText}>Buy Now</Text>
+      </TouchableOpacity>
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   bar: {
     position: 'absolute',
@@ -38,7 +42,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 12,
   },
-
   cartBtn: {
     flex: 1,
     height: 46,
@@ -50,7 +53,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 8,
   },
-
   buyBtn: {
     flex: 1,
     height: 46,
@@ -61,13 +63,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 8,
   },
-
   cartText: {
     fontSize: 13,
     fontWeight: '900',
     color: '#16883E',
   },
-
   buyText: {
     fontSize: 13,
     fontWeight: '900',

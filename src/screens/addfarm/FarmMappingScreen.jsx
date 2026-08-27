@@ -1,6 +1,4 @@
-// src/screens/FarmMappingScreen.jsx
-
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -11,7 +9,7 @@ import {
   ScrollView,
   Dimensions,
 } from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
 import {
   ArrowLeft,
@@ -25,23 +23,17 @@ import {
   Route,
   UserRound,
 } from 'lucide-react-native';
-
-const {width, height} = Dimensions.get('window');
-
+const { width, height } = Dimensions.get('window');
 const GREEN = '#159447';
 const DARK = '#1F2937';
-
 const isSmall = width < 360;
 const isShort = height < 700;
-
 const rf = size => {
   const scale = width / 390;
   return Math.max(size - 3, Math.min(size * scale, size + 2));
 };
-
-export default function FarmMappingScreen({navigation}) {
+export default function FarmMappingScreen({ navigation }) {
   const [selected, setSelected] = useState('draw');
-
   const handleContinue = () => {
     if (selected === 'walk') {
       navigation.navigate('walkaroundscreen');
@@ -49,19 +41,20 @@ export default function FarmMappingScreen({navigation}) {
       navigation.navigate('Mapscreen');
     }
   };
-
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}>
+        contentContainerStyle={styles.scrollContent}
+      >
         <View style={styles.header}>
           <TouchableOpacity
             activeOpacity={0.8}
             style={styles.backBtn}
-            onPress={() => navigation.goBack()}>
+            onPress={() => navigation.goBack()}
+          >
             <ArrowLeft size={22} color={DARK} />
           </TouchableOpacity>
 
@@ -95,7 +88,8 @@ export default function FarmMappingScreen({navigation}) {
                 style={[
                   styles.stepItemText,
                   item === 'Mapping' && styles.stepActive,
-                ]}>
+                ]}
+              >
                 {item}
               </Text>
             </View>
@@ -119,7 +113,8 @@ export default function FarmMappingScreen({navigation}) {
           style={[
             styles.methodCard,
             selected === 'draw' && styles.methodActive,
-          ]}>
+          ]}
+        >
           <View style={styles.mapMockGreen}>
             {selected === 'draw' && (
               <View style={styles.selectedBubble}>
@@ -176,7 +171,8 @@ export default function FarmMappingScreen({navigation}) {
           style={[
             styles.methodCard,
             selected === 'walk' && styles.methodActiveOrange,
-          ]}>
+          ]}
+        >
           <View style={styles.mapMockOrange}>
             {selected === 'walk' && (
               <View style={styles.selectedBubbleOrange}>
@@ -232,9 +228,16 @@ export default function FarmMappingScreen({navigation}) {
         <TouchableOpacity activeOpacity={0.9} onPress={handleContinue}>
           <LinearGradient
             colors={['#12833B', '#2ECC71']}
-            start={{x: 0, y: 0}}
-            end={{x: 1, y: 0}}
-            style={styles.button}>
+            start={{
+              x: 0,
+              y: 0,
+            }}
+            end={{
+              x: 1,
+              y: 0,
+            }}
+            style={styles.button}
+          >
             <Text style={styles.buttonText}>Continue</Text>
             <ArrowRight size={27} color="#FFFFFF" />
           </LinearGradient>
@@ -243,25 +246,21 @@ export default function FarmMappingScreen({navigation}) {
     </SafeAreaView>
   );
 }
-
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: '#FFFFFF',
   },
-
   scrollContent: {
     paddingHorizontal: isSmall ? 12 : 16,
     paddingBottom: 120,
   },
-
   header: {
     height: 60,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-
   backBtn: {
     width: 42,
     height: 42,
@@ -272,7 +271,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: '#FFFFFF',
   },
-
   logoPill: {
     height: 40,
     paddingHorizontal: 18,
@@ -283,34 +281,28 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: '#FFFFFF',
   },
-
   logo: {
     width: isSmall ? 112 : 132,
     height: 30,
   },
-
   headerSpace: {
     width: 42,
   },
-
   progressTop: {
     marginTop: 10,
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-
   progressLabel: {
     fontSize: rf(14),
     color: '#9CA3AF',
     fontWeight: '800',
   },
-
   progressStep: {
     fontSize: rf(13),
     color: '#0F8A3D',
     fontWeight: '900',
   },
-
   progressTrack: {
     marginTop: 10,
     height: 7,
@@ -318,25 +310,21 @@ const styles = StyleSheet.create({
     backgroundColor: '#F0F1F3',
     overflow: 'hidden',
   },
-
   progressFill: {
     width: '100%',
     height: '100%',
     backgroundColor: '#16A34A',
   },
-
   stepsRow: {
     marginTop: 18,
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-
   stepItem: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
   },
-
   smallCheck: {
     width: 20,
     height: 20,
@@ -345,24 +333,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   stepItemText: {
     fontSize: rf(13),
     color: '#6B7280',
     fontWeight: '700',
   },
-
   stepActive: {
     color: GREEN,
     fontWeight: '900',
   },
-
   titleWrap: {
     marginTop: isShort ? 28 : 34,
     flexDirection: 'row',
     alignItems: 'flex-end',
   },
-
   title: {
     flex: 1,
     fontSize: isSmall ? 27 : 30,
@@ -371,18 +355,15 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     letterSpacing: -0.6,
   },
-
   greenText: {
     color: GREEN,
   },
-
   subtitle: {
     marginTop: 12,
     fontSize: rf(17),
     color: '#9CA3AF',
     fontWeight: '500',
   },
-
   methodCard: {
     marginTop: 28,
     borderRadius: 20,
@@ -393,20 +374,20 @@ const styles = StyleSheet.create({
     shadowColor: '#000',
     shadowOpacity: 0.04,
     shadowRadius: 10,
-    shadowOffset: {width: 0, height: 4},
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
     elevation: 2,
   },
-
   methodActive: {
     borderColor: GREEN,
     borderWidth: 2,
   },
-
   methodActiveOrange: {
     borderColor: '#FDBA74',
     borderWidth: 2,
   },
-
   mapMockGreen: {
     height: isSmall ? 136 : 150,
     borderRadius: 14,
@@ -417,7 +398,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-
   mapMockOrange: {
     height: isSmall ? 136 : 150,
     borderRadius: 14,
@@ -427,7 +407,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-
   selectedBubble: {
     position: 'absolute',
     left: 14,
@@ -439,7 +418,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   selectedBubbleOrange: {
     position: 'absolute',
     left: 14,
@@ -451,7 +429,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   polygonWrap: {
     width: 150,
     height: 88,
@@ -462,9 +439,12 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(21,148,71,0.12)',
     alignItems: 'center',
     justifyContent: 'center',
-    transform: [{rotate: '-8deg'}],
+    transform: [
+      {
+        rotate: '-8deg',
+      },
+    ],
   },
-
   pointOne: {
     position: 'absolute',
     top: -5,
@@ -474,7 +454,6 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     backgroundColor: GREEN,
   },
-
   pointTwo: {
     position: 'absolute',
     top: 8,
@@ -484,7 +463,6 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     backgroundColor: GREEN,
   },
-
   pointThree: {
     position: 'absolute',
     bottom: -5,
@@ -494,7 +472,6 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     backgroundColor: GREEN,
   },
-
   pointFour: {
     position: 'absolute',
     bottom: 16,
@@ -504,7 +481,6 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     backgroundColor: GREEN,
   },
-
   tapPill: {
     position: 'absolute',
     right: 14,
@@ -518,7 +494,6 @@ const styles = StyleSheet.create({
     gap: 7,
     elevation: 4,
   },
-
   gpsPill: {
     position: 'absolute',
     right: 14,
@@ -532,13 +507,11 @@ const styles = StyleSheet.create({
     gap: 7,
     elevation: 4,
   },
-
   tapText: {
     fontSize: rf(12),
     color: DARK,
     fontWeight: '900',
   },
-
   routeOval: {
     width: 150,
     height: 68,
@@ -550,7 +523,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: 'rgba(249,115,22,0.06)',
   },
-
   methodTitleRow: {
     marginTop: 22,
     flexDirection: 'row',
@@ -558,27 +530,23 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     gap: 10,
   },
-
   methodTitle: {
     flex: 1,
     fontSize: rf(22),
     color: DARK,
     fontWeight: '900',
   },
-
   recommended: {
     paddingHorizontal: 12,
     paddingVertical: 7,
     borderRadius: 7,
     backgroundColor: '#2ECC71',
   },
-
   recommendedText: {
     fontSize: rf(12),
     color: '#FFFFFF',
     fontWeight: '900',
   },
-
   accurate: {
     paddingHorizontal: 12,
     paddingVertical: 7,
@@ -587,13 +555,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: '#FED7AA',
   },
-
   accurateText: {
     fontSize: rf(12),
     color: '#F97316',
     fontWeight: '900',
   },
-
   methodDesc: {
     marginTop: 12,
     fontSize: rf(15),
@@ -601,26 +567,22 @@ const styles = StyleSheet.create({
     color: '#9CA3AF',
     fontWeight: '500',
   },
-
   featureRow: {
     marginTop: 20,
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 20,
   },
-
   featureItem: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
   },
-
   featureText: {
     fontSize: rf(12),
     color: '#6B7280',
     fontWeight: '800',
   },
-
   infoBox: {
     marginTop: 30,
     minHeight: 78,
@@ -633,7 +595,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 22,
     gap: 16,
   },
-
   infoText: {
     flex: 1,
     fontSize: rf(14),
@@ -641,7 +602,6 @@ const styles = StyleSheet.create({
     color: '#087235',
     fontWeight: '700',
   },
-
   bottomBar: {
     position: 'absolute',
     left: 0,
@@ -652,7 +612,6 @@ const styles = StyleSheet.create({
     paddingBottom: 18,
     backgroundColor: '#FFFFFF',
   },
-
   button: {
     height: 66,
     borderRadius: 17,
@@ -661,7 +620,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 12,
   },
-
   buttonText: {
     fontSize: rf(21),
     color: '#FFFFFF',

@@ -1,17 +1,20 @@
 import React from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, Dimensions} from 'react-native';
-import {ChevronRight} from 'lucide-react-native';
-
-const {width} = Dimensions.get('window');
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Dimensions,
+} from 'react-native';
+import { ChevronRight } from 'lucide-react-native';
+const { width } = Dimensions.get('window');
 const GREEN = '#16883E';
 const DARK = '#111827';
-
 const rf = size => {
   const scale = width / 390;
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
-
-export default function SectionHeader({title, onPress}) {
+export default function SectionHeader({ title, onPress }) {
   return (
     <View style={styles.sectionHeader}>
       <Text style={styles.sectionTitle}>{title}</Text>
@@ -24,7 +27,6 @@ export default function SectionHeader({title, onPress}) {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   sectionHeader: {
     marginTop: 34,

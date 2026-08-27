@@ -1,9 +1,8 @@
 import React from 'react';
-import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
-import {MessageCircle, Check} from 'lucide-react-native';
-import {COLORS, rf} from '../theme';
-
-export default function SimilarQuestionCard({item}) {
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { MessageCircle, Check } from 'lucide-react-native';
+import { COLORS, rf } from '../theme';
+export default function SimilarQuestionCard({ item }) {
   return (
     <View style={styles.wrap}>
       <View style={styles.row1}>
@@ -24,7 +23,11 @@ export default function SimilarQuestionCard({item}) {
           </View>
         )}
 
-        <View style={{flex: 1}} />
+        <View
+          style={{
+            flex: 1,
+          }}
+        />
 
         <TouchableOpacity activeOpacity={0.85} style={styles.viewBtn}>
           <Text style={styles.viewText}>View</Text>
@@ -33,7 +36,6 @@ export default function SimilarQuestionCard({item}) {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   wrap: {
     padding: 14,
@@ -43,7 +45,11 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: COLORS.BORDER,
   },
-  row1: {flexDirection: 'row', gap: 10, alignItems: 'flex-start'},
+  row1: {
+    flexDirection: 'row',
+    gap: 10,
+    alignItems: 'flex-start',
+  },
   title: {
     flex: 1,
     fontSize: rf(12.5),
@@ -51,10 +57,27 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     color: COLORS.DARK,
   },
-  match: {fontSize: rf(12.5), fontWeight: '900', color: COLORS.DARK_GREEN},
-  row2: {marginTop: 12, flexDirection: 'row', alignItems: 'center', gap: 10},
-  repliesRow: {flexDirection: 'row', alignItems: 'center', gap: 4},
-  repliesText: {fontSize: rf(10), fontWeight: '600', color: COLORS.MUTED},
+  match: {
+    fontSize: rf(12.5),
+    fontWeight: '900',
+    color: COLORS.DARK_GREEN,
+  },
+  row2: {
+    marginTop: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  repliesRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  repliesText: {
+    fontSize: rf(10),
+    fontWeight: '600',
+    color: COLORS.MUTED,
+  },
   expertBadge: {
     height: 22,
     paddingHorizontal: 8,
@@ -64,7 +87,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 3,
   },
-  expertText: {fontSize: rf(9.5), fontWeight: '900', color: '#FFFFFF'},
+  expertText: {
+    fontSize: rf(9.5),
+    fontWeight: '900',
+    color: '#FFFFFF',
+  },
   viewBtn: {
     height: 30,
     paddingHorizontal: 16,
@@ -73,5 +100,9 @@ const styles = StyleSheet.create({
     borderColor: COLORS.BORDER,
     justifyContent: 'center',
   },
-  viewText: {fontSize: rf(10.5), fontWeight: '900', color: COLORS.DARK},
+  viewText: {
+    fontSize: rf(10.5),
+    fontWeight: '900',
+    color: COLORS.DARK,
+  },
 });

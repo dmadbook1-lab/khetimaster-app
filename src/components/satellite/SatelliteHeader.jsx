@@ -1,11 +1,19 @@
 import React from 'react';
-import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
-import {ArrowLeft, CalendarDays, ChevronDown, Layers} from 'lucide-react-native';
-
-export default function SatelliteHeader({title, onBack}) {
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import {
+  ArrowLeft,
+  CalendarDays,
+  ChevronDown,
+  Layers,
+} from 'lucide-react-native';
+export default function SatelliteHeader({ title, onBack }) {
   return (
     <View style={styles.header}>
-      <TouchableOpacity activeOpacity={0.8} onPress={onBack} style={styles.backBtn}>
+      <TouchableOpacity
+        activeOpacity={0.8}
+        onPress={onBack}
+        style={styles.backBtn}
+      >
         <ArrowLeft size={22} color="#1F2937" strokeWidth={2.5} />
       </TouchableOpacity>
 
@@ -28,14 +36,12 @@ export default function SatelliteHeader({title, onBack}) {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   header: {
     height: 78,
     flexDirection: 'row',
     alignItems: 'center',
   },
-
   backBtn: {
     width: 40,
     height: 40,
@@ -46,12 +52,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   titleBox: {
     flex: 1,
     marginLeft: 12,
   },
-
   title: {
     fontSize: 20,
     lineHeight: 24,
@@ -59,20 +63,17 @@ const styles = StyleSheet.create({
     color: '#111827',
     letterSpacing: -0.4,
   },
-
   subtitleRow: {
     marginTop: 3,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
   },
-
   subtitle: {
     fontSize: 12,
     fontWeight: '800',
     color: '#64748B',
   },
-
   datePill: {
     height: 38,
     paddingHorizontal: 12,
@@ -84,7 +85,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 7,
   },
-
   dateText: {
     fontSize: 12,
     fontWeight: '900',

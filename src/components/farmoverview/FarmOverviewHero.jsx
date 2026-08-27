@@ -7,19 +7,15 @@ import {
   StyleSheet,
   Dimensions,
 } from 'react-native';
-import {ArrowLeft, MoreVertical, MapPin} from 'lucide-react-native';
-import {defaultFarm} from './data';
-
-const {width} = Dimensions.get('window');
-
+import { ArrowLeft, MoreVertical, MapPin } from 'lucide-react-native';
+import { defaultFarm } from './data';
+const { width } = Dimensions.get('window');
 const rf = size => {
   const scale = width / 390;
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
-
-export default function FarmOverviewHero({navigation, farm}) {
+export default function FarmOverviewHero({ navigation, farm }) {
   const item = farm || defaultFarm;
-
   return (
     <ImageBackground source={item.image} style={styles.hero} resizeMode="cover">
       <View style={styles.overlay} />
@@ -28,7 +24,8 @@ export default function FarmOverviewHero({navigation, farm}) {
         <TouchableOpacity
           activeOpacity={0.8}
           onPress={() => navigation.goBack()}
-          style={styles.iconBtn}>
+          style={styles.iconBtn}
+        >
           <ArrowLeft size={22} color="#FFFFFF" strokeWidth={2.5} />
         </TouchableOpacity>
 
@@ -54,7 +51,6 @@ export default function FarmOverviewHero({navigation, farm}) {
     </ImageBackground>
   );
 }
-
 const styles = StyleSheet.create({
   hero: {
     height: 292,

@@ -1,7 +1,6 @@
 import React from 'react';
-import {View, Text, StyleSheet} from 'react-native';
-import {ArrowLeftRight, TrendingUp} from 'lucide-react-native';
-
+import { View, Text, StyleSheet } from 'react-native';
+import { ArrowLeftRight, TrendingUp } from 'lucide-react-native';
 export default function ChangeDetectionCard() {
   return (
     <View style={styles.card}>
@@ -23,7 +22,6 @@ export default function ChangeDetectionCard() {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   card: {
     marginTop: 18,
@@ -39,16 +37,17 @@ const styles = StyleSheet.create({
     shadowColor: '#0F172A',
     shadowOpacity: 0.05,
     shadowRadius: 10,
-    shadowOffset: {width: 0, height: 5},
+    shadowOffset: {
+      width: 0,
+      height: 5,
+    },
     elevation: 2,
   },
-
   left: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 14,
   },
-
   iconBox: {
     width: 46,
     height: 46,
@@ -57,14 +56,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   label: {
     fontSize: 10,
     fontWeight: '900',
     color: '#94A3B8',
     letterSpacing: 0.8,
   },
-
   title: {
     marginTop: 4,
     fontSize: 15,
@@ -72,7 +69,6 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     color: '#111827',
   },
-
   badge: {
     minWidth: 132,
     height: 48,
@@ -83,7 +79,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 7,
   },
-
   badgeText: {
     fontSize: 12,
     lineHeight: 15,

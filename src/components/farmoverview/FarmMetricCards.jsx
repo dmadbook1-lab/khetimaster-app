@@ -1,14 +1,10 @@
 import React from 'react';
-import {View, Text, StyleSheet, Dimensions} from 'react-native';
-import {Sparkles, BookOpen, FlaskConical} from 'lucide-react-native';
-
-const {width} = Dimensions.get('window');
-
+import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import { Sparkles, BookOpen, FlaskConical } from 'lucide-react-native';
+const { width } = Dimensions.get('window');
 const GREEN = '#16883E';
 const BLUE = '#2563EB';
-
 const CARD_WIDTH = (width - width * 0.074 - 32) / 3;
-
 const items = [
   {
     Icon: Sparkles,
@@ -39,21 +35,35 @@ const items = [
     bg: '#EFF6FF',
   },
 ];
-
 export default function FarmMetricCards() {
   return (
     <View style={styles.row}>
       {items.map((item, index) => {
         const Icon = item.Icon;
-
         return (
           <View key={index} style={styles.card}>
-            <View style={[styles.iconBox, {backgroundColor: item.bg}]}>
+            <View
+              style={[
+                styles.iconBox,
+                {
+                  backgroundColor: item.bg,
+                },
+              ]}
+            >
               <Icon size={22} color={item.iconColor} strokeWidth={2.5} />
             </View>
 
             <Text style={styles.label}>{item.label}</Text>
-            <Text style={[styles.value, {color: item.color}]}>{item.value}</Text>
+            <Text
+              style={[
+                styles.value,
+                {
+                  color: item.color,
+                },
+              ]}
+            >
+              {item.value}
+            </Text>
 
             <View style={[styles.pill, item.bigPill && styles.bigPill]}>
               <Text style={styles.pillText}>{item.pill}</Text>
@@ -64,14 +74,12 @@ export default function FarmMetricCards() {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   row: {
     marginTop: 26,
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-
   card: {
     width: CARD_WIDTH,
     height: 178,
@@ -81,10 +89,12 @@ const styles = StyleSheet.create({
     shadowColor: '#0F172A',
     shadowOpacity: 0.06,
     shadowRadius: 12,
-    shadowOffset: {width: 0, height: 6},
+    shadowOffset: {
+      width: 0,
+      height: 6,
+    },
     elevation: 3,
   },
-
   iconBox: {
     width: 38,
     height: 38,
@@ -92,21 +102,18 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   label: {
     marginTop: 16,
     fontSize: 12,
     fontWeight: '700',
     color: '#667085',
   },
-
   value: {
     marginTop: 5,
     fontSize: 21,
     fontWeight: '900',
     letterSpacing: -0.5,
   },
-
   pill: {
     marginTop: 16,
     height: 22,
@@ -116,14 +123,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#DCFCE7',
     justifyContent: 'center',
   },
-
   bigPill: {
     height: 40,
     borderRadius: 20,
     paddingHorizontal: 17,
     alignSelf: 'center',
   },
-
   pillText: {
     fontSize: 10,
     lineHeight: 13,

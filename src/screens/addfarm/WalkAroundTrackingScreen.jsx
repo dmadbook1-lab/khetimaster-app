@@ -8,37 +8,30 @@ import {
   Dimensions,
   ImageBackground,
 } from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import Svg, {Circle, Polyline, Polygon} from 'react-native-svg';
-import {Check, CircleHelp, Pause, X} from 'lucide-react-native';
-
-const {width, height} = Dimensions.get('window');
-
+import { SafeAreaView } from 'react-native-safe-area-context';
+import Svg, { Circle, Polyline, Polygon } from 'react-native-svg';
+import { Check, CircleHelp, Pause, X } from 'lucide-react-native';
+const { width, height } = Dimensions.get('window');
 const GREEN = '#22C55E';
 const DARK = '#111827';
 const ORANGE = '#F97316';
-
 const isSmall = width < 360;
 const isShort = height < 700;
-
 const rf = size => {
   const scale = width / 390;
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
-
 const mapHeight = isShort ? height * 0.46 : height * 0.49;
-
 const farmPoints = [
-  [0.25, 0.30],
+  [0.25, 0.3],
   [0.29, 0.19],
   [0.43, 0.135],
   [0.59, 0.17],
-  [0.70, 0.28],
+  [0.7, 0.28],
   [0.62, 0.39],
   [0.43, 0.43],
   [0.28, 0.38],
 ];
-
 const ProgressRing = () => {
   const size = isSmall ? 90 : 104;
   const stroke = 6;
@@ -46,7 +39,6 @@ const ProgressRing = () => {
   const circle = 2 * Math.PI * radius;
   const progress = 0.45;
   const offset = circle - circle * progress;
-
   return (
     <View style={styles.progressRingWrap}>
       <Svg width={size} height={size}>
@@ -81,31 +73,27 @@ const ProgressRing = () => {
     </View>
   );
 };
-
 const StaticFarmMap = () => {
   const svgHeight = mapHeight;
-
   const polygonPoints = farmPoints
     .map(([x, y]) => `${width * x},${svgHeight * y}`)
     .join(' ');
-
   const walkedPoints = farmPoints
     .slice(0, 5)
     .map(([x, y]) => `${width * x},${svgHeight * y}`)
     .join(' ');
-
   const remainingPoints = farmPoints
     .slice(4)
     .concat([farmPoints[0]])
     .map(([x, y]) => `${width * x},${svgHeight * y}`)
     .join(' ');
-
   return (
     <View style={styles.mapWrap}>
       <ImageBackground
         source={require('../../assets/images/farm-satellite.png')}
         style={styles.mapImage}
-        resizeMode="cover">
+        resizeMode="cover"
+      >
         <View style={styles.mapOverlay} />
 
         <View style={styles.gpsBar}>
@@ -126,7 +114,8 @@ const StaticFarmMap = () => {
           width={width}
           height={svgHeight}
           style={styles.trajectorySvg}
-          viewBox={`0 0 ${width} ${svgHeight}`}>
+          viewBox={`0 0 ${width} ${svgHeight}`}
+        >
           <Polygon
             points={polygonPoints}
             fill="rgba(34,197,94,0.14)"
@@ -165,7 +154,7 @@ const StaticFarmMap = () => {
           ))}
 
           <Circle
-            cx={width * 0.70}
+            cx={width * 0.7}
             cy={svgHeight * 0.28}
             r="24"
             fill="rgba(249,115,22,0.22)"
@@ -174,7 +163,7 @@ const StaticFarmMap = () => {
           />
 
           <Circle
-            cx={width * 0.70}
+            cx={width * 0.7}
             cy={svgHeight * 0.28}
             r="8"
             fill={ORANGE}
@@ -194,8 +183,7 @@ const StaticFarmMap = () => {
     </View>
   );
 };
-
-export default function WalkAroundTrackingScreen({navigation}) {
+export default function WalkAroundTrackingScreen({ navigation }) {
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <StatusBar barStyle="light-content" backgroundColor="#111827" />
@@ -234,7 +222,8 @@ export default function WalkAroundTrackingScreen({navigation}) {
           <TouchableOpacity
             activeOpacity={0.9}
             style={styles.finishButton}
-            onPress={() => navigation.navigate('ReviewFarmScreen')}>
+            onPress={() => navigation.navigate('ReviewFarmScreen')}
+          >
             <View style={styles.finishIconCircle}>
               <Check size={22} color="#FFFFFF" strokeWidth={3} />
             </View>
@@ -250,34 +239,28 @@ export default function WalkAroundTrackingScreen({navigation}) {
     </SafeAreaView>
   );
 }
-
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: '#111827',
   },
-
   container: {
     flex: 1,
     backgroundColor: '#000000',
   },
-
   mapWrap: {
     height: mapHeight,
     width: '100%',
     backgroundColor: '#10230B',
   },
-
   mapImage: {
     width: '100%',
     height: '100%',
   },
-
   mapOverlay: {
     ...StyleSheet.absoluteFillObject,
     backgroundColor: 'rgba(0,0,0,0.16)',
   },
-
   gpsBar: {
     position: 'absolute',
     top: height * 0.025,
@@ -291,28 +274,24 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     zIndex: 20,
   },
-
   gpsLeft: {
     flex: 1,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 8,
   },
-
   greenDot: {
     width: 8,
     height: 8,
     borderRadius: 4,
     backgroundColor: GREEN,
   },
-
   gpsActive: {
     fontSize: rf(12),
     color: '#FFFFFF',
     fontWeight: '800',
     letterSpacing: 0.35,
   },
-
   accuracyPill: {
     height: 22,
     paddingHorizontal: 8,
@@ -323,25 +302,21 @@ const styles = StyleSheet.create({
     gap: 4,
     marginRight: 10,
   },
-
   accuracyText: {
     fontSize: rf(11),
     color: '#FFFFFF',
     fontWeight: '900',
   },
-
   satText: {
     fontSize: rf(11),
     color: '#FFFFFF',
     fontWeight: '800',
   },
-
   trajectorySvg: {
     position: 'absolute',
     left: 0,
     top: 0,
   },
-
   ringCenter: {
     position: 'absolute',
     top: mapHeight * 0.455,
@@ -351,31 +326,26 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     zIndex: 15,
   },
-
   progressRingWrap: {
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   ringTextBox: {
     position: 'absolute',
     alignItems: 'center',
   },
-
   ringPercent: {
     fontSize: rf(22),
     color: '#FFFFFF',
     fontWeight: '900',
     letterSpacing: -0.4,
   },
-
   ringDone: {
     marginTop: -2,
     fontSize: rf(9),
     color: '#FFFFFF',
     fontWeight: '800',
   },
-
   completedPill: {
     position: 'absolute',
     top: mapHeight * 0.68,
@@ -388,13 +358,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     zIndex: 16,
   },
-
   completedText: {
     fontSize: rf(12),
     color: '#FFFFFF',
     fontWeight: '900',
   },
-
   bottomSheet: {
     position: 'absolute',
     left: 0,
@@ -408,7 +376,6 @@ const styles = StyleSheet.create({
     paddingTop: 16,
     paddingBottom: 24,
   },
-
   dragHandle: {
     alignSelf: 'center',
     width: 48,
@@ -417,12 +384,10 @@ const styles = StyleSheet.create({
     backgroundColor: '#EEF2F7',
     marginBottom: isShort ? 24 : 30,
   },
-
   titleRow: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-
   orangeDot: {
     width: 10,
     height: 10,
@@ -430,7 +395,6 @@ const styles = StyleSheet.create({
     backgroundColor: ORANGE,
     marginRight: 9,
   },
-
   sheetTitle: {
     flex: 1,
     fontSize: rf(20),
@@ -439,7 +403,6 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     letterSpacing: -0.35,
   },
-
   sheetSubtitle: {
     marginTop: 12,
     fontSize: rf(16),
@@ -447,26 +410,22 @@ const styles = StyleSheet.create({
     color: '#667085',
     fontWeight: '600',
   },
-
   progressTextRow: {
     marginTop: isShort ? 26 : 34,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-
   progressLabel: {
     fontSize: rf(14),
     color: '#9CA3AF',
     fontWeight: '800',
   },
-
   progressValue: {
     fontSize: rf(14),
     color: '#15803D',
     fontWeight: '900',
   },
-
   progressTrack: {
     marginTop: 14,
     height: 12,
@@ -474,14 +433,12 @@ const styles = StyleSheet.create({
     backgroundColor: '#F1F5F9',
     overflow: 'hidden',
   },
-
   progressFill: {
     width: '45%',
     height: '100%',
     borderRadius: 12,
     backgroundColor: GREEN,
   },
-
   pauseButton: {
     marginTop: isShort ? 26 : 32,
     height: isSmall ? 56 : 58,
@@ -494,7 +451,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 12,
   },
-
   pauseIconCircle: {
     width: 34,
     height: 34,
@@ -504,13 +460,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   pauseText: {
     fontSize: rf(20),
     color: DARK,
     fontWeight: '900',
   },
-
   finishButton: {
     marginTop: 20,
     height: isSmall ? 60 : 64,
@@ -523,10 +477,12 @@ const styles = StyleSheet.create({
     shadowColor: '#16A34A',
     shadowOpacity: 0.28,
     shadowRadius: 16,
-    shadowOffset: {width: 0, height: 10},
+    shadowOffset: {
+      width: 0,
+      height: 10,
+    },
     elevation: 8,
   },
-
   finishIconCircle: {
     width: 34,
     height: 34,
@@ -536,13 +492,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   finishText: {
     fontSize: rf(19),
     color: '#FFFFFF',
     fontWeight: '900',
   },
-
   gpsIssueRow: {
     marginTop: isShort ? 22 : 28,
     alignSelf: 'center',
@@ -550,7 +504,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 8,
   },
-
   gpsIssueText: {
     fontSize: rf(14),
     color: '#9CA3AF',

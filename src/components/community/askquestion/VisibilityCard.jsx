@@ -1,8 +1,7 @@
 import React from 'react';
-import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
-import {COLORS, rf} from '../theme';
-
-export default function VisibilityCard({options, value, onChange}) {
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { COLORS, rf } from '../theme';
+export default function VisibilityCard({ options, value, onChange }) {
   return (
     <View style={styles.row}>
       {options.map(opt => {
@@ -13,12 +12,16 @@ export default function VisibilityCard({options, value, onChange}) {
             key={opt.id}
             activeOpacity={0.85}
             onPress={() => onChange(opt.id)}
-            style={[styles.card, active && styles.cardActive]}>
+            style={[styles.card, active && styles.cardActive]}
+          >
             <View
               style={[
                 styles.iconCircle,
-                active && {backgroundColor: COLORS.DARK_GREEN},
-              ]}>
+                active && {
+                  backgroundColor: COLORS.DARK_GREEN,
+                },
+              ]}
+            >
               <Icon
                 size={rf(14)}
                 color={active ? '#FFFFFF' : COLORS.DARK}
@@ -26,7 +29,13 @@ export default function VisibilityCard({options, value, onChange}) {
               />
             </View>
             <Text
-              style={[styles.title, active && {color: COLORS.DARK_GREEN}]}>
+              style={[
+                styles.title,
+                active && {
+                  color: COLORS.DARK_GREEN,
+                },
+              ]}
+            >
               {opt.label}
             </Text>
             <Text style={styles.sub}>{opt.sub}</Text>
@@ -36,9 +45,11 @@ export default function VisibilityCard({options, value, onChange}) {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
-  row: {flexDirection: 'row', gap: 8},
+  row: {
+    flexDirection: 'row',
+    gap: 8,
+  },
   card: {
     flex: 1,
     padding: 12,
@@ -49,7 +60,10 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 6,
   },
-  cardActive: {borderColor: COLORS.DARK_GREEN, backgroundColor: '#EAFBF0'},
+  cardActive: {
+    borderColor: COLORS.DARK_GREEN,
+    backgroundColor: '#EAFBF0',
+  },
   iconCircle: {
     width: 32,
     height: 32,
@@ -58,6 +72,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  title: {fontSize: rf(11.5), fontWeight: '900', color: COLORS.DARK, textAlign: 'center'},
-  sub: {fontSize: rf(9), fontWeight: '500', color: COLORS.MUTED, textAlign: 'center'},
+  title: {
+    fontSize: rf(11.5),
+    fontWeight: '900',
+    color: COLORS.DARK,
+    textAlign: 'center',
+  },
+  sub: {
+    fontSize: rf(9),
+    fontWeight: '500',
+    color: COLORS.MUTED,
+    textAlign: 'center',
+  },
 });

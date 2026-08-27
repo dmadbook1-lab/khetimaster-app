@@ -1,15 +1,17 @@
 import React from 'react';
-import {View, Text, Image, StyleSheet} from 'react-native';
-import {Wheat, Leaf} from 'lucide-react-native';
-import {COLORS, rf} from '../theme';
-import {COMMUNITY_IMAGES} from '../communityImages';
-
+import { View, Text, Image, StyleSheet } from 'react-native';
+import { Wheat, Leaf } from 'lucide-react-native';
+import { COLORS, rf } from '../theme';
+import { COMMUNITY_IMAGES } from '../communityImages';
 const IMG = COMMUNITY_IMAGES.community4;
-
-export default function YourQuestionCard({title, tags = []}) {
+export default function YourQuestionCard({ title, tags = [] }) {
   return (
     <View style={styles.wrap}>
-      <View style={{flex: 1}}>
+      <View
+        style={{
+          flex: 1,
+        }}
+      >
         <Text style={styles.label}>YOUR QUESTION</Text>
         <Text style={styles.title}>{title}</Text>
         <View style={styles.tagRow}>
@@ -18,7 +20,11 @@ export default function YourQuestionCard({title, tags = []}) {
             return (
               <View key={t.label} style={styles.tag}>
                 {Icon && (
-                  <Icon size={rf(11)} color={COLORS.DARK_GREEN} strokeWidth={2.3} />
+                  <Icon
+                    size={rf(11)}
+                    color={COLORS.DARK_GREEN}
+                    strokeWidth={2.3}
+                  />
                 )}
                 <Text style={styles.tagText}>{t.label}</Text>
               </View>
@@ -31,7 +37,6 @@ export default function YourQuestionCard({title, tags = []}) {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   wrap: {
     padding: 14,
@@ -55,7 +60,12 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     color: COLORS.DARK,
   },
-  tagRow: {marginTop: 10, flexDirection: 'row', flexWrap: 'wrap', gap: 6},
+  tagRow: {
+    marginTop: 10,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 6,
+  },
   tag: {
     height: 26,
     paddingHorizontal: 10,
@@ -65,7 +75,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 4,
   },
-  tagText: {fontSize: rf(10), fontWeight: '900', color: COLORS.DARK_GREEN},
+  tagText: {
+    fontSize: rf(10),
+    fontWeight: '900',
+    color: COLORS.DARK_GREEN,
+  },
   img: {
     width: 66,
     height: 66,

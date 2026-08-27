@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, Image} from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
 import {
   Play,
   Heart,
@@ -8,10 +8,9 @@ import {
   Share2,
   Eye,
 } from 'lucide-react-native';
-import {COLORS, rf} from './theme';
-import {resolveCommunityImageSource} from './communityImages';
-
-export default function PostCard({post}) {
+import { COLORS, rf } from './theme';
+import { resolveCommunityImageSource } from './communityImages';
+export default function PostCard({ post }) {
   return (
     <View style={styles.postCard}>
       <View style={styles.postHeader}>
@@ -38,7 +37,10 @@ export default function PostCard({post}) {
       <Text style={styles.postDesc}>{post.desc}</Text>
 
       <View style={styles.videoBox}>
-        <Image source={resolveCommunityImageSource(post.image)} style={styles.videoImage} />
+        <Image
+          source={resolveCommunityImageSource(post.image)}
+          style={styles.videoImage}
+        />
         <View style={styles.playCircle}>
           <Play
             size={rf(22)}
@@ -60,9 +62,12 @@ export default function PostCard({post}) {
         {post.hashtags.map((tag, i) => (
           <Text
             key={i}
-            style={tag.startsWith('#') && /[\u0900-\u097F]/.test(tag)
-              ? styles.hashtagBlue
-              : styles.hashtagGreen}>
+            style={
+              tag.startsWith('#') && /[\u0900-\u097F]/.test(tag)
+                ? styles.hashtagBlue
+                : styles.hashtagGreen
+            }
+          >
             {tag}
           </Text>
         ))}
@@ -77,7 +82,11 @@ export default function PostCard({post}) {
           <MessageCircle size={rf(15)} color={COLORS.MUTED} strokeWidth={2.2} />
           <Text style={styles.actionText}>{post.comments}</Text>
         </View>
-        <View style={{flex: 1}} />
+        <View
+          style={{
+            flex: 1,
+          }}
+        />
         <TouchableOpacity activeOpacity={0.7} style={styles.iconAction}>
           <Bookmark size={rf(15)} color={COLORS.MUTED} strokeWidth={2.2} />
         </TouchableOpacity>
@@ -88,7 +97,6 @@ export default function PostCard({post}) {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   postCard: {
     padding: 14,
@@ -112,9 +120,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  avatarText: {fontSize: rf(20)},
-  postUserBox: {flex: 1},
-  userName: {fontSize: rf(12), fontWeight: '900', color: COLORS.DARK},
+  avatarText: {
+    fontSize: rf(20),
+  },
+  postUserBox: {
+    flex: 1,
+  },
+  userName: {
+    fontSize: rf(12),
+    fontWeight: '900',
+    color: COLORS.DARK,
+  },
   userLocation: {
     marginTop: 2,
     fontSize: rf(9.5),
@@ -128,7 +144,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF7ED',
     justifyContent: 'center',
   },
-  progressiveTagText: {fontSize: rf(8), fontWeight: '900', color: COLORS.ORANGE},
+  progressiveTagText: {
+    fontSize: rf(8),
+    fontWeight: '900',
+    color: COLORS.ORANGE,
+  },
   followBtn: {
     height: 28,
     paddingHorizontal: 12,
@@ -137,8 +157,11 @@ const styles = StyleSheet.create({
     borderColor: COLORS.DARK_GREEN,
     justifyContent: 'center',
   },
-  followBtnText: {fontSize: rf(10), fontWeight: '900', color: COLORS.DARK_GREEN},
-
+  followBtnText: {
+    fontSize: rf(10),
+    fontWeight: '900',
+    color: COLORS.DARK_GREEN,
+  },
   postTitle: {
     marginTop: 12,
     fontSize: rf(13),
@@ -153,7 +176,6 @@ const styles = StyleSheet.create({
     fontWeight: '500',
     color: COLORS.MUTED,
   },
-
   videoBox: {
     marginTop: 12,
     height: 190,
@@ -162,7 +184,10 @@ const styles = StyleSheet.create({
     position: 'relative',
     backgroundColor: '#000',
   },
-  videoImage: {width: '100%', height: '100%'},
+  videoImage: {
+    width: '100%',
+    height: '100%',
+  },
   playCircle: {
     position: 'absolute',
     top: '50%',
@@ -188,7 +213,11 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     backgroundColor: 'rgba(0,0,0,0.55)',
   },
-  videoViewsText: {fontSize: rf(9), fontWeight: '900', color: '#FFFFFF'},
+  videoViewsText: {
+    fontSize: rf(9),
+    fontWeight: '900',
+    color: '#FFFFFF',
+  },
   videoDuration: {
     position: 'absolute',
     bottom: 10,
@@ -199,17 +228,27 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(0,0,0,0.55)',
     justifyContent: 'center',
   },
-  videoDurationText: {fontSize: rf(9), fontWeight: '900', color: '#FFFFFF'},
-
+  videoDurationText: {
+    fontSize: rf(9),
+    fontWeight: '900',
+    color: '#FFFFFF',
+  },
   hashtagRow: {
     marginTop: 10,
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 8,
   },
-  hashtagGreen: {fontSize: rf(11), fontWeight: '900', color: COLORS.DARK_GREEN},
-  hashtagBlue: {fontSize: rf(11), fontWeight: '900', color: COLORS.BLUE},
-
+  hashtagGreen: {
+    fontSize: rf(11),
+    fontWeight: '900',
+    color: COLORS.DARK_GREEN,
+  },
+  hashtagBlue: {
+    fontSize: rf(11),
+    fontWeight: '900',
+    color: COLORS.BLUE,
+  },
   postActionsRow: {
     marginTop: 10,
     paddingTop: 10,
@@ -225,6 +264,12 @@ const styles = StyleSheet.create({
     gap: 5,
     padding: 4,
   },
-  actionText: {fontSize: rf(11), fontWeight: '700', color: COLORS.MUTED},
-  iconAction: {padding: 6},
+  actionText: {
+    fontSize: rf(11),
+    fontWeight: '700',
+    color: COLORS.MUTED,
+  },
+  iconAction: {
+    padding: 6,
+  },
 });

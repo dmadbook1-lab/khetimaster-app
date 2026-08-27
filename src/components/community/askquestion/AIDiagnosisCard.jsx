@@ -1,9 +1,8 @@
 import React from 'react';
-import {View, Text, TouchableOpacity, StyleSheet} from 'react-native';
-import {Circle, Lightbulb} from 'lucide-react-native';
-import {COLORS, rf} from '../theme';
-
-export default function AIDiagnosisCard({onViewAdvice}) {
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { Circle, Lightbulb } from 'lucide-react-native';
+import { COLORS, rf } from '../theme';
+export default function AIDiagnosisCard({ onViewAdvice }) {
   return (
     <View style={styles.wrap}>
       <View style={styles.header}>
@@ -23,21 +22,25 @@ export default function AIDiagnosisCard({onViewAdvice}) {
       <TouchableOpacity
         activeOpacity={0.9}
         onPress={onViewAdvice}
-        style={styles.viewBtn}>
+        style={styles.viewBtn}
+      >
         <Lightbulb size={rf(15)} color={COLORS.DARK_GREEN} strokeWidth={2.3} />
         <Text style={styles.viewText}>View AI Advice</Text>
       </TouchableOpacity>
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   wrap: {
     padding: 16,
     borderRadius: 14,
     backgroundColor: COLORS.DARK_GREEN,
   },
-  header: {flexDirection: 'row', alignItems: 'center', gap: 8},
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
   dotCircle: {
     width: 22,
     height: 22,
@@ -47,7 +50,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  innerDot: {width: 8, height: 8, borderRadius: 4, backgroundColor: '#FFFFFF'},
+  innerDot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#FFFFFF',
+  },
   title: {
     fontSize: rf(11),
     fontWeight: '900',
@@ -91,5 +99,9 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 8,
   },
-  viewText: {fontSize: rf(12.5), fontWeight: '900', color: COLORS.DARK_GREEN},
+  viewText: {
+    fontSize: rf(12.5),
+    fontWeight: '900',
+    color: COLORS.DARK_GREEN,
+  },
 });

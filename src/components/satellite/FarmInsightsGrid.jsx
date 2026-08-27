@@ -1,10 +1,8 @@
 import React from 'react';
-import {View, Text, StyleSheet, Dimensions} from 'react-native';
-import {BookOpen, Box, Zap, TrendingUp} from 'lucide-react-native';
-
-const {width} = Dimensions.get('window');
+import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import { BookOpen, Box, Zap, TrendingUp } from 'lucide-react-native';
+const { width } = Dimensions.get('window');
 const CARD_WIDTH = (width - width * 0.074 - 16) / 2;
-
 const insights = [
   {
     Icon: BookOpen,
@@ -35,7 +33,6 @@ const insights = [
     bg: '#FAF5FF',
   },
 ];
-
 export default function FarmInsightsGrid() {
   return (
     <View style={styles.wrapper}>
@@ -47,10 +44,16 @@ export default function FarmInsightsGrid() {
       <View style={styles.grid}>
         {insights.map((item, index) => {
           const Icon = item.Icon;
-
           return (
             <View key={index} style={styles.card}>
-              <View style={[styles.iconBox, {backgroundColor: item.bg}]}>
+              <View
+                style={[
+                  styles.iconBox,
+                  {
+                    backgroundColor: item.bg,
+                  },
+                ]}
+              >
                 <Icon size={21} color={item.color} strokeWidth={2.4} />
               </View>
 
@@ -63,31 +66,26 @@ export default function FarmInsightsGrid() {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   wrapper: {
     marginTop: 34,
   },
-
   sectionRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-
   sectionTitle: {
     fontSize: 19,
     fontWeight: '900',
     color: '#111827',
     letterSpacing: -0.35,
   },
-
   viewAll: {
     fontSize: 14,
     fontWeight: '900',
     color: '#16883E',
   },
-
   grid: {
     marginTop: 18,
     flexDirection: 'row',
@@ -95,7 +93,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     rowGap: 16,
   },
-
   card: {
     width: CARD_WIDTH,
     height: 136,
@@ -107,10 +104,12 @@ const styles = StyleSheet.create({
     shadowColor: '#0F172A',
     shadowOpacity: 0.05,
     shadowRadius: 10,
-    shadowOffset: {width: 0, height: 5},
+    shadowOffset: {
+      width: 0,
+      height: 5,
+    },
     elevation: 2,
   },
-
   iconBox: {
     width: 40,
     height: 40,
@@ -118,14 +117,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-
   label: {
     marginTop: 16,
     fontSize: 12,
     fontWeight: '800',
     color: '#94A3B8',
   },
-
   value: {
     marginTop: 5,
     fontSize: 19,

@@ -6,17 +6,13 @@ import {
   StyleSheet,
   Dimensions,
 } from 'react-native';
-import {Search, SlidersHorizontal} from 'lucide-react-native';
-
-const {width} = Dimensions.get('window');
-
+import { Search, SlidersHorizontal } from 'lucide-react-native';
+const { width } = Dimensions.get('window');
 const GREEN = '#16883E';
-
 const rf = size => {
   const scale = width / 390;
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
-
 export default function FarmSearchBar() {
   return (
     <View style={styles.searchRow}>
@@ -35,7 +31,6 @@ export default function FarmSearchBar() {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   searchRow: {
     marginTop: 28,
@@ -44,7 +39,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 10,
   },
-
   searchBox: {
     flex: 1,
     height: '100%',
@@ -56,7 +50,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 14,
   },
-
   searchInput: {
     flex: 1,
     marginLeft: 8,
@@ -65,7 +58,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#111827',
   },
-
   filterBtn: {
     width: 46,
     height: 46,

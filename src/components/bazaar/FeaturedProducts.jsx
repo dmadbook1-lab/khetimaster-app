@@ -8,17 +8,13 @@ import {
   StyleSheet,
   Dimensions,
 } from 'react-native';
-import {ChevronRight, Star} from 'lucide-react-native';
-
-const {width} = Dimensions.get('window');
-
+import { ChevronRight, Star } from 'lucide-react-native';
+const { width } = Dimensions.get('window');
 const CARD_WIDTH = width * 0.34;
-
 const rf = size => {
   const scale = width / 390;
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
-
 const products = [
   {
     title: 'Pioneer Soybean Seed',
@@ -45,7 +41,6 @@ const products = [
     image: require('../../assets/bazar/product3.jpg'),
   },
 ];
-
 export default function FeaturedProducts() {
   return (
     <View style={styles.wrapper}>
@@ -61,10 +56,15 @@ export default function FeaturedProducts() {
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.row}>
+        contentContainerStyle={styles.row}
+      >
         {products.map((item, index) => (
           <TouchableOpacity key={index} activeOpacity={0.9} style={styles.card}>
-            <Image source={item.image} style={styles.image} resizeMode="contain" />
+            <Image
+              source={item.image}
+              style={styles.image}
+              resizeMode="contain"
+            />
 
             <Text numberOfLines={2} style={styles.title}>
               {item.title}
@@ -86,42 +86,35 @@ export default function FeaturedProducts() {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   wrapper: {
     marginTop: 28,
   },
-
   sectionRow: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-
   sectionTitle: {
     fontSize: rf(20),
     color: '#111827',
     fontWeight: '900',
     letterSpacing: -0.35,
   },
-
   viewRow: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-
   viewAll: {
     fontSize: rf(12),
     color: '#16883E',
     fontWeight: '900',
   },
-
   row: {
     marginTop: 18,
     gap: 14,
     paddingRight: 24,
   },
-
   card: {
     width: CARD_WIDTH,
     height: 166,
@@ -130,19 +123,19 @@ const styles = StyleSheet.create({
     padding: 12,
     borderWidth: 1,
     borderColor: '#EEF2F7',
-
     shadowColor: '#0F172A',
     shadowOpacity: 0.05,
     shadowRadius: 10,
-    shadowOffset: {width: 0, height: 5},
+    shadowOffset: {
+      width: 0,
+      height: 5,
+    },
     elevation: 2,
   },
-
   image: {
     width: '100%',
     height: 72,
   },
-
   title: {
     marginTop: 8,
     fontSize: rf(11),
@@ -150,38 +143,32 @@ const styles = StyleSheet.create({
     color: '#111827',
     fontWeight: '900',
   },
-
   priceRow: {
     marginTop: 7,
     flexDirection: 'row',
     alignItems: 'flex-end',
   },
-
   price: {
     fontSize: rf(14),
     color: '#111827',
     fontWeight: '900',
   },
-
   unit: {
     fontSize: rf(9),
     color: '#64748B',
     fontWeight: '700',
   },
-
   ratingRow: {
     marginTop: 7,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
   },
-
   rating: {
     fontSize: rf(10),
     color: '#111827',
     fontWeight: '800',
   },
-
   reviews: {
     fontSize: rf(9),
     color: '#94A3B8',

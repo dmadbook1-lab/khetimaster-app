@@ -1,14 +1,11 @@
 import React from 'react';
-import {View, Text, StyleSheet, Dimensions} from 'react-native';
-import {Users, Tractor, ShoppingBag, ChevronRight} from 'lucide-react-native';
-
-const {width} = Dimensions.get('window');
-
+import { View, Text, StyleSheet, Dimensions } from 'react-native';
+import { Users, Tractor, ShoppingBag, ChevronRight } from 'lucide-react-native';
+const { width } = Dimensions.get('window');
 const rf = size => {
   const scale = width / 390;
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
-
 const activities = [
   {
     Icon: Users,
@@ -38,7 +35,6 @@ const activities = [
     bg: '#ECFDF5',
   },
 ];
-
 export default function BazaarRecentActivity() {
   return (
     <View style={styles.wrapper}>
@@ -54,10 +50,16 @@ export default function BazaarRecentActivity() {
       <View style={styles.list}>
         {activities.map((item, index) => {
           const Icon = item.Icon;
-
           return (
             <View key={index} style={styles.card}>
-              <View style={[styles.iconBox, {backgroundColor: item.bg}]}>
+              <View
+                style={[
+                  styles.iconBox,
+                  {
+                    backgroundColor: item.bg,
+                  },
+                ]}
+              >
                 <Icon size={22} color={item.color} strokeWidth={2.4} />
               </View>
 
@@ -67,8 +69,22 @@ export default function BazaarRecentActivity() {
                     {item.title}
                   </Text>
 
-                  <View style={[styles.status, {backgroundColor: item.bg}]}>
-                    <Text style={[styles.statusText, {color: item.color}]}>
+                  <View
+                    style={[
+                      styles.status,
+                      {
+                        backgroundColor: item.bg,
+                      },
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        styles.statusText,
+                        {
+                          color: item.color,
+                        },
+                      ]}
+                    >
                       {item.status}
                     </Text>
                   </View>
@@ -89,41 +105,34 @@ export default function BazaarRecentActivity() {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   wrapper: {
     marginTop: 28,
   },
-
   sectionRow: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
   },
-
   sectionTitle: {
     fontSize: rf(20),
     color: '#111827',
     fontWeight: '900',
     letterSpacing: -0.35,
   },
-
   viewRow: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-
   viewAll: {
     fontSize: rf(12),
     color: '#16883E',
     fontWeight: '900',
   },
-
   list: {
     marginTop: 18,
     gap: 12,
   },
-
   card: {
     minHeight: 78,
     borderRadius: 18,
@@ -133,14 +142,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1,
     borderColor: '#EEF2F7',
-
     shadowColor: '#0F172A',
     shadowOpacity: 0.05,
     shadowRadius: 10,
-    shadowOffset: {width: 0, height: 5},
+    shadowOffset: {
+      width: 0,
+      height: 5,
+    },
     elevation: 2,
   },
-
   iconBox: {
     width: 46,
     height: 46,
@@ -149,23 +159,19 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginRight: 13,
   },
-
   textBox: {
     flex: 1,
   },
-
   topRow: {
     flexDirection: 'row',
     alignItems: 'center',
   },
-
   title: {
     flex: 1,
     fontSize: rf(13),
     color: '#111827',
     fontWeight: '900',
   },
-
   status: {
     height: 22,
     borderRadius: 11,
@@ -173,19 +179,16 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginLeft: 8,
   },
-
   statusText: {
     fontSize: rf(8),
     fontWeight: '900',
   },
-
   desc: {
     marginTop: 4,
     fontSize: rf(11),
     color: '#667085',
     fontWeight: '700',
   },
-
   time: {
     marginTop: 4,
     fontSize: rf(9),

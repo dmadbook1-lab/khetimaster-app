@@ -1,11 +1,14 @@
 import React from 'react';
-import {View, Text, TouchableOpacity, StyleSheet, Dimensions} from 'react-native';
-import {BookOpen, Download, Share2} from 'lucide-react-native';
-
-const {width} = Dimensions.get('window');
-
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Dimensions,
+} from 'react-native';
+import { BookOpen, Download, Share2 } from 'lucide-react-native';
+const { width } = Dimensions.get('window');
 const CARD_WIDTH = (width - width * 0.074 - 24) / 3;
-
 const actions = [
   {
     title: 'View Advisory',
@@ -21,7 +24,6 @@ const actions = [
     Icon: Share2,
   },
 ];
-
 export default function SatelliteQuickActions() {
   return (
     <View style={styles.wrapper}>
@@ -30,12 +32,12 @@ export default function SatelliteQuickActions() {
       <View style={styles.row}>
         {actions.map((item, index) => {
           const Icon = item.Icon;
-
           return (
             <TouchableOpacity
               key={index}
               activeOpacity={0.85}
-              style={[styles.card, item.active && styles.activeCard]}>
+              style={[styles.card, item.active && styles.activeCard]}
+            >
               <Icon
                 size={24}
                 color={item.active ? '#FFFFFF' : '#475467'}
@@ -52,25 +54,21 @@ export default function SatelliteQuickActions() {
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   wrapper: {
     marginTop: 36,
   },
-
   sectionTitle: {
     fontSize: 19,
     fontWeight: '900',
     color: '#111827',
     letterSpacing: -0.35,
   },
-
   row: {
     marginTop: 18,
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-
   card: {
     width: CARD_WIDTH,
     height: 104,
@@ -83,17 +81,18 @@ const styles = StyleSheet.create({
     shadowColor: '#0F172A',
     shadowOpacity: 0.06,
     shadowRadius: 12,
-    shadowOffset: {width: 0, height: 6},
+    shadowOffset: {
+      width: 0,
+      height: 6,
+    },
     elevation: 3,
   },
-
   activeCard: {
     backgroundColor: '#16883E',
     borderColor: '#16883E',
     shadowColor: '#16883E',
     shadowOpacity: 0.26,
   },
-
   text: {
     marginTop: 12,
     fontSize: 12,
@@ -101,7 +100,6 @@ const styles = StyleSheet.create({
     color: '#344054',
     textAlign: 'center',
   },
-
   activeText: {
     color: '#FFFFFF',
   },

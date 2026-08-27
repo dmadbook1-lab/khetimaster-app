@@ -1,20 +1,28 @@
 import React from 'react';
-import {View, Text, StyleSheet, TouchableOpacity, Dimensions} from 'react-native';
-import {ChevronLeft, Bell} from 'lucide-react-native';
-
-const {width} = Dimensions.get('window');
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Dimensions,
+} from 'react-native';
+import { ChevronLeft, Bell } from 'lucide-react-native';
+const { width } = Dimensions.get('window');
 const rf = size => {
   const scale = width / 390;
   return Math.max(size, Math.min(size * scale, size + 3));
 };
-
-export default function LabourBookingHeader({navigation, onNotificationPress}) {
+export default function LabourBookingHeader({
+  navigation,
+  onNotificationPress,
+}) {
   return (
     <View style={styles.header}>
       <TouchableOpacity
         activeOpacity={0.8}
         onPress={() => navigation.goBack()}
-        style={styles.iconWrap}>
+        style={styles.iconWrap}
+      >
         <ChevronLeft size={rf(26)} color="#16A34A" strokeWidth={2.6} />
       </TouchableOpacity>
 
@@ -23,13 +31,13 @@ export default function LabourBookingHeader({navigation, onNotificationPress}) {
       <TouchableOpacity
         activeOpacity={0.8}
         onPress={onNotificationPress}
-        style={styles.iconWrap}>
+        style={styles.iconWrap}
+      >
         <Bell size={rf(22)} color="#16A34A" strokeWidth={2.4} />
       </TouchableOpacity>
     </View>
   );
 }
-
 const styles = StyleSheet.create({
   header: {
     height: 60,
