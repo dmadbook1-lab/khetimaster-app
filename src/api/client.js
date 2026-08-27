@@ -1,13 +1,16 @@
 import axios from 'axios';
+import { API_BASE_URL } from '@env';
 import {
   getAccessToken,
   getRefreshToken,
   saveTokens,
   clearTokens,
 } from '../utils/tokenStorage';
-const API_BASE_URL = 'http://127.0.0.1:7070';
+
+const BASE_URL = API_BASE_URL || 'http://127.0.0.1:7070';
+
 const apiClient = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: BASE_URL,
   headers: {
     'Content-Type': 'application/json',
   },
@@ -66,7 +69,7 @@ apiClient.interceptors.response.use(
         return Promise.reject(error);
       }
       const refreshResponse = await axios.post(
-        `${API_BASE_URL}/api/auth/refresh`,
+        `${BASE_URL}/api/auth/refresh`,
         {
           refreshToken,
         },
