@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import {
   View,
   Text,
@@ -10,8 +10,10 @@ import {
   Image,
   ImageBackground,
   Alert,
+  Linking,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useDispatch, useSelector } from 'react-redux';
 import LinearGradient from 'react-native-linear-gradient';
 import {
   Check,
@@ -28,80 +30,158 @@ import {
   UserRound,
   Sparkles,
   Truck,
-  Circle,
-  ArrowLeft,
-  LocateFixed,
+  ClipboardList,
 } from 'lucide-react-native';
+
+import { getMachineryBookingById } from '../../redux/slices/machineryBookingSlice';
+
 const { width } = Dimensions.get('window');
-const GREEN = '#16A34A';
-const DARK_GREEN = '#16883E';
 const BRIGHT_GREEN = '#1FC45A';
+const DARK_GREEN = '#16883E';
 const DARK = '#172033';
 const MUTED = '#7B8494';
 const BORDER = '#E7EBED';
 const PAGE_BG = '#F5F7F6';
 const PAGE_PADDING = width * 0.037;
+
+// Upscaled font utility
 const rf = size => {
   const scale = width / 390;
-  return Math.max(size - 2, Math.min(size * scale, size + 2));
+  return Math.max(size - 1, Math.min(size * scale, size + 3));
 };
-const DEFAULT_MACHINE = {
-  name: 'Sonalika DI 745',
-  horsepower: '45 HP',
-  driveType: '2WD',
-  fuelType: 'Diesel',
-  rating: '4.8',
-  reviews: 128,
-  distance: '2.1 km Away',
-  owner: 'Patil Agro Services',
-  image: require('../../assets/machinery/sonalika-di-745.jpg'),
-  ownerImage: require('../../assets/machinery/owner-1.jpg'),
-};
+
 const formatINR = value => `₹${Number(value || 0).toLocaleString('en-IN')}`;
-export default function MachineryBookingSuccessScreen({ navigation, route }) {
-  const machine = route?.params?.machine || DEFAULT_MACHINE;
-  const hours = route?.params?.hours || 4;
-  const includeOperator = route?.params?.includeOperator ?? true;
-  const grandTotal = route?.params?.grandTotal || 3880;
-  const bookingId = route?.params?.bookingId || '#KMB274618';
-  const handleTrackMachinery = () => {
-    navigation.navigate('MachineryLiveTracking', {
-      machine,
-      hours,
-      includeOperator,
-      grandTotal,
-      bookingId,
+
+const formatDate = date => {
+  if (!date) return 'N/A';
+  try {
+    const d = new Date(date);
+    return d.toLocaleDateString('en-IN', {
+      day: '2-digit',
+      month: 'long',
+      year: 'numeric',
     });
+  } catch {
+    return 'N/A';
+  }
+};
+
+const getEstimatedMinutes = () => Math.floor(Math.random() * 30) + 15;
+
+export default function MachineryBookingSuccessScreen({ navigation, route }) {
+  const dispatch = useDispatch();
+
+  const bookingFromRoute = route?.params?.booking;
+  const bookingId = route?.params?.bookingId;
+
+  const { selectedBooking } = useSelector(
+    state => state.machineryBooking || {},
+  );
+
+  useEffect(() => {
+    if (bookingId && !bookingFromRoute) {
+      dispatch(getMachineryBookingById(bookingId));
+    }
+  }, [dispatch, bookingId, bookingFromRoute]);
+
+  const booking = bookingFromRoute || selectedBooking || {};
+
+  const machinery = booking.machinery || {};
+  const machineryName = machinery.name || 'Machinery';
+  
+  const machineryImage =
+    Array.isArray(machinery.images) && machinery.images.length > 0
+      ? { uri: machinery.images[0] }
+      : require('../../assets/machinery/sonalika-di-745.jpg');
+  
+  const enginePower = machinery.enginePower || {};
+  const horsepower = enginePower.value
+    ? `${enginePower.value} ${enginePower.unit || 'HP'}`
+    : 'N/A';
+  const driveType = machinery.driveType || 'N/A';
+  const fuelType = machinery.fuelType
+    ? machinery.fuelType.charAt(0).toUpperCase() + machinery.fuelType.slice(1)
+    : 'N/A';
+  const rating = machinery.rating || 0;
+  const totalReviews = machinery.totalReviews || 0;
+  const totalJobsCompleted = machinery.totalJobsCompleted || 0;
+
+  const machineryLocation = [
+    machinery.village,
+    machinery.district,
+    machinery.state,
+  ]
+    .filter(Boolean)
+    .join(', ');
+
+  const owner = machinery.owner || {};
+  const ownerName = machinery.ownerName || owner.fullName || 'Owner';
+  const ownerPhone = owner.phoneNumber || '';
+  
+  const ownerImageSource = owner.profileImage
+    ? { uri: owner.profileImage }
+    : require('../../assets/machinery/owner-1.jpg');
+
+  const displayBookingId =
+    booking._id || booking.id
+      ? `#${String(booking._id || booking.id).slice(-8).toUpperCase()}`
+      : 'N/A';
+
+  const bookingDate = booking.bookingDate;
+  const startTime = booking.startTime || 'N/A';
+  const duration = booking.duration || 0;
+  const durationUnit = booking.durationUnit || 'hours';
+
+  const grandTotal = booking.totalAmount || 0;
+  const farmName = booking.farmName || 'Your Farm';
+  const farmerNotes = booking.farmerNotes || '';
+  const workType = booking.workType || 'Cultivation';
+  const status = booking.status || 'pending';
+
+  const estimatedMinutes = getEstimatedMinutes();
+
+  const handleViewBookings = () => {
+    navigation.navigate('MachineryMyBookings');
   };
-  const handleBackToBazaar = () => {
+
+  const handleBackToHome = () => {
     navigation.reset({
       index: 0,
-      routes: [
-        {
-          name: 'Bazaar',
-        },
-      ],
+      routes: [{ name: 'Bazaar' }],
     });
   };
+
+  const handleCallOwner = () => {
+    if (!ownerPhone) {
+      Alert.alert('Contact Unavailable', 'Owner phone not available.');
+      return;
+    }
+    Linking.openURL(`tel:${ownerPhone}`).catch(() =>
+      Alert.alert('Error', 'Could not open dialer.'),
+    );
+  };
+
+  const handleChatOwner = () => {
+    Alert.alert('Chat', 'Chat feature coming soon.');
+  };
+
+  const handleCopyBookingId = () => {
+    Alert.alert('Booking ID', `${displayBookingId} — Copy manually.`);
+  };
+
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
       <StatusBar barStyle="light-content" backgroundColor="#FFFFFF" />
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
-      >
+        contentContainerStyle={styles.scrollContent}>
         <ImageBackground
-          source={require('../../assets/machinery/machinery-hero.png')}
+          source={machineryImage}
           style={styles.hero}
-          resizeMode="cover"
-        >
+          resizeMode="cover">
           <LinearGradient
-            colors={[
-              'rgba(255,255,255,0)',
-              'rgba(255,255,255,0.12)',
-              '#F5F7F6',
-            ]}
+            colors={['rgba(255,255,255,0)', 'rgba(255,255,255,0.12)', PAGE_BG]}
             locations={[0, 0.53, 1]}
             style={styles.heroGradient}
           />
@@ -109,126 +189,193 @@ export default function MachineryBookingSuccessScreen({ navigation, route }) {
 
         <View style={styles.successCircleOuter}>
           <View style={styles.successCircle}>
-            <Check size={rf(36)} color="#FFFFFF" strokeWidth={3} />
+            <Check size={rf(38)} color="#FFFFFF" strokeWidth={3} />
           </View>
         </View>
 
         <View style={styles.successTextBox}>
-          <Text style={styles.successTitle}>Booking Confirmed! 🎉</Text>
+          <Text style={styles.successTitle}>
+            {status === 'pending' ? 'Request Sent! 🎉' : 'Booking Confirmed! 🎉'}
+          </Text>
 
           <Text style={styles.successDescription}>
-            Your tractor has been successfully reserved.
-            {'\n'}The owner has been notified and is
-            {'\n'}preparing for dispatch.
+            {status === 'pending'
+              ? 'Your request has been sent to the owner.\nYou will be notified once confirmed.'
+              : 'Your machinery has been successfully reserved.\nThe owner has been notified and is\npreparing for dispatch.'}
           </Text>
         </View>
 
         <View style={styles.pageContent}>
           <Text style={styles.sectionTitle}>Assigned Machine</Text>
 
-          <AssignedMachineCard machine={machine} />
+          <AssignedMachineCard
+            machineryName={machineryName}
+            machineryImage={machineryImage}
+            horsepower={horsepower}
+            driveType={driveType}
+            fuelType={fuelType}
+            rating={rating}
+            totalReviews={totalReviews}
+            totalJobsCompleted={totalJobsCompleted}
+            location={machineryLocation}
+            ownerName={ownerName}
+            ownerImageSource={ownerImageSource}
+            status={status}
+          />
 
-          <Text style={styles.sectionTitle}>Estimated Arrival</Text>
-
-          <ArrivalCard />
+          {status !== 'pending' && (
+            <>
+              <Text style={styles.sectionTitle}>Estimated Arrival</Text>
+              <ArrivalCard
+                minutes={estimatedMinutes}
+                startTime={startTime}
+                bookingDate={bookingDate}
+                farmName={farmName}
+              />
+            </>
+          )}
 
           <Text style={styles.sectionTitle}>Owner Profile</Text>
 
-          <OwnerProfileCard machine={machine} />
+          <OwnerProfileCard
+            ownerName={ownerName}
+            ownerImageSource={ownerImageSource}
+            rating={rating}
+            totalJobsCompleted={totalJobsCompleted}
+            onCall={handleCallOwner}
+            onChat={handleChatOwner}
+          />
 
           <Text style={styles.sectionTitle}>Booking Summary</Text>
 
           <BookingSummaryCard
-            bookingId={bookingId}
-            hours={hours}
-            includeOperator={includeOperator}
+            bookingId={displayBookingId}
+            farmName={farmName}
+            bookingDate={bookingDate}
+            startTime={startTime}
+            duration={duration}
+            durationUnit={durationUnit}
+            workType={workType}
             grandTotal={grandTotal}
+            onCopy={handleCopyBookingId}
           />
 
-          <AIAlertCard />
+          {farmerNotes ? (
+            <>
+              <Text style={styles.sectionTitle}>Your Notes</Text>
+              <View style={styles.notesCard}>
+                <Text style={styles.notesText}>{farmerNotes}</Text>
+              </View>
+            </>
+          ) : null}
+
+          <AIAlertCard workType={workType} />
 
           <Text style={styles.sectionTitle}>Booking Progress</Text>
 
-          <BookingProgressCard />
         </View>
       </ScrollView>
 
       <View style={styles.bottomBar}>
         <TouchableOpacity
           activeOpacity={0.88}
-          onPress={handleBackToBazaar}
-          style={styles.backBazaarButton}
-        >
-          <Home size={rf(18)} color={BRIGHT_GREEN} strokeWidth={2.4} />
-
-          <Text style={styles.backBazaarText}>Back to Bazaar</Text>
+          onPress={handleBackToHome}
+          style={styles.homeButton}>
+          <Home size={rf(19)} color={BRIGHT_GREEN} strokeWidth={2.4} />
+          <Text style={styles.homeButtonText}>Home</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           activeOpacity={0.9}
-          onPress={handleTrackMachinery}
-          style={styles.trackButton}
-        >
-          <MapPin size={rf(18)} color="#FFFFFF" strokeWidth={2.4} />
-
-          <Text style={styles.trackButtonText}>Track Machinery</Text>
+          onPress={handleViewBookings}
+          style={styles.viewBookingsButton}>
+          <ClipboardList size={rf(19)} color="#FFFFFF" strokeWidth={2.4} />
+          <Text style={styles.viewBookingsButtonText}>View My Bookings</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
 }
-function AssignedMachineCard({ machine }) {
+
+function AssignedMachineCard({
+  machineryName,
+  machineryImage,
+  horsepower,
+  driveType,
+  fuelType,
+  rating,
+  totalReviews,
+  totalJobsCompleted,
+  location,
+  ownerName,
+  ownerImageSource,
+  status,
+}) {
+  const statusLabel =
+    status === 'pending'
+      ? 'Pending'
+      : status === 'confirmed'
+      ? 'Confirmed'
+      : status === 'completed'
+      ? 'Completed'
+      : 'Assigned';
+
+  const statusColor = status === 'pending' ? '#F59E0B' : BRIGHT_GREEN;
+  const statusBg = status === 'pending' ? '#FEF3C7' : '#EAFBF0';
+
   return (
     <View style={styles.machineCard}>
       <Image
-        source={machine.image}
+        source={machineryImage}
         style={styles.machineImage}
         resizeMode="cover"
       />
 
-      <View style={styles.assignedBadge}>
-        <View style={styles.assignedDot} />
-
-        <Text style={styles.assignedText}>Assigned</Text>
+      <View style={[styles.assignedBadge, { backgroundColor: statusBg }]}>
+        <View style={[styles.assignedDot, { backgroundColor: statusColor }]} />
+        <Text style={[styles.assignedText, { color: statusColor }]}>
+          {statusLabel}
+        </Text>
       </View>
 
       <View style={styles.machineContent}>
-        <Text style={styles.machineName}>{machine.name}</Text>
+        <Text style={styles.machineName}>{machineryName}</Text>
 
         <Text style={styles.machineSpecs}>
-          {machine.horsepower} · {machine.driveType} · {machine.fuelType}
+          {horsepower} · {driveType} · {fuelType}
         </Text>
 
         <View style={styles.machineMetaRow}>
-          <Star size={rf(12)} color="#FACC15" fill="#FACC15" />
+          <Star size={rf(13)} color="#FACC15" fill="#FACC15" />
+          <Text style={styles.machineRating}>
+            {rating > 0 ? rating.toFixed(1) : 'New'}
+          </Text>
+          <Text style={styles.machineReviews}>({totalReviews})</Text>
 
-          <Text style={styles.machineRating}>{machine.rating}</Text>
-
-          <Text style={styles.machineReviews}>({machine.reviews})</Text>
-
-          <MapPin size={rf(12)} color="#EF4444" strokeWidth={2.3} />
-
-          <Text style={styles.machineDistance}>{machine.distance}</Text>
-
-          <Text style={styles.machineAvailable}>Available Today</Text>
+          {location ? (
+            <>
+              <MapPin size={rf(13)} color="#EF4444" strokeWidth={2.3} />
+              <Text style={styles.machineDistance} numberOfLines={1}>
+                {location}
+              </Text>
+            </>
+          ) : null}
         </View>
 
         <View style={styles.machineDivider} />
 
         <View style={styles.ownerStrip}>
-          <Image source={machine.ownerImage} style={styles.ownerSmallImage} />
+          <Image source={ownerImageSource} style={styles.ownerSmallImage} />
 
           <View style={styles.ownerStripContent}>
-            <Text style={styles.ownerStripName}>{machine.owner}</Text>
-
+            <Text style={styles.ownerStripName}>{ownerName}</Text>
             <Text style={styles.ownerStripSub}>
-              Verified Partner · 250+ Bookings
+              Verified Partner · {totalJobsCompleted} Jobs
             </Text>
           </View>
 
           <View style={styles.verifiedBadge}>
-            <BadgeCheck size={rf(11)} color="#2563EB" strokeWidth={2.5} />
-
+            <BadgeCheck size={rf(12)} color="#2563EB" strokeWidth={2.5} />
             <Text style={styles.verifiedText}>Verified</Text>
           </View>
         </View>
@@ -236,61 +383,62 @@ function AssignedMachineCard({ machine }) {
     </View>
   );
 }
-function ArrivalCard() {
+
+function ArrivalCard({ minutes, startTime, bookingDate, farmName }) {
   return (
     <LinearGradient
       colors={['#158B3D', '#16883E']}
-      start={{
-        x: 0,
-        y: 0,
-      }}
-      end={{
-        x: 1,
-        y: 0,
-      }}
-      style={styles.arrivalCard}
-    >
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 0 }}
+      style={styles.arrivalCard}>
       <View style={styles.arrivalIconBox}>
-        <Truck size={rf(27)} color="#31D46A" strokeWidth={2.3} />
+        <Truck size={rf(28)} color="#31D46A" strokeWidth={2.3} />
       </View>
 
       <View style={styles.arrivalContent}>
-        <Text style={styles.arrivalLabel}>ARRIVING AT PATIL FARM</Text>
-
-        <Text style={styles.arrivalTime}>08:30 AM</Text>
-
-        <Text style={styles.arrivalDate}>Today · Thursday, 26 June 2026</Text>
+        <Text style={styles.arrivalLabel}>
+          ARRIVING AT {farmName.toUpperCase()}
+        </Text>
+        <Text style={styles.arrivalTime}>{startTime}</Text>
+        <Text style={styles.arrivalDate}>{formatDate(bookingDate)}</Text>
       </View>
 
       <View style={styles.minutesBox}>
-        <Text style={styles.minutesValue}>~25</Text>
-
+        <Text style={styles.minutesValue}>~{minutes}</Text>
         <Text style={styles.minutesLabel}>MIN AWAY</Text>
       </View>
     </LinearGradient>
   );
 }
-function OwnerProfileCard({ machine }) {
+
+function OwnerProfileCard({
+  ownerName,
+  ownerImageSource,
+  rating,
+  totalJobsCompleted,
+  onCall,
+  onChat,
+}) {
   return (
     <View style={styles.ownerCard}>
       <View style={styles.ownerTopRow}>
-        <Image source={machine.ownerImage} style={styles.ownerImage} />
+        <Image source={ownerImageSource} style={styles.ownerImage} />
 
         <View style={styles.ownerDetails}>
-          <Text style={styles.ownerName}>Rajesh Patil</Text>
-
-          <Text style={styles.ownerCompany}>
-            Patil Agro Services · Verified Partner
-          </Text>
+          <Text style={styles.ownerName}>{ownerName}</Text>
+          <Text style={styles.ownerCompany}>Verified Partner</Text>
 
           <View style={styles.ownerMetaRow}>
-            <Star size={rf(12)} color="#FACC15" fill="#FACC15" />
-
-            <Text style={styles.ownerRating}>4.9</Text>
+            <Star size={rf(13)} color="#FACC15" fill="#FACC15" />
+            <Text style={styles.ownerRating}>
+              {rating > 0 ? rating.toFixed(1) : 'New'}
+            </Text>
 
             <View style={styles.ownerSeparator} />
 
-            <Text style={styles.ownerBookings}>250+ Bookings</Text>
+            <Text style={styles.ownerBookings}>
+              {totalJobsCompleted}+ Jobs
+            </Text>
 
             <View style={styles.ownerSeparator} />
 
@@ -302,75 +450,62 @@ function OwnerProfileCard({ machine }) {
       <View style={styles.ownerActions}>
         <TouchableOpacity
           activeOpacity={0.85}
-          onPress={() => Alert.alert('Call Owner', 'Calling Rajesh Patil...')}
-          style={styles.callButton}
-        >
-          <Phone size={rf(17)} color="#FFFFFF" strokeWidth={2.4} />
-
+          onPress={onCall}
+          style={styles.callButton}>
+          <Phone size={rf(18)} color="#FFFFFF" strokeWidth={2.4} />
           <Text style={styles.callText}>Call</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
           activeOpacity={0.85}
-          onPress={() =>
-            Alert.alert('Chat Owner', 'Opening chat with Rajesh Patil.')
-          }
-          style={styles.chatButton}
-        >
-          <MessageCircle size={rf(17)} color={BRIGHT_GREEN} strokeWidth={2.4} />
-
+          onPress={onChat}
+          style={styles.chatButton}>
+          <MessageCircle size={rf(18)} color={BRIGHT_GREEN} strokeWidth={2.4} />
           <Text style={styles.chatText}>Chat</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 }
-function BookingSummaryCard({ bookingId, hours, includeOperator, grandTotal }) {
+
+function BookingSummaryCard({
+  bookingId,
+  farmName,
+  bookingDate,
+  startTime,
+  duration,
+  durationUnit,
+  workType,
+  grandTotal,
+  onCopy,
+}) {
   const rows = [
-    {
-      id: 'farm',
-      label: 'Farm Name',
-      value: 'Patil Farm',
-      Icon: Home,
-    },
+    { id: 'farm', label: 'Farm Name', value: farmName, Icon: Home },
     {
       id: 'date',
       label: 'Booking Date',
-      value: '26 June 2026',
+      value: formatDate(bookingDate),
       Icon: CalendarDays,
     },
-    {
-      id: 'time',
-      label: 'Booking Time',
-      value: '8:00 AM',
-      Icon: Clock3,
-    },
+    { id: 'time', label: 'Start Time', value: startTime, Icon: Clock3 },
     {
       id: 'duration',
       label: 'Duration',
-      value: `${hours} Hours`,
+      value: `${duration} ${durationUnit}`,
       Icon: Timer,
     },
-    {
-      id: 'operator',
-      label: 'Operator',
-      value: includeOperator ? 'Included' : 'Not Included',
-      Icon: UserRound,
-      green: includeOperator,
-    },
+    { id: 'work', label: 'Work Type', value: workType, Icon: UserRound },
   ];
+
   return (
     <View style={styles.summaryCard}>
       <View style={styles.summaryHeader}>
         <Text style={styles.bookingIdText}>Booking ID: {bookingId}</Text>
-
         <TouchableOpacity
           activeOpacity={0.8}
-          onPress={() => Alert.alert('Copied', `${bookingId} copied.`)}
-          style={styles.copyButton}
-        >
-          <Copy size={rf(13)} color={BRIGHT_GREEN} strokeWidth={2.4} />
-
+          onPress={onCopy}
+          style={styles.copyButton}>
+          <Copy size={rf(14)} color={BRIGHT_GREEN} strokeWidth={2.4} />
           <Text style={styles.copyText}>Copy</Text>
         </TouchableOpacity>
       </View>
@@ -380,18 +515,9 @@ function BookingSummaryCard({ bookingId, hours, includeOperator, grandTotal }) {
           const Icon = item.Icon;
           return (
             <View key={item.id} style={styles.summaryRow}>
-              <Icon size={rf(15)} color="#98A1AF" strokeWidth={2.2} />
-
+              <Icon size={rf(16)} color="#98A1AF" strokeWidth={2.2} />
               <Text style={styles.summaryLabel}>{item.label}</Text>
-
-              <Text
-                style={[
-                  styles.summaryValue,
-                  item.green && styles.greenSummaryValue,
-                ]}
-              >
-                {item.value}
-              </Text>
+              <Text style={styles.summaryValue}>{item.value}</Text>
             </View>
           );
         })}
@@ -399,389 +525,224 @@ function BookingSummaryCard({ bookingId, hours, includeOperator, grandTotal }) {
         <View style={styles.summaryDivider} />
 
         <View style={styles.totalRow}>
-          <Text style={styles.totalLabel}>Total Paid</Text>
-
+          <Text style={styles.totalLabel}>Total Amount</Text>
           <Text style={styles.totalValue}>{formatINR(grandTotal)}</Text>
         </View>
       </View>
     </View>
   );
 }
-function AIAlertCard() {
+
+function AIAlertCard({ workType }) {
   return (
     <LinearGradient
       colors={['#158B3D', '#18A84A']}
-      start={{
-        x: 0,
-        y: 0,
-      }}
-      end={{
-        x: 1,
-        y: 1,
-      }}
-      style={styles.aiCard}
-    >
+      start={{ x: 0, y: 0 }}
+      end={{ x: 1, y: 1 }}
+      style={styles.aiCard}>
       <View style={styles.aiCircle} />
 
       <View style={styles.aiBadge}>
-        <Sparkles size={rf(11)} color="#FFFFFF" strokeWidth={2.3} />
-
+        <Sparkles size={rf(12)} color="#FFFFFF" strokeWidth={2.3} />
         <Text style={styles.aiBadgeText}>AI Reminder</Text>
       </View>
 
       <Text style={styles.aiTitle}>Smart Farming Alert</Text>
 
       <Text style={styles.aiText}>
-        “Your soybean field has moderate soil moisture. The booked tractor
-        should complete cultivation before today’s forecasted rainfall. Optimal
-        application window: 8:00 AM – 11:00 AM.”
+        "Your {workType.toLowerCase()} work is scheduled during optimal soil
+        conditions. Ensure the operator is briefed on your farm layout for
+        maximum efficiency and safety."
       </Text>
     </LinearGradient>
   );
 }
-function BookingProgressCard() {
-  const steps = [
-    {
-      id: 'confirmed',
-      label: 'Booking\nConfirmed',
-      completed: true,
-    },
-    {
-      id: 'dispatched',
-      label: 'Machine\nDispatched',
-      active: true,
-    },
-    {
-      id: 'arriving',
-      label: 'Arriving',
-    },
-    {
-      id: 'started',
-      label: 'Work\nStarted',
-    },
-    {
-      id: 'completed',
-      label: 'Completed',
-    },
-  ];
-  return (
-    <View style={styles.progressCard}>
-      <View style={styles.progressRow}>
-        {steps.map((step, index) => (
-          <React.Fragment key={step.id}>
-            <View style={styles.progressStep}>
-              <View
-                style={[
-                  styles.progressCircle,
-                  step.completed && styles.completedProgressCircle,
-                  step.active && styles.activeProgressCircle,
-                ]}
-              >
-                {step.completed ? (
-                  <Check size={rf(15)} color="#FFFFFF" strokeWidth={3} />
-                ) : step.active ? (
-                  <View style={styles.activeProgressDot} />
-                ) : null}
-              </View>
 
-              <Text
-                style={[
-                  styles.progressLabel,
-                  (step.completed || step.active) && styles.activeProgressLabel,
-                ]}
-              >
-                {step.label}
-              </Text>
-            </View>
 
-            {index < steps.length - 1 && (
-              <View
-                style={[
-                  styles.progressLine,
-                  index === 0 && styles.activeProgressLine,
-                ]}
-              />
-            )}
-          </React.Fragment>
-        ))}
-      </View>
-    </View>
-  );
-}
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-  },
-  scrollContent: {
-    paddingBottom: 100,
-    backgroundColor: PAGE_BG,
-  },
-  hero: {
-    width: '100%',
-    height: width * 0.59,
-  },
-  heroGradient: {
-    ...StyleSheet.absoluteFillObject,
-  },
+  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
+  scrollContent: { paddingBottom: 100, backgroundColor: PAGE_BG },
+  hero: { width: '100%', height: width * 0.59 },
+  heroGradient: { ...StyleSheet.absoluteFillObject },
   successCircleOuter: {
     alignSelf: 'center',
-    width: 75,
-    height: 75,
-    marginTop: -39,
-    borderRadius: 38,
+    width: 78,
+    height: 78,
+    marginTop: -40,
+    borderRadius: 39,
     backgroundColor: '#FFFFFF',
     alignItems: 'center',
     justifyContent: 'center',
     shadowColor: BRIGHT_GREEN,
     shadowOpacity: 0.3,
     shadowRadius: 16,
-    shadowOffset: {
-      width: 0,
-      height: 8,
-    },
+    shadowOffset: { width: 0, height: 8 },
     elevation: 8,
   },
   successCircle: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
+    width: 62,
+    height: 62,
+    borderRadius: 31,
     backgroundColor: BRIGHT_GREEN,
     alignItems: 'center',
     justifyContent: 'center',
   },
   successTextBox: {
-    paddingTop: 21,
+    paddingTop: 22,
     paddingBottom: 26,
     alignItems: 'center',
   },
-  successTitle: {
-    fontSize: rf(23),
-    fontWeight: '900',
-    color: DARK,
-  },
+  successTitle: { fontSize: rf(24), fontWeight: '900', color: DARK },
   successDescription: {
     marginTop: 10,
-    fontSize: rf(13),
-    lineHeight: rf(19),
+    fontSize: rf(14),
+    lineHeight: rf(20),
     color: MUTED,
     fontWeight: '500',
     textAlign: 'center',
   },
-  pageContent: {
-    paddingHorizontal: PAGE_PADDING,
-  },
+  pageContent: { paddingHorizontal: PAGE_PADDING },
   sectionTitle: {
-    marginTop: 20,
-    marginBottom: 11,
-    fontSize: rf(16),
+    marginTop: 22,
+    marginBottom: 12,
+    fontSize: rf(17),
     fontWeight: '900',
     color: DARK,
   },
   machineCard: {
-    borderRadius: 8,
+    borderRadius: 12,
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
     borderColor: BORDER,
     overflow: 'hidden',
   },
-  machineImage: {
-    width: '100%',
-    height: 176,
-  },
+  machineImage: { width: '100%', height: 180 },
   assignedBadge: {
     position: 'absolute',
     right: 14,
     top: 189,
-    height: 23,
-    paddingHorizontal: 8,
-    borderRadius: 5,
-    backgroundColor: '#EAFBF0',
+    height: 25,
+    paddingHorizontal: 9,
+    borderRadius: 6,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
     zIndex: 2,
   },
-  assignedDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-    backgroundColor: BRIGHT_GREEN,
-  },
-  assignedText: {
-    fontSize: rf(7),
-    fontWeight: '900',
-    color: BRIGHT_GREEN,
-  },
-  machineContent: {
-    padding: 13,
-  },
-  machineName: {
-    fontSize: rf(16),
-    fontWeight: '900',
-    color: DARK,
-  },
+  assignedDot: { width: 6, height: 6, borderRadius: 3 },
+  assignedText: { fontSize: rf(9), fontWeight: '900' },
+  machineContent: { padding: 14 },
+  machineName: { fontSize: rf(18), fontWeight: '900', color: DARK },
   machineSpecs: {
-    marginTop: 3,
-    fontSize: rf(9),
+    marginTop: 4,
+    fontSize: rf(11),
     color: MUTED,
     fontWeight: '600',
   },
   machineMetaRow: {
-    marginTop: 8,
+    marginTop: 10,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
   },
-  machineRating: {
-    fontSize: rf(9),
-    fontWeight: '900',
-    color: DARK,
-  },
+  machineRating: { fontSize: rf(11), fontWeight: '900', color: DARK },
   machineReviews: {
     marginRight: 5,
-    fontSize: rf(8),
+    fontSize: rf(10),
     fontWeight: '500',
     color: MUTED,
   },
   machineDistance: {
+    flex: 1,
     marginRight: 5,
-    fontSize: rf(8),
+    fontSize: rf(10),
     fontWeight: '500',
     color: MUTED,
   },
-  machineAvailable: {
-    fontSize: rf(8),
-    fontWeight: '900',
-    color: BRIGHT_GREEN,
-  },
   machineDivider: {
     height: 1,
-    marginVertical: 11,
+    marginVertical: 12,
     backgroundColor: '#EEF1F2',
   },
-  ownerStrip: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  ownerSmallImage: {
-    width: 33,
-    height: 33,
-    borderRadius: 17,
-  },
-  ownerStripContent: {
-    flex: 1,
-    marginLeft: 9,
-  },
-  ownerStripName: {
-    fontSize: rf(10),
-    fontWeight: '900',
-    color: DARK,
-  },
+  ownerStrip: { flexDirection: 'row', alignItems: 'center' },
+  ownerSmallImage: { width: 36, height: 36, borderRadius: 18 },
+  ownerStripContent: { flex: 1, marginLeft: 10 },
+  ownerStripName: { fontSize: rf(12), fontWeight: '900', color: DARK },
   ownerStripSub: {
     marginTop: 2,
-    fontSize: rf(7),
+    fontSize: rf(9),
     fontWeight: '500',
     color: MUTED,
   },
   verifiedBadge: {
-    height: 22,
+    height: 24,
     paddingHorizontal: 8,
-    borderRadius: 4,
+    borderRadius: 5,
     backgroundColor: '#EFF6FF',
     flexDirection: 'row',
     alignItems: 'center',
     gap: 3,
   },
-  verifiedText: {
-    fontSize: rf(7),
-    fontWeight: '800',
-    color: '#2563EB',
-  },
+  verifiedText: { fontSize: rf(9), fontWeight: '800', color: '#2563EB' },
   arrivalCard: {
-    minHeight: 86,
-    borderRadius: 7,
+    minHeight: 90,
+    borderRadius: 10,
     paddingHorizontal: 14,
     flexDirection: 'row',
     alignItems: 'center',
     overflow: 'hidden',
   },
   arrivalIconBox: {
-    width: 50,
-    height: 50,
-    borderRadius: 9,
+    width: 52,
+    height: 52,
+    borderRadius: 10,
     backgroundColor: 'rgba(255,255,255,0.09)',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  arrivalContent: {
-    flex: 1,
-    marginLeft: 13,
-  },
-  arrivalLabel: {
-    fontSize: rf(8),
-    fontWeight: '700',
-    color: '#BBF7D0',
-  },
+  arrivalContent: { flex: 1, marginLeft: 14 },
+  arrivalLabel: { fontSize: rf(10), fontWeight: '700', color: '#BBF7D0' },
   arrivalTime: {
     marginTop: 3,
-    fontSize: rf(20),
+    fontSize: rf(21),
     fontWeight: '900',
     color: '#FFFFFF',
   },
   arrivalDate: {
     marginTop: 2,
-    fontSize: rf(7),
+    fontSize: rf(9),
     fontWeight: '500',
     color: '#BBF7D0',
   },
   minutesBox: {
-    width: 64,
-    height: 60,
-    borderRadius: 7,
+    width: 68,
+    height: 64,
+    borderRadius: 8,
     backgroundColor: 'rgba(255,255,255,0.17)',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  minutesValue: {
-    fontSize: rf(17),
-    fontWeight: '900',
-    color: '#FFFFFF',
-  },
+  minutesValue: { fontSize: rf(18), fontWeight: '900', color: '#FFFFFF' },
   minutesLabel: {
     marginTop: 2,
-    fontSize: rf(6),
+    fontSize: rf(8),
     fontWeight: '900',
     color: '#FFFFFF',
   },
   ownerCard: {
-    borderRadius: 8,
-    padding: 14,
+    borderRadius: 10,
+    padding: 15,
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
     borderColor: BORDER,
   },
-  ownerTopRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  ownerImage: {
-    width: 58,
-    height: 58,
-    borderRadius: 29,
-  },
-  ownerDetails: {
-    flex: 1,
-    marginLeft: 13,
-  },
-  ownerName: {
-    fontSize: rf(17),
-    fontWeight: '900',
-    color: DARK,
-  },
+  ownerTopRow: { flexDirection: 'row', alignItems: 'center' },
+  ownerImage: { width: 62, height: 62, borderRadius: 31 },
+  ownerDetails: { flex: 1, marginLeft: 14 },
+  ownerName: { fontSize: rf(18), fontWeight: '900', color: DARK },
   ownerCompany: {
     marginTop: 3,
-    fontSize: rf(8),
+    fontSize: rf(10),
     fontWeight: '500',
     color: MUTED,
   },
@@ -791,35 +752,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 5,
   },
-  ownerRating: {
-    fontSize: rf(9),
-    fontWeight: '900',
-    color: DARK,
-  },
+  ownerRating: { fontSize: rf(11), fontWeight: '900', color: DARK },
   ownerSeparator: {
     width: 1,
-    height: 12,
-    marginHorizontal: 5,
+    height: 13,
+    marginHorizontal: 6,
     backgroundColor: '#CBD5E1',
   },
-  ownerBookings: {
-    fontSize: rf(8),
-    fontWeight: '600',
-    color: MUTED,
-  },
-  ownerVerified: {
-    fontSize: rf(8),
-    fontWeight: '900',
-    color: BRIGHT_GREEN,
-  },
-  ownerActions: {
-    marginTop: 13,
-    flexDirection: 'row',
-    gap: 10,
-  },
+  ownerBookings: { fontSize: rf(10), fontWeight: '600', color: MUTED },
+  ownerVerified: { fontSize: rf(10), fontWeight: '900', color: BRIGHT_GREEN },
+  ownerActions: { marginTop: 14, flexDirection: 'row', gap: 10 },
   callButton: {
     flex: 1,
-    height: 43,
+    height: 46,
     borderRadius: 10,
     backgroundColor: BRIGHT_GREEN,
     flexDirection: 'row',
@@ -827,14 +772,10 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 7,
   },
-  callText: {
-    fontSize: rf(13),
-    fontWeight: '900',
-    color: '#FFFFFF',
-  },
+  callText: { fontSize: rf(14), fontWeight: '900', color: '#FFFFFF' },
   chatButton: {
     flex: 1,
-    height: 43,
+    height: 46,
     borderRadius: 10,
     backgroundColor: '#FFFFFF',
     borderWidth: 1.2,
@@ -844,90 +785,67 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 7,
   },
-  chatText: {
-    fontSize: rf(13),
-    fontWeight: '900',
-    color: BRIGHT_GREEN,
-  },
+  chatText: { fontSize: rf(14), fontWeight: '900', color: BRIGHT_GREEN },
   summaryCard: {
-    borderRadius: 8,
+    borderRadius: 10,
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
     borderColor: BORDER,
     overflow: 'hidden',
   },
   summaryHeader: {
-    height: 43,
-    paddingHorizontal: 13,
+    height: 46,
+    paddingHorizontal: 14,
     backgroundColor: '#F8FAFC',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  bookingIdText: {
-    fontSize: rf(11),
-    fontWeight: '900',
-    color: DARK,
-  },
-  copyButton: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 5,
-  },
-  copyText: {
-    fontSize: rf(8),
-    fontWeight: '900',
-    color: BRIGHT_GREEN,
-  },
-  summaryRows: {
-    padding: 13,
-  },
+  bookingIdText: { fontSize: rf(12), fontWeight: '900', color: DARK },
+  copyButton: { flexDirection: 'row', alignItems: 'center', gap: 5 },
+  copyText: { fontSize: rf(10), fontWeight: '900', color: BRIGHT_GREEN },
+  summaryRows: { padding: 14 },
   summaryRow: {
-    minHeight: 30,
+    minHeight: 34,
     flexDirection: 'row',
     alignItems: 'center',
   },
   summaryLabel: {
     flex: 1,
-    marginLeft: 9,
-    fontSize: rf(9),
+    marginLeft: 10,
+    fontSize: rf(11),
     fontWeight: '500',
     color: MUTED,
   },
-  summaryValue: {
-    fontSize: rf(10),
-    fontWeight: '900',
-    color: DARK,
-  },
-  greenSummaryValue: {
-    color: BRIGHT_GREEN,
-  },
+  summaryValue: { fontSize: rf(12), fontWeight: '900', color: DARK },
   summaryDivider: {
     height: 1,
-    marginTop: 4,
-    marginBottom: 11,
+    marginTop: 6,
+    marginBottom: 12,
     borderTopWidth: 1,
     borderStyle: 'dashed',
     borderTopColor: '#E5E7EB',
   },
-  totalRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+  totalRow: { flexDirection: 'row', justifyContent: 'space-between' },
+  totalLabel: { fontSize: rf(13), fontWeight: '600', color: MUTED },
+  totalValue: { fontSize: rf(19), fontWeight: '900', color: DARK },
+  notesCard: {
+    borderRadius: 10,
+    padding: 14,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: BORDER,
   },
-  totalLabel: {
-    fontSize: rf(12),
-    fontWeight: '600',
-    color: MUTED,
-  },
-  totalValue: {
-    fontSize: rf(17),
-    fontWeight: '900',
-    color: DARK,
+  notesText: {
+    fontSize: rf(11),
+    lineHeight: rf(17),
+    color: '#4B5563',
+    fontWeight: '500',
   },
   aiCard: {
-    minHeight: 215,
-    marginTop: 20,
-    borderRadius: 8,
+    minHeight: 200,
+    marginTop: 22,
+    borderRadius: 12,
     padding: 18,
     overflow: 'hidden',
   },
@@ -942,54 +860,45 @@ const styles = StyleSheet.create({
   },
   aiBadge: {
     alignSelf: 'flex-start',
-    height: 22,
-    borderRadius: 11,
-    paddingHorizontal: 9,
+    height: 24,
+    borderRadius: 12,
+    paddingHorizontal: 10,
     backgroundColor: 'rgba(255,255,255,0.12)',
     flexDirection: 'row',
     alignItems: 'center',
     gap: 5,
   },
-  aiBadgeText: {
-    fontSize: rf(7),
-    fontWeight: '900',
-    color: '#FFFFFF',
-  },
+  aiBadgeText: { fontSize: rf(9), fontWeight: '900', color: '#FFFFFF' },
   aiTitle: {
-    marginTop: 15,
-    fontSize: rf(16),
+    marginTop: 16,
+    fontSize: rf(17),
     fontWeight: '900',
     color: '#FFFFFF',
   },
   aiText: {
-    marginTop: 11,
-    fontSize: rf(11),
-    lineHeight: rf(18),
+    marginTop: 12,
+    fontSize: rf(12),
+    lineHeight: rf(19),
     color: 'rgba(255,255,255,0.90)',
     fontWeight: '500',
     fontStyle: 'italic',
   },
   progressCard: {
-    minHeight: 106,
-    borderRadius: 8,
+    minHeight: 112,
+    borderRadius: 10,
     paddingHorizontal: 15,
     paddingTop: 22,
+    paddingBottom: 8,
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
     borderColor: BORDER,
   },
-  progressRow: {
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-  },
-  progressStep: {
-    width: 50,
-    alignItems: 'center',
-  },
+  progressRow: { flexDirection: 'row', alignItems: 'flex-start' },
+  progressStep: { width: 54, alignItems: 'center' },
   progressCircle: {
-    width: 30,
-    height: 30,
-    borderRadius: 15,
+    width: 32,
+    height: 32,
+    borderRadius: 16,
     borderWidth: 2,
     borderColor: '#E1E6EA',
     backgroundColor: '#FFFFFF',
@@ -1000,42 +909,35 @@ const styles = StyleSheet.create({
     backgroundColor: BRIGHT_GREEN,
     borderColor: BRIGHT_GREEN,
   },
-  activeProgressCircle: {
-    borderColor: BRIGHT_GREEN,
-  },
+  activeProgressCircle: { borderColor: BRIGHT_GREEN },
   activeProgressDot: {
-    width: 9,
-    height: 9,
+    width: 10,
+    height: 10,
     borderRadius: 5,
     backgroundColor: BRIGHT_GREEN,
   },
   progressLine: {
     flex: 1,
     height: 2,
-    marginTop: 14,
+    marginTop: 15,
     backgroundColor: '#E1E6EA',
   },
-  activeProgressLine: {
-    backgroundColor: BRIGHT_GREEN,
-  },
+  activeProgressLine: { backgroundColor: BRIGHT_GREEN },
   progressLabel: {
-    marginTop: 7,
-    fontSize: rf(7),
-    lineHeight: rf(9),
+    marginTop: 8,
+    fontSize: rf(9),
+    lineHeight: rf(11),
     color: '#A5ADB8',
     fontWeight: '600',
     textAlign: 'center',
   },
-  activeProgressLabel: {
-    color: BRIGHT_GREEN,
-    fontWeight: '900',
-  },
+  activeProgressLabel: { color: BRIGHT_GREEN, fontWeight: '900' },
   bottomBar: {
     position: 'absolute',
     left: 0,
     right: 0,
     bottom: 0,
-    minHeight: 74,
+    minHeight: 78,
     paddingHorizontal: PAGE_PADDING,
     paddingVertical: 10,
     backgroundColor: '#FFFFFF',
@@ -1044,10 +946,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     gap: 12,
   },
-  backBazaarButton: {
-    flex: 1,
-    height: 53,
-    borderRadius: 13,
+  homeButton: {
+    flex: 0.6,
+    height: 56,
+    borderRadius: 14,
     backgroundColor: '#FFFFFF',
     borderWidth: 1.3,
     borderColor: BRIGHT_GREEN,
@@ -1056,32 +958,25 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 7,
   },
-  backBazaarText: {
-    fontSize: rf(12),
+  homeButtonText: {
+    fontSize: rf(13),
     fontWeight: '900',
     color: BRIGHT_GREEN,
   },
-  trackButton: {
-    flex: 1,
-    height: 53,
-    borderRadius: 13,
+  viewBookingsButton: {
+    flex: 1.4,
+    height: 56,
+    borderRadius: 14,
     backgroundColor: BRIGHT_GREEN,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 7,
+    gap: 8,
     shadowColor: BRIGHT_GREEN,
     shadowOpacity: 0.22,
     shadowRadius: 9,
-    shadowOffset: {
-      width: 0,
-      height: 5,
-    },
+    shadowOffset: { width: 0, height: 5 },
     elevation: 5,
   },
-  trackButtonText: {
-    fontSize: rf(12),
-    fontWeight: '900',
-    color: '#FFFFFF',
-  },
+  viewBookingsButtonText: { fontSize: rf(13), fontWeight: '900', color: '#FFFFFF' },
 });

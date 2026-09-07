@@ -22,6 +22,7 @@ import OrderSuccessScreen from '../screens/agriproducts/OrderSuccessScreen';
 import OrderDetailsScreen from '../screens/agriproducts/OrderDetailsScreen';
 import ConfirmMachineryBookingScreen from '../screens/Machinery-rentals/ConfirmMachineryBookingScreen';
 import MachineryBookingSuccessScreen from '../screens/Machinery-rentals/MachineryBookingSuccessScreen';
+import MachineryRentalProfileScreen from '../screens/Machinery-rentals/MachineryRentalProfileScreen';
 import MachineryLiveTrackingScreen from '../screens/Machinery-rentals/MachineryLiveTrackingScreen';
 import TractorBookingScreen from '../screens/Machinery-rentals/TractorBookingScreen';
 import LabourBookingScreen from '../screens/labourbooking/LabourBookingScreen';
@@ -36,6 +37,8 @@ import ProvideServiceStep1Screen from '../screens/Machinery-rentals/ProvideServi
 import ProvideServiceStep2Screen from '../screens/Machinery-rentals/ProvideServiceStep2Screen';
 import ProvideServiceStep3Screen from '../screens/Machinery-rentals/ProvideServiceStep3Screen';
 import ProvideServiceStep4Screen from '../screens/Machinery-rentals/ProvideServiceStep4Screen';
+import MachineryMyBookingsScreen from '../screens/Machinery-rentals/MachineryMyBookingsScreen';
+import MachineryRequestsScreen from '../screens/Machinery-rentals/MachineryRequestsScreen';
 import ProvideServiceSuccessScreen from '../screens/Machinery-rentals/ProvideServiceSuccessScreen';
 import ProfileSetupScreen from '../screens/addfarm/ProfileSetupScreen';
 import ProfileFarmScreen from '../screens/addfarm/ProfileFarmScreen';
@@ -203,6 +206,12 @@ export default function AppNavigator() {
 
         {}
         <Stack.Screen name="TractorBooking" component={TractorBookingScreen} />
+        <Stack.Screen
+  name="MachineryRentalProfile"
+  component={MachineryRentalProfileScreen}
+/>
+
+          
         <Stack.Screen name="LabourBooking" component={LabourBookingScreen} />
         <Stack.Screen
           name="MachineryDetails"
@@ -224,6 +233,17 @@ export default function AppNavigator() {
             gestureEnabled: false,
           }}
         />
+        <Stack.Screen
+  name="MachineryMyBookings"
+  component={MachineryMyBookingsScreen}
+  options={{ headerShown: false }}
+/>
+
+<Stack.Screen
+  name="MachineryRequests"
+  component={MachineryRequestsScreen}
+  options={{ headerShown: false }}
+/>
 
         <Stack.Screen
           name="MachineryLiveTracking"

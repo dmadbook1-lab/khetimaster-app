@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -10,8 +10,11 @@ import {
   ScrollView,
   StatusBar,
   Alert,
+  Linking,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useDispatch, useSelector } from 'react-redux';
 import LinearGradient from 'react-native-linear-gradient';
 import {
   ArrowLeft,
@@ -19,7 +22,6 @@ import {
   Share2,
   Star,
   MapPin,
-  Clock3,
   BadgeCheck,
   Sparkles,
   Eye,
@@ -40,6 +42,9 @@ import {
   Headphones,
   CircleAlert,
 } from 'lucide-react-native';
+
+import { getMachineryById } from '../../redux/slices/machinerySlice';
+
 const { width } = Dimensions.get('window');
 const GREEN = '#16883E';
 const BRIGHT_GREEN = '#20C55A';
@@ -47,254 +52,201 @@ const DARK = '#111827';
 const MUTED = '#64748B';
 const PAGE_BG = '#F8FAF9';
 const BORDER = '#E5E7EB';
-const ORANGE = '#F97316';
 const PAGE_PADDING = width * 0.037;
+
+// Upscaled font scale utility
 const rf = size => {
   const scale = width / 390;
-  return Math.max(size - 2, Math.min(size * scale, size + 2));
+  return Math.max(size - 1, Math.min(size * scale, size + 3));
 };
-const DEFAULT_MACHINE = {
-  id: 'sonalika-di-745',
-  name: 'Sonalika DI 745',
-  horsepower: '45 HP',
-  driveType: '2WD',
-  fuelType: 'Diesel',
-  liftingCapacity: '1800 kg',
-  availability: 'Available',
-  engine: '3 Cyl.',
-  rating: '4.8',
-  reviews: 128,
-  bookings: '250+',
-  distance: '2.1 km Away',
-  hourlyPrice: 650,
-  dailyPrice: 2500,
-  weeklyPrice: 14000,
-  owner: 'Patil Agro Services',
-  ownerSince: '3 yrs',
-  image: require('../../assets/machinery/sonalika-di-745.jpg'),
-  ownerImage: require('../../assets/machinery/owner-1.jpg'),
-};
-const IMPLEMENTS = [
-  {
-    id: 'rotavator',
-    label: 'Rotavator',
-    Icon: Tractor,
-    color: '#16883E',
-    background: '#ECFDF3',
-  },
-  {
-    id: 'cultivator',
-    label: 'Cultivator',
-    Icon: Wrench,
-    color: '#2563EB',
-    background: '#EFF6FF',
-  },
-  {
-    id: 'seed-drill',
-    label: 'Seed Drill',
-    Icon: Leaf,
-    color: '#F97316',
-    background: '#FFF7ED',
-  },
-  {
-    id: 'trailer',
-    label: 'Trailer',
-    Icon: Tractor,
-    color: '#9333EA',
-    background: '#FAF5FF',
-  },
-];
-const REVIEWS = [
-  {
-    id: 'review-1',
-    name: 'Ramesh Deshmukh',
-    date: '12 June 2026',
-    rating: '5.0',
-    text: 'Excellent tractor service! The Sonalika was in perfect condition and the operator was very professional. Completed my 2.5 acre field in just 3 hours.',
-  },
-  {
-    id: 'review-2',
-    name: 'Suresh Jadhav',
-    date: '8 June 2026',
-    rating: '4.5',
-    text: 'Good service, on-time arrival. The rotavator attachment worked well for my soybean field preparation. Would book again.',
-  },
-];
-const CALENDAR_DATES = [
-  {
-    day: 1,
-  },
-  {
-    day: 2,
-  },
-  {
-    day: 3,
-  },
-  {
-    day: 4,
-  },
-  {
-    day: 5,
-  },
-  {
-    day: 6,
-  },
-  {
-    day: 7,
-  },
-  {
-    day: 8,
-  },
-  {
-    day: 9,
-  },
-  {
-    day: 10,
-  },
-  {
-    day: 11,
-  },
-  {
-    day: 12,
-  },
-  {
-    day: 13,
-  },
-  {
-    day: 14,
-  },
-  {
-    day: 15,
-  },
-  {
-    day: 16,
-  },
-  {
-    day: 17,
-  },
-  {
-    day: 18,
-  },
-  {
-    day: 19,
-  },
-  {
-    day: 20,
-  },
-  {
-    day: 21,
-  },
-  {
-    day: 22,
-  },
-  {
-    day: 23,
-  },
-  {
-    day: 24,
-  },
-  {
-    day: 25,
-    status: 'today',
-  },
-  {
-    day: 26,
-    status: 'available',
-  },
-  {
-    day: 27,
-    status: 'available',
-  },
-  {
-    day: 28,
-    status: 'booked',
-  },
-  {
-    day: 29,
-    status: 'booked',
-  },
-  {
-    day: 30,
-    status: 'available',
-  },
-];
+
+const CALENDAR_DATES = Array.from({ length: 30 }, (_, i) => {
+  const day = i + 1;
+  if (day === 25) return { day, status: 'today' };
+  if (day === 28 || day === 29) return { day, status: 'booked' };
+  if (day >= 26) return { day, status: 'available' };
+  return { day };
+});
+
 export default function MachineryDetailsScreen({ navigation, route }) {
-  const machine = route?.params?.machine || DEFAULT_MACHINE;
-  const [favourite, setFavourite] = useState(Boolean(machine?.favourite));
+  const dispatch = useDispatch();
+
+  const machineryFromRoute = route?.params?.machine || route?.params?.machinery;
+  const machineryId = route?.params?.machineryId || machineryFromRoute?._id;
+
+  const { selectedMachinery, isLoading } = useSelector(
+    state => state.machinery || {},
+  );
+
+  const [favourite, setFavourite] = useState(false);
   const [selectedPlan, setSelectedPlan] = useState('day');
+
+  // Fetch full data if only ID was passed
+  useEffect(() => {
+    if (machineryId && !machineryFromRoute?.pricing) {
+      dispatch(getMachineryById(machineryId));
+    }
+  }, [dispatch, machineryId, machineryFromRoute]);
+
+  const machine = selectedMachinery || machineryFromRoute || {};
+
+  const name = machine.name || 'Machinery';
+  const category = machine.category || 'Tractor';
+  const brand = machine.brand || '';
+  const model = machine.model || '';
+  const modelYear = machine.modelYear || '';
+  const enginePower = machine.enginePower || {};
+  const fuelType = machine.fuelType || 'diesel';
+  const driveType = machine.driveType || '2WD';
+  const supportedImplements = Array.isArray(machine.supportedImplements)
+    ? machine.supportedImplements
+    : [];
+  const supportsImplements = machine.supportsImplements || false;
+  const availability = machine.availability || 'available';
+  const isAvailable = availability === 'available';
+  const pricing = machine.pricing || {};
+  const hourlyPrice = Number(pricing.hourly) || 0;
+  const dailyPrice = Number(pricing.daily) || 0;
+  const customPricing = Array.isArray(pricing.custom) ? pricing.custom : [];
+  const rating = machine.rating || 0;
+  const totalReviews = machine.totalReviews || 0;
+  const totalJobsCompleted = machine.totalJobsCompleted || 0;
+  const owner = machine.owner || {};
+  const ownerName =
+    machine.ownerName ||
+    owner.fullName ||
+    'Owner';
+  const ownerPhone = owner.phoneNumber || '';
+  const ownerImage = owner.profileImage;
+  const state = machine.state || '';
+  const district = machine.district || '';
+  const village = machine.village || '';
+  const address = machine.address || '';
+  const description = machine.description || '';
+
+  const location = [village, district, state].filter(Boolean).join(', ');
+  
+  // High fidelity local assets fallback
+  const heroImage =
+    Array.isArray(machine.images) && machine.images.length > 0
+      ? { uri: machine.images[0] }
+      : require('../../assets/machinery/sonalika-di-745.jpg');
+
+  const ownerProfileImage = ownerImage 
+    ? { uri: ownerImage } 
+    : require('../../assets/machinery/owner-1.jpg');
+
+  const estWorkTime = 3.5;
+  const estRentalCost = Math.round(hourlyPrice * estWorkTime);
+
   const specificationData = useMemo(
-    () => [
-      {
-        id: 'hp',
-        value: machine.horsepower || '45 HP',
-        label: 'ENGINE POWER',
-        Icon: Gauge,
-        color: GREEN,
-      },
-      {
-        id: 'drive',
-        value: machine.driveType || '2WD',
-        label: 'DRIVE TYPE',
-        Icon: Tractor,
-        color: '#2563EB',
-      },
-      {
-        id: 'fuel',
-        value: machine.fuelType || 'Diesel',
-        label: 'FUEL TYPE',
-        Icon: Fuel,
-        color: '#F97316',
-      },
-      {
-        id: 'lift',
-        value: machine.liftingCapacity || '1800 kg',
-        label: 'HYDRAULIC LIFT',
-        Icon: Weight,
-        color: '#16883E',
-      },
-      {
-        id: 'availability',
-        value: machine.availability || 'Available',
-        label: 'PTO',
-        Icon: Tractor,
-        color: '#16A34A',
-      },
-      {
-        id: 'engine',
-        value: machine.engine || '3 Cyl.',
-        label: 'ENGINE',
-        Icon: Gauge,
-        color: '#2563EB',
-      },
-    ],
+    () =>
+      [
+        enginePower.value && {
+          id: 'hp',
+          value: `${enginePower.value} ${enginePower.unit || 'HP'}`,
+          label: 'ENGINE POWER',
+          Icon: Gauge,
+          color: GREEN,
+        },
+        {
+          id: 'drive',
+          value: driveType,
+          label: 'DRIVE TYPE',
+          Icon: Tractor,
+          color: '#2563EB',
+        },
+        {
+          id: 'fuel',
+          value: fuelType.charAt(0).toUpperCase() + fuelType.slice(1),
+          label: 'FUEL TYPE',
+          Icon: Fuel,
+          color: '#F97316',
+        },
+        modelYear && {
+          id: 'year',
+          value: String(modelYear),
+          label: 'MODEL YEAR',
+          Icon: CalendarDays,
+          color: '#16883E',
+        },
+        {
+          id: 'availability',
+          value: isAvailable ? 'Yes' : 'No',
+          label: 'AVAILABLE',
+          Icon: BadgeCheck,
+          color: '#16A34A',
+        },
+        brand && {
+          id: 'brand',
+          value: brand,
+          label: 'BRAND',
+          Icon: Wrench,
+          color: '#2563EB',
+        },
+      ].filter(Boolean),
     [machine],
   );
+
   const handleBack = () => {
     if (navigation.canGoBack()) {
       navigation.goBack();
+    } else {
+      navigation.navigate('TractorBooking');
+    }
+  };
+
+  const handleBookNow = () => {
+    if (!isAvailable) {
+      Alert.alert('Unavailable', 'This machinery is not available for booking right now.');
       return;
     }
-    navigation.navigate('TractorBooking');
-  };
-  const handleBookNow = () => {
+    if (hourlyPrice <= 0 && dailyPrice <= 0) {
+      Alert.alert('Pricing Unavailable', 'This machinery does not have pricing set.');
+      return;
+    }
     navigation.navigate('MachineryBooking', {
       machine,
       selectedPlan,
     });
   };
+
+  const handleCallOwner = () => {
+    if (!ownerPhone) {
+      Alert.alert('Contact Unavailable', 'Owner phone number is not available.');
+      return;
+    }
+    Linking.openURL(`tel:${ownerPhone}`).catch(() =>
+      Alert.alert('Error', 'Could not open dialer.'),
+    );
+  };
+
+  const handleChatOwner = () => {
+    Alert.alert('Chat', 'Chat functionality coming soon.');
+  };
+
+  if (isLoading && !machine.name) {
+    return (
+      <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
+        <View style={styles.loadingWrap}>
+          <ActivityIndicator size="large" color={GREEN} />
+          <Text style={styles.loadingText}>Loading machinery...</Text>
+        </View>
+      </SafeAreaView>
+    );
+  }
+
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
-      >
+        contentContainerStyle={styles.scrollContent}>
         <ImageBackground
-          source={machine.image}
+          source={heroImage}
           resizeMode="cover"
-          style={styles.heroImage}
-        >
+          style={styles.heroImage}>
           <LinearGradient
             colors={[
               'rgba(15,23,42,0.32)',
@@ -307,19 +259,17 @@ export default function MachineryDetailsScreen({ navigation, route }) {
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={handleBack}
-            style={styles.heroCircleButton}
-          >
-            <ArrowLeft size={rf(21)} color={DARK} strokeWidth={2.5} />
+            style={styles.heroCircleButton}>
+            <ArrowLeft size={rf(22)} color={DARK} strokeWidth={2.5} />
           </TouchableOpacity>
 
           <View style={styles.heroRightActions}>
             <TouchableOpacity
               activeOpacity={0.8}
               onPress={() => setFavourite(current => !current)}
-              style={styles.heroCircleButton}
-            >
+              style={styles.heroCircleButton}>
               <Heart
-                size={rf(20)}
+                size={rf(21)}
                 color={favourite ? '#EF4444' : DARK}
                 fill={favourite ? '#EF4444' : 'transparent'}
                 strokeWidth={2.3}
@@ -329,101 +279,111 @@ export default function MachineryDetailsScreen({ navigation, route }) {
             <TouchableOpacity
               activeOpacity={0.8}
               onPress={() =>
-                Alert.alert(
-                  'Share Machinery',
-                  'Sharing options can be opened here.',
-                )
+                Alert.alert('Share', 'Sharing options coming soon.')
               }
-              style={styles.heroCircleButton}
-            >
-              <Share2 size={rf(19)} color={DARK} strokeWidth={2.3} />
+              style={styles.heroCircleButton}>
+              <Share2 size={rf(20)} color={DARK} strokeWidth={2.3} />
             </TouchableOpacity>
           </View>
 
-          <View style={styles.heroDots}>
-            <View style={styles.heroActiveDot} />
-            <View style={styles.heroDot} />
-            <View style={styles.heroDot} />
-          </View>
-
-          <Text style={styles.imageCount}>1/4</Text>
+          {Array.isArray(machine.images) && machine.images.length > 1 && (
+            <>
+              <View style={styles.heroDots}>
+                <View style={styles.heroActiveDot} />
+                {machine.images.slice(1).map((_, idx) => (
+                  <View key={idx} style={styles.heroDot} />
+                ))}
+              </View>
+              <Text style={styles.imageCount}>
+                1/{machine.images.length}
+              </Text>
+            </>
+          )}
         </ImageBackground>
 
         <View style={styles.pageContent}>
           <View style={styles.machineInfoCard}>
-            <Text style={styles.machineName}>{machine.name}</Text>
+            <Text style={styles.machineName}>{name}</Text>
 
             <View style={styles.machineInfoBadges}>
-              <View style={styles.availablePill}>
-                <View style={styles.availableDot} />
-
-                <Text style={styles.availablePillText}>Available Today</Text>
-              </View>
-
-              <View style={styles.distancePill}>
-                <MapPin size={rf(11)} color="#64748B" strokeWidth={2.3} />
-
-                <Text style={styles.distanceText}>
-                  {machine.distance || '2.1 km Away'}
+              <View
+                style={[
+                  styles.availablePill,
+                  !isAvailable && { backgroundColor: '#FEE2E2' },
+                ]}>
+                <View
+                  style={[
+                    styles.availableDot,
+                    !isAvailable && { backgroundColor: '#EF4444' },
+                  ]}
+                />
+                <Text
+                  style={[
+                    styles.availablePillText,
+                    !isAvailable && { color: '#DC2626' },
+                  ]}>
+                  {isAvailable ? 'Available Today' : 'Unavailable'}
                 </Text>
               </View>
+
+              {location ? (
+                <View style={styles.distancePill}>
+                  <MapPin size={rf(12)} color="#64748B" strokeWidth={2.3} />
+                  <Text style={styles.distanceText} numberOfLines={1}>
+                    {location}
+                  </Text>
+                </View>
+              ) : null}
             </View>
 
             <View style={styles.machineStatsRow}>
               <View style={styles.ratingInline}>
-                <Star size={rf(14)} color="#FACC15" fill="#FACC15" />
-
+                <Star size={rf(15)} color="#FACC15" fill="#FACC15" />
                 <Text style={styles.ratingValue}>
-                  {machine.rating || '4.8'}
+                  {rating > 0 ? rating.toFixed(1) : 'New'}
                 </Text>
-
-                <Text style={styles.ratingReviews}>
-                  {machine.reviews || 128} Reviews
-                </Text>
+                {totalReviews > 0 && (
+                  <Text style={styles.ratingReviews}>
+                    {totalReviews} Reviews
+                  </Text>
+                )}
               </View>
 
               <Text style={styles.bookingCount}>
-                {machine.bookings || '250+'} Bookings
+                {totalJobsCompleted} Jobs Completed
               </Text>
             </View>
           </View>
 
+          {/* Owner Strip */}
           <View style={styles.ownerStrip}>
-            <Image source={machine.ownerImage} style={styles.ownerSmallImage} />
+            <Image
+              source={ownerProfileImage}
+              style={styles.ownerSmallImage}
+            />
 
             <View style={styles.ownerStripDetails}>
-              <Text style={styles.ownerSmallName}>
-                {machine.owner || 'Patil Agro Services'}
-              </Text>
-
+              <Text style={styles.ownerSmallName}>{ownerName}</Text>
               <Text style={styles.ownerSmallSub}>Owner & Operator</Text>
             </View>
 
             <View style={styles.verifiedPartnerPill}>
-              <BadgeCheck size={rf(11)} color="#FFFFFF" strokeWidth={2.5} />
-
-              <Text style={styles.verifiedPartnerText}>Verified Partner</Text>
+              <BadgeCheck size={rf(12)} color="#FFFFFF" strokeWidth={2.5} />
+              <Text style={styles.verifiedPartnerText}>Verified</Text>
             </View>
           </View>
 
+          {/* AI Recommendation */}
           <LinearGradient
             colors={['#16883E', '#0D7C35']}
-            start={{
-              x: 0,
-              y: 0,
-            }}
-            end={{
-              x: 1,
-              y: 1,
-            }}
-            style={styles.recommendationCard}
-          >
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={styles.recommendationCard}>
             <View style={styles.recommendationCircle} />
 
             <View style={styles.recommendationHeader}>
               <View style={styles.recommendedBadge}>
-                <Sparkles size={rf(10)} color="#FFFFFF" strokeWidth={2.3} />
-
+                <Sparkles size={rf(11)} color="#FFFFFF" strokeWidth={2.3} />
                 <Text style={styles.recommendedBadgeText}>AI RECOMMENDED</Text>
               </View>
 
@@ -438,23 +398,24 @@ export default function MachineryDetailsScreen({ navigation, route }) {
 
             <View style={styles.recommendationStats}>
               <RecommendationStat Icon={Leaf} label="Soybean" />
-
               <RecommendationStat Icon={MapPin} label="2.34 Acres" />
-
-              <RecommendationStat Icon={Gauge} label="45 HP Rec." />
+              <RecommendationStat
+                Icon={Gauge}
+                label={enginePower.value ? `${enginePower.value} HP` : '45 HP'}
+              />
             </View>
 
             <View style={styles.recommendationPriceRow}>
               <View style={styles.recommendationPriceBox}>
                 <Text style={styles.recommendationLabel}>EST. WORK TIME</Text>
-
-                <Text style={styles.recommendationValue}>3.5 Hours</Text>
+                <Text style={styles.recommendationValue}>{estWorkTime} Hours</Text>
               </View>
 
               <View style={styles.recommendationPriceBox}>
                 <Text style={styles.recommendationLabel}>EST. RENTAL COST</Text>
-
-                <Text style={styles.recommendationValue}>₹2,300</Text>
+                <Text style={styles.recommendationValue}>
+                  ₹{estRentalCost.toLocaleString('en-IN')}
+                </Text>
               </View>
             </View>
 
@@ -463,17 +424,16 @@ export default function MachineryDetailsScreen({ navigation, route }) {
               onPress={() =>
                 Alert.alert(
                   'AI Recommendation',
-                  'This machine matches your crop, farm area and estimated work requirement.',
+                  'This machine matches your crop and farm area.',
                 )
               }
-              style={styles.whyButton}
-            >
-              <Eye size={rf(15)} color="#FFFFFF" strokeWidth={2.4} />
-
+              style={styles.whyButton}>
+              <Eye size={rf(16)} color="#FFFFFF" strokeWidth={2.4} />
               <Text style={styles.whyButtonText}>Why this recommendation?</Text>
             </TouchableOpacity>
           </LinearGradient>
 
+          {/* Specifications */}
           <SectionTitle title="Specifications" />
 
           <View style={styles.specificationGrid}>
@@ -481,208 +441,174 @@ export default function MachineryDetailsScreen({ navigation, route }) {
               const Icon = item.Icon;
               return (
                 <View key={item.id} style={styles.specificationCard}>
-                  <Icon size={rf(18)} color={item.color} strokeWidth={2.2} />
-
-                  <Text style={styles.specificationValue}>{item.value}</Text>
-
+                  <Icon size={rf(19)} color={item.color} strokeWidth={2.2} />
+                  <Text style={styles.specificationValue} numberOfLines={1}>
+                    {item.value}
+                  </Text>
                   <Text style={styles.specificationLabel}>{item.label}</Text>
                 </View>
               );
             })}
           </View>
 
-          <Text style={styles.supportedLabel}>Supported Implements</Text>
-
-          <View style={styles.supportedPills}>
-            {['Rotavator', 'Cultivator', 'Trailer'].map(item => (
-              <View key={item} style={styles.supportedPill}>
-                <Text style={styles.supportedPillText}>{item}</Text>
+          {/* Supported Implements */}
+          {supportsImplements && supportedImplements.length > 0 && (
+            <>
+              <Text style={styles.supportedLabel}>Supported Implements</Text>
+              <View style={styles.supportedPills}>
+                {supportedImplements.map(item => (
+                  <View key={item} style={styles.supportedPill}>
+                    <Text style={styles.supportedPillText}>{item}</Text>
+                  </View>
+                ))}
               </View>
-            ))}
-          </View>
+            </>
+          )}
 
+          {/* Description */}
+          {description ? (
+            <>
+              <SectionTitle title="About" />
+              <View style={styles.aboutCard}>
+                <Text style={styles.aboutText}>{description}</Text>
+              </View>
+            </>
+          ) : null}
+
+          {/* Pricing */}
           <SectionTitle title="Pricing" />
 
           <View style={styles.pricingRow}>
-            <PricingCard
-              label="PER HOUR"
-              price={`₹${machine.hourlyPrice || 650}`}
-              note="Min 2 hrs"
-              selected={selectedPlan === 'hour'}
-              onPress={() => setSelectedPlan('hour')}
-            />
+            {hourlyPrice > 0 && (
+              <PricingCard
+                label="PER HOUR"
+                price={`₹${hourlyPrice}`}
+                note="Min 1 hr"
+                selected={selectedPlan === 'hour'}
+                onPress={() => setSelectedPlan('hour')}
+              />
+            )}
 
-            <PricingCard
-              label="PER DAY"
-              price={`₹${Number(machine.dailyPrice || 2500).toLocaleString(
-                'en-IN',
-              )}`}
-              note="Best Value"
-              selected={selectedPlan === 'day'}
-              recommended
-              onPress={() => setSelectedPlan('day')}
-            />
+            {dailyPrice > 0 && (
+              <PricingCard
+                label="PER DAY"
+                price={`₹${dailyPrice.toLocaleString('en-IN')}`}
+                note="Best Value"
+                selected={selectedPlan === 'day'}
+                recommended
+                onPress={() => setSelectedPlan('day')}
+              />
+            )}
 
-            <PricingCard
-              label="PER WEEK"
-              price={`₹${Number(machine.weeklyPrice || 14000).toLocaleString(
-                'en-IN',
-              )}`}
-              note="Save ₹3,500"
-              selected={selectedPlan === 'week'}
-              onPress={() => setSelectedPlan('week')}
-            />
+            {customPricing.length > 0 && (
+              <PricingCard
+                label="CUSTOM"
+                price={`₹${customPricing[0].amount || 0}`}
+                note={customPricing[0].name || 'Custom'}
+                selected={selectedPlan === 'custom'}
+                onPress={() => setSelectedPlan('custom')}
+              />
+            )}
           </View>
 
-          <View style={styles.depositBanner}>
-            <CircleAlert size={rf(17)} color="#A16207" strokeWidth={2.3} />
+          {customPricing.length > 0 && (
+            <View style={styles.customPricingList}>
+              <Text style={styles.customPricingTitle}>Additional Pricing</Text>
+              {customPricing.map((item, idx) => (
+                <View key={idx} style={styles.customPricingRow}>
+                  <Text style={styles.customPricingName}>{item.name}</Text>
+                  <Text style={styles.customPricingAmount}>
+                    ₹{item.amount}
+                    {item.unit ? ` / ${item.unit}` : ''}
+                  </Text>
+                </View>
+              ))}
+            </View>
+          )}
 
+          <View style={styles.depositBanner}>
+            <CircleAlert size={rf(18)} color="#A16207" strokeWidth={2.3} />
             <Text style={styles.depositText}>
-              Refundable deposit of ₹2,000 required at booking
+              Refundable deposit may be required at booking
             </Text>
           </View>
 
-          <CalendarCard />
 
-          <SectionTitle title="Included Implements" />
-
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.implementRow}
-          >
-            {IMPLEMENTS.map(item => {
-              const Icon = item.Icon;
-              return (
-                <View key={item.id} style={styles.implementCard}>
-                  <View
-                    style={[
-                      styles.implementIconBox,
-                      {
-                        backgroundColor: item.background,
-                      },
-                    ]}
-                  >
-                    <Icon size={rf(20)} color={item.color} strokeWidth={2.2} />
-                  </View>
-
-                  <Text style={styles.implementLabel}>{item.label}</Text>
+          {/* Location */}
+          {(location || address) && (
+            <>
+              <SectionTitle title="Location" />
+              <View style={styles.locationCard}>
+                <View style={styles.locationIconBox}>
+                  <MapPin size={rf(21)} color={GREEN} strokeWidth={2.2} />
                 </View>
-              );
-            })}
-          </ScrollView>
+                <View style={{ flex: 1 }}>
+                  {location ? (
+                    <Text style={styles.locationText}>{location}</Text>
+                  ) : null}
+                  {address ? (
+                    <Text style={styles.addressText}>{address}</Text>
+                  ) : null}
+                </View>
+              </View>
+            </>
+          )}
 
+          {/* Owner Profile */}
           <SectionTitle title="Owner Profile" />
 
           <View style={styles.ownerCard}>
             <View style={styles.ownerHeader}>
-              <Image source={machine.ownerImage} style={styles.ownerImage} />
+              <Image
+                source={ownerProfileImage}
+                style={styles.ownerImage}
+              />
 
               <View style={styles.ownerDetails}>
-                <Text style={styles.ownerName}>
-                  {machine.owner || 'Patil Agro Services'}
-                </Text>
-
+                <Text style={styles.ownerName}>{ownerName}</Text>
                 <View style={styles.verifiedOwnerBadge}>
-                  <BadgeCheck size={rf(11)} color="#FFFFFF" strokeWidth={2.5} />
-
+                  <BadgeCheck size={rf(12)} color="#FFFFFF" strokeWidth={2.5} />
                   <Text style={styles.verifiedOwnerText}>Verified Partner</Text>
                 </View>
               </View>
             </View>
 
             <View style={styles.ownerStatsRow}>
-              <OwnerStat value={machine.rating || '4.8'} label="Rating" />
-
-              <OwnerStat value={machine.bookings || '250+'} label="Bookings" />
-
               <OwnerStat
-                value={machine.ownerSince || '3 yrs'}
-                label="On Platform"
+                value={rating > 0 ? rating.toFixed(1) : 'New'}
+                label="Rating"
               />
+              <OwnerStat
+                value={String(totalJobsCompleted)}
+                label="Jobs Done"
+              />
+              <OwnerStat value={String(totalReviews)} label="Reviews" />
             </View>
 
             <View style={styles.ownerActions}>
               <TouchableOpacity
                 activeOpacity={0.86}
-                onPress={() =>
-                  Alert.alert('Call Owner', 'Calling Patil Agro Services...')
-                }
-                style={styles.callOwnerButton}
-              >
-                <Phone size={rf(16)} color="#FFFFFF" strokeWidth={2.4} />
-
-                <Text style={styles.callOwnerText}>Call Seller</Text>
+                onPress={handleCallOwner}
+                style={styles.callOwnerButton}>
+                <Phone size={rf(17)} color="#FFFFFF" strokeWidth={2.4} />
+                <Text style={styles.callOwnerText}>Call Owner</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
                 activeOpacity={0.86}
-                onPress={() =>
-                  Alert.alert('Chat Owner', 'Opening machinery owner chat.')
-                }
-                style={styles.chatOwnerButton}
-              >
+                onPress={handleChatOwner}
+                style={styles.chatOwnerButton}>
                 <MessageSquare
-                  size={rf(16)}
+                  size={rf(17)}
                   color="#FFFFFF"
                   strokeWidth={2.4}
                 />
-
-                <Text style={styles.chatOwnerText}>Chat Seller</Text>
+                <Text style={styles.chatOwnerText}>Chat Owner</Text>
               </TouchableOpacity>
             </View>
           </View>
 
-          <View style={styles.reviewHeader}>
-            <SectionTitle title="Customer Reviews" noMargin />
-
-            <TouchableOpacity activeOpacity={0.8}>
-              <Text style={styles.seeAllReviews}>See All</Text>
-            </TouchableOpacity>
-          </View>
-
-          <View style={styles.ratingSummary}>
-            <View style={styles.ratingScoreBox}>
-              <Text style={styles.largeRating}>4.8</Text>
-
-              <View style={styles.largeStars}>
-                {[1, 2, 3, 4, 5].map(item => (
-                  <Star
-                    key={item}
-                    size={rf(11)}
-                    color="#FACC15"
-                    fill="#FACC15"
-                  />
-                ))}
-              </View>
-
-              <Text style={styles.reviewCountText}>128 Reviews</Text>
-            </View>
-
-            <View style={styles.ratingBars}>
-              {[5, 4, 3, 2, 1].map((rating, index) => (
-                <View key={rating} style={styles.ratingBarRow}>
-                  <Text style={styles.ratingBarNumber}>{rating}</Text>
-
-                  <View style={styles.ratingBarBackground}>
-                    <View
-                      style={[
-                        styles.ratingBarFill,
-                        {
-                          width: `${[88, 62, 31, 14, 5][index]}%`,
-                        },
-                      ]}
-                    />
-                  </View>
-                </View>
-              ))}
-            </View>
-          </View>
-
-          {REVIEWS.map(review => (
-            <ReviewCard key={review.id} review={review} />
-          ))}
-
+          {/* Safety */}
           <View style={styles.sectionDivider} />
 
           <SectionTitle title="Safety & Service" />
@@ -695,7 +621,6 @@ export default function MachineryDetailsScreen({ navigation, route }) {
               color="#16A34A"
               background="#ECFDF3"
             />
-
             <SafetyCard
               Icon={Timer}
               title="On-Time"
@@ -703,7 +628,6 @@ export default function MachineryDetailsScreen({ navigation, route }) {
               color="#2563EB"
               background="#EFF6FF"
             />
-
             <SafetyCard
               Icon={FileCheck2}
               title="Insurance"
@@ -711,10 +635,9 @@ export default function MachineryDetailsScreen({ navigation, route }) {
               color="#F97316"
               background="#FFF7ED"
             />
-
             <SafetyCard
               Icon={Headphones}
-              title="24-7 Support"
+              title="24/7 Support"
               subtitle=""
               color="#9333EA"
               background="#FAF5FF"
@@ -723,237 +646,145 @@ export default function MachineryDetailsScreen({ navigation, route }) {
         </View>
       </ScrollView>
 
+      {/* Bottom Bar */}
       <View style={styles.bottomBar}>
         <View>
-          <View style={styles.bottomPriceRow}>
-            <Text style={styles.bottomPrice}>
-              ₹{machine.hourlyPrice || 650}
+          {hourlyPrice > 0 ? (
+            <View style={styles.bottomPriceRow}>
+              <Text style={styles.bottomPrice}>₹{hourlyPrice}</Text>
+              <Text style={styles.bottomUnit}>/hr</Text>
+            </View>
+          ) : (
+            <View style={styles.bottomPriceRow}>
+              <Text style={styles.bottomPrice}>₹{dailyPrice}</Text>
+              <Text style={styles.bottomUnit}>/day</Text>
+            </View>
+          )}
+
+          {dailyPrice > 0 && hourlyPrice > 0 && (
+            <Text style={styles.bottomDayPrice}>
+              ₹{dailyPrice.toLocaleString('en-IN')} per day
             </Text>
-
-            <Text style={styles.bottomUnit}>/hr</Text>
-          </View>
-
-          <Text style={styles.bottomDayPrice}>
-            ₹{Number(machine.dailyPrice || 2500).toLocaleString('en-IN')} per
-            day
-          </Text>
+          )}
         </View>
 
         <TouchableOpacity
           activeOpacity={0.9}
           onPress={handleBookNow}
-          style={styles.bookNowButton}
-        >
-          <CalendarDays size={rf(17)} color="#FFFFFF" strokeWidth={2.4} />
-
-          <Text style={styles.bookNowText}>Book Now</Text>
+          style={[
+            styles.bookNowButton,
+            !isAvailable && { backgroundColor: '#9CA3AF' },
+          ]}>
+          <CalendarDays size={rf(18)} color="#FFFFFF" strokeWidth={2.4} />
+          <Text style={styles.bookNowText}>
+            {isAvailable ? 'Book Now' : 'Unavailable'}
+          </Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
 }
+
 function RecommendationStat({ Icon, label }) {
   return (
     <View style={styles.recommendationStat}>
       <Icon size={rf(15)} color="#D1FAE5" strokeWidth={2.2} />
-
       <Text style={styles.recommendationStatText}>{label}</Text>
     </View>
   );
 }
+
 function SectionTitle({ title, noMargin = false }) {
   return (
     <Text
-      style={[styles.sectionTitle, noMargin && styles.sectionTitleNoMargin]}
-    >
+      style={[styles.sectionTitle, noMargin && styles.sectionTitleNoMargin]}>
       {title}
     </Text>
   );
 }
+
 function PricingCard({ label, price, note, selected, recommended, onPress }) {
   return (
     <TouchableOpacity
       activeOpacity={0.86}
       onPress={onPress}
-      style={[styles.pricingCard, selected && styles.selectedPricingCard]}
-    >
+      style={[styles.pricingCard, selected && styles.selectedPricingCard]}>
       {recommended && (
         <View style={styles.bestBadge}>
           <Text style={styles.bestBadgeText}>BEST</Text>
         </View>
       )}
-
       <Text
-        style={[styles.pricingLabel, selected && styles.selectedPricingText]}
-      >
+        style={[styles.pricingLabel, selected && styles.selectedPricingText]}>
         {label}
       </Text>
-
       <Text
-        style={[styles.pricingPrice, selected && styles.selectedPricingText]}
-      >
+        style={[styles.pricingPrice, selected && styles.selectedPricingText]}>
         {price}
       </Text>
-
       <Text
-        style={[styles.pricingNote, selected && styles.selectedPricingNote]}
-      >
+        style={[styles.pricingNote, selected && styles.selectedPricingNote]}>
         {note}
       </Text>
     </TouchableOpacity>
   );
 }
-function CalendarCard() {
-  return (
-    <View style={styles.calendarCard}>
-      <View style={styles.calendarHeader}>
-        <TouchableOpacity activeOpacity={0.8} style={styles.calendarArrow}>
-          <ChevronLeft size={rf(18)} color={DARK} strokeWidth={2.3} />
-        </TouchableOpacity>
 
-        <Text style={styles.calendarMonth}>June 2026</Text>
 
-        <TouchableOpacity activeOpacity={0.8} style={styles.calendarArrow}>
-          <ChevronRight size={rf(18)} color={DARK} strokeWidth={2.3} />
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.weekRow}>
-        {['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'].map(day => (
-          <Text key={day} style={styles.weekDay}>
-            {day}
-          </Text>
-        ))}
-      </View>
-
-      <View style={styles.calendarGrid}>
-        {CALENDAR_DATES.map(item => (
-          <TouchableOpacity
-            key={item.day}
-            activeOpacity={0.8}
-            style={[
-              styles.calendarDate,
-              item.status === 'today' && styles.todayCalendarDate,
-              item.status === 'available' && styles.availableCalendarDate,
-              item.status === 'booked' && styles.bookedCalendarDate,
-            ]}
-          >
-            <Text
-              style={[
-                styles.calendarDateText,
-                item.status === 'today' && styles.selectedCalendarDateText,
-                item.status === 'booked' && styles.bookedCalendarDateText,
-              ]}
-            >
-              {item.day}
-            </Text>
-          </TouchableOpacity>
-        ))}
-      </View>
-
-      <View style={styles.calendarLegend}>
-        <LegendItem color="#16883E" label="Today" />
-
-        <LegendItem color="#D8F0E1" label="Available" />
-
-        <LegendItem color="#FECACA" label="Booked" />
-      </View>
-    </View>
-  );
-}
 function LegendItem({ color, label }) {
   return (
     <View style={styles.legendItem}>
-      <View
-        style={[
-          styles.legendDot,
-          {
-            backgroundColor: color,
-          },
-        ]}
-      />
-
+      <View style={[styles.legendDot, { backgroundColor: color }]} />
       <Text style={styles.legendText}>{label}</Text>
     </View>
   );
 }
+
 function OwnerStat({ value, label }) {
   return (
     <View style={styles.ownerStat}>
       <Text style={styles.ownerStatValue}>{value}</Text>
-
       <Text style={styles.ownerStatLabel}>{label}</Text>
     </View>
   );
 }
-function ReviewCard({ review }) {
-  return (
-    <View style={styles.reviewCard}>
-      <View style={styles.reviewCardHeader}>
-        <View style={styles.reviewerAvatar}>
-          <Text style={styles.reviewerAvatarText}>{review.name.charAt(0)}</Text>
-        </View>
 
-        <View style={styles.reviewerDetails}>
-          <Text style={styles.reviewerName}>{review.name}</Text>
-
-          <Text style={styles.reviewDate}>{review.date}</Text>
-        </View>
-
-        <Star size={rf(11)} color="#FACC15" fill="#FACC15" />
-
-        <Text style={styles.reviewRating}>{review.rating}</Text>
-      </View>
-
-      <Text style={styles.reviewText}>{review.text}</Text>
-    </View>
-  );
-}
 function SafetyCard({ Icon, title, subtitle, color, background }) {
   return (
     <View style={styles.safetyCard}>
-      <View
-        style={[
-          styles.safetyIconBox,
-          {
-            backgroundColor: background,
-          },
-        ]}
-      >
-        <Icon size={rf(17)} color={color} strokeWidth={2.3} />
+      <View style={[styles.safetyIconBox, { backgroundColor: background }]}>
+        <Icon size={rf(18)} color={color} strokeWidth={2.3} />
       </View>
-
       <View style={styles.safetyTextBox}>
         <Text style={styles.safetyTitle}>{title}</Text>
-
         {!!subtitle && <Text style={styles.safetySubtitle}>{subtitle}</Text>}
       </View>
     </View>
   );
 }
+
 const styles = StyleSheet.create({
-  safeArea: {
+  safeArea: { flex: 1, backgroundColor: '#FFFFFF' },
+  loadingWrap: {
     flex: 1,
-    backgroundColor: '#FFFFFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 12,
   },
-  scrollContent: {
-    paddingBottom: 95,
-    backgroundColor: PAGE_BG,
-  },
-  heroImage: {
-    width: '100%',
-    height: width * 0.81,
-  },
-  heroOverlay: {
-    ...StyleSheet.absoluteFillObject,
-  },
+  loadingText: { fontSize: rf(13), color: MUTED, fontWeight: '600' },
+  scrollContent: { paddingBottom: 95, backgroundColor: PAGE_BG },
+  heroImage: { width: '100%', height: width * 0.81 },
+  heroOverlay: { ...StyleSheet.absoluteFillObject },
   heroCircleButton: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     backgroundColor: 'rgba(255,255,255,0.9)',
     alignItems: 'center',
     justifyContent: 'center',
+    position: 'absolute',
+    top: 10,
+    left: 10,
   },
   heroRightActions: {
     position: 'absolute',
@@ -987,14 +818,11 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 11,
     bottom: 10,
-    fontSize: rf(9),
+    fontSize: rf(10),
     fontWeight: '700',
     color: '#FFFFFF',
   },
-  pageContent: {
-    marginTop: -3,
-    paddingHorizontal: PAGE_PADDING,
-  },
+  pageContent: { marginTop: -3, paddingHorizontal: PAGE_PADDING },
   machineInfoCard: {
     borderRadius: 14,
     padding: 13,
@@ -1002,16 +830,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: BORDER,
   },
-  machineName: {
-    fontSize: rf(20),
-    fontWeight: '900',
-    color: DARK,
-  },
-  machineInfoBadges: {
-    marginTop: 10,
-    flexDirection: 'row',
-    gap: 8,
-  },
+  machineName: { fontSize: rf(21), fontWeight: '900', color: DARK },
+  machineInfoBadges: { marginTop: 10, flexDirection: 'row', gap: 8 },
   availablePill: {
     height: 25,
     borderRadius: 13,
@@ -1027,11 +847,7 @@ const styles = StyleSheet.create({
     borderRadius: 3,
     backgroundColor: BRIGHT_GREEN,
   },
-  availablePillText: {
-    fontSize: rf(9),
-    fontWeight: '800',
-    color: GREEN,
-  },
+  availablePillText: { fontSize: rf(10), fontWeight: '800', color: GREEN },
   distancePill: {
     height: 25,
     borderRadius: 13,
@@ -1042,12 +858,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
+    flex: 1,
   },
-  distanceText: {
-    fontSize: rf(9),
-    fontWeight: '700',
-    color: '#64748B',
-  },
+  distanceText: { fontSize: rf(10), fontWeight: '700', color: '#64748B', flex: 1 },
   machineStatsRow: {
     marginTop: 12,
     paddingTop: 11,
@@ -1056,26 +869,10 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
   },
-  ratingInline: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  ratingValue: {
-    fontSize: rf(11),
-    fontWeight: '900',
-    color: DARK,
-  },
-  ratingReviews: {
-    fontSize: rf(9),
-    fontWeight: '500',
-    color: MUTED,
-  },
-  bookingCount: {
-    fontSize: rf(9),
-    fontWeight: '700',
-    color: DARK,
-  },
+  ratingInline: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  ratingValue: { fontSize: rf(12), fontWeight: '900', color: DARK },
+  ratingReviews: { fontSize: rf(10), fontWeight: '500', color: MUTED },
+  bookingCount: { fontSize: rf(10), fontWeight: '700', color: DARK },
   ownerStrip: {
     minHeight: 59,
     marginTop: 10,
@@ -1087,23 +884,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
-  ownerSmallImage: {
-    width: 35,
-    height: 35,
-    borderRadius: 18,
-  },
-  ownerStripDetails: {
-    flex: 1,
-    marginLeft: 9,
-  },
-  ownerSmallName: {
-    fontSize: rf(10),
-    fontWeight: '900',
-    color: DARK,
-  },
+  ownerSmallImage: { width: 35, height: 35, borderRadius: 18 },
+  ownerStripDetails: { flex: 1, marginLeft: 9 },
+  ownerSmallName: { fontSize: rf(11), fontWeight: '900', color: DARK },
   ownerSmallSub: {
     marginTop: 2,
-    fontSize: rf(8),
+    fontSize: rf(9),
     fontWeight: '600',
     color: MUTED,
   },
@@ -1116,11 +902,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 4,
   },
-  verifiedPartnerText: {
-    fontSize: rf(8),
-    fontWeight: '800',
-    color: '#FFFFFF',
-  },
+  verifiedPartnerText: { fontSize: rf(9), fontWeight: '800', color: '#FFFFFF' },
   recommendationCard: {
     minHeight: 198,
     marginTop: 14,
@@ -1151,7 +933,7 @@ const styles = StyleSheet.create({
     gap: 5,
   },
   recommendedBadgeText: {
-    fontSize: rf(7),
+    fontSize: rf(8),
     fontWeight: '900',
     color: '#FFFFFF',
   },
@@ -1163,22 +945,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  matchValue: {
-    fontSize: rf(9),
-    fontWeight: '900',
-    color: GREEN,
-  },
+  matchValue: { fontSize: rf(10), fontWeight: '900', color: GREEN },
   recommendationTitle: {
     marginTop: 4,
-    fontSize: rf(14),
+    fontSize: rf(15),
     fontWeight: '900',
     color: '#FFFFFF',
   },
-  recommendationStats: {
-    marginTop: 12,
-    flexDirection: 'row',
-    gap: 7,
-  },
+  recommendationStats: { marginTop: 12, flexDirection: 'row', gap: 7 },
   recommendationStat: {
     flex: 1,
     height: 44,
@@ -1189,15 +963,11 @@ const styles = StyleSheet.create({
   },
   recommendationStatText: {
     marginTop: 3,
-    fontSize: rf(7),
+    fontSize: rf(8),
     fontWeight: '700',
     color: '#D1FAE5',
   },
-  recommendationPriceRow: {
-    marginTop: 10,
-    flexDirection: 'row',
-    gap: 7,
-  },
+  recommendationPriceRow: { marginTop: 10, flexDirection: 'row', gap: 7 },
   recommendationPriceBox: {
     flex: 1,
     height: 47,
@@ -1207,13 +977,13 @@ const styles = StyleSheet.create({
     backgroundColor: 'rgba(255,255,255,0.1)',
   },
   recommendationLabel: {
-    fontSize: rf(7),
+    fontSize: rf(8),
     fontWeight: '600',
     color: '#BBF7D0',
   },
   recommendationValue: {
     marginTop: 3,
-    fontSize: rf(11),
+    fontSize: rf(12),
     fontWeight: '900',
     color: '#FFFFFF',
   },
@@ -1229,22 +999,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 6,
   },
-  whyButtonText: {
-    fontSize: rf(9),
-    fontWeight: '800',
-    color: '#FFFFFF',
-  },
+  whyButtonText: { fontSize: rf(10), fontWeight: '800', color: '#FFFFFF' },
   sectionTitle: {
     marginTop: 26,
     marginBottom: 13,
-    fontSize: rf(15),
+    fontSize: rf(16),
     fontWeight: '900',
     color: DARK,
   },
-  sectionTitleNoMargin: {
-    marginTop: 0,
-    marginBottom: 0,
-  },
+  sectionTitleNoMargin: { marginTop: 0, marginBottom: 0 },
   specificationGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -1260,30 +1023,29 @@ const styles = StyleSheet.create({
     borderColor: '#DDE4DF',
     alignItems: 'center',
     justifyContent: 'center',
+    paddingHorizontal: 4,
   },
   specificationValue: {
     marginTop: 3,
-    fontSize: rf(10),
+    fontSize: rf(11),
     fontWeight: '900',
     color: DARK,
+    textAlign: 'center',
   },
   specificationLabel: {
     marginTop: 2,
-    fontSize: rf(6),
+    fontSize: rf(8),
     fontWeight: '700',
     color: MUTED,
+    textAlign: 'center',
   },
   supportedLabel: {
     marginTop: 12,
-    fontSize: rf(8),
+    fontSize: rf(9),
     fontWeight: '600',
     color: MUTED,
   },
-  supportedPills: {
-    marginTop: 6,
-    flexDirection: 'row',
-    gap: 6,
-  },
+  supportedPills: { marginTop: 6, flexDirection: 'row', gap: 6, flexWrap: 'wrap' },
   supportedPill: {
     height: 21,
     paddingHorizontal: 9,
@@ -1292,15 +1054,21 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  supportedPillText: {
-    fontSize: rf(7),
-    fontWeight: '800',
-    color: '#FFFFFF',
+  supportedPillText: { fontSize: rf(8), fontWeight: '800', color: '#FFFFFF' },
+  aboutCard: {
+    borderRadius: 10,
+    padding: 13,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: BORDER,
   },
-  pricingRow: {
-    flexDirection: 'row',
-    gap: 8,
+  aboutText: {
+    fontSize: rf(11),
+    lineHeight: rf(17),
+    color: '#4B5563',
+    fontWeight: '500',
   },
+  pricingRow: { flexDirection: 'row', gap: 8 },
   pricingCard: {
     flex: 1,
     height: 88,
@@ -1311,10 +1079,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     justifyContent: 'center',
   },
-  selectedPricingCard: {
-    backgroundColor: GREEN,
-    borderColor: GREEN,
-  },
+  selectedPricingCard: { backgroundColor: GREEN, borderColor: GREEN },
   bestBadge: {
     position: 'absolute',
     right: 3,
@@ -1324,34 +1089,40 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
     backgroundColor: '#D1FAE5',
   },
-  bestBadgeText: {
-    fontSize: rf(5),
-    fontWeight: '900',
-    color: GREEN,
-  },
-  pricingLabel: {
-    fontSize: rf(7),
-    fontWeight: '700',
-    color: MUTED,
-  },
+  bestBadgeText: { fontSize: rf(6), fontWeight: '900', color: GREEN },
+  pricingLabel: { fontSize: rf(8), fontWeight: '700', color: MUTED },
   pricingPrice: {
     marginTop: 5,
-    fontSize: rf(14),
+    fontSize: rf(15),
     fontWeight: '900',
     color: GREEN,
   },
-  pricingNote: {
-    marginTop: 4,
-    fontSize: rf(7),
-    fontWeight: '700',
+  pricingNote: { marginTop: 4, fontSize: rf(8), fontWeight: '700', color: DARK },
+  selectedPricingText: { color: '#FFFFFF' },
+  selectedPricingNote: { color: '#D1FAE5' },
+  customPricingList: {
+    marginTop: 10,
+    borderRadius: 10,
+    padding: 12,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: BORDER,
+  },
+  customPricingTitle: {
+    fontSize: rf(11),
+    fontWeight: '900',
     color: DARK,
+    marginBottom: 8,
   },
-  selectedPricingText: {
-    color: '#FFFFFF',
+  customPricingRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: 6,
+    borderTopWidth: 1,
+    borderTopColor: '#F3F4F6',
   },
-  selectedPricingNote: {
-    color: '#D1FAE5',
-  },
+  customPricingName: { fontSize: rf(11), color: '#374151', fontWeight: '600' },
+  customPricingAmount: { fontSize: rf(11), color: DARK, fontWeight: '900' },
   depositBanner: {
     minHeight: 44,
     marginTop: 9,
@@ -1366,8 +1137,8 @@ const styles = StyleSheet.create({
   },
   depositText: {
     flex: 1,
-    fontSize: rf(8),
-    lineHeight: rf(12),
+    fontSize: rf(9),
+    lineHeight: rf(13),
     fontWeight: '700',
     color: '#854D0E',
   },
@@ -1392,27 +1163,16 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  calendarMonth: {
-    fontSize: rf(10),
-    fontWeight: '900',
-    color: DARK,
-  },
-  weekRow: {
-    marginTop: 13,
-    flexDirection: 'row',
-  },
+  calendarMonth: { fontSize: rf(11), fontWeight: '900', color: DARK },
+  weekRow: { marginTop: 13, flexDirection: 'row' },
   weekDay: {
     width: `${100 / 7}%`,
     textAlign: 'center',
-    fontSize: rf(7),
+    fontSize: rf(8),
     fontWeight: '800',
     color: MUTED,
   },
-  calendarGrid: {
-    marginTop: 8,
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-  },
+  calendarGrid: { marginTop: 8, flexDirection: 'row', flexWrap: 'wrap' },
   calendarDate: {
     width: `${100 / 7}%`,
     height: 32,
@@ -1420,73 +1180,39 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  todayCalendarDate: {
-    backgroundColor: GREEN,
-  },
-  availableCalendarDate: {
-    backgroundColor: '#DDF4E5',
-  },
-  bookedCalendarDate: {
-    backgroundColor: '#FECACA',
-  },
-  calendarDateText: {
-    fontSize: rf(8),
-    fontWeight: '700',
-    color: DARK,
-  },
-  selectedCalendarDateText: {
-    color: '#FFFFFF',
-    fontWeight: '900',
-  },
-  bookedCalendarDateText: {
-    color: '#DC2626',
-  },
-  calendarLegend: {
-    marginTop: 10,
+  todayCalendarDate: { backgroundColor: GREEN },
+  availableCalendarDate: { backgroundColor: '#DDF4E5' },
+  bookedCalendarDate: { backgroundColor: '#FECACA' },
+  calendarDateText: { fontSize: rf(9), fontWeight: '700', color: DARK },
+  selectedCalendarDateText: { color: '#FFFFFF', fontWeight: '900' },
+  bookedCalendarDateText: { color: '#DC2626' },
+  calendarLegend: { marginTop: 10, flexDirection: 'row', gap: 12 },
+  legendItem: { flexDirection: 'row', alignItems: 'center', gap: 4 },
+  legendDot: { width: 6, height: 6, borderRadius: 3 },
+  legendText: { fontSize: rf(8), fontWeight: '700', color: MUTED },
+  locationCard: {
     flexDirection: 'row',
-    gap: 12,
-  },
-  legendItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  legendDot: {
-    width: 6,
-    height: 6,
-    borderRadius: 3,
-  },
-  legendText: {
-    fontSize: rf(7),
-    fontWeight: '700',
-    color: MUTED,
-  },
-  implementRow: {
-    paddingRight: 10,
-    gap: 9,
-  },
-  implementCard: {
-    width: 74,
-    height: 65,
-    borderRadius: 9,
+    borderRadius: 10,
+    padding: 13,
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
     borderColor: BORDER,
+    gap: 10,
+  },
+  locationIconBox: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: '#EAF6E8',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  implementIconBox: {
-    width: 31,
-    height: 31,
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  implementLabel: {
-    marginTop: 5,
-    fontSize: rf(7),
-    fontWeight: '800',
-    color: DARK,
+  locationText: { fontSize: rf(12), fontWeight: '900', color: DARK },
+  addressText: {
+    fontSize: rf(10),
+    color: MUTED,
+    marginTop: 3,
+    lineHeight: rf(15),
   },
   ownerCard: {
     borderRadius: 13,
@@ -1495,24 +1221,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: BORDER,
   },
-  ownerHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  ownerImage: {
-    width: 47,
-    height: 47,
-    borderRadius: 24,
-  },
-  ownerDetails: {
-    flex: 1,
-    marginLeft: 11,
-  },
-  ownerName: {
-    fontSize: rf(13),
-    fontWeight: '900',
-    color: DARK,
-  },
+  ownerHeader: { flexDirection: 'row', alignItems: 'center' },
+  ownerImage: { width: 47, height: 47, borderRadius: 24 },
+  ownerDetails: { flex: 1, marginLeft: 11 },
+  ownerName: { fontSize: rf(14), fontWeight: '900', color: DARK },
   verifiedOwnerBadge: {
     alignSelf: 'flex-start',
     marginTop: 4,
@@ -1524,11 +1236,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 4,
   },
-  verifiedOwnerText: {
-    fontSize: rf(7),
-    fontWeight: '800',
-    color: '#FFFFFF',
-  },
+  verifiedOwnerText: { fontSize: rf(8), fontWeight: '800', color: '#FFFFFF' },
   ownerStatsRow: {
     marginTop: 12,
     flexDirection: 'row',
@@ -1541,22 +1249,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  ownerStatValue: {
-    fontSize: rf(10),
-    fontWeight: '900',
-    color: DARK,
-  },
+  ownerStatValue: { fontSize: rf(11), fontWeight: '900', color: DARK },
   ownerStatLabel: {
     marginTop: 3,
-    fontSize: rf(7),
+    fontSize: rf(8),
     fontWeight: '600',
     color: MUTED,
   },
-  ownerActions: {
-    marginTop: 11,
-    flexDirection: 'row',
-    gap: 8,
-  },
+  ownerActions: { marginTop: 11, flexDirection: 'row', gap: 8 },
   callOwnerButton: {
     flex: 1,
     height: 38,
@@ -1567,11 +1267,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 5,
   },
-  callOwnerText: {
-    fontSize: rf(10),
-    fontWeight: '900',
-    color: '#FFFFFF',
-  },
+  callOwnerText: { fontSize: rf(11), fontWeight: '900', color: '#FFFFFF' },
   chatOwnerButton: {
     flex: 1,
     height: 38,
@@ -1582,130 +1278,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 5,
   },
-  chatOwnerText: {
-    fontSize: rf(10),
-    fontWeight: '900',
-    color: '#FFFFFF',
-  },
-  reviewHeader: {
-    marginTop: 27,
-    marginBottom: 14,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  seeAllReviews: {
-    fontSize: rf(8),
-    fontWeight: '900',
-    color: GREEN,
-  },
-  ratingSummary: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  ratingScoreBox: {
-    width: '32%',
-  },
-  largeRating: {
-    fontSize: rf(31),
-    lineHeight: rf(35),
-    fontWeight: '900',
-    color: DARK,
-  },
-  largeStars: {
-    marginTop: 2,
-    flexDirection: 'row',
-  },
-  reviewCountText: {
-    marginTop: 4,
-    fontSize: rf(7),
-    fontWeight: '700',
-    color: ORANGE,
-  },
-  ratingBars: {
-    flex: 1,
-  },
-  ratingBarRow: {
-    marginBottom: 5,
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  ratingBarNumber: {
-    width: 13,
-    fontSize: rf(7),
-    fontWeight: '700',
-    color: MUTED,
-  },
-  ratingBarBackground: {
-    flex: 1,
-    height: 4,
-    borderRadius: 2,
-    backgroundColor: '#E5E7EB',
-    overflow: 'hidden',
-  },
-  ratingBarFill: {
-    height: '100%',
-    borderRadius: 2,
-    backgroundColor: '#FBBF24',
-  },
-  reviewCard: {
-    marginTop: 12,
-    borderRadius: 10,
-    padding: 12,
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: BORDER,
-  },
-  reviewCardHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  reviewerAvatar: {
-    width: 31,
-    height: 31,
-    borderRadius: 16,
-    backgroundColor: '#F1F5F9',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  reviewerAvatarText: {
-    fontSize: rf(11),
-    fontWeight: '900',
-    color: GREEN,
-  },
-  reviewerDetails: {
-    flex: 1,
-    marginLeft: 8,
-  },
-  reviewerName: {
-    fontSize: rf(8),
-    fontWeight: '900',
-    color: DARK,
-  },
-  reviewDate: {
-    marginTop: 2,
-    fontSize: rf(6),
-    fontWeight: '600',
-    color: MUTED,
-  },
-  reviewRating: {
-    marginLeft: 3,
-    fontSize: rf(8),
-    fontWeight: '900',
-    color: DARK,
-  },
-  reviewText: {
-    marginTop: 9,
-    fontSize: rf(8),
-    lineHeight: rf(12),
-    fontWeight: '500',
-    color: '#475569',
-  },
-  sectionDivider: {
-    height: 6,
-    marginTop: 23,
-    backgroundColor: '#EEF2F3',
-  },
+  chatOwnerText: { fontSize: rf(11), fontWeight: '900', color: '#FFFFFF' },
+  sectionDivider: { height: 6, marginTop: 23, backgroundColor: '#EEF2F3' },
   safetyGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -1730,17 +1304,11 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  safetyTextBox: {
-    marginLeft: 8,
-  },
-  safetyTitle: {
-    fontSize: rf(8),
-    fontWeight: '900',
-    color: DARK,
-  },
+  safetyTextBox: { marginLeft: 8 },
+  safetyTitle: { fontSize: rf(9), fontWeight: '900', color: DARK },
   safetySubtitle: {
     marginTop: 2,
-    fontSize: rf(7),
+    fontSize: rf(8),
     fontWeight: '700',
     color: DARK,
   },
@@ -1759,24 +1327,17 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  bottomPriceRow: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
-  },
-  bottomPrice: {
-    fontSize: rf(19),
-    fontWeight: '900',
-    color: GREEN,
-  },
+  bottomPriceRow: { flexDirection: 'row', alignItems: 'baseline' },
+  bottomPrice: { fontSize: rf(21), fontWeight: '900', color: GREEN },
   bottomUnit: {
     marginLeft: 3,
-    fontSize: rf(8),
+    fontSize: rf(9),
     fontWeight: '600',
     color: MUTED,
   },
   bottomDayPrice: {
     marginTop: 1,
-    fontSize: rf(7),
+    fontSize: rf(8),
     fontWeight: '600',
     color: MUTED,
   },
@@ -1790,9 +1351,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 7,
   },
-  bookNowText: {
-    fontSize: rf(13),
-    fontWeight: '900',
-    color: '#FFFFFF',
-  },
+  bookNowText: { fontSize: rf(14), fontWeight: '900', color: '#FFFFFF' },
 });

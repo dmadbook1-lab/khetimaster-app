@@ -7,14 +7,17 @@ import {
   Dimensions,
 } from 'react-native';
 import MachineryCard from './MachineryCard';
+
 const { width } = Dimensions.get('window');
 const GREEN = '#16883E';
+
 const rf = size => {
   const scale = width / 390;
-  return Math.max(size - 2, Math.min(size * scale, size + 2));
+  return Math.max(size - 1, Math.min(size * scale, size + 2));
 };
+
 export default function AvailableMachinery({
-  machines,
+  machines = [],
   onSeeAllPress,
   onMachinePress,
   onBookPress,
@@ -30,36 +33,60 @@ export default function AvailableMachinery({
         </TouchableOpacity>
       </View>
 
-      {machines.map(machine => (
-        <MachineryCard
-          key={machine.id}
-          machine={machine}
-          onPress={onMachinePress}
-          onBookPress={onBookPress}
-          onFavouritePress={onFavouritePress}
-        />
-      ))}
+      {machines.length === 0 ? (
+        <View style={styles.emptyContainer}>
+          <Text style={styles.emptyText}>No available machinery found near you.</Text>
+        </View>
+      ) : (
+        <View style={styles.grid}>
+          {machines.map(machine => (
+            <MachineryCard
+              key={machine._id || machine.id}
+              machine={machine}
+              onPress={onMachinePress}
+              onBookPress={onBookPress}
+              onFavouritePress={onFavouritePress}
+            />
+          ))}
+        </View>
+      )}
     </View>
   );
 }
+
 const styles = StyleSheet.create({
   wrapper: {
     marginTop: 20,
   },
   header: {
-    marginBottom: 13,
+    marginBottom: 12,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
   title: {
-    fontSize: rf(16),
+    fontSize: rf(17),
     fontWeight: '900',
     color: '#121A2B',
   },
   seeAll: {
-    fontSize: rf(11),
+    fontSize: rf(12),
     fontWeight: '900',
     color: GREEN,
+  },
+  grid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  emptyContainer: {
+    paddingVertical: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyText: {
+    fontSize: rf(12),
+    color: '#64748B',
+    fontWeight: '500',
   },
 });

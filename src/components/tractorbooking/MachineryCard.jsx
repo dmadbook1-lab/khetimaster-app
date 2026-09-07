@@ -3,7 +3,6 @@ import {
   View,
   Text,
   Image,
-  ImageBackground,
   TouchableOpacity,
   StyleSheet,
   Dimensions,
@@ -12,317 +11,337 @@ import {
   Heart,
   Star,
   MapPin,
-  Clock3,
-  BadgeCheck,
   CalendarDays,
+  CircleCheck,
 } from 'lucide-react-native';
+
 const { width } = Dimensions.get('window');
 const GREEN = '#16883E';
 const BRIGHT_GREEN = '#18B94D';
 const DARK = '#121A2B';
-const MUTED = '#7B8494';
+const MUTED = '#64748B';
+const BORDER = '#E9EDEE';
+
+// Upscaled font scale utility
 const rf = size => {
   const scale = width / 390;
-  return Math.max(size - 2, Math.min(size * scale, size + 2));
+  return Math.max(size - 1, Math.min(size * scale, size + 2));
 };
+
+// Calculate 2-column tile width
+const TILE_WIDTH = (width - width * 0.037 * 2 - 12) / 2;
+
 export default function MachineryCard({
-  machine,
+  machine = {},
   onPress,
   onBookPress,
   onFavouritePress,
 }) {
+  const isAvailable =
+    machine.availability === 'available' && machine.isActive !== false;
+
+  const imageUri =
+    Array.isArray(machine.images) && machine.images.length > 0
+      ? { uri: machine.images[0] }
+      : require('../../assets/machinery/sonalika-di-745.jpg');
+
+  const name = machine.name || 'Machinery';
+  const category = machine.category || 'Tractor';
+
+  const location =
+    [machine.village, machine.district].filter(Boolean).join(', ') ||
+    'Location not set';
+
+  const hourlyPrice = Number(machine.pricing?.hourly) || 0;
+  const dailyPrice = Number(machine.pricing?.daily) || 0;
+  const rating = Number(machine.rating) || 0;
+
+  const horsepower = machine.enginePower?.value
+    ? `${machine.enginePower.value} ${machine.enginePower.unit || 'HP'}`
+    : '';
+
   return (
     <TouchableOpacity
-      activeOpacity={0.95}
+      activeOpacity={0.92}
       onPress={() => onPress?.(machine)}
-      style={styles.card}
+      style={styles.tileCard}
     >
-      <ImageBackground
-        source={machine.image}
-        style={styles.heroImage}
-        imageStyle={styles.heroImageStyle}
-      >
-        {machine.available && (
-          <View style={styles.availableBadge}>
-            <View style={styles.availableDot} />
-            <Text style={styles.availableText}>Available Today</Text>
-          </View>
-        )}
+      {/* IMAGE CONTAINER */}
+      <View style={styles.imageWrap}>
+        <Image source={imageUri} style={styles.image} resizeMode="cover" />
 
+        {/* Status Badge */}
+        <View
+          style={[
+            styles.statusBadge,
+            isAvailable ? styles.statusOn : styles.statusOff,
+          ]}
+        >
+          <View
+            style={[
+              styles.statusDot,
+              isAvailable ? styles.statusDotOn : styles.statusDotOff,
+            ]}
+          />
+          <Text
+            style={[
+              styles.statusText,
+              isAvailable ? styles.statusTextOn : styles.statusTextOff,
+            ]}
+          >
+            {isAvailable ? 'Available' : 'Busy'}
+          </Text>
+        </View>
+
+        {/* Favorite Button */}
         <TouchableOpacity
           activeOpacity={0.8}
           onPress={() => onFavouritePress?.(machine)}
-          style={styles.heartButton}
+          style={styles.favButton}
         >
           <Heart
-            size={rf(21)}
-            color={machine.favourite ? '#F97316' : '#94A3B8'}
-            fill={machine.favourite ? '#FFF7ED' : '#FFFFFF'}
-            strokeWidth={2.2}
+            size={rf(16)}
+            color={machine.favourite ? '#EF4444' : '#64748B'}
+            fill={machine.favourite ? '#EF4444' : 'transparent'}
+            strokeWidth={2.3}
           />
         </TouchableOpacity>
-      </ImageBackground>
+      </View>
 
+      {/* CONTENT */}
       <View style={styles.content}>
-        <View style={styles.nameRow}>
-          <Text numberOfLines={1} style={styles.name}>
-            {machine.name}
+        {/* Category & Rating */}
+        <View style={styles.metaRow}>
+          <Text style={styles.category} numberOfLines={1}>
+            {horsepower ? `${category} • ${horsepower}` : category}
           </Text>
 
-          <View style={styles.hpBadge}>
-            <Text style={styles.hpText}>{machine.horsepower}</Text>
-          </View>
-        </View>
-
-        <View style={styles.infoRow}>
-          <Star size={rf(13)} color="#FACC15" fill="#FACC15" />
-
-          <Text style={styles.rating}>{machine.rating}</Text>
-
-          <Text style={styles.reviews}>({machine.reviews})</Text>
-
-          <MapPin size={rf(13)} color="#94A3B8" strokeWidth={2.1} />
-
-          <Text style={styles.infoText}>{machine.distance}</Text>
-
-          <Clock3 size={rf(13)} color="#94A3B8" strokeWidth={2.1} />
-
-          <Text style={styles.infoText}>{machine.readyTime}</Text>
-        </View>
-
-        <View style={styles.divider} />
-
-        <View style={styles.ownerRow}>
-          <Image source={machine.ownerImage} style={styles.ownerImage} />
-
-          <View style={styles.ownerDetails}>
-            <View style={styles.ownerNameRow}>
-              <Text style={styles.ownerName}>{machine.owner}</Text>
-
-              {machine.ownerVerified && (
-                <BadgeCheck
-                  size={rf(14)}
-                  color={BRIGHT_GREEN}
-                  strokeWidth={2.4}
-                />
-              )}
+          {rating > 0 && (
+            <View style={styles.ratingBox}>
+              <Star size={rf(11)} color="#FACC15" fill="#FACC15" />
+              <Text style={styles.ratingText}>{rating.toFixed(1)}</Text>
             </View>
-
-            <Text style={styles.ownerSubtitle}>Verified Owner</Text>
-          </View>
+          )}
         </View>
 
-        <View style={styles.divider} />
+        {/* Machinery Name */}
+        <Text numberOfLines={1} style={styles.name}>
+          {name}
+        </Text>
 
-        <View style={styles.bottomRow}>
-          <View>
-            <View style={styles.hourlyPriceRow}>
-              <Text style={styles.price}>₹{machine.hourlyPrice}</Text>
+        {/* Location */}
+        <View style={styles.locationRow}>
+          <MapPin size={rf(13)} color="#64748B" strokeWidth={2.2} />
+          <Text numberOfLines={1} style={styles.locationText}>
+            {location}
+          </Text>
+        </View>
 
-              <Text style={styles.perHour}>/ Hour</Text>
-            </View>
+        {/* Price & Book Action */}
+        <View style={styles.footerRow}>
+          <View style={styles.priceContainer}>
+            {hourlyPrice > 0 ? (
+              <Text style={styles.priceText}>
+                ₹{hourlyPrice}
+                <Text style={styles.priceUnit}>/hr</Text>
+              </Text>
+            ) : dailyPrice > 0 ? (
+              <Text style={styles.priceText}>
+                ₹{dailyPrice}
+                <Text style={styles.priceUnit}>/day</Text>
+              </Text>
+            ) : (
+              <Text style={styles.priceText}>On Request</Text>
+            )}
 
-            <Text style={styles.dailyPrice}>
-              {machine.dailyPrice.toLocaleString('en-IN')} / Day
-            </Text>
+            {dailyPrice > 0 && hourlyPrice > 0 && (
+              <Text style={styles.subPriceText}>
+                ₹{dailyPrice.toLocaleString('en-IN')}/day
+              </Text>
+            )}
           </View>
 
           <TouchableOpacity
-            activeOpacity={0.88}
+            activeOpacity={0.85}
             onPress={() => onBookPress?.(machine)}
-            style={styles.bookButton}
+            disabled={!isAvailable}
+            style={[
+              styles.bookBtn,
+              !isAvailable && styles.bookBtnDisabled,
+            ]}
           >
-            <CalendarDays size={rf(17)} color="#FFFFFF" strokeWidth={2.4} />
-
-            <Text style={styles.bookButtonText}>Book Now</Text>
+            <CalendarDays size={rf(14)} color="#FFFFFF" strokeWidth={2.5} />
+            <Text style={styles.bookBtnText}>Book</Text>
           </TouchableOpacity>
         </View>
       </View>
     </TouchableOpacity>
   );
 }
+
 const styles = StyleSheet.create({
-  card: {
-    marginBottom: 17,
-    borderRadius: 15,
+  tileCard: {
+    width: TILE_WIDTH,
+    marginBottom: 14,
+    borderRadius: 16,
     backgroundColor: '#FFFFFF',
     borderWidth: 1,
-    borderColor: '#E9EDEE',
+    borderColor: BORDER,
     overflow: 'hidden',
     shadowColor: '#111827',
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
+    shadowOpacity: 0.05,
+    shadowRadius: 6,
+    shadowOffset: { width: 0, height: 2 },
     elevation: 2,
   },
-  heroImage: {
-    height: 177,
+  imageWrap: {
+    width: '100%',
+    height: 125,
+    backgroundColor: '#F1F5F9',
+    position: 'relative',
   },
-  heroImageStyle: {
-    resizeMode: 'cover',
+  image: {
+    width: '100%',
+    height: '100%',
   },
-  availableBadge: {
+  statusBadge: {
     position: 'absolute',
-    left: 13,
-    top: 12,
-    height: 25,
-    borderRadius: 5,
-    paddingHorizontal: 10,
-    backgroundColor: '#21C861',
+    left: 8,
+    top: 8,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 5,
+    gap: 4,
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 10,
   },
-  availableDot: {
-    width: 6,
-    height: 6,
+  statusOn: {
+    backgroundColor: '#EAFBF0',
+  },
+  statusOff: {
+    backgroundColor: '#FEE2E2',
+  },
+  statusDot: {
+    width: 5,
+    height: 5,
     borderRadius: 3,
-    backgroundColor: '#FFFFFF',
   },
-  availableText: {
-    fontSize: rf(9),
-    fontWeight: '900',
-    color: '#FFFFFF',
+  statusDotOn: {
+    backgroundColor: BRIGHT_GREEN,
   },
-  heartButton: {
+  statusDotOff: {
+    backgroundColor: '#EF4444',
+  },
+  statusText: {
+    fontSize: rf(8),
+    fontWeight: '800',
+  },
+  statusTextOn: {
+    color: GREEN,
+  },
+  statusTextOff: {
+    color: '#DC2626',
+  },
+  favButton: {
     position: 'absolute',
-    right: 13,
-    top: 12,
-    width: 35,
-    height: 35,
-    borderRadius: 18,
-    backgroundColor: '#FFFFFF',
+    right: 8,
+    top: 8,
+    width: 28,
+    height: 28,
+    borderRadius: 14,
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
     alignItems: 'center',
     justifyContent: 'center',
   },
   content: {
-    paddingHorizontal: 16,
-    paddingTop: 15,
-    paddingBottom: 15,
+    padding: 10,
   },
-  nameRow: {
+  metaRow: {
     flexDirection: 'row',
     alignItems: 'center',
-  },
-  name: {
-    flex: 1,
-    fontSize: rf(17),
-    fontWeight: '900',
-    color: DARK,
-  },
-  hpBadge: {
-    height: 22,
-    borderRadius: 5,
-    paddingHorizontal: 8,
-    backgroundColor: '#F1F3F5',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  hpText: {
-    fontSize: rf(9),
-    fontWeight: '900',
-    color: '#657080',
-  },
-  infoRow: {
-    marginTop: 9,
-    flexDirection: 'row',
-    alignItems: 'center',
-    flexWrap: 'wrap',
+    justifyContent: 'space-between',
     gap: 4,
   },
-  rating: {
+  category: {
+    flex: 1,
+    fontSize: rf(10),
+    color: '#16883E',
+    fontWeight: '800',
+    textTransform: 'uppercase',
+  },
+  ratingBox: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 2,
+  },
+  ratingText: {
     fontSize: rf(10),
     fontWeight: '900',
     color: DARK,
   },
-  reviews: {
-    marginRight: 5,
-    fontSize: rf(9),
-    fontWeight: '600',
-    color: MUTED,
-  },
-  infoText: {
-    marginRight: 5,
-    fontSize: rf(9),
-    fontWeight: '500',
-    color: MUTED,
-  },
-  divider: {
-    height: 1,
-    marginVertical: 13,
-    backgroundColor: '#EEF1F2',
-  },
-  ownerRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  ownerImage: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-  },
-  ownerDetails: {
-    flex: 1,
-    marginLeft: 10,
-  },
-  ownerNameRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 5,
-  },
-  ownerName: {
-    fontSize: rf(11),
+  name: {
+    marginTop: 4,
+    fontSize: rf(15),
     fontWeight: '900',
     color: DARK,
+    lineHeight: rf(19),
   },
-  ownerSubtitle: {
-    marginTop: 4,
-    fontSize: rf(9),
-    fontWeight: '500',
-    color: '#9AA3B0',
+  locationRow: {
+    marginTop: 6,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
   },
-  bottomRow: {
+  locationText: {
+    flex: 1,
+    fontSize: rf(11),
+    color: MUTED,
+    fontWeight: '600',
+  },
+  footerRow: {
+    marginTop: 10,
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: '#F1F5F9',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-  hourlyPriceRow: {
-    flexDirection: 'row',
-    alignItems: 'baseline',
+  priceContainer: {
+    flex: 1,
   },
-  price: {
-    fontSize: rf(20),
+  priceText: {
+    fontSize: rf(16),
     fontWeight: '900',
     color: GREEN,
   },
-  perHour: {
-    marginLeft: 4,
-    fontSize: rf(10),
-    color: MUTED,
-    fontWeight: '500',
-  },
-  dailyPrice: {
-    marginTop: 5,
+  priceUnit: {
     fontSize: rf(9),
-    fontWeight: '500',
-    color: '#A4ACB8',
+    color: MUTED,
+    fontWeight: '600',
   },
-  bookButton: {
-    height: 43,
-    borderRadius: 10,
-    paddingHorizontal: 17,
-    backgroundColor: '#14AA49',
+  subPriceText: {
+    fontSize: rf(9),
+    color: '#94A3B8',
+    fontWeight: '600',
+    marginTop: 1,
+  },
+  bookBtn: {
+    height: 32,
+    paddingHorizontal: 10,
+    borderRadius: 8,
+    backgroundColor: BRIGHT_GREEN,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
+    gap: 4,
   },
-  bookButtonText: {
-    fontSize: rf(13),
-    fontWeight: '900',
+  bookBtnDisabled: {
+    backgroundColor: '#94A3B8',
+  },
+  bookBtnText: {
     color: '#FFFFFF',
+    fontSize: rf(11),
+    fontWeight: '900',
   },
 });
