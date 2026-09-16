@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import {
   View,
@@ -21,41 +22,111 @@ import {
   Camera,
   Check,
   Calendar,
+  Map,
 } from 'lucide-react-native';
 import { useDispatch, useSelector } from 'react-redux';
 import { setLabourFormData } from '../../redux/slices/labourSlice';
+
 const { width } = Dimensions.get('window');
+
 const rf = size => {
   const scale = width / 390;
   return Math.max(size, Math.min(size * scale, size + 3));
 };
+
 const GREEN = '#16A34A';
 const DARK = '#172033';
 const MUTED = '#7C8596';
+
 export default function FindWorkStep3Screen({ navigation }) {
   const dispatch = useDispatch();
-  const formData = useSelector(state => state?.labour?.formData || {});
-  const [name, setName] = useState(formData.fullName || '');
-  const [phone, setPhone] = useState(formData.phoneNumber || '');
-  const [age, setAge] = useState(formData.age ? String(formData.age) : '');
-  const [village, setVillage] = useState(formData.village || '');
-  const selectedWorkTypes = Array.isArray(formData.preferredWork)
+
+  const formData = useSelector(
+    state => state?.labour?.formData || {},
+  );
+
+  const [name, setName] = useState(
+    formData.fullName || '',
+  );
+
+  const [phone, setPhone] = useState(
+    formData.phoneNumber || '',
+  );
+
+  const [age, setAge] = useState(
+    formData.age ? String(formData.age) : '',
+  );
+
+  const [stateName, setStateName] = useState(
+    formData.state || '',
+  );
+
+  const [district, setDistrict] = useState(
+    formData.district || '',
+  );
+
+  const [taluka, setTaluka] = useState(
+    formData.taluka || '',
+  );
+
+  const [village, setVillage] = useState(
+    formData.village || '',
+  );
+
+  const selectedWorkTypes = Array.isArray(
+    formData.preferredWork,
+  )
     ? formData.preferredWork
     : [];
+
+  /*
+  |--------------------------------------------------------------------------
+  | NEXT
+  |--------------------------------------------------------------------------
+  */
+
   const handleNext = () => {
     const trimmedName = name.trim();
-    const cleanedPhone = phone.replace(/\D/g, '');
+
+    const cleanedPhone = phone.replace(
+      /\D/g,
+      '',
+    );
+
     const trimmedAge = age.trim();
+
+    const trimmedState = stateName.trim();
+
+    const trimmedDistrict = district.trim();
+
+    const trimmedTaluka = taluka.trim();
+
     const trimmedVillage = village.trim();
+
     const numericAge = Number(trimmedAge);
+
+    /*
+    |--------------------------------------------------------------------------
+    | VALIDATION
+    |--------------------------------------------------------------------------
+    */
+
     if (!trimmedName) {
-      Alert.alert('Required', 'Please enter your full name.');
+      Alert.alert(
+        'Required',
+        'Please enter your full name.',
+      );
       return;
     }
+
     if (!cleanedPhone) {
-      Alert.alert('Mobile Number Required', 'Please enter your mobile number.');
+      Alert.alert(
+        'Mobile Number Required',
+        'Please enter your mobile number.',
+      );
       return;
     }
+
     if (cleanedPhone.length !== 10) {
       Alert.alert(
         'Invalid Mobile Number',
@@ -63,25 +134,66 @@ export default function FindWorkStep3Screen({ navigation }) {
       );
       return;
     }
+
     if (!trimmedAge) {
-      Alert.alert('Age Required', 'Please enter your age.');
+      Alert.alert(
+        'Age Required',
+        'Please enter your age.',
+      );
       return;
     }
-    if (!Number.isInteger(numericAge) || numericAge < 18) {
+
+    if (
+      !Number.isInteger(numericAge) ||
+      numericAge < 18
+    ) {
       Alert.alert(
         'Invalid Age',
         'You must be at least 18 years old to register as a labourer.',
       );
       return;
     }
+
     if (numericAge > 100) {
-      Alert.alert('Invalid Age', 'Please enter a valid age.');
+      Alert.alert(
+        'Invalid Age',
+        'Please enter a valid age.',
+      );
       return;
     }
+
+    if (!trimmedState) {
+      Alert.alert(
+        'State Required',
+        'Please enter your state.',
+      );
+      return;
+    }
+
+    if (!trimmedDistrict) {
+      Alert.alert(
+        'District Required',
+        'Please enter your district.',
+      );
+      return;
+    }
+
+    if (!trimmedTaluka) {
+      Alert.alert(
+        'Taluka Required',
+        'Please enter your taluka.',
+      );
+      return;
+    }
+
     if (!trimmedVillage) {
-      Alert.alert('Required', 'Please enter your village.');
+      Alert.alert(
+        'Village Required',
+        'Please enter your village.',
+      );
       return;
     }
+
     if (selectedWorkTypes.length === 0) {
       Alert.alert(
         'Work Type Required',
@@ -89,32 +201,77 @@ export default function FindWorkStep3Screen({ navigation }) {
       );
       return;
     }
+
+    /*
+    |--------------------------------------------------------------------------
+    | SAVE FORM DATA
+    |--------------------------------------------------------------------------
+    */
+
     dispatch(
       setLabourFormData({
         fullName: trimmedName,
+
         phoneNumber: cleanedPhone,
+
         age: numericAge,
+
+        state: trimmedState,
+
+        district: trimmedDistrict,
+
+        taluka: trimmedTaluka,
+
         village: trimmedVillage,
+
         preferredWork: selectedWorkTypes,
+
         skills: selectedWorkTypes,
       }),
     );
-    navigation.navigate('FindWorkStep4');
+
+    navigation.navigate(
+      'FindWorkStep4',
+    );
   };
+
+  /*
+  |--------------------------------------------------------------------------
+  | LOCATION
+  |--------------------------------------------------------------------------
+  */
+
   const handleUseLocation = () => {
     Alert.alert(
       'Location',
-      'GPS location integration can be connected here. For now, please enter your village manually.',
+      'GPS location integration can be connected here. For now, please enter your location manually.',
     );
   };
-  const handlePhotoPress = () => {
-    Alert.alert('Profile Photo', 'Camera/photo picker can be connected here.');
-  };
-  return (
-    <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
 
-      {}
+  /*
+  |--------------------------------------------------------------------------
+  | PHOTO
+  |--------------------------------------------------------------------------
+  */
+
+  const handlePhotoPress = () => {
+    Alert.alert(
+      'Profile Photo',
+      'Camera/photo picker can be connected here.',
+    );
+  };
+
+  return (
+    <SafeAreaView
+      style={styles.safeArea}
+      edges={['top', 'bottom']}
+    >
+      <StatusBar
+        barStyle="dark-content"
+        backgroundColor="#FFFFFF"
+      />
+
+      {/* HEADER */}
 
       <View style={styles.header}>
         <TouchableOpacity
@@ -122,53 +279,86 @@ export default function FindWorkStep3Screen({ navigation }) {
           onPress={() => navigation.goBack()}
           style={styles.iconBtn}
         >
-          <ArrowLeft size={rf(20)} color={DARK} strokeWidth={2.4} />
+          <ArrowLeft
+            size={rf(20)}
+            color={DARK}
+            strokeWidth={2.4}
+          />
         </TouchableOpacity>
 
-        <Text style={styles.title}>Find Work</Text>
+        <Text style={styles.title}>
+          Find Work
+        </Text>
 
-        <Text style={styles.stepText}>Step 3 of 4</Text>
+        <Text style={styles.stepText}>
+          Step 3 of 4
+        </Text>
       </View>
 
-      {}
+      {/* PROGRESS */}
 
       <View style={styles.progressRow}>
-        <View style={[styles.progressBar, styles.activeBar]} />
+        <View
+          style={[
+            styles.progressBar,
+            styles.activeBar,
+          ]}
+        />
 
-        <View style={[styles.progressBar, styles.activeBar]} />
+        <View
+          style={[
+            styles.progressBar,
+            styles.activeBar,
+          ]}
+        />
 
-        <View style={[styles.progressBar, styles.activeBar]} />
+        <View
+          style={[
+            styles.progressBar,
+            styles.activeBar,
+          ]}
+        />
 
         <View style={styles.progressBar} />
       </View>
 
-      {}
+      {/* CONTENT */}
 
       <ScrollView
         showsVerticalScrollIndicator={false}
         keyboardShouldPersistTaps="handled"
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={
+          styles.scrollContent
+        }
       >
-        {}
+        {/* HERO */}
 
         <Image
           source={require('../../assets/labour/hero6.jpg')}
           style={styles.heroImage}
         />
 
-        <Text style={styles.mainTitle}>Your Details</Text>
+        <Text style={styles.mainTitle}>
+          Your Details
+        </Text>
 
         <Text style={styles.subtitle}>
           Tell farmers a little about yourself.
         </Text>
 
-        {}
+        {/* FULL NAME */}
 
         <View style={styles.field}>
           <View style={styles.labelRow}>
-            <User size={rf(15)} color={GREEN} strokeWidth={2.4} />
+            <User
+              size={rf(15)}
+              color={GREEN}
+              strokeWidth={2.4}
+            />
 
-            <Text style={styles.label}>Full Name</Text>
+            <Text style={styles.label}>
+              Full Name
+            </Text>
           </View>
 
           <TextInput
@@ -181,24 +371,40 @@ export default function FindWorkStep3Screen({ navigation }) {
           />
         </View>
 
-        {}
+        {/* PHONE */}
 
         <View style={styles.field}>
           <View style={styles.labelRow}>
-            <Phone size={rf(15)} color={GREEN} strokeWidth={2.4} />
+            <Phone
+              size={rf(15)}
+              color={GREEN}
+              strokeWidth={2.4}
+            />
 
-            <Text style={styles.label}>Mobile Number</Text>
+            <Text style={styles.label}>
+              Mobile Number
+            </Text>
           </View>
 
-          <View style={styles.phoneInputWrapper}>
-            <Text style={styles.countryCode}>+91</Text>
+          <View
+            style={
+              styles.phoneInputWrapper
+            }
+          >
+            <Text style={styles.countryCode}>
+              +91
+            </Text>
 
-            <View style={styles.phoneDivider} />
+            <View
+              style={styles.phoneDivider}
+            />
 
             <TextInput
               value={phone}
               onChangeText={text => {
-                const cleaned = text.replace(/\D/g, '');
+                const cleaned =
+                  text.replace(/\D/g, '');
+
                 if (cleaned.length <= 10) {
                   setPhone(cleaned);
                 }
@@ -216,19 +422,27 @@ export default function FindWorkStep3Screen({ navigation }) {
           </Text>
         </View>
 
-        {}
+        {/* AGE */}
 
         <View style={styles.field}>
           <View style={styles.labelRow}>
-            <Calendar size={rf(15)} color={GREEN} strokeWidth={2.4} />
+            <Calendar
+              size={rf(15)}
+              color={GREEN}
+              strokeWidth={2.4}
+            />
 
-            <Text style={styles.label}>Age</Text>
+            <Text style={styles.label}>
+              Age
+            </Text>
           </View>
 
           <TextInput
             value={age}
             onChangeText={text => {
-              const cleaned = text.replace(/\D/g, '');
+              const cleaned =
+                text.replace(/\D/g, '');
+
               if (cleaned.length <= 3) {
                 setAge(cleaned);
               }
@@ -240,16 +454,99 @@ export default function FindWorkStep3Screen({ navigation }) {
             maxLength={3}
           />
 
-          <Text style={styles.ageHint}>You must be at least 18 years old</Text>
+          <Text style={styles.ageHint}>
+            You must be at least 18 years old
+          </Text>
         </View>
 
-        {}
+        {/* STATE */}
 
         <View style={styles.field}>
           <View style={styles.labelRow}>
-            <MapPin size={rf(15)} color="#F97316" strokeWidth={2.4} />
+            <Map
+              size={rf(15)}
+              color={GREEN}
+              strokeWidth={2.4}
+            />
 
-            <Text style={styles.label}>Village</Text>
+            <Text style={styles.label}>
+              State
+            </Text>
+          </View>
+
+          <TextInput
+            value={stateName}
+            onChangeText={setStateName}
+            placeholder="Enter your state"
+            placeholderTextColor="#94A3B8"
+            style={styles.input}
+            autoCapitalize="words"
+          />
+        </View>
+
+        {/* DISTRICT */}
+
+        <View style={styles.field}>
+          <View style={styles.labelRow}>
+            <MapPin
+              size={rf(15)}
+              color={GREEN}
+              strokeWidth={2.4}
+            />
+
+            <Text style={styles.label}>
+              District
+            </Text>
+          </View>
+
+          <TextInput
+            value={district}
+            onChangeText={setDistrict}
+            placeholder="Enter your district"
+            placeholderTextColor="#94A3B8"
+            style={styles.input}
+            autoCapitalize="words"
+          />
+        </View>
+
+        {/* TALUKA */}
+
+        <View style={styles.field}>
+          <View style={styles.labelRow}>
+            <MapPin
+              size={rf(15)}
+              color={GREEN}
+              strokeWidth={2.4}
+            />
+
+            <Text style={styles.label}>
+              Taluka
+            </Text>
+          </View>
+
+          <TextInput
+            value={taluka}
+            onChangeText={setTaluka}
+            placeholder="Enter your taluka"
+            placeholderTextColor="#94A3B8"
+            style={styles.input}
+            autoCapitalize="words"
+          />
+        </View>
+
+        {/* VILLAGE */}
+
+        <View style={styles.field}>
+          <View style={styles.labelRow}>
+            <MapPin
+              size={rf(15)}
+              color="#F97316"
+              strokeWidth={2.4}
+            />
+
+            <Text style={styles.label}>
+              Village
+            </Text>
           </View>
 
           <TextInput
@@ -266,47 +563,94 @@ export default function FindWorkStep3Screen({ navigation }) {
             onPress={handleUseLocation}
             style={styles.locationBox}
           >
-            <View style={styles.locIconBox}>
-              <MapPin size={rf(17)} color={GREEN} strokeWidth={2.4} />
+            <View
+              style={styles.locIconBox}
+            >
+              <MapPin
+                size={rf(17)}
+                color={GREEN}
+                strokeWidth={2.4}
+              />
             </View>
 
-            <View style={styles.locationTextWrap}>
-              <Text style={styles.locName}>Use current location</Text>
+            <View
+              style={styles.locationTextWrap}
+            >
+              <Text style={styles.locName}>
+                Use current location
+              </Text>
 
-              <Text style={styles.locSub}>Auto-detect via GPS</Text>
+              <Text style={styles.locSub}>
+                Auto-detect via GPS
+              </Text>
             </View>
 
-            <ArrowRight size={rf(17)} color={GREEN} strokeWidth={2.4} />
+            <ArrowRight
+              size={rf(17)}
+              color={GREEN}
+              strokeWidth={2.4}
+            />
           </TouchableOpacity>
         </View>
 
-        {}
+        {/* SELECTED WORK */}
 
         <View style={styles.field}>
           <View style={styles.labelRow}>
-            <Check size={rf(15)} color={GREEN} strokeWidth={2.8} />
+            <Check
+              size={rf(15)}
+              color={GREEN}
+              strokeWidth={2.8}
+            />
 
-            <Text style={styles.label}>Selected Work</Text>
+            <Text style={styles.label}>
+              Selected Work
+            </Text>
           </View>
 
-          <View style={styles.selectedWorkWrap}>
-            {selectedWorkTypes.map(work => (
-              <View key={work} style={styles.workPill}>
-                <Check size={rf(12)} color={GREEN} strokeWidth={2.8} />
+          <View
+            style={
+              styles.selectedWorkWrap
+            }
+          >
+            {selectedWorkTypes.map(
+              work => (
+                <View
+                  key={work}
+                  style={styles.workPill}
+                >
+                  <Check
+                    size={rf(12)}
+                    color={GREEN}
+                    strokeWidth={2.8}
+                  />
 
-                <Text style={styles.workPillText}>{work}</Text>
-              </View>
-            ))}
+                  <Text
+                    style={
+                      styles.workPillText
+                    }
+                  >
+                    {work}
+                  </Text>
+                </View>
+              ),
+            )}
           </View>
         </View>
 
-        {}
+        {/* PROFILE PHOTO */}
 
         <View style={styles.field}>
           <View style={styles.labelRow}>
-            <Camera size={rf(15)} color={GREEN} strokeWidth={2.4} />
+            <Camera
+              size={rf(15)}
+              color={GREEN}
+              strokeWidth={2.4}
+            />
 
-            <Text style={styles.label}>Profile Photo</Text>
+            <Text style={styles.label}>
+              Profile Photo
+            </Text>
           </View>
 
           <TouchableOpacity
@@ -314,18 +658,28 @@ export default function FindWorkStep3Screen({ navigation }) {
             onPress={handlePhotoPress}
             style={styles.photoBox}
           >
-            <View style={styles.cameraIcon}>
-              <Camera size={rf(22)} color={GREEN} strokeWidth={2.4} />
+            <View
+              style={styles.cameraIcon}
+            >
+              <Camera
+                size={rf(22)}
+                color={GREEN}
+                strokeWidth={2.4}
+              />
             </View>
 
-            <Text style={styles.photoTitle}>Add Profile Photo</Text>
+            <Text style={styles.photoTitle}>
+              Add Profile Photo
+            </Text>
 
-            <Text style={styles.photoSub}>Helps farmers identify you</Text>
+            <Text style={styles.photoSub}>
+              Helps farmers identify you
+            </Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
 
-      {}
+      {/* BOTTOM BUTTON */}
 
       <View style={styles.bottomBar}>
         <TouchableOpacity
@@ -333,19 +687,27 @@ export default function FindWorkStep3Screen({ navigation }) {
           onPress={handleNext}
           style={styles.nextBtn}
         >
-          <Text style={styles.nextText}>Next</Text>
+          <Text style={styles.nextText}>
+            Next
+          </Text>
 
-          <ArrowRight size={rf(17)} color="#FFFFFF" strokeWidth={2.6} />
+          <ArrowRight
+            size={rf(17)}
+            color="#FFFFFF"
+            strokeWidth={2.6}
+          />
         </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
 }
+
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: '#FFFFFF',
   },
+
   header: {
     height: 60,
     flexDirection: 'row',
@@ -353,6 +715,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: width * 0.037,
     justifyContent: 'space-between',
   },
+
   iconBtn: {
     width: 40,
     height: 40,
@@ -361,67 +724,80 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+
   title: {
     fontSize: rf(18),
     fontWeight: '900',
     color: DARK,
   },
+
   stepText: {
     fontSize: rf(12),
     color: MUTED,
     fontWeight: '700',
   },
+
   progressRow: {
     flexDirection: 'row',
     gap: 5,
     paddingHorizontal: width * 0.037,
     marginBottom: 20,
   },
+
   progressBar: {
     flex: 1,
     height: 5,
     borderRadius: 3,
     backgroundColor: '#E7EBED',
   },
+
   activeBar: {
     backgroundColor: GREEN,
   },
+
   scrollContent: {
     paddingHorizontal: width * 0.037,
     paddingBottom: 20,
   },
+
   heroImage: {
     width: '100%',
     height: 220,
     borderRadius: 16,
     resizeMode: 'cover',
   },
+
   mainTitle: {
     marginTop: 20,
     fontSize: rf(24),
     fontWeight: '900',
     color: DARK,
   },
+
   subtitle: {
     marginTop: 6,
     fontSize: rf(13),
     color: MUTED,
     lineHeight: rf(19),
   },
+
   field: {
     marginTop: 20,
   },
+
   labelRow: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: 7,
     marginBottom: 9,
   },
+
   label: {
     fontSize: rf(13),
     fontWeight: '900',
     color: DARK,
   },
+
   input: {
     height: 54,
     paddingHorizontal: 16,
@@ -432,6 +808,7 @@ const styles = StyleSheet.create({
     color: DARK,
     backgroundColor: '#FFFFFF',
   },
+
   phoneInputWrapper: {
     height: 54,
     paddingHorizontal: 16,
@@ -442,17 +819,20 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+
   countryCode: {
     fontSize: rf(14),
     fontWeight: '800',
     color: DARK,
   },
+
   phoneDivider: {
     width: 1,
     height: 24,
     backgroundColor: '#E7EBED',
     marginHorizontal: 12,
   },
+
   phoneInput: {
     flex: 1,
     height: 54,
@@ -461,18 +841,21 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     color: DARK,
   },
+
   phoneHint: {
     marginTop: 6,
     marginLeft: 4,
     fontSize: rf(11),
     color: MUTED,
   },
+
   ageHint: {
     marginTop: 6,
     marginLeft: 4,
     fontSize: rf(11),
     color: MUTED,
   },
+
   locationBox: {
     marginTop: 10,
     padding: 14,
@@ -483,6 +866,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
   },
+
   locIconBox: {
     width: 38,
     height: 38,
@@ -491,26 +875,31 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+
   locationTextWrap: {
     flex: 1,
     marginLeft: 12,
   },
+
   locName: {
     fontSize: rf(13),
     fontWeight: '900',
     color: DARK,
   },
+
   locSub: {
     marginTop: 2,
     fontSize: rf(11),
     color: MUTED,
     fontWeight: '500',
   },
+
   selectedWorkWrap: {
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 8,
   },
+
   workPill: {
     height: 36,
     paddingHorizontal: 12,
@@ -522,11 +911,13 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 5,
   },
+
   workPillText: {
     fontSize: rf(12),
     fontWeight: '800',
     color: GREEN,
   },
+
   photoBox: {
     padding: 22,
     borderRadius: 14,
@@ -536,6 +927,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#F0FDF4',
     alignItems: 'center',
   },
+
   cameraIcon: {
     width: 52,
     height: 52,
@@ -544,21 +936,25 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+
   photoTitle: {
     marginTop: 10,
     fontSize: rf(14),
     fontWeight: '900',
     color: GREEN,
   },
+
   photoSub: {
     marginTop: 3,
     fontSize: rf(11),
     color: MUTED,
   },
+
   bottomBar: {
     padding: width * 0.037,
     backgroundColor: '#FFFFFF',
   },
+
   nextBtn: {
     height: 56,
     borderRadius: 28,
@@ -568,6 +964,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 8,
   },
+
   nextText: {
     fontSize: rf(15),
     fontWeight: '900',

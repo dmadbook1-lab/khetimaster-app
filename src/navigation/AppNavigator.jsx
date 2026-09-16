@@ -93,6 +93,18 @@ import MyBookingsScreen from '../screens/labourbooking/MyBookingsScreen';
 import GovernmentSchemesScreen from '../screens/gov/GovernmentSchemesScreen';
 import LatestSchemesScreen from '../screens/gov/LatestSchemesScreen';
 import { GOV_ROUTES } from '../constants/govRoutes';
+import DoctorMainScreen from '../screens/Doctor/DoctorMainScreen';
+import DoctorsScreen from '../screens/Doctor/DoctorsScreen';
+import DoctorRegistrationScreen from '../screens/Doctor/DoctorRegistrationScreen';
+import DoctorRegistrationDetailsScreen from '../screens/Doctor/DoctorRegistrationDetailsScreen';
+import DoctorDetailsScreen from '../screens/Doctor/DoctorDetailsScreen';
+import DoctorConsultationScreen from '../screens/Doctor/DoctorConsultationScreen';
+import DoctorConsultationDetailsScreen from '../screens/Doctor/DoctorConsultationDetailsScreen';
+import DoctorRequestsScreen from '../screens/Doctor/DoctorRequestsScreen';
+import DoctorRequestDetailsScreen from '../screens/Doctor/DoctorRequestDetailsScreen';
+import DoctorEditProfileScreen from '../screens/Doctor/DoctorEditProfileScreen';
+import MyDoctorProfileScreen from '../screens/Doctor/MyDoctorProfileScreen';
+import MyConsultationsScreen from '../screens/Doctor/MyConsultationsScreen';
 const Stack = createNativeStackNavigator();
 const navigationTheme = {
   ...DefaultTheme,
@@ -400,6 +412,45 @@ export default function AppNavigator() {
           component={GovernmentSchemesScreen}
         />
         <Stack.Screen name="LatestSchemes" component={LatestSchemesScreen} />
+        <Stack.Screen name="DoctorMain" component={DoctorMainScreen} />
+        <Stack.Screen name="Doctors" component={DoctorsScreen} />
+        <Stack.Screen
+          name="DoctorRegistration"
+          component={DoctorRegistrationScreen}
+        />
+        <Stack.Screen
+          name="DoctorRegistrationDetails"
+          component={DoctorRegistrationDetailsScreen}
+        />
+        <Stack.Screen name="DoctorDetails" component={DoctorDetailsScreen} />
+        <Stack.Screen
+          name="DoctorConsultation"
+          component={DoctorConsultationScreen}
+        />
+        <Stack.Screen
+          name="DoctorConsultationDetails"
+          component={DoctorConsultationDetailsScreen}
+        />
+        <Stack.Screen
+          name="DoctorRequests"
+          component={DoctorRequestsScreen}
+        />
+        <Stack.Screen
+          name="DoctorRequestDetails"
+          component={DoctorRequestDetailsScreen}
+        />
+        <Stack.Screen
+          name="DoctorEditProfile"
+          component={DoctorEditProfileScreen}
+        />
+        <Stack.Screen
+          name="MyDoctorProfile"
+          component={MyDoctorProfileScreen}
+        />
+        <Stack.Screen
+          name="MyConsultations"
+          component={MyConsultationsScreen}
+        />
 
         <Stack.Screen
           name="ProvideServiceStep1"
