@@ -50,6 +50,8 @@ import WalkAroundTrackingScreen from '../screens/addfarm/WalkAroundTrackingScree
 import ReviewFarmScreen from '../screens/addfarm/ReviewFarmBoundaryScreen';
 import SmartFarmScreen from '../screens/addfarm/FarmSmartSuccessScreen';
 import AIGuruScreen from '../screens/main/AIGuruScreen';
+import AgricultureNewsScreen from '../screens/knowledge/AgricultureNewsScreen';
+import ArticleDetailsScreen from '../screens/knowledge/ArticleDetailsScreen';
 import DiseaseDetectionScreen from '../screens/disease-detection/DiseaseDetectionScreen';
 import UploadCropPhotoScreen from '../screens/disease-detection/UploadCropPhotoScreen';
 import AIDetectionScreen from '../screens/disease-detection/AIDetectionScreen';
@@ -163,6 +165,15 @@ export default function AppNavigator() {
             gestureEnabled: true,
             fullScreenGestureEnabled: true,
           }}
+        />
+
+        <Stack.Screen
+          name="AgricultureNews"
+          component={AgricultureNewsScreen}
+        />
+        <Stack.Screen
+          name="ArticleDetails"
+          component={ArticleDetailsScreen}
         />
 
         <Stack.Screen name="Bazaar" component={BazaarScreen} />

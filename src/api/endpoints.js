@@ -6,5 +6,9 @@ const API_ENDPOINTS = {
   REFRESH_TOKEN: '/api/auth/refresh',
   ME: '/api/auth/me',
   LOGOUT: '/api/auth/logout',
+    // Agriculture Articles
+  LATEST_ARTICLES: '/api/articles/latest',
+  ARTICLE_STATS: '/api/articles/stats',
+  REFRESH_ARTICLES: '/api/articles/refresh',
 };
 export default API_ENDPOINTS;

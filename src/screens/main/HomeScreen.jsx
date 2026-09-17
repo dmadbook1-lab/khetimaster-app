@@ -111,12 +111,12 @@ export default function HomeScreen({ navigation }) {
       onPress: () => navigation.navigate('GovernmentSchemes'),
     },
     {
-      title: 'Knowledge\nCenter',
-      image: require('../../assets/homescreen/knowledge.png'),
-      borderColor: '#C7D2FE',
-      textColor: '#4338CA',
-      onPress: () => {},
-    },
+  title: 'Knowledge\nCenter',
+  image: require('../../assets/homescreen/knowledge.png'),
+  borderColor: '#C7D2FE',
+  textColor: '#4338CA',
+  onPress: () => navigation.navigate('AgricultureNews'),
+},
   ];
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>

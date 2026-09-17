@@ -11,6 +11,8 @@ import machineryBookingReducer from './slices/machineryBookingSlice';
 import doctorReducer from './slices/doctorSlice';
 import doctorConsultationReducer from './slices/doctorConsultationSlice';
 
+import articleReducer from './slices/articleSlice';
+
 const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -26,6 +28,8 @@ const store = configureStore({
     doctor: doctorReducer,
     doctorConsultation:
       doctorConsultationReducer,
+
+      articles: articleReducer,
   },
 
   middleware: getDefaultMiddleware =>
