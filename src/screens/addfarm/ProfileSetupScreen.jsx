@@ -21,7 +21,7 @@ import {
   Keyboard,
 } from 'react-native';
 
-import { SafeAreaView } from 'react-native-safe-area-context';
+import {SafeAreaView} from 'react-native-safe-area-context';
 
 import LinearGradient from 'react-native-linear-gradient';
 
@@ -49,7 +49,9 @@ import {
   selectUser,
 } from '../../redux/slices/authSlice';
 
-const { width, height } =
+import {useLocation} from '../../context/LocationContext';
+
+const {width, height} =
   Dimensions.get('window');
 
 const GREEN = '#159447';
@@ -63,11 +65,22 @@ const ProfileSetupScreen = ({
 
   const scrollRef = useRef(null);
 
+  // ==================================================
+  // REDUX
+  // ==================================================
+
   const reduxEmail =
     useSelector(selectEmail);
 
   const user =
     useSelector(selectUser);
+
+  const isLoading =
+    useSelector(selectIsLoading);
+
+  // ==================================================
+  // EMAIL
+  // ==================================================
 
   const routeEmail =
     route?.params?.email || '';
@@ -75,23 +88,26 @@ const ProfileSetupScreen = ({
   const email =
     reduxEmail || routeEmail;
 
-  const isLoading =
-    useSelector(selectIsLoading);
-
-  /*
-  |--------------------------------------------------------------------------
-  | EDIT MODE
-  |--------------------------------------------------------------------------
-  */
+  // ==================================================
+  // EDIT MODE
+  // ==================================================
 
   const isEditMode =
     route?.params?.mode === 'edit';
 
-  /*
-  |--------------------------------------------------------------------------
-  | FORM STATE
-  |--------------------------------------------------------------------------
-  */
+  // ==================================================
+  // LOCATION
+  // SAME LOCATION SYSTEM AS HOMESCREEN
+  // ==================================================
+
+  const {
+    location: currentLocation,
+    loading: locationLoading,
+  } = useLocation();
+
+  // ==================================================
+  // FORM STATE
+  // ==================================================
 
   const [phoneNumber, setPhoneNumber] =
     useState('');
@@ -114,11 +130,9 @@ const ProfileSetupScreen = ({
   const [keyboardVisible, setKeyboardVisible] =
     useState(false);
 
-  /*
-  |--------------------------------------------------------------------------
-  | LOAD EXISTING USER DATA
-  |--------------------------------------------------------------------------
-  */
+  // ==================================================
+  // LOAD EXISTING USER DATA
+  // ==================================================
 
   useEffect(() => {
     if (!isEditMode || !user) {
@@ -154,11 +168,47 @@ const ProfileSetupScreen = ({
     );
   }, [isEditMode, user]);
 
-  /*
-  |--------------------------------------------------------------------------
-  | KEYBOARD
-  |--------------------------------------------------------------------------
-  */
+  // ==================================================
+  // AUTOMATIC LOCATION
+  //
+  // Same location source used by HomeScreen.
+  //
+  // ONLY STATE + DISTRICT are automatically filled.
+  //
+  // TALUKA + VILLAGE remain untouched.
+  // ==================================================
+
+  useEffect(() => {
+    if (!currentLocation) {
+      return;
+    }
+
+    const detectedState =
+      currentLocation?.state || '';
+
+    const detectedDistrict =
+      currentLocation?.district || '';
+
+    if (detectedState) {
+      setStateName(detectedState);
+    }
+
+    if (detectedDistrict) {
+      setDistrict(detectedDistrict);
+    }
+
+    console.log(
+      '[Profile Location] Detected:',
+      {
+        state: detectedState,
+        district: detectedDistrict,
+      },
+    );
+  }, [currentLocation]);
+
+  // ==================================================
+  // KEYBOARD
+  // ==================================================
 
   useEffect(() => {
     const showSubscription =
@@ -190,11 +240,9 @@ const ProfileSetupScreen = ({
     };
   }, []);
 
-  /*
-  |--------------------------------------------------------------------------
-  | FOCUS / SCROLL
-  |--------------------------------------------------------------------------
-  */
+  // ==================================================
+  // FOCUS / SCROLL
+  // ==================================================
 
   const focusField = y => {
     setTimeout(() => {
@@ -205,11 +253,9 @@ const ProfileSetupScreen = ({
     }, 120);
   };
 
-  /*
-  |--------------------------------------------------------------------------
-  | SAVE / CONTINUE
-  |--------------------------------------------------------------------------
-  */
+  // ==================================================
+  // SAVE / CONTINUE
+  // ==================================================
 
   const handleContinue =
     async () => {
@@ -231,11 +277,9 @@ const ProfileSetupScreen = ({
       const villageValue =
         village.trim();
 
-      /*
-      |--------------------------------------------------------------------------
-      | VALIDATION
-      |--------------------------------------------------------------------------
-      */
+      // ==================================================
+      // VALIDATION
+      // ==================================================
 
       if (!phoneValue) {
         Alert.alert(
@@ -291,6 +335,10 @@ const ProfileSetupScreen = ({
         return;
       }
 
+      // ==================================================
+      // TALUKA IS MANUAL
+      // ==================================================
+
       if (!talukaValue) {
         Alert.alert(
           'Required',
@@ -299,6 +347,10 @@ const ProfileSetupScreen = ({
 
         return;
       }
+
+      // ==================================================
+      // VILLAGE IS MANUAL
+      // ==================================================
 
       if (!villageValue) {
         Alert.alert(
@@ -309,11 +361,9 @@ const ProfileSetupScreen = ({
         return;
       }
 
-      /*
-      |--------------------------------------------------------------------------
-      | CREATE MODE
-      |--------------------------------------------------------------------------
-      */
+      // ==================================================
+      // CREATE MODE EMAIL
+      // ==================================================
 
       if (!isEditMode && !email) {
         Alert.alert(
@@ -327,11 +377,9 @@ const ProfileSetupScreen = ({
       try {
         Keyboard.dismiss();
 
-        /*
-        |--------------------------------------------------------------------------
-        | EDIT PROFILE
-        |--------------------------------------------------------------------------
-        */
+        // ==================================================
+        // EDIT PROFILE
+        // ==================================================
 
         if (isEditMode) {
           const result =
@@ -339,12 +387,17 @@ const ProfileSetupScreen = ({
               updateProfile({
                 phoneNumber:
                   phoneValue,
+
                 fullName,
+
                 state,
+
                 district:
                   districtValue,
+
                 taluka:
                   talukaValue,
+
                 village:
                   villageValue,
               }),
@@ -375,11 +428,9 @@ const ProfileSetupScreen = ({
           return;
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | CREATE PROFILE
-        |--------------------------------------------------------------------------
-        */
+        // ==================================================
+        // CREATE PROFILE
+        // ==================================================
 
         const result =
           await dispatch(
@@ -445,11 +496,9 @@ const ProfileSetupScreen = ({
       }
     };
 
-  /*
-  |--------------------------------------------------------------------------
-  | BACK
-  |--------------------------------------------------------------------------
-  */
+  // ==================================================
+  // BACK
+  // ==================================================
 
   const handleBack = () => {
     if (isLoading) {
@@ -461,11 +510,9 @@ const ProfileSetupScreen = ({
     navigation.goBack();
   };
 
-  /*
-  |--------------------------------------------------------------------------
-  | UI
-  |--------------------------------------------------------------------------
-  */
+  // ==================================================
+  // UI
+  // ==================================================
 
   return (
     <SafeAreaView
@@ -501,7 +548,9 @@ const ProfileSetupScreen = ({
               styles.keyboardScrollContent,
           ]}
         >
-          {/* HEADER */}
+          {/* ==================================================
+              HEADER
+          ================================================== */}
 
           <View style={styles.header}>
             <TouchableOpacity
@@ -530,7 +579,9 @@ const ProfileSetupScreen = ({
 
           <View style={styles.divider} />
 
-          {/* HERO */}
+          {/* ==================================================
+              HERO
+          ================================================== */}
 
           <Image
             source={require('../../assets/images/profile1.png')}
@@ -539,7 +590,9 @@ const ProfileSetupScreen = ({
           />
 
           <View style={styles.content}>
-            {/* TITLE */}
+            {/* ==================================================
+                TITLE
+            ================================================== */}
 
             <Text style={styles.title}>
               {isEditMode
@@ -553,13 +606,21 @@ const ProfileSetupScreen = ({
                 : 'Help us personalize weather updates, mandi prices, and farming recommendations.'}
             </Text>
 
-            {/* EMAIL */}
+            {/* ==================================================
+                EMAIL
+            ================================================== */}
 
-            <FieldLabel title="Email Address" />
+            <FieldLabel
+              title="Email Address"
+            />
 
-            <View style={styles.emailBox}>
+            <View
+              style={styles.emailBox}
+            >
               <View
-                style={styles.emailIconBox}
+                style={
+                  styles.emailIconBox
+                }
               >
                 <Mail
                   size={19}
@@ -571,7 +632,9 @@ const ProfileSetupScreen = ({
               <TextInput
                 value={email}
                 editable={false}
-                style={styles.emailInput}
+                style={
+                  styles.emailInput
+                }
                 placeholder="Email address"
                 placeholderTextColor="#A3ADBD"
                 autoCapitalize="none"
@@ -579,21 +642,31 @@ const ProfileSetupScreen = ({
               />
 
               <View
-                style={styles.verifiedBadge}
+                style={
+                  styles.verifiedBadge
+                }
               >
                 <Text
-                  style={styles.verifiedText}
+                  style={
+                    styles.verifiedText
+                  }
                 >
                   Verified
                 </Text>
               </View>
             </View>
 
-            {/* PHONE */}
+            {/* ==================================================
+                PHONE
+            ================================================== */}
 
-            <FieldLabel title="Phone Number" />
+            <FieldLabel
+              title="Phone Number"
+            />
 
-            <View style={styles.inputBox}>
+            <View
+              style={styles.inputBox}
+            >
               <Phone
                 size={18}
                 color="#7D8796"
@@ -626,11 +699,17 @@ const ProfileSetupScreen = ({
               />
             </View>
 
-            {/* FULL NAME */}
+            {/* ==================================================
+                FULL NAME
+            ================================================== */}
 
-            <FieldLabel title="Full Name" />
+            <FieldLabel
+              title="Full Name"
+            />
 
-            <View style={styles.inputBox}>
+            <View
+              style={styles.inputBox}
+            >
               <User
                 size={18}
                 color="#7D8796"
@@ -652,7 +731,9 @@ const ProfileSetupScreen = ({
               />
             </View>
 
-            {/* STATE */}
+            {/* ==================================================
+                STATE
+            ================================================== */}
 
             <FieldLabel title="State" />
 
@@ -666,7 +747,11 @@ const ProfileSetupScreen = ({
               <TextInput
                 value={stateName}
                 onChangeText={setStateName}
-                placeholder="Enter your state"
+                placeholder={
+                  locationLoading
+                    ? 'Detecting state...'
+                    : 'Enter your state'
+                }
                 placeholderTextColor="#A3ADBD"
                 style={styles.input}
                 editable={!isLoading}
@@ -676,11 +761,22 @@ const ProfileSetupScreen = ({
                   focusField(220)
                 }
               />
+
+              {locationLoading && (
+                <ActivityIndicator
+                  size="small"
+                  color={GREEN}
+                />
+              )}
             </View>
 
-            {/* DISTRICT */}
+            {/* ==================================================
+                DISTRICT
+            ================================================== */}
 
-            <FieldLabel title="District" />
+            <FieldLabel
+              title="District"
+            />
 
             <View style={styles.inputBox}>
               <MapPin
@@ -692,7 +788,11 @@ const ProfileSetupScreen = ({
               <TextInput
                 value={district}
                 onChangeText={setDistrict}
-                placeholder="Enter your district"
+                placeholder={
+                  locationLoading
+                    ? 'Detecting district...'
+                    : 'Enter your district'
+                }
                 placeholderTextColor="#A3ADBD"
                 style={styles.input}
                 editable={!isLoading}
@@ -702,13 +802,25 @@ const ProfileSetupScreen = ({
                   focusField(290)
                 }
               />
+
+              {locationLoading && (
+                <ActivityIndicator
+                  size="small"
+                  color={GREEN}
+                />
+              )}
             </View>
 
-            {/* TALUKA */}
+            {/* ==================================================
+                TALUKA
+                MANUAL ONLY
+            ================================================== */}
 
             <FieldLabel title="Taluka" />
 
-            <View style={styles.inputBox}>
+            <View
+              style={styles.inputBox}
+            >
               <MapPin
                 size={18}
                 color="#7D8796"
@@ -730,11 +842,18 @@ const ProfileSetupScreen = ({
               />
             </View>
 
-            {/* VILLAGE */}
+            {/* ==================================================
+                VILLAGE
+                MANUAL ONLY
+            ================================================== */}
 
-            <FieldLabel title="Village" />
+            <FieldLabel
+              title="Village"
+            />
 
-            <View style={styles.inputBox}>
+            <View
+              style={styles.inputBox}
+            >
               <Home
                 size={18}
                 color="#7D8796"
@@ -756,7 +875,9 @@ const ProfileSetupScreen = ({
               />
             </View>
 
-            {/* STEP */}
+            {/* ==================================================
+                STEP
+            ================================================== */}
 
             {!isEditMode && (
               <View
@@ -786,7 +907,9 @@ const ProfileSetupScreen = ({
               </View>
             )}
 
-            {/* BUTTON */}
+            {/* ==================================================
+                BUTTON
+            ================================================== */}
 
             <TouchableOpacity
               activeOpacity={0.9}
@@ -860,6 +983,10 @@ const ProfileSetupScreen = ({
   );
 };
 
+// ==================================================
+// FIELD LABEL
+// ==================================================
+
 const FieldLabel = ({
   title,
 }) => (
@@ -869,6 +996,10 @@ const FieldLabel = ({
 );
 
 export default ProfileSetupScreen;
+
+// ==================================================
+// STYLES
+// ==================================================
 
 const styles = StyleSheet.create({
   safeArea: {

@@ -1,8 +1,20 @@
 import React from 'react';
-import { ScrollView, StyleSheet, Text, View, Dimensions } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import { MapPin, CloudSun, Landmark, Users } from 'lucide-react-native';
-import { useSelector } from 'react-redux';
+import {
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  Dimensions,
+} from 'react-native';
+import {SafeAreaView} from 'react-native-safe-area-context';
+import {
+  MapPin,
+  CloudSun,
+  Landmark,
+  Users,
+} from 'lucide-react-native';
+import {useSelector} from 'react-redux';
+
 import HomeHeader from '../../components/home/HomeHeader';
 import WeatherCard from '../../components/home/WeatherCard';
 import AIAdvisoryCard from '../../components/home/AIAdvisoryCard';
@@ -14,53 +26,111 @@ import BottomTabBar from '../../common/BottomTabBar';
 import AddFarmCard from '../../components/home/AddFarmCard';
 import VoiceAssistantCard from '../../components/home/VoiceAssistantCard';
 import MoreServicesSection from '../../components/home/MoreServicesSection';
-import { selectUser } from '../../redux/slices/authSlice';
-const { width } = Dimensions.get('window');
+
+import {selectUser} from '../../redux/slices/authSlice';
+import {useLocation} from '../../context/LocationContext';
+
+const {width} = Dimensions.get('window');
+
 const GREEN = '#16883E';
 const DARK = '#111827';
 const MUTED = '#64748B';
+
 const rf = size => {
   const scale = width / 390;
-  return Math.max(size - 2, Math.min(size * scale, size + 2));
+
+  return Math.max(
+    size - 2,
+    Math.min(size * scale, size + 2),
+  );
 };
-export default function HomeScreen({ navigation }) {
+
+export default function HomeScreen({navigation}) {
+  // ==================================================
+  // USER
+  // ==================================================
+
   const user = useSelector(selectUser);
-  const userName = user?.fullName || user?.name || 'User';
-  const userDistrict = user?.district || '';
-  const userState = user?.state || '';
-  const location =
-    userDistrict && userState
-      ? `${userDistrict}, ${userState}`
-      : userDistrict || userState || 'Location unavailable';
+
+  const userName =
+    user?.fullName ||
+    user?.name ||
+    'User';
+
+  // ==================================================
+  // LOCATION
+  // ==================================================
+
+  const {
+    location: currentLocation,
+    loading: locationLoading,
+  } = useLocation();
+
+  /*
+   * Location display priority:
+   *
+   * District + State
+   *        ↓
+   * City + State
+   *        ↓
+   * State
+   *        ↓
+   * Location unavailable
+   */
+
+  const locationText = locationLoading
+    ? 'Detecting location...'
+    : currentLocation?.district &&
+      currentLocation?.state
+    ? `${currentLocation.district}, ${currentLocation.state}`
+    : currentLocation?.city &&
+      currentLocation?.state
+    ? `${currentLocation.city}, ${currentLocation.state}`
+    : currentLocation?.state
+    ? currentLocation.state
+    : 'Location unavailable';
+
+  // ==================================================
+  // QUICK ACTIONS
+  // ==================================================
+
   const quickActions = [
     {
       title: 'Hire Labour',
       image: require('../../assets/homescreen/labour.png'),
       borderColor: '#A7F3D0',
       textColor: '#15803D',
-      onPress: () => navigation.navigate('LabourBooking'),
+      onPress: () =>
+        navigation.navigate('LabourBooking'),
     },
+
     {
       title: ' Hire Tractor /\nMachinery',
       image: require('../../assets/homescreen/tractorr.png'),
       borderColor: '#BFDBFE',
       textColor: '#2563EB',
-      onPress: () => navigation.navigate('TractorBooking'),
+      onPress: () =>
+        navigation.navigate('TractorBooking'),
     },
+
     {
       title: 'Agri Products',
       image: require('../../assets/homescreen/Agrii.png'),
       borderColor: '#FED7AA',
       textColor: '#EA580C',
-      onPress: () => navigation.navigate('AgriProducts'),
+      onPress: () =>
+        navigation.navigate('AgriProducts'),
     },
+
     {
       title: 'Mandi\nPrices',
       image: require('../../assets/homescreen/mand.png'),
       borderColor: '#E9D5FF',
       textColor: '#9333EA',
-      onPress: () => navigation.navigate('MandiHome'),
+      onPress: () =>
+        navigation.navigate('MandiHome'),
     },
+
     {
       title: 'Loans /\nSupport',
       image: require('../../assets/homescreen/loan.png'),
@@ -68,6 +138,7 @@ export default function HomeScreen({ navigation }) {
       textColor: '#DB2777',
       onPress: () => {},
     },
+
     {
       title: 'Warehouse',
       image: require('../../assets/homescreen/warehousee.png'),
@@ -75,6 +146,7 @@ export default function HomeScreen({ navigation }) {
       textColor: '#059669',
       onPress: () => {},
     },
+
     {
       title: 'Nursery',
       image: require('../../assets/homescreen/nu.png'),
@@ -82,6 +154,7 @@ export default function HomeScreen({ navigation }) {
       textColor: '#15803D',
       onPress: () => {},
     },
+
     {
       title: 'Shipping /\nDelivery',
       image: require('../../assets/homescreen/Deliveryy.png'),
@@ -89,67 +162,130 @@ export default function HomeScreen({ navigation }) {
       textColor: '#EA580C',
       onPress: () => {},
     },
+
     {
       title: 'Doctor/vet',
       image: require('../../assets/homescreen/duuu.png'),
       borderColor: '#BFDBFE',
       textColor: '#2563EB',
-      onPress: () => navigation.navigate('DoctorMain'),
+      onPress: () =>
+        navigation.navigate('DoctorMain'),
     },
+
     {
       title: 'AI Disease\nDetection',
       image: require('../../assets/homescreen/dis.png'),
       borderColor: '#BBF7D0',
       textColor: '#166534',
-      onPress: () => navigation.navigate('DiseaseDetection'),
+      onPress: () =>
+        navigation.navigate('DiseaseDetection'),
     },
+
     {
       title: 'Govt.\nSchemes',
       image: require('../../assets/homescreen/govv.png'),
       borderColor: '#FECACA',
       textColor: '#DC2626',
-      onPress: () => navigation.navigate('GovernmentSchemes'),
+      onPress: () =>
+        navigation.navigate('GovernmentSchemes'),
     },
+
     {
-  title: 'Knowledge\nCenter',
-  image: require('../../assets/homescreen/knowledge.png'),
-  borderColor: '#C7D2FE',
-  textColor: '#4338CA',
-  onPress: () => navigation.navigate('AgricultureNews'),
-},
+      title: 'Knowledge\nCenter',
+      image: require('../../assets/homescreen/knowledge.png'),
+      borderColor: '#C7D2FE',
+      textColor: '#4338CA',
+      onPress: () =>
+        navigation.navigate('AgricultureNews'),
+    },
   ];
+
+  // ==================================================
+  // UI
+  // ==================================================
+
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top']}>
+    <SafeAreaView
+      style={styles.safeArea}
+      edges={['top']}>
+
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
-      >
+        contentContainerStyle={
+          styles.scrollContent
+        }>
+
+        {/* ==========================================
+            HEADER
+        ========================================== */}
+
         <HomeHeader />
 
-        <Text style={styles.greeting}>Good Morning, {userName}</Text>
+        {/* ==========================================
+            GREETING
+        ========================================== */}
+
+        <Text style={styles.greeting}>
+          Good Morning, {userName}
+        </Text>
+
+        {/* ==========================================
+            LOCATION
+        ========================================== */}
 
         <View style={styles.locationRow}>
-          <MapPin size={15} color={GREEN} strokeWidth={2.4} />
+          <MapPin
+            size={15}
+            color={GREEN}
+            strokeWidth={2.4}
+          />
 
-          <Text style={styles.locationText}>{location}</Text>
+          <Text
+            style={styles.locationText}
+            numberOfLines={1}
+            ellipsizeMode="tail">
+
+            {locationText}
+
+          </Text>
         </View>
+
+        {/* ==========================================
+            WEATHER
+        ========================================== */}
 
         <WeatherCard />
 
+        {/* ==========================================
+            VOICE ASSISTANT
+        ========================================== */}
+
         <VoiceAssistantCard />
+
+        {/* ==========================================
+            MY FARMS
+        ========================================== */}
 
         <SectionHeader
           title="My Farms"
-          onPress={() => navigation.navigate('MyFarms')}
+          onPress={() =>
+            navigation.navigate('MyFarms')
+          }
         />
 
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.farmsRow}
-        >
+          contentContainerStyle={
+            styles.farmsRow
+          }>
+
           <AddFarmCard
-            onPress={() => navigation.navigate('FarmMappingScreen')}
+            onPress={() =>
+              navigation.navigate(
+                'FarmMappingScreen',
+              )
+            }
           />
 
           <FarmCard
@@ -171,9 +307,16 @@ export default function HomeScreen({ navigation }) {
             statusColor="#16A34A"
             statusBg="#ECFDF5"
           />
+
         </ScrollView>
 
-        <Text style={styles.quickTitle}>Quick Actions</Text>
+        {/* ==========================================
+            QUICK ACTIONS
+        ========================================== */}
+
+        <Text style={styles.quickTitle}>
+          Quick Actions
+        </Text>
 
         <View style={styles.quickGrid}>
           {quickActions.map(item => (
@@ -187,11 +330,27 @@ export default function HomeScreen({ navigation }) {
           ))}
         </View>
 
+        {/* ==========================================
+            AI ADVISORY
+        ========================================== */}
+
         <AIAdvisoryCard />
 
-        <MoreServicesSection navigation={navigation} />
+        {/* ==========================================
+            MORE SERVICES
+        ========================================== */}
 
-        <SectionHeader title="Today's Updates" />
+        <MoreServicesSection
+          navigation={navigation}
+        />
+
+        {/* ==========================================
+            TODAY'S UPDATES
+        ========================================== */}
+
+        <SectionHeader
+          title="Today's Updates"
+        />
 
         <UpdateCard
           Icon={CloudSun}
@@ -219,22 +378,38 @@ export default function HomeScreen({ navigation }) {
           bg="#FAF5FF"
           border="#E9D5FF"
         />
+
       </ScrollView>
 
-      <BottomTabBar navigation={navigation} active="Home" />
+      {/* ==========================================
+          BOTTOM TAB
+      ========================================== */}
+
+      <BottomTabBar
+        navigation={navigation}
+        active="Home"
+      />
+
     </SafeAreaView>
   );
 }
+
+// ==================================================
+// STYLES
+// ==================================================
+
 const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: '#FFFFFF',
   },
+
   scrollContent: {
     paddingHorizontal: width * 0.055,
     paddingTop: 6,
     paddingBottom: 130,
   },
+
   greeting: {
     marginTop: 14,
     fontSize: rf(24),
@@ -243,6 +418,7 @@ const styles = StyleSheet.create({
     fontWeight: '900',
     letterSpacing: -0.45,
   },
+
   locationRow: {
     marginTop: 10,
     flexDirection: 'row',
@@ -250,15 +426,19 @@ const styles = StyleSheet.create({
     gap: 6,
     marginBottom: 8,
   },
+
   locationText: {
+    flex: 1,
     fontSize: rf(13),
     color: MUTED,
     fontWeight: '800',
   },
+
   farmsRow: {
     paddingRight: 24,
     gap: 16,
   },
+
   quickTitle: {
     marginTop: 36,
     marginBottom: 20,
@@ -266,6 +446,7 @@ const styles = StyleSheet.create({
     color: DARK,
     fontWeight: '900',
   },
+
   quickGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
