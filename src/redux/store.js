@@ -1,4 +1,4 @@
-import { configureStore } from '@reduxjs/toolkit';
+import {configureStore} from '@reduxjs/toolkit';
 
 import authReducer from './slices/authSlice';
 import labourReducer from './slices/labourSlice';
@@ -12,6 +12,7 @@ import doctorReducer from './slices/doctorSlice';
 import doctorConsultationReducer from './slices/doctorConsultationSlice';
 
 import articleReducer from './slices/articleSlice';
+import mandiReducer from './slices/mandiSlice';
 
 const store = configureStore({
   reducer: {
@@ -22,14 +23,14 @@ const store = configureStore({
     labourBooking: labourBookingReducer,
 
     machinery: machineryReducer,
-    machineryBooking:
-      machineryBookingReducer,
+    machineryBooking: machineryBookingReducer,
 
     doctor: doctorReducer,
-    doctorConsultation:
-      doctorConsultationReducer,
+    doctorConsultation: doctorConsultationReducer,
 
-      articles: articleReducer,
+    articles: articleReducer,
+
+    mandi: mandiReducer,
   },
 
   middleware: getDefaultMiddleware =>
