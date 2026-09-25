@@ -107,6 +107,14 @@ import DoctorRequestDetailsScreen from '../screens/Doctor/DoctorRequestDetailsSc
 import DoctorEditProfileScreen from '../screens/Doctor/DoctorEditProfileScreen';
 import MyDoctorProfileScreen from '../screens/Doctor/MyDoctorProfileScreen';
 import MyConsultationsScreen from '../screens/Doctor/MyConsultationsScreen';
+import NurseryHomeScreen from '../screens/Nursery/NurseryHomeScreen';
+import NurseryPlantDetailsScreen from '../screens/Nursery/NurseryPlantDetailsScreen';
+import NurseryCartScreen from '../screens/Nursery/NurseryCartScreen';
+import NurseryCheckoutScreen from '../screens/Nursery/NurseryCheckoutScreen';
+import NurseryOrdersScreen from '../screens/Nursery/NurseryOrdersScreen';
+import NurseryOrderDetailsScreen from '../screens/Nursery/NurseryOrderDetailsScreen';
+import SellPlantScreen from '../screens/Nursery/SellPlantScreen';
+import MyNurseryListingsScreen from '../screens/Nursery/MyNurseryListingsScreen';
 const Stack = createNativeStackNavigator();
 const navigationTheme = {
   ...DefaultTheme,
@@ -461,6 +469,28 @@ export default function AppNavigator() {
         <Stack.Screen
           name="MyConsultations"
           component={MyConsultationsScreen}
+        />
+
+        <Stack.Screen name="NurseryHome" component={NurseryHomeScreen} />
+        <Stack.Screen
+          name="NurseryPlantDetails"
+          component={NurseryPlantDetailsScreen}
+        />
+        <Stack.Screen name="NurseryCart" component={NurseryCartScreen} />
+        <Stack.Screen
+          name="NurseryCheckout"
+          component={NurseryCheckoutScreen}
+        />
+        <Stack.Screen name="NurseryOrders" component={NurseryOrdersScreen} />
+        <Stack.Screen name="MyOrders" component={NurseryOrdersScreen} />
+        <Stack.Screen
+          name="NurseryOrderDetails"
+          component={NurseryOrderDetailsScreen}
+        />
+        <Stack.Screen name="SellPlant" component={SellPlantScreen} />
+        <Stack.Screen
+          name="MyNurseryListings"
+          component={MyNurseryListingsScreen}
         />
 
         <Stack.Screen

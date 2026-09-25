@@ -152,7 +152,8 @@ export default function HomeScreen({navigation}) {
       image: require('../../assets/homescreen/nu.png'),
       borderColor: '#BBF7D0',
       textColor: '#15803D',
-      onPress: () => {},
+      onPress: () =>
+        navigation.navigate('NurseryHome'),
     },
 
     {
@@ -454,4 +455,5 @@ const styles = StyleSheet.create({
     rowGap: 20,
     marginBottom: 18,
   },
+
 });

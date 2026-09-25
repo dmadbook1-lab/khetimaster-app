@@ -1,6 +1,7 @@
 import {configureStore} from '@reduxjs/toolkit';
 
 import authReducer from './slices/authSlice';
+
 import labourReducer from './slices/labourSlice';
 import labourerReducer from './slices/labourerSlice';
 import labourBookingReducer from './slices/labourBookingSlice';
@@ -13,6 +14,11 @@ import doctorConsultationReducer from './slices/doctorConsultationSlice';
 
 import articleReducer from './slices/articleSlice';
 import mandiReducer from './slices/mandiSlice';
+
+// Nursery
+import nurseryReducer from './slices/nurserySlice';
+import nurseryCartReducer from './slices/nurseryCartSlice';
+import nurseryOrderReducer from './slices/nurseryOrderSlice';
 
 const store = configureStore({
   reducer: {
@@ -31,6 +37,14 @@ const store = configureStore({
     articles: articleReducer,
 
     mandi: mandiReducer,
+
+    // =========================================
+    // NURSERY
+    // =========================================
+
+    nursery: nurseryReducer,
+    nurseryCart: nurseryCartReducer,
+    nurseryOrder: nurseryOrderReducer,
   },
 
   middleware: getDefaultMiddleware =>
