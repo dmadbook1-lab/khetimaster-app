@@ -19,6 +19,36 @@ const API_ENDPOINTS = {
 
   MANDI_RATES: '/api/mandi/rates',
 
+
+  /*
+  |--------------------------------------------------------------------------
+  | FARM FIELD
+  |--------------------------------------------------------------------------
+  */
+
+  // Add new farm
+  FARM_FIELD_ADD: userId =>
+    `/api/field/add-field/${userId}`,
+
+  // Get all farms belonging to a user
+  FARM_FIELDS_BY_USER: userId =>
+    `/api/field/user/${userId}`,
+
+  // Get one farm
+  FARM_FIELD_BY_ID: fieldId =>
+    `/api/field/${fieldId}`,
+
+  // Update farm
+  FARM_FIELD_UPDATE: fieldId =>
+    `/api/field/${fieldId}`,
+
+  // Delete farm
+  FARM_FIELD_DELETE: fieldId =>
+    `/api/field/${fieldId}`,
+
+
+
+
    /*
   |--------------------------------------------------------------------------
   | NURSERY - PLANTS

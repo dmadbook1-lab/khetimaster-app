@@ -19,6 +19,11 @@ import mandiReducer from './slices/mandiSlice';
 import nurseryReducer from './slices/nurserySlice';
 import nurseryCartReducer from './slices/nurseryCartSlice';
 import nurseryOrderReducer from './slices/nurseryOrderSlice';
+import farmFieldReducer from './slices/farmFieldSlice';
+// import cropMonitoringReducer from './slices/cropMonitoringSlice';
+import cropReducer from './slices/cropSlice';
+import satelliteReducer from './slices/satelliteSlice';
+import weatherReducer from './slices/weatherSlice';
 
 const store = configureStore({
   reducer: {
@@ -35,6 +40,10 @@ const store = configureStore({
     doctorConsultation: doctorConsultationReducer,
 
     articles: articleReducer,
+    farmField: farmFieldReducer,
+      satellite: satelliteReducer,
+          weather: weatherReducer,
+              crop: cropReducer,
 
     mandi: mandiReducer,
 

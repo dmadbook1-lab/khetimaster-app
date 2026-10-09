@@ -42,6 +42,7 @@ import MachineryRequestsScreen from '../screens/Machinery-rentals/MachineryReque
 import ProvideServiceSuccessScreen from '../screens/Machinery-rentals/ProvideServiceSuccessScreen';
 import ProfileSetupScreen from '../screens/addfarm/ProfileSetupScreen';
 import ProfileFarmScreen from '../screens/addfarm/ProfileFarmScreen';
+import AddFarmDetailsScreen from '../screens/addfarm/FarmDetailsScreen';
 import FarmMappingScreen from '../screens/addfarm/FarmMappingScreen';
 import Mapscreen from '../screens/addfarm/MapYourFarmScreen';
 import Farmsuccess from '../screens/addfarm/FarmSuccessScreen';
@@ -94,7 +95,6 @@ import LabourProfileScreen from '../screens/labourbooking/LabourProfileScreen';
 import MyBookingsScreen from '../screens/labourbooking/MyBookingsScreen';
 import GovernmentSchemesScreen from '../screens/gov/GovernmentSchemesScreen';
 import LatestSchemesScreen from '../screens/gov/LatestSchemesScreen';
-import { GOV_ROUTES } from '../constants/govRoutes';
 import DoctorMainScreen from '../screens/Doctor/DoctorMainScreen';
 import DoctorsScreen from '../screens/Doctor/DoctorsScreen';
 import DoctorRegistrationScreen from '../screens/Doctor/DoctorRegistrationScreen';
@@ -139,6 +139,7 @@ export default function AppNavigator() {
           },
         }}
       >
+        {/* Route names: Splash, Onboarding, language, Login, Otp */}
         <Stack.Screen
           name="Splash"
           component={SplashScreen}
@@ -160,7 +161,7 @@ export default function AppNavigator() {
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Otp" component={OtpScreen} />
 
-        {}
+        {/* Route names: Home, MyFarms, AIGuru, AgricultureNews, ArticleDetails, Bazaar, Profile, LabourProfile */}
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="MyFarms" component={MyFarmsScreen} />
 
@@ -188,7 +189,7 @@ export default function AppNavigator() {
         <Stack.Screen name="Profile" component={ProfileScreen} />
         <Stack.Screen name="LabourProfile" component={LabourProfileScreen} />
 
-        {}
+        {/* Route name: Sidebar */}
         <Stack.Screen
           name="Sidebar"
           component={SidebarScreen}
@@ -200,12 +201,13 @@ export default function AppNavigator() {
           }}
         />
 
-        {}
+        {/* Route names: FarmOverview, SatelliteView, FarmDetailsScreen, FarmDetails */}
         <Stack.Screen name="FarmOverview" component={FarmOverviewScreen} />
         <Stack.Screen name="SatelliteView" component={SatelliteViewScreen} />
         <Stack.Screen name="FarmDetailsScreen" component={FarmDetailsScreen} />
+        <Stack.Screen name="FarmDetails" component={AddFarmDetailsScreen} />
 
-        {}
+        {/* Route names: AgriProducts, ProductDetails, Cart, Checkout, OrderSuccess, OrderDetails */}
         <Stack.Screen name="AgriProducts" component={AgriProductsScreen} />
         <Stack.Screen name="ProductDetails" component={ProductDetailsScreen} />
         <Stack.Screen name="Cart" component={CartScreen} />
@@ -221,12 +223,14 @@ export default function AppNavigator() {
 
         <Stack.Screen name="OrderDetails" component={OrderDetailsScreen} />
 
-        {}
+        {/* Route names: ProfileSetup, ProfileFarm, FarmMappingScreen, Mapscreen, Farmsuccess, walkaroundscreen, WalkAroundTrackingScreen, ReviewFarmScreen, SmartFarmScreen */}
         <Stack.Screen name="ProfileSetup" component={ProfileSetupScreen} />
         <Stack.Screen name="ProfileFarm" component={ProfileFarmScreen} />
         <Stack.Screen name="FarmMappingScreen" component={FarmMappingScreen} />
         <Stack.Screen name="Mapscreen" component={Mapscreen} />
         <Stack.Screen name="Farmsuccess" component={Farmsuccess} />
+
+        {/* walkaround screen */}
         <Stack.Screen name="walkaroundscreen" component={WalkAroundScreen} />
         <Stack.Screen
           name="WalkAroundTrackingScreen"
@@ -235,14 +239,13 @@ export default function AppNavigator() {
         <Stack.Screen name="ReviewFarmScreen" component={ReviewFarmScreen} />
         <Stack.Screen name="SmartFarmScreen" component={SmartFarmScreen} />
 
-        {}
+        {/* Route names: TractorBooking, MachineryRentalProfile, LabourBooking, MachineryDetails, MachineryBooking, ConfirmMachineryBooking, MachineryBookingSuccess, MachineryMyBookings, MachineryRequests, MachineryLiveTracking */}
         <Stack.Screen name="TractorBooking" component={TractorBookingScreen} />
         <Stack.Screen
-  name="MachineryRentalProfile"
-  component={MachineryRentalProfileScreen}
-/>
+          name="MachineryRentalProfile"
+          component={MachineryRentalProfileScreen}
+        />
 
-          
         <Stack.Screen name="LabourBooking" component={LabourBookingScreen} />
         <Stack.Screen
           name="MachineryDetails"
@@ -265,23 +268,22 @@ export default function AppNavigator() {
           }}
         />
         <Stack.Screen
-  name="MachineryMyBookings"
-  component={MachineryMyBookingsScreen}
-  options={{ headerShown: false }}
-/>
-
-<Stack.Screen
-  name="MachineryRequests"
-  component={MachineryRequestsScreen}
-  options={{ headerShown: false }}
-/>
+          name="MachineryMyBookings"
+          component={MachineryMyBookingsScreen}
+          options={{headerShown: false}}
+        />
+        <Stack.Screen
+          name="MachineryRequests"
+          component={MachineryRequestsScreen}
+          options={{headerShown: false}}
+        />
 
         <Stack.Screen
           name="MachineryLiveTracking"
           component={MachineryLiveTrackingScreen}
         />
 
-        {}
+        {/* Route names: DiseaseDetection, UploadCropPhoto, AIDetection, AIDiagnosis, DiseaseInformation */}
         <Stack.Screen
           name="DiseaseDetection"
           component={DiseaseDetectionScreen}
@@ -312,7 +314,7 @@ export default function AppNavigator() {
           component={DiseaseInformationScreen}
         />
 
-        {}
+        {/* Route names: Weather, SevenDayForecast, HourlyForecast, RainfallDetails, AIWeatherInsights */}
         <Stack.Screen name="Weather" component={WeatherScreen} />
         <Stack.Screen
           name="SevenDayForecast"
@@ -328,7 +330,7 @@ export default function AppNavigator() {
           component={AIWeatherInsightsScreen}
         />
 
-        {}
+        {/* Route names: Community, Videos, Questions, Experts, Disease, AskWithPhoto, AskQuestion, AskByVoice, AIAnswer */}
         <Stack.Screen name="Community" component={CommunityScreen} />
         <Stack.Screen name="Videos" component={VideosScreen} />
         <Stack.Screen name="Questions" component={QuestionsScreen} />
@@ -367,7 +369,7 @@ export default function AppNavigator() {
           }}
         />
 
-        {}
+        {/* Route names: MandiHome, TodaysPrices, NearbyMarkets, PriceTrends, PriceAlerts, MarketUpdates, CommodityDetail, DistrictWiseRates */}
         <Stack.Screen
           name={MANDI_ROUTES.HOME}
           component={MandiRatesScreen}
@@ -425,7 +427,7 @@ export default function AppNavigator() {
           }}
         />
 
-        {}
+        {/* Route names: GovernmentSchemes, LatestSchemes, DoctorMain, Doctors, DoctorRegistration, DoctorRegistrationDetails, DoctorDetails, DoctorConsultation, DoctorConsultationDetails, DoctorRequests, DoctorRequestDetails, DoctorEditProfile, MyDoctorProfile, MyConsultations */}
         <Stack.Screen
           name="GovernmentSchemes"
           component={GovernmentSchemesScreen}
@@ -471,6 +473,7 @@ export default function AppNavigator() {
           component={MyConsultationsScreen}
         />
 
+        {/* Route names: NurseryHome, NurseryPlantDetails, NurseryCart, NurseryCheckout, NurseryOrders, MyOrders, NurseryOrderDetails, SellPlant, MyNurseryListings */}
         <Stack.Screen name="NurseryHome" component={NurseryHomeScreen} />
         <Stack.Screen
           name="NurseryPlantDetails"
@@ -493,6 +496,7 @@ export default function AppNavigator() {
           component={MyNurseryListingsScreen}
         />
 
+        {/* Route names: ProvideServiceStep1, ProvideServiceStep2, ProvideServiceStep3, ProvideServiceStep4, ProvideServiceSuccess */}
         <Stack.Screen
           name="ProvideServiceStep1"
           component={ProvideServiceStep1Screen}
@@ -517,6 +521,7 @@ export default function AppNavigator() {
           }}
         />
 
+        {/* Route names: WorkerDetails, LabourBookingDetails, ConfirmLabourBooking, LabourBookingSuccess, FindWorkStep1, FindWorkStep2, FindWorkStep3, FindWorkStep4, FindWorkSuccess, MyBookings, LabourRequests */}
         <Stack.Screen name="WorkerDetails" component={WorkerDetailsScreen} />
         <Stack.Screen
           name="LabourBookingDetails"
@@ -541,6 +546,7 @@ export default function AppNavigator() {
         <Stack.Screen name="MyBookings" component={MyBookingsScreen} />
         <Stack.Screen name="LabourRequests" component={LabourRequestsScreen} />
 
+        {/* Route names: DroneServices, DroneServiceDetails, BookDroneService, ConfirmDroneBooking, DroneBookingSuccess */}
         <Stack.Screen name="DroneServices" component={DroneServicesScreen} />
         <Stack.Screen
           name="DroneServiceDetails"

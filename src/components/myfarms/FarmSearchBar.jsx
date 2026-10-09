@@ -1,4 +1,5 @@
 import React from 'react';
+
 import {
   View,
   TextInput,
@@ -6,31 +7,71 @@ import {
   StyleSheet,
   Dimensions,
 } from 'react-native';
-import { Search, SlidersHorizontal } from 'lucide-react-native';
-const { width } = Dimensions.get('window');
+
+import {
+  Search,
+  SlidersHorizontal,
+} from 'lucide-react-native';
+
+const {width} =
+  Dimensions.get('window');
+
 const GREEN = '#16883E';
+
 const rf = size => {
   const scale = width / 390;
-  return Math.max(size - 2, Math.min(size * scale, size + 2));
+
+  return Math.max(
+    size - 2,
+    Math.min(size * scale, size + 2),
+  );
 };
-export default function FarmSearchBar() {
+
+export default function FarmSearchBar({
+  value = '',
+  onChangeText,
+}) {
   return (
-    <View style={styles.searchRow}>
-      <View style={styles.searchBox}>
-        <Search size={18} color="#98A2B3" strokeWidth={2.2} />
+    <View
+      style={styles.searchRow}
+    >
+      <View
+        style={styles.searchBox}
+      >
+        <Search
+          size={18}
+          color="#98A2B3"
+          strokeWidth={2.2}
+        />
+
         <TextInput
+          value={value}
+          onChangeText={
+            onChangeText
+          }
           placeholder="Search farm by name or crop"
           placeholderTextColor="#667085"
           style={styles.searchInput}
+          returnKeyType="search"
+          autoCorrect={false}
+          autoCapitalize="none"
         />
       </View>
 
-      <TouchableOpacity activeOpacity={0.85} style={styles.filterBtn}>
-        <SlidersHorizontal size={22} color="#FFFFFF" strokeWidth={2.5} />
+      <TouchableOpacity
+        activeOpacity={0.85}
+        style={styles.filterBtn}
+      >
+        <SlidersHorizontal
+          size={22}
+          color="#FFFFFF"
+          strokeWidth={2.5}
+        />
       </TouchableOpacity>
     </View>
   );
 }
+
 const styles = StyleSheet.create({
   searchRow: {
     marginTop: 28,
@@ -39,6 +80,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     gap: 10,
   },
+
   searchBox: {
     flex: 1,
     height: '100%',
@@ -50,6 +92,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     paddingHorizontal: 14,
   },
+
   searchInput: {
     flex: 1,
     marginLeft: 8,
@@ -58,6 +101,7 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#111827',
   },
+
   filterBtn: {
     width: 46,
     height: 46,
