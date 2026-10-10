@@ -1,4 +1,6 @@
-import React from 'react';
+
+import React, {useCallback, useMemo} from 'react';
+
 import {
   ScrollView,
   StyleSheet,
@@ -6,14 +8,17 @@ import {
   View,
   Dimensions,
 } from 'react-native';
+
 import {SafeAreaView} from 'react-native-safe-area-context';
+import {useFocusEffect} from '@react-navigation/native';
+import {useDispatch, useSelector} from 'react-redux';
+
 import {
   MapPin,
   CloudSun,
   Landmark,
   Users,
 } from 'lucide-react-native';
-import {useSelector} from 'react-redux';
 
 import HomeHeader from '../../components/home/HomeHeader';
 import WeatherCard from '../../components/home/WeatherCard';
@@ -28,6 +33,12 @@ import VoiceAssistantCard from '../../components/home/VoiceAssistantCard';
 import MoreServicesSection from '../../components/home/MoreServicesSection';
 
 import {selectUser} from '../../redux/slices/authSlice';
+
+import {
+  loadMyFarms,
+  selectFarmFields,
+} from '../../redux/slices/farmFieldSlice';
+
 import {useLocation} from '../../context/LocationContext';
 
 const {width} = Dimensions.get('window');
@@ -46,16 +57,50 @@ const rf = size => {
 };
 
 export default function HomeScreen({navigation}) {
+  const dispatch = useDispatch();
+
   // ==================================================
   // USER
   // ==================================================
 
   const user = useSelector(selectUser);
 
+  const userId =
+    user?._id ||
+    user?.id ||
+    user?.userId;
+
   const userName =
     user?.fullName ||
     user?.name ||
     'User';
+
+  // ==================================================
+  // LIVE FARM DATA
+  // ==================================================
+
+  const farmsFromRedux = useSelector(selectFarmFields);
+
+  const displayedFarms = useMemo(() => {
+    return Array.isArray(farmsFromRedux)
+      ? farmsFromRedux
+      : [];
+  }, [farmsFromRedux]);
+
+  // Refresh the farms whenever Home gains focus.
+  useFocusEffect(
+    useCallback(() => {
+      if (!userId) {
+        return undefined;
+      }
+
+      dispatch(loadMyFarms(userId)).catch(error => {
+        console.warn('Unable to refresh farms:', error);
+      });
+
+      return undefined;
+    }, [dispatch, userId]),
+  );
 
   // ==================================================
   // LOCATION
@@ -65,18 +110,6 @@ export default function HomeScreen({navigation}) {
     location: currentLocation,
     loading: locationLoading,
   } = useLocation();
-
-  /*
-   * Location display priority:
-   *
-   * District + State
-   *        ↓
-   * City + State
-   *        ↓
-   * State
-   *        ↓
-   * Location unavailable
-   */
 
   const locationText = locationLoading
     ? 'Detecting location...'
@@ -98,108 +131,81 @@ export default function HomeScreen({navigation}) {
     {
       title: 'Hire Labour',
       image: require('../../assets/homescreen/labour.png'),
-      borderColor: '#A7F3D0',
-      textColor: '#15803D',
-      onPress: () =>
-        navigation.navigate('LabourBooking'),
+      onPress: () => navigation.navigate('LabourBooking'),
     },
-
     {
       title: ' Hire Tractor /\nMachinery',
       image: require('../../assets/homescreen/tractorr.png'),
-      borderColor: '#BFDBFE',
-      textColor: '#2563EB',
-      onPress: () =>
-        navigation.navigate('TractorBooking'),
+      onPress: () => navigation.navigate('TractorBooking'),
     },
-
     {
       title: 'Agri Products',
       image: require('../../assets/homescreen/Agrii.png'),
-      borderColor: '#FED7AA',
-      textColor: '#EA580C',
-      onPress: () =>
-        navigation.navigate('AgriProducts'),
+      onPress: () => navigation.navigate('AgriProducts'),
     },
-
     {
       title: 'Mandi\nPrices',
       image: require('../../assets/homescreen/mand.png'),
-      borderColor: '#E9D5FF',
-      textColor: '#9333EA',
-      onPress: () =>
-        navigation.navigate('MandiHome'),
+      onPress: () => navigation.navigate('MandiHome'),
     },
-
     {
       title: 'Loans /\nSupport',
       image: require('../../assets/homescreen/loan.png'),
-      borderColor: '#FBCFE8',
-      textColor: '#DB2777',
       onPress: () => {},
     },
-
     {
       title: 'Warehouse',
       image: require('../../assets/homescreen/warehousee.png'),
-      borderColor: '#A7F3D0',
-      textColor: '#059669',
       onPress: () => {},
     },
-
     {
       title: 'Nursery',
       image: require('../../assets/homescreen/nu.png'),
-      borderColor: '#BBF7D0',
-      textColor: '#15803D',
-      onPress: () =>
-        navigation.navigate('NurseryHome'),
+      onPress: () => navigation.navigate('NurseryHome'),
     },
-
     {
       title: 'Shipping /\nDelivery',
       image: require('../../assets/homescreen/Deliveryy.png'),
-      borderColor: '#FED7AA',
-      textColor: '#EA580C',
       onPress: () => {},
     },
-
     {
       title: 'Doctor/vet',
       image: require('../../assets/homescreen/duuu.png'),
-      borderColor: '#BFDBFE',
-      textColor: '#2563EB',
-      onPress: () =>
-        navigation.navigate('DoctorMain'),
+      onPress: () => navigation.navigate('DoctorMain'),
     },
-
     {
       title: 'AI Disease\nDetection',
       image: require('../../assets/homescreen/dis.png'),
-      borderColor: '#BBF7D0',
-      textColor: '#166534',
-      onPress: () =>
-        navigation.navigate('DiseaseDetection'),
+      onPress: () => navigation.navigate('DiseaseDetection'),
     },
-
     {
       title: 'Govt.\nSchemes',
       image: require('../../assets/homescreen/govv.png'),
-      borderColor: '#FECACA',
-      textColor: '#DC2626',
-      onPress: () =>
-        navigation.navigate('GovernmentSchemes'),
+      onPress: () => navigation.navigate('GovernmentSchemes'),
     },
-
     {
       title: 'Knowledge\nCenter',
       image: require('../../assets/homescreen/knowledge.png'),
-      borderColor: '#C7D2FE',
-      textColor: '#4338CA',
-      onPress: () =>
-        navigation.navigate('AgricultureNews'),
+      onPress: () => navigation.navigate('AgricultureNews'),
     },
   ];
+
+  // ==================================================
+  // NAVIGATION
+  // ==================================================
+
+  const handleAddFarm = useCallback(() => {
+    navigation.navigate('FarmMappingScreen');
+  }, [navigation]);
+
+  const handleFarmPress = useCallback(
+    farm => {
+      // Use the existing My Farms screen so this works
+      // without assuming a separate FarmDetails route.
+      navigation.navigate('MyFarms');
+    },
+    [navigation],
+  );
 
   // ==================================================
   // UI
@@ -212,27 +218,19 @@ export default function HomeScreen({navigation}) {
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={
-          styles.scrollContent
-        }>
+        contentContainerStyle={styles.scrollContent}>
 
-        {/* ==========================================
-            HEADER
-        ========================================== */}
+        {/* HEADER */}
 
         <HomeHeader />
 
-        {/* ==========================================
-            GREETING
-        ========================================== */}
+        {/* GREETING */}
 
         <Text style={styles.greeting}>
           Good Morning, {userName}
         </Text>
 
-        {/* ==========================================
-            LOCATION
-        ========================================== */}
+        {/* LOCATION */}
 
         <View style={styles.locationRow}>
           <MapPin
@@ -245,75 +243,57 @@ export default function HomeScreen({navigation}) {
             style={styles.locationText}
             numberOfLines={1}
             ellipsizeMode="tail">
-
             {locationText}
-
           </Text>
         </View>
 
-        {/* ==========================================
-            WEATHER
-        ========================================== */}
+        {/* WEATHER */}
 
         <WeatherCard />
 
-        {/* ==========================================
-            VOICE ASSISTANT
-        ========================================== */}
+        {/* VOICE ASSISTANT */}
 
         <VoiceAssistantCard />
 
-        {/* ==========================================
-            MY FARMS
-        ========================================== */}
+        {/* MY FARMS */}
 
         <SectionHeader
           title="My Farms"
-          onPress={() =>
-            navigation.navigate('MyFarms')
-          }
+          onPress={() => navigation.navigate('MyFarms')}
         />
 
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={
-            styles.farmsRow
-          }>
+          contentContainerStyle={styles.farmsRow}>
 
-          <AddFarmCard
-            onPress={() =>
-              navigation.navigate(
-                'FarmMappingScreen',
-              )
-            }
-          />
+          {/* Always show Add Farm first */}
 
-          <FarmCard
-            image={require('../../assets/homescreen/farm1.jpg')}
-            title="Shinde Farm"
-            crop="Cotton"
-            area="5.10 Acres"
-            status="Needs Attention"
-            statusColor="#F97316"
-            statusBg="#FFF7ED"
-          />
+          <AddFarmCard onPress={handleAddFarm} />
 
-          <FarmCard
-            image={require('../../assets/homescreen/farm2.jpg')}
-            title="Patil Farm"
-            crop="Soybean"
-            area="2.34 Acres"
-            status="Healthy"
-            statusColor="#16A34A"
-            statusBg="#ECFDF5"
-          />
+          {/* Farms fetched for the logged-in user */}
+
+          {displayedFarms.map((farm, index) => (
+            <FarmCard
+              key={
+                farm?._id ||
+                farm?.id ||
+                `farm-${index}`
+              }
+              farm={farm}
+              onPress={() => handleFarmPress(farm)}
+            />
+          ))}
 
         </ScrollView>
 
-        {/* ==========================================
-            QUICK ACTIONS
-        ========================================== */}
+        {displayedFarms.length === 0 && (
+          <Text style={styles.noFarmsText}>
+            Your farms will appear here after you add them.
+          </Text>
+        )}
+
+        {/* QUICK ACTIONS */}
 
         <Text style={styles.quickTitle}>
           Quick Actions
@@ -325,33 +305,22 @@ export default function HomeScreen({navigation}) {
               key={item.title}
               image={item.image}
               title={item.title}
-              imageStyle={item.imageStyle}
               onPress={item.onPress}
             />
           ))}
         </View>
 
-        {/* ==========================================
-            AI ADVISORY
-        ========================================== */}
+        {/* AI ADVISORY */}
 
         <AIAdvisoryCard />
 
-        {/* ==========================================
-            MORE SERVICES
-        ========================================== */}
+        {/* MORE SERVICES */}
 
-        <MoreServicesSection
-          navigation={navigation}
-        />
+        <MoreServicesSection navigation={navigation} />
 
-        {/* ==========================================
-            TODAY'S UPDATES
-        ========================================== */}
+        {/* TODAY'S UPDATES */}
 
-        <SectionHeader
-          title="Today's Updates"
-        />
+        <SectionHeader title="Today's Updates" />
 
         <UpdateCard
           Icon={CloudSun}
@@ -382,9 +351,7 @@ export default function HomeScreen({navigation}) {
 
       </ScrollView>
 
-      {/* ==========================================
-          BOTTOM TAB
-      ========================================== */}
+      {/* BOTTOM TAB */}
 
       <BottomTabBar
         navigation={navigation}
@@ -437,7 +404,16 @@ const styles = StyleSheet.create({
 
   farmsRow: {
     paddingRight: 24,
+    paddingVertical: 8,
     gap: 16,
+  },
+
+  noFarmsText: {
+    marginTop: 5,
+    marginBottom: 4,
+    color: MUTED,
+    fontSize: rf(12),
+    fontWeight: '600',
   },
 
   quickTitle: {
@@ -455,5 +431,4 @@ const styles = StyleSheet.create({
     rowGap: 20,
     marginBottom: 18,
   },
-
 });
