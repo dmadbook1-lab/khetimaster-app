@@ -1,5 +1,5 @@
 
-import React, {useCallback, useMemo} from 'react';
+import React, {useCallback, useMemo, useState} from 'react';
 
 import {
   ScrollView,
@@ -30,6 +30,7 @@ import UpdateCard from '../../components/home/UpdateCard';
 import BottomTabBar from '../../common/BottomTabBar';
 import AddFarmCard from '../../components/home/AddFarmCard';
 import VoiceAssistantCard from '../../components/home/VoiceAssistantCard';
+import VoiceAssistantModal from '../../components/voice/VoiceAssistantModal';
 import MoreServicesSection from '../../components/home/MoreServicesSection';
 
 import {selectUser} from '../../redux/slices/authSlice';
@@ -58,6 +59,19 @@ const rf = size => {
 
 export default function HomeScreen({navigation}) {
   const dispatch = useDispatch();
+  const [voiceAssistantVisible, setVoiceAssistantVisible] = useState(false);
+
+  const handleVoiceClose = useCallback(() => {
+    setVoiceAssistantVisible(false);
+  }, []);
+
+  const handleVoiceNavigation = useCallback(
+    routeName => {
+      setVoiceAssistantVisible(false);
+      navigation.navigate(routeName);
+    },
+    [navigation],
+  );
 
   // ==================================================
   // USER
@@ -253,7 +267,9 @@ export default function HomeScreen({navigation}) {
 
         {/* VOICE ASSISTANT */}
 
-        <VoiceAssistantCard />
+        <VoiceAssistantCard
+          onPress={() => setVoiceAssistantVisible(true)}
+        />
 
         {/* MY FARMS */}
 
@@ -358,6 +374,11 @@ export default function HomeScreen({navigation}) {
         active="Home"
       />
 
+      <VoiceAssistantModal
+        visible={voiceAssistantVisible}
+        onClose={handleVoiceClose}
+        onNavigate={handleVoiceNavigation}
+      />
     </SafeAreaView>
   );
 }
