@@ -1,188 +1,127 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import {
+  createAsyncThunk,
+  createSlice,
+} from '@reduxjs/toolkit';
 
 import {
-  createLabourerApi,
+  getLabourMetaApi,
   getAllLabourersApi,
-  getMyLabourerProfileApi,
   getLabourerByIdApi,
+  getMyLabourerProfileApi,
+  createLabourerApi,
   updateMyLabourerProfileApi,
   deactivateMyLabourerProfileApi,
   activateMyLabourerProfileApi,
 } from '../../api/labourerApi';
 
-const getErrorMessage = (error, fallback) => {
-  return (
-    error?.response?.data?.message ||
-    error?.response?.data?.error ||
-    error?.message ||
-    fallback
-  );
-};
+const errorMessage = (error, fallback) =>
+  error.response?.data?.message ||
+  error.message ||
+  fallback;
 
 /*
 |--------------------------------------------------------------------------
-| CREATE LABOURER
+| META
 |--------------------------------------------------------------------------
 */
 
-export const createLabourer = createAsyncThunk(
-  'labourer/createLabourer',
-  async (labourerData, { rejectWithValue }) => {
+export const fetchLabourMeta = createAsyncThunk(
+  'labourer/fetchMeta',
+  async (_, {rejectWithValue}) => {
     try {
-      return await createLabourerApi(labourerData);
+      return await getLabourMetaApi();
     } catch (error) {
-      return rejectWithValue(
-        getErrorMessage(
-          error,
-          'Failed to create labourer profile',
-        ),
-      );
+      return rejectWithValue(errorMessage(error, 'Unable to load options'));
     }
   },
 );
 
 /*
 |--------------------------------------------------------------------------
-| GET ALL LABOURERS
+| BROWSE LABOURERS
 |--------------------------------------------------------------------------
+|
+| {params, append} - append adds the next page to the current list.
+|
 */
 
-export const getAllLabourers = createAsyncThunk(
-  'labourer/getAllLabourers',
-  async (params = {}, { rejectWithValue }) => {
+export const fetchLabourers = createAsyncThunk(
+  'labourer/fetchLabourers',
+  async ({params = {}} = {}, {rejectWithValue}) => {
     try {
       return await getAllLabourersApi(params);
     } catch (error) {
-      return rejectWithValue(
-        getErrorMessage(
-          error,
-          'Failed to fetch labourers',
-        ),
-      );
+      return rejectWithValue(errorMessage(error, 'Unable to load workers'));
     }
   },
 );
 
-/*
-|--------------------------------------------------------------------------
-| GET MY LABOURER PROFILE
-|--------------------------------------------------------------------------
-*/
-
-export const getMyLabourerProfile =
-  createAsyncThunk(
-    'labourer/getMyLabourerProfile',
-    async (_, { rejectWithValue }) => {
-      try {
-        return await getMyLabourerProfileApi();
-      } catch (error) {
-        return rejectWithValue(
-          getErrorMessage(
-            error,
-            'Failed to fetch labourer profile',
-          ),
-        );
-      }
-    },
-  );
-
-/*
-|--------------------------------------------------------------------------
-| GET LABOURER BY ID
-|--------------------------------------------------------------------------
-*/
-
-export const getLabourerById = createAsyncThunk(
-  'labourer/getLabourerById',
-  async (labourerId, { rejectWithValue }) => {
+export const fetchLabourerById = createAsyncThunk(
+  'labourer/fetchById',
+  async (labourerId, {rejectWithValue}) => {
     try {
-      return await getLabourerByIdApi(
-        labourerId,
-      );
+      return await getLabourerByIdApi(labourerId);
     } catch (error) {
-      return rejectWithValue(
-        getErrorMessage(
-          error,
-          'Failed to fetch labourer',
-        ),
-      );
+      return rejectWithValue(errorMessage(error, 'Unable to load worker'));
     }
   },
 );
 
 /*
 |--------------------------------------------------------------------------
-| UPDATE MY LABOURER PROFILE
+| MY LABOURER PROFILE
 |--------------------------------------------------------------------------
+|
+| A 404 means the user hasn't registered as a worker yet; the slice keeps
+| that as myProfileStatus 'missing' instead of an error.
+|
 */
 
-export const updateMyLabourerProfile =
-  createAsyncThunk(
-    'labourer/updateMyLabourerProfile',
-    async (
-      labourerData,
-      { rejectWithValue },
-    ) => {
-      try {
-        return await updateMyLabourerProfileApi(
-          labourerData,
-        );
-      } catch (error) {
-        return rejectWithValue(
-          getErrorMessage(
-            error,
-            'Failed to update labourer profile',
-          ),
-        );
-      }
-    },
-  );
+export const fetchMyLabourerProfile = createAsyncThunk(
+  'labourer/fetchMine',
+  async (_, {rejectWithValue}) => {
+    try {
+      return await getMyLabourerProfileApi();
+    } catch (error) {
+      return rejectWithValue({
+        notFound: error.response?.status === 404,
+        message: errorMessage(error, 'Unable to load your worker profile'),
+      });
+    }
+  },
+);
 
 /*
-|--------------------------------------------------------------------------
-| DEACTIVATE
-|--------------------------------------------------------------------------
-*/
-
-export const deactivateMyLabourerProfile =
-  createAsyncThunk(
-    'labourer/deactivateMyLabourerProfile',
-    async (_, { rejectWithValue }) => {
-      try {
-        return await deactivateMyLabourerProfileApi();
-      } catch (error) {
-        return rejectWithValue(
-          getErrorMessage(
-            error,
-            'Failed to deactivate labourer profile',
-          ),
-        );
-      }
-    },
-  );
+ * {labourerData, isCreate}
+ */
+export const saveMyLabourerProfile = createAsyncThunk(
+  'labourer/saveMine',
+  async ({labourerData, isCreate}, {rejectWithValue}) => {
+    try {
+      return isCreate
+        ? await createLabourerApi(labourerData)
+        : await updateMyLabourerProfileApi(labourerData);
+    } catch (error) {
+      return rejectWithValue(errorMessage(error, 'Unable to save your profile'));
+    }
+  },
+);
 
 /*
-|--------------------------------------------------------------------------
-| ACTIVATE
-|--------------------------------------------------------------------------
-*/
-
-export const activateMyLabourerProfile =
-  createAsyncThunk(
-    'labourer/activateMyLabourerProfile',
-    async (_, { rejectWithValue }) => {
-      try {
-        return await activateMyLabourerProfileApi();
-      } catch (error) {
-        return rejectWithValue(
-          getErrorMessage(
-            error,
-            'Failed to activate labourer profile',
-          ),
-        );
-      }
-    },
-  );
+ * active: true -> activate, false -> deactivate
+ */
+export const setMyLabourerActive = createAsyncThunk(
+  'labourer/setActive',
+  async (active, {rejectWithValue}) => {
+    try {
+      return active
+        ? await activateMyLabourerProfileApi()
+        : await deactivateMyLabourerProfileApi();
+    } catch (error) {
+      return rejectWithValue(errorMessage(error, 'Unable to update your profile'));
+    }
+  },
+);
 
 /*
 |--------------------------------------------------------------------------
@@ -191,33 +130,40 @@ export const activateMyLabourerProfile =
 */
 
 const initialState = {
-  myProfile: null,
+  meta: {
+    labourTypes: [],
+    workTypes: [],
+    languages: [],
+    genders: [],
+    wageTypes: [],
+    experienceUnits: [],
+    availabilityOptions: [],
+    maxBookingDays: 90,
+  },
+  metaLoading: false,
+  metaError: null,
 
   labourers: [],
+  pagination: {
+    page: 1,
+    totalPages: 1,
+    total: 0,
+  },
+  listLoading: false,
+  listLoadingMore: false,
+  listError: null,
 
   selectedLabourer: null,
+  labourerLoading: false,
+  labourerError: null,
 
-  pagination: null,
+  myProfile: null,
+  // idle | loading | loaded | missing | error
+  myProfileStatus: 'idle',
+  myProfileError: null,
 
-  total: 0,
-
-  isLoading: false,
-
-  isCreating: false,
-
-  isUpdating: false,
-
-  isLoadingProfile: false,
-
-  isLoadingLabourers: false,
-
-  error: null,
-
-  message: '',
-
-  createSuccess: false,
-
-  updateSuccess: false,
+  saving: false,
+  togglingActive: false,
 };
 
 /*
@@ -232,373 +178,160 @@ const labourerSlice = createSlice({
   initialState,
 
   reducers: {
-    clearLabourerError: state => {
-      state.error = null;
-    },
-
-    clearLabourerMessage: state => {
-      state.message = '';
-    },
-
     clearSelectedLabourer: state => {
       state.selectedLabourer = null;
-    },
-
-    clearCreateSuccess: state => {
-      state.createSuccess = false;
-    },
-
-    clearUpdateSuccess: state => {
-      state.updateSuccess = false;
-    },
-
-    resetLabourerState: state => {
-      state.myProfile = null;
-
-      state.labourers = [];
-
-      state.selectedLabourer = null;
-
-      state.pagination = null;
-
-      state.total = 0;
-
-      state.isLoading = false;
-
-      state.isCreating = false;
-
-      state.isUpdating = false;
-
-      state.isLoadingProfile = false;
-
-      state.isLoadingLabourers = false;
-
-      state.error = null;
-
-      state.message = '';
-
-      state.createSuccess = false;
-
-      state.updateSuccess = false;
+      state.labourerError = null;
     },
   },
 
   extraReducers: builder => {
-    /*
-    |--------------------------------------------------------------------------
-    | CREATE
-    |--------------------------------------------------------------------------
-    */
+    builder
+      .addCase(fetchLabourMeta.pending, state => {
+        state.metaLoading = true;
+        state.metaError = null;
+      })
+      .addCase(fetchLabourMeta.fulfilled, (state, action) => {
+        state.metaLoading = false;
+
+        const data = action.payload || {};
+
+        state.meta = {
+          labourTypes: data.labourTypes || [],
+          workTypes: data.workTypes || [],
+          languages: data.languages || [],
+          genders: data.genders || [],
+          wageTypes: data.wageTypes || [],
+          experienceUnits: data.experienceUnits || [],
+          availabilityOptions: data.availabilityOptions || [],
+          maxBookingDays: data.maxBookingDays || 90,
+        };
+      })
+      .addCase(fetchLabourMeta.rejected, (state, action) => {
+        state.metaLoading = false;
+        state.metaError = action.payload;
+      });
 
     builder
-      .addCase(
-        createLabourer.pending,
-        state => {
-          state.isCreating = true;
-          state.error = null;
-          state.message = '';
-          state.createSuccess = false;
-        },
-      )
+      .addCase(fetchLabourers.pending, (state, action) => {
+        if (action.meta.arg?.append) {
+          state.listLoadingMore = true;
+        } else {
+          state.listLoading = true;
+        }
 
-      .addCase(
-        createLabourer.fulfilled,
-        (state, action) => {
-          state.isCreating = false;
+        state.listError = null;
+      })
+      .addCase(fetchLabourers.fulfilled, (state, action) => {
+        state.listLoading = false;
+        state.listLoadingMore = false;
 
-          state.createSuccess = true;
+        const labourers = action.payload?.labourers || [];
 
-          state.message =
-            action.payload?.message ||
-            'Labourer profile created successfully';
+        if (action.meta.arg?.append) {
+          const known = new Set(state.labourers.map(item => item._id));
 
-          state.myProfile =
-            action.payload?.labourer ||
-            null;
+          state.labourers = [
+            ...state.labourers,
+            ...labourers.filter(item => !known.has(item._id)),
+          ];
+        } else {
+          state.labourers = labourers;
+        }
 
-          state.error = null;
-        },
-      )
-
-      .addCase(
-        createLabourer.rejected,
-        (state, action) => {
-          state.isCreating = false;
-
-          state.createSuccess = false;
-
-          state.error =
-            action.payload ||
-            'Failed to create labourer profile';
-        },
-      );
-
-    /*
-    |--------------------------------------------------------------------------
-    | GET ALL
-    |--------------------------------------------------------------------------
-    */
+        state.pagination = {
+          page: action.payload?.pagination?.currentPage || 1,
+          totalPages: action.payload?.pagination?.totalPages || 1,
+          total: action.payload?.total || 0,
+        };
+      })
+      .addCase(fetchLabourers.rejected, (state, action) => {
+        state.listLoading = false;
+        state.listLoadingMore = false;
+        state.listError = action.payload;
+      });
 
     builder
-      .addCase(
-        getAllLabourers.pending,
-        state => {
-          state.isLoadingLabourers = true;
-          state.error = null;
-        },
-      )
+      .addCase(fetchLabourerById.pending, (state, action) => {
+        state.labourerLoading = true;
+        state.labourerError = null;
 
-      .addCase(
-        getAllLabourers.fulfilled,
-        (state, action) => {
-          state.isLoadingLabourers = false;
-
-          state.labourers =
-            action.payload?.labourers ||
-            action.payload?.data ||
-            [];
-
-          state.pagination =
-            action.payload?.pagination ||
-            null;
-
-          state.total =
-            action.payload?.total ??
-            action.payload?.pagination
-              ?.total ??
-            state.labourers.length;
-
-          state.error = null;
-        },
-      )
-
-      .addCase(
-        getAllLabourers.rejected,
-        (state, action) => {
-          state.isLoadingLabourers = false;
-
-          state.error =
-            action.payload ||
-            'Failed to fetch labourers';
-        },
-      );
-
-    /*
-    |--------------------------------------------------------------------------
-    | GET MY PROFILE
-    |--------------------------------------------------------------------------
-    */
-
-    builder
-      .addCase(
-        getMyLabourerProfile.pending,
-        state => {
-          state.isLoadingProfile = true;
-          state.error = null;
-        },
-      )
-
-      .addCase(
-        getMyLabourerProfile.fulfilled,
-        (state, action) => {
-          state.isLoadingProfile = false;
-
-          state.myProfile =
-            action.payload?.labourer ||
-            null;
-
-          state.error = null;
-        },
-      )
-
-      .addCase(
-        getMyLabourerProfile.rejected,
-        (state, action) => {
-          state.isLoadingProfile = false;
-
-          state.error =
-            action.payload ||
-            'Failed to fetch labourer profile';
-        },
-      );
-
-    /*
-    |--------------------------------------------------------------------------
-    | GET BY ID
-    |--------------------------------------------------------------------------
-    */
-
-    builder
-      .addCase(
-        getLabourerById.pending,
-        state => {
-          state.isLoading = true;
-
-          state.error = null;
-
+        if (state.selectedLabourer?._id !== action.meta.arg) {
           state.selectedLabourer = null;
-        },
-      )
-
-      .addCase(
-        getLabourerById.fulfilled,
-        (state, action) => {
-          state.isLoading = false;
-
-          state.selectedLabourer =
-            action.payload?.labourer ||
-            null;
-
-          state.error = null;
-        },
-      )
-
-      .addCase(
-        getLabourerById.rejected,
-        (state, action) => {
-          state.isLoading = false;
-
-          state.error =
-            action.payload ||
-            'Failed to fetch labourer';
-        },
-      );
-
-    /*
-    |--------------------------------------------------------------------------
-    | UPDATE
-    |--------------------------------------------------------------------------
-    */
+        }
+      })
+      .addCase(fetchLabourerById.fulfilled, (state, action) => {
+        state.labourerLoading = false;
+        state.selectedLabourer = action.payload?.labourer || null;
+      })
+      .addCase(fetchLabourerById.rejected, (state, action) => {
+        state.labourerLoading = false;
+        state.labourerError = action.payload;
+      });
 
     builder
-      .addCase(
-        updateMyLabourerProfile.pending,
-        state => {
-          state.isUpdating = true;
-
-          state.error = null;
-
-          state.updateSuccess = false;
-        },
-      )
-
-      .addCase(
-        updateMyLabourerProfile.fulfilled,
-        (state, action) => {
-          state.isUpdating = false;
-
-          state.updateSuccess = true;
-
-          state.message =
-            action.payload?.message ||
-            'Labourer profile updated successfully';
-
-          state.myProfile =
-            action.payload?.labourer ||
-            state.myProfile;
-
-          state.error = null;
-        },
-      )
-
-      .addCase(
-        updateMyLabourerProfile.rejected,
-        (state, action) => {
-          state.isUpdating = false;
-
-          state.updateSuccess = false;
-
-          state.error =
-            action.payload ||
-            'Failed to update labourer profile';
-        },
-      );
-
-    /*
-    |--------------------------------------------------------------------------
-    | DEACTIVATE
-    |--------------------------------------------------------------------------
-    */
+      .addCase(fetchMyLabourerProfile.pending, state => {
+        state.myProfileStatus = state.myProfile ? 'loaded' : 'loading';
+        state.myProfileError = null;
+      })
+      .addCase(fetchMyLabourerProfile.fulfilled, (state, action) => {
+        state.myProfile = action.payload?.labourer || null;
+        state.myProfileStatus = state.myProfile ? 'loaded' : 'missing';
+      })
+      .addCase(fetchMyLabourerProfile.rejected, (state, action) => {
+        if (action.payload?.notFound) {
+          state.myProfile = null;
+          state.myProfileStatus = 'missing';
+        } else {
+          state.myProfileStatus = state.myProfile ? 'loaded' : 'error';
+          state.myProfileError = action.payload?.message;
+        }
+      });
 
     builder
-      .addCase(
-        deactivateMyLabourerProfile.pending,
-        state => {
-          state.error = null;
-        },
-      )
+      .addCase(saveMyLabourerProfile.pending, state => {
+        state.saving = true;
+      })
+      .addCase(saveMyLabourerProfile.fulfilled, (state, action) => {
+        state.saving = false;
 
-      .addCase(
-        deactivateMyLabourerProfile.fulfilled,
-        (state, action) => {
-          state.message =
-            action.payload?.message ||
-            'Labourer profile deactivated successfully';
+        const labourer = action.payload?.labourer;
 
-          if (state.myProfile) {
-            state.myProfile.isActive =
-              false;
+        if (labourer) {
+          state.myProfile = {
+            ...labourer,
+            pendingRequests: state.myProfile?.pendingRequests || 0,
+          };
+          state.myProfileStatus = 'loaded';
+        }
+      })
+      .addCase(saveMyLabourerProfile.rejected, state => {
+        state.saving = false;
+      })
 
-            state.myProfile.availability =
-              'unavailable';
-          }
-        },
-      )
+      .addCase(setMyLabourerActive.pending, state => {
+        state.togglingActive = true;
+      })
+      .addCase(setMyLabourerActive.fulfilled, (state, action) => {
+        state.togglingActive = false;
 
-      .addCase(
-        deactivateMyLabourerProfile.rejected,
-        (state, action) => {
-          state.error =
-            action.payload ||
-            'Failed to deactivate labourer profile';
-        },
-      );
+        const labourer = action.payload?.labourer;
 
-    /*
-    |--------------------------------------------------------------------------
-    | ACTIVATE
-    |--------------------------------------------------------------------------
-    */
-
-    builder
-      .addCase(
-        activateMyLabourerProfile.pending,
-        state => {
-          state.error = null;
-        },
-      )
-
-      .addCase(
-        activateMyLabourerProfile.fulfilled,
-        (state, action) => {
-          state.message =
-            action.payload?.message ||
-            'Labourer profile activated successfully';
-
-          state.myProfile =
-            action.payload?.labourer ||
-            state.myProfile;
-        },
-      )
-
-      .addCase(
-        activateMyLabourerProfile.rejected,
-        (state, action) => {
-          state.error =
-            action.payload ||
-            'Failed to activate labourer profile';
-        },
-      );
+        if (labourer && state.myProfile) {
+          state.myProfile = {
+            ...state.myProfile,
+            isActive: labourer.isActive,
+            availability: labourer.availability,
+            // deactivating cancels pending requests
+            pendingRequests: labourer.isActive ? state.myProfile.pendingRequests : 0,
+          };
+        }
+      })
+      .addCase(setMyLabourerActive.rejected, state => {
+        state.togglingActive = false;
+      });
   },
 });
 
-export const {
-  clearLabourerError,
-  clearLabourerMessage,
-  clearSelectedLabourer,
-  clearCreateSuccess,
-  clearUpdateSuccess,
-  resetLabourerState,
-} = labourerSlice.actions;
+export const {clearSelectedLabourer} = labourerSlice.actions;
 
 export default labourerSlice.reducer;

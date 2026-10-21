@@ -7,6 +7,7 @@ import {
   Image,
   Dimensions,
 } from 'react-native';
+import { MARKET_ROUTES } from '../../constants/marketRoutes';
 const { width } = Dimensions.get('window');
 const DARK = '#111827';
 const rf = size => {
@@ -28,7 +29,7 @@ export default function MoreServicesSection({ navigation }) {
     {
       title: 'Traders',
       image: require('../../assets/homescreen/traders.png'),
-      onPress: () => navigation?.navigate('Traders'),
+      onPress: () => navigation?.navigate(MARKET_ROUTES.HOME),
     },
   ];
   const bottomRow = [

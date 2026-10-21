@@ -95,7 +95,7 @@ const ACTIVITY_MENU = [
     Icon: Settings,
     iconColor: '#FB4B69',
     iconBackground: '#FFF0F3',
-    route: 'MachineryLiveTracking',
+    route: 'MachineryMyBookings',
   },
   {
     id: 'labour',
@@ -103,7 +103,7 @@ const ACTIVITY_MENU = [
     Icon: UsersRound,
     iconColor: '#3B82F6',
     iconBackground: '#EFF6FF',
-    route: 'LabourBooking',
+    route: 'MyBookings',
   },
   {
     id: 'drone',

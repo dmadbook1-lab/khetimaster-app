@@ -2,7 +2,6 @@ import {configureStore} from '@reduxjs/toolkit';
 
 import authReducer from './slices/authSlice';
 
-import labourReducer from './slices/labourSlice';
 import labourerReducer from './slices/labourerSlice';
 import labourBookingReducer from './slices/labourBookingSlice';
 
@@ -25,12 +24,15 @@ import cropReducer from './slices/cropSlice';
 import satelliteReducer from './slices/satelliteSlice';
 import weatherReducer from './slices/weatherSlice';
 
+// Marketplace
+import marketReducer from './slices/marketSlice';
+import marketDealReducer from './slices/marketDealSlice';
+
 const store = configureStore({
   reducer: {
     auth: authReducer,
 
     labourer: labourerReducer,
-    labour: labourReducer,
     labourBooking: labourBookingReducer,
 
     machinery: machineryReducer,
@@ -54,6 +56,13 @@ const store = configureStore({
     nursery: nurseryReducer,
     nurseryCart: nurseryCartReducer,
     nurseryOrder: nurseryOrderReducer,
+
+    // =========================================
+    // MARKETPLACE
+    // =========================================
+
+    market: marketReducer,
+    marketDeal: marketDealReducer,
   },
 
   middleware: getDefaultMiddleware =>

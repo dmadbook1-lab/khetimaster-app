@@ -1,7 +1,4 @@
-import {
-  createSlice,
-  createAsyncThunk,
-} from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 import {
   createMachineryBookingApi,
@@ -12,277 +9,120 @@ import {
   rejectMachineryBookingApi,
   cancelMachineryBookingApi,
   completeMachineryBookingApi,
+  reviewMachineryBookingApi,
 } from '../../api/machineryBookingApi';
 
+const errorMessage = (error, fallback) =>
+  error.response?.data?.message || error.message || fallback;
+
 /*
 |--------------------------------------------------------------------------
-| ERROR HELPER
+| CREATE BOOKING (FARMER)
 |--------------------------------------------------------------------------
+|
+| Rejects with {message, bookingId}. bookingId is set when the farmer
+| already has a booking for this machine at that time (409).
+|
 */
 
-const getErrorMessage = (
-  error,
-  fallback,
-) => {
-  return (
-    error?.response?.data?.message ||
-    error?.response?.data?.error ||
-    error?.message ||
-    fallback
-  );
+export const createMachineryBooking = createAsyncThunk(
+  'machineryBooking/create',
+  async (bookingData, { rejectWithValue }) => {
+    try {
+      return await createMachineryBookingApi(bookingData);
+    } catch (error) {
+      return rejectWithValue({
+        message: errorMessage(error, 'Unable to send the rental request'),
+        bookingId: error.response?.data?.booking?._id || null,
+      });
+    }
+  },
+);
+
+/*
+|--------------------------------------------------------------------------
+| LISTS
+|--------------------------------------------------------------------------
+|
+| {params: {status, machineryId, page, limit}, append}
+|
+*/
+
+export const fetchMyMachineryBookings = createAsyncThunk(
+  'machineryBooking/fetchMine',
+  async ({ params = {} } = {}, { rejectWithValue }) => {
+    try {
+      return await getMyMachineryBookingsApi(params);
+    } catch (error) {
+      return rejectWithValue(
+        errorMessage(error, 'Unable to load your rentals'),
+      );
+    }
+  },
+);
+
+export const fetchMachineryRequests = createAsyncThunk(
+  'machineryBooking/fetchRequests',
+  async ({ params = {} } = {}, { rejectWithValue }) => {
+    try {
+      return await getMachineryRequestsApi(params);
+    } catch (error) {
+      return rejectWithValue(
+        errorMessage(error, 'Unable to load rental requests'),
+      );
+    }
+  },
+);
+
+export const fetchMachineryBookingById = createAsyncThunk(
+  'machineryBooking/fetchById',
+  async (bookingId, { rejectWithValue }) => {
+    try {
+      return await getMachineryBookingByIdApi(bookingId);
+    } catch (error) {
+      return rejectWithValue(errorMessage(error, 'Unable to load booking'));
+    }
+  },
+);
+
+/*
+|--------------------------------------------------------------------------
+| ACTIONS
+|--------------------------------------------------------------------------
+|
+| {bookingId, action: accept | reject | cancel | complete, note}
+| note is the owner's note on accept, or the reason on reject / cancel.
+|
+*/
+
+const ACTION_APIS = {
+  accept: (bookingId, note) => acceptMachineryBookingApi(bookingId, note),
+  reject: (bookingId, note) => rejectMachineryBookingApi(bookingId, note),
+  cancel: (bookingId, note) => cancelMachineryBookingApi(bookingId, note),
+  complete: bookingId => completeMachineryBookingApi(bookingId),
 };
 
-/*
-|--------------------------------------------------------------------------
-| CREATE BOOKING
-|--------------------------------------------------------------------------
-*/
+export const updateMachineryBooking = createAsyncThunk(
+  'machineryBooking/update',
+  async ({ bookingId, action, note }, { rejectWithValue }) => {
+    try {
+      return await ACTION_APIS[action](bookingId, note);
+    } catch (error) {
+      return rejectWithValue(errorMessage(error, 'Unable to update booking'));
+    }
+  },
+);
 
-export const createMachineryBooking =
-  createAsyncThunk(
-    'machineryBooking/create',
-
-    async (
-      data,
-      {
-        rejectWithValue,
-      },
-    ) => {
-      try {
-        return await createMachineryBookingApi(
-          data,
-        );
-      } catch (error) {
-        return rejectWithValue(
-          getErrorMessage(
-            error,
-            'Failed to create machinery booking',
-          ),
-        );
-      }
-    },
-  );
-
-/*
-|--------------------------------------------------------------------------
-| MY BOOKINGS
-|--------------------------------------------------------------------------
-*/
-
-export const getMyMachineryBookings =
-  createAsyncThunk(
-    'machineryBooking/getMyBookings',
-
-    async (
-      params = {},
-      {
-        rejectWithValue,
-      },
-    ) => {
-      try {
-        return await getMyMachineryBookingsApi(
-          params,
-        );
-      } catch (error) {
-        return rejectWithValue(
-          getErrorMessage(
-            error,
-            'Failed to fetch machinery bookings',
-          ),
-        );
-      }
-    },
-  );
-
-/*
-|--------------------------------------------------------------------------
-| OWNER REQUESTS
-|--------------------------------------------------------------------------
-*/
-
-export const getMachineryRequests =
-  createAsyncThunk(
-    'machineryBooking/getRequests',
-
-    async (
-      params = {},
-      {
-        rejectWithValue,
-      },
-    ) => {
-      try {
-        return await getMachineryRequestsApi(
-          params,
-        );
-      } catch (error) {
-        return rejectWithValue(
-          getErrorMessage(
-            error,
-            'Failed to fetch machinery requests',
-          ),
-        );
-      }
-    },
-  );
-
-/*
-|--------------------------------------------------------------------------
-| GET BY ID
-|--------------------------------------------------------------------------
-*/
-
-export const getMachineryBookingById =
-  createAsyncThunk(
-    'machineryBooking/getById',
-
-    async (
-      id,
-      {
-        rejectWithValue,
-      },
-    ) => {
-      try {
-        return await getMachineryBookingByIdApi(
-          id,
-        );
-      } catch (error) {
-        return rejectWithValue(
-          getErrorMessage(
-            error,
-            'Failed to fetch machinery booking',
-          ),
-        );
-      }
-    },
-  );
-
-/*
-|--------------------------------------------------------------------------
-| ACCEPT
-|--------------------------------------------------------------------------
-*/
-
-export const acceptMachineryBooking =
-  createAsyncThunk(
-    'machineryBooking/accept',
-
-    async (
-      id,
-      {
-        rejectWithValue,
-      },
-    ) => {
-      try {
-        return await acceptMachineryBookingApi(
-          id,
-        );
-      } catch (error) {
-        return rejectWithValue(
-          getErrorMessage(
-            error,
-            'Failed to accept machinery booking',
-          ),
-        );
-      }
-    },
-  );
-
-/*
-|--------------------------------------------------------------------------
-| REJECT
-|--------------------------------------------------------------------------
-*/
-
-export const rejectMachineryBooking =
-  createAsyncThunk(
-    'machineryBooking/reject',
-
-    async (
-      id,
-      {
-        rejectWithValue,
-      },
-    ) => {
-      try {
-        return await rejectMachineryBookingApi(
-          id,
-        );
-      } catch (error) {
-        return rejectWithValue(
-          getErrorMessage(
-            error,
-            'Failed to reject machinery booking',
-          ),
-        );
-      }
-    },
-  );
-
-/*
-|--------------------------------------------------------------------------
-| CANCEL
-|--------------------------------------------------------------------------
-*/
-
-export const cancelMachineryBooking =
-  createAsyncThunk(
-    'machineryBooking/cancel',
-
-    async (
-      {
-        id,
-        reason = '',
-      },
-      {
-        rejectWithValue,
-      },
-    ) => {
-      try {
-        return await cancelMachineryBookingApi(
-          id,
-          reason,
-        );
-      } catch (error) {
-        return rejectWithValue(
-          getErrorMessage(
-            error,
-            'Failed to cancel machinery booking',
-          ),
-        );
-      }
-    },
-  );
-
-/*
-|--------------------------------------------------------------------------
-| COMPLETE
-|--------------------------------------------------------------------------
-*/
-
-export const completeMachineryBooking =
-  createAsyncThunk(
-    'machineryBooking/complete',
-
-    async (
-      id,
-      {
-        rejectWithValue,
-      },
-    ) => {
-      try {
-        return await completeMachineryBookingApi(
-          id,
-        );
-      } catch (error) {
-        return rejectWithValue(
-          getErrorMessage(
-            error,
-            'Failed to complete machinery booking',
-          ),
-        );
-      }
-    },
-  );
+export const reviewMachineryBooking = createAsyncThunk(
+  'machineryBooking/review',
+  async ({ bookingId, rating, comment }, { rejectWithValue }) => {
+    try {
+      return await reviewMachineryBookingApi(bookingId, { rating, comment });
+    } catch (error) {
+      return rejectWithValue(errorMessage(error, 'Unable to submit review'));
+    }
+  },
+);
 
 /*
 |--------------------------------------------------------------------------
@@ -290,70 +130,87 @@ export const completeMachineryBooking =
 |--------------------------------------------------------------------------
 */
 
-const initialState = {
-  bookings: [],
+const emptyList = {
+  items: [],
+  page: 1,
+  totalPages: 1,
+  total: 0,
+  loading: false,
+  loadingMore: false,
+  error: null,
+};
 
-  requests: [],
+const initialState = {
+  myBookings: emptyList,
+  requests: emptyList,
 
   selectedBooking: null,
+  bookingLoading: false,
+  bookingError: null,
 
-  bookingCount: 0,
+  creating: false,
 
-  requestCount: 0,
+  // name of the action in flight, e.g. 'accept'
+  actionInProgress: null,
+};
 
-  isLoading: false,
+const storeBooking = (state, booking) => {
+  if (!booking?._id) return;
 
-  isLoadingBookings: false,
+  state.selectedBooking = booking;
 
-  isLoadingRequests: false,
-
-  isCreating: false,
-
-  isAccepting: false,
-
-  isRejecting: false,
-
-  isCancelling: false,
-
-  isCompleting: false,
-
-  error: null,
-
-  message: '',
-
-  createSuccess: false,
+  for (const key of ['myBookings', 'requests']) {
+    state[key].items = state[key].items.map(item =>
+      item._id === booking._id ? booking : item,
+    );
+  }
 };
 
 /*
-|--------------------------------------------------------------------------
-| HELPERS
-|--------------------------------------------------------------------------
-*/
+ * Reducers for a paginated list thunk stored under state[key]. The
+ * farmer list comes back as `bookings`, the owner list as `requests`.
+ */
+const addListCases = (builder, thunk, key, responseKey) => {
+  builder
+    .addCase(thunk.pending, (state, action) => {
+      const list = state[key];
 
-const getId = item =>
-  String(
-    item?._id ||
-      item?.id ||
-      '',
-  );
+      if (action.meta.arg?.append) {
+        list.loadingMore = true;
+      } else {
+        list.loading = true;
+      }
 
-const replaceItem = (
-  list,
-  updated,
-) => {
-  const id =
-    getId(updated);
+      list.error = null;
+    })
+    .addCase(thunk.fulfilled, (state, action) => {
+      const list = state[key];
+      const bookings = action.payload?.[responseKey] || [];
 
-  if (!id) {
-    return list;
-  }
+      list.loading = false;
+      list.loadingMore = false;
 
-  return list.map(
-    item =>
-      getId(item) === id
-        ? updated
-        : item,
-  );
+      if (action.meta.arg?.append) {
+        const known = new Set(list.items.map(item => item._id));
+        list.items = [
+          ...list.items,
+          ...bookings.filter(item => !known.has(item._id)),
+        ];
+      } else {
+        list.items = bookings;
+      }
+
+      list.page = action.payload?.pagination?.currentPage || 1;
+      list.totalPages = action.payload?.pagination?.totalPages || 1;
+      list.total = action.payload?.total || 0;
+    })
+    .addCase(thunk.rejected, (state, action) => {
+      const list = state[key];
+
+      list.loading = false;
+      list.loadingMore = false;
+      list.error = action.payload;
+    });
 };
 
 /*
@@ -362,602 +219,83 @@ const replaceItem = (
 |--------------------------------------------------------------------------
 */
 
-const machineryBookingSlice =
-  createSlice({
-    name: 'machineryBooking',
+const machineryBookingSlice = createSlice({
+  name: 'machineryBooking',
 
-    initialState,
+  initialState,
 
-    reducers: {
-      clearMachineryBookingError:
-        state => {
-          state.error =
-            null;
-        },
-
-      clearMachineryBookingMessage:
-        state => {
-          state.message =
-            '';
-        },
-
-      clearSelectedMachineryBooking:
-        state => {
-          state.selectedBooking =
-            null;
-        },
-
-      clearMachineryBookingCreateSuccess:
-        state => {
-          state.createSuccess =
-            false;
-        },
-
-      resetMachineryBookingState:
-        () => initialState,
+  reducers: {
+    clearSelectedMachineryBooking: state => {
+      state.selectedBooking = null;
+      state.bookingError = null;
     },
-
-    extraReducers:
-      builder => {
-        /*
-        |--------------------------------------------------------------------------
-        | CREATE
-        |--------------------------------------------------------------------------
-        */
-
-        builder
-          .addCase(
-            createMachineryBooking.pending,
-            state => {
-              state.isCreating =
-                true;
-
-              state.createSuccess =
-                false;
-
-              state.error =
-                null;
-
-              state.message =
-                '';
-            },
-          )
-
-          .addCase(
-            createMachineryBooking.fulfilled,
-            (
-              state,
-              action,
-            ) => {
-              state.isCreating =
-                false;
-
-              state.createSuccess =
-                true;
-
-              state.error =
-                null;
-
-              state.message =
-                action.payload
-                  ?.message ||
-                'Machinery booking request sent successfully';
-
-              const booking =
-                action.payload
-                  ?.booking;
-
-              if (booking) {
-                state.bookings.unshift(
-                  booking,
-                );
-
-                state.bookingCount =
-                  state.bookings.length;
-
-                state.selectedBooking =
-                  booking;
-              }
-            },
-          )
-
-          .addCase(
-            createMachineryBooking.rejected,
-            (
-              state,
-              action,
-            ) => {
-              state.isCreating =
-                false;
-
-              state.createSuccess =
-                false;
-
-              state.error =
-                action.payload ||
-                'Failed to create machinery booking';
-            },
-          );
-
-        /*
-        |--------------------------------------------------------------------------
-        | MY BOOKINGS
-        |--------------------------------------------------------------------------
-        */
-
-        builder
-          .addCase(
-            getMyMachineryBookings.pending,
-            state => {
-              state.isLoadingBookings =
-                true;
-
-              state.error =
-                null;
-            },
-          )
-
-          .addCase(
-            getMyMachineryBookings.fulfilled,
-            (
-              state,
-              action,
-            ) => {
-              state.isLoadingBookings =
-                false;
-
-              state.bookings =
-                Array.isArray(
-                  action.payload
-                    ?.bookings,
-                )
-                  ? action.payload
-                      .bookings
-                  : [];
-
-              state.bookingCount =
-                action.payload
-                  ?.count ??
-                state.bookings
-                  .length;
-
-              state.error =
-                null;
-            },
-          )
-
-          .addCase(
-            getMyMachineryBookings.rejected,
-            (
-              state,
-              action,
-            ) => {
-              state.isLoadingBookings =
-                false;
-
-              state.error =
-                action.payload ||
-                'Failed to fetch machinery bookings';
-            },
-          );
-
-        /*
-        |--------------------------------------------------------------------------
-        | REQUESTS
-        |--------------------------------------------------------------------------
-        */
-
-        builder
-          .addCase(
-            getMachineryRequests.pending,
-            state => {
-              state.isLoadingRequests =
-                true;
-
-              state.error =
-                null;
-            },
-          )
-
-          .addCase(
-            getMachineryRequests.fulfilled,
-            (
-              state,
-              action,
-            ) => {
-              state.isLoadingRequests =
-                false;
-
-              state.requests =
-                Array.isArray(
-                  action.payload
-                    ?.requests,
-                )
-                  ? action.payload
-                      .requests
-                  : [];
-
-              state.requestCount =
-                action.payload
-                  ?.count ??
-                state.requests
-                  .length;
-
-              state.error =
-                null;
-            },
-          )
-
-          .addCase(
-            getMachineryRequests.rejected,
-            (
-              state,
-              action,
-            ) => {
-              state.isLoadingRequests =
-                false;
-
-              state.error =
-                action.payload ||
-                'Failed to fetch machinery requests';
-            },
-          );
-
-        /*
-        |--------------------------------------------------------------------------
-        | GET BY ID
-        |--------------------------------------------------------------------------
-        */
-
-        builder
-          .addCase(
-            getMachineryBookingById.pending,
-            state => {
-              state.isLoading =
-                true;
-
-              state.selectedBooking =
-                null;
-
-              state.error =
-                null;
-            },
-          )
-
-          .addCase(
-            getMachineryBookingById.fulfilled,
-            (
-              state,
-              action,
-            ) => {
-              state.isLoading =
-                false;
-
-              state.selectedBooking =
-                action.payload
-                  ?.booking ||
-                null;
-
-              state.error =
-                null;
-            },
-          )
-
-          .addCase(
-            getMachineryBookingById.rejected,
-            (
-              state,
-              action,
-            ) => {
-              state.isLoading =
-                false;
-
-              state.error =
-                action.payload ||
-                'Failed to fetch machinery booking';
-            },
-          );
-
-        /*
-        |--------------------------------------------------------------------------
-        | ACCEPT
-        |--------------------------------------------------------------------------
-        */
-
-        builder
-          .addCase(
-            acceptMachineryBooking.pending,
-            state => {
-              state.isAccepting =
-                true;
-
-              state.error =
-                null;
-            },
-          )
-
-          .addCase(
-            acceptMachineryBooking.fulfilled,
-            (
-              state,
-              action,
-            ) => {
-              state.isAccepting =
-                false;
-
-              state.error =
-                null;
-
-              state.message =
-                action.payload
-                  ?.message ||
-                'Machinery booking accepted';
-
-              const updated =
-                action.payload
-                  ?.booking;
-
-              if (updated) {
-                state.requests =
-                  replaceItem(
-                    state.requests,
-                    updated,
-                  );
-
-                state.bookings =
-                  replaceItem(
-                    state.bookings,
-                    updated,
-                  );
-
-                state.selectedBooking =
-                  updated;
-              }
-            },
-          )
-
-          .addCase(
-            acceptMachineryBooking.rejected,
-            (
-              state,
-              action,
-            ) => {
-              state.isAccepting =
-                false;
-
-              state.error =
-                action.payload ||
-                'Failed to accept machinery booking';
-            },
-          );
-
-        /*
-        |--------------------------------------------------------------------------
-        | REJECT
-        |--------------------------------------------------------------------------
-        */
-
-        builder
-          .addCase(
-            rejectMachineryBooking.pending,
-            state => {
-              state.isRejecting =
-                true;
-
-              state.error =
-                null;
-            },
-          )
-
-          .addCase(
-            rejectMachineryBooking.fulfilled,
-            (
-              state,
-              action,
-            ) => {
-              state.isRejecting =
-                false;
-
-              state.error =
-                null;
-
-              state.message =
-                action.payload
-                  ?.message ||
-                'Machinery booking rejected';
-
-              const updated =
-                action.payload
-                  ?.booking;
-
-              if (updated) {
-                state.requests =
-                  replaceItem(
-                    state.requests,
-                    updated,
-                  );
-
-                state.bookings =
-                  replaceItem(
-                    state.bookings,
-                    updated,
-                  );
-
-                state.selectedBooking =
-                  updated;
-              }
-            },
-          )
-
-          .addCase(
-            rejectMachineryBooking.rejected,
-            (
-              state,
-              action,
-            ) => {
-              state.isRejecting =
-                false;
-
-              state.error =
-                action.payload ||
-                'Failed to reject machinery booking';
-            },
-          );
-
-        /*
-        |--------------------------------------------------------------------------
-        | CANCEL
-        |--------------------------------------------------------------------------
-        */
-
-        builder
-          .addCase(
-            cancelMachineryBooking.pending,
-            state => {
-              state.isCancelling =
-                true;
-
-              state.error =
-                null;
-            },
-          )
-
-          .addCase(
-            cancelMachineryBooking.fulfilled,
-            (
-              state,
-              action,
-            ) => {
-              state.isCancelling =
-                false;
-
-              state.error =
-                null;
-
-              state.message =
-                action.payload
-                  ?.message ||
-                'Machinery booking cancelled';
-
-              const updated =
-                action.payload
-                  ?.booking;
-
-              if (updated) {
-                state.bookings =
-                  replaceItem(
-                    state.bookings,
-                    updated,
-                  );
-
-                state.requests =
-                  replaceItem(
-                    state.requests,
-                    updated,
-                  );
-
-                state.selectedBooking =
-                  updated;
-              }
-            },
-          )
-
-          .addCase(
-            cancelMachineryBooking.rejected,
-            (
-              state,
-              action,
-            ) => {
-              state.isCancelling =
-                false;
-
-              state.error =
-                action.payload ||
-                'Failed to cancel machinery booking';
-            },
-          );
-
-        /*
-        |--------------------------------------------------------------------------
-        | COMPLETE
-        |--------------------------------------------------------------------------
-        */
-
-        builder
-          .addCase(
-            completeMachineryBooking.pending,
-            state => {
-              state.isCompleting =
-                true;
-
-              state.error =
-                null;
-            },
-          )
-
-          .addCase(
-            completeMachineryBooking.fulfilled,
-            (
-              state,
-              action,
-            ) => {
-              state.isCompleting =
-                false;
-
-              state.error =
-                null;
-
-              state.message =
-                action.payload
-                  ?.message ||
-                'Machinery booking completed';
-
-              const updated =
-                action.payload
-                  ?.booking;
-
-              if (updated) {
-                state.bookings =
-                  replaceItem(
-                    state.bookings,
-                    updated,
-                  );
-
-                state.requests =
-                  replaceItem(
-                    state.requests,
-                    updated,
-                  );
-
-                state.selectedBooking =
-                  updated;
-              }
-            },
-          )
-
-          .addCase(
-            completeMachineryBooking.rejected,
-            (
-              state,
-              action,
-            ) => {
-              state.isCompleting =
-                false;
-
-              state.error =
-                action.payload ||
-                'Failed to complete machinery booking';
-            },
-          );
-      },
-  });
-
-export const {
-  clearMachineryBookingError,
-  clearMachineryBookingMessage,
-  clearSelectedMachineryBooking,
-  clearMachineryBookingCreateSuccess,
-  resetMachineryBookingState,
-} = machineryBookingSlice.actions;
+  },
+
+  extraReducers: builder => {
+    builder
+      .addCase(createMachineryBooking.pending, state => {
+        state.creating = true;
+      })
+      .addCase(createMachineryBooking.fulfilled, (state, action) => {
+        state.creating = false;
+
+        const booking = action.payload?.booking;
+
+        if (booking) {
+          state.selectedBooking = booking;
+          state.myBookings.items.unshift(booking);
+        }
+      })
+      .addCase(createMachineryBooking.rejected, state => {
+        state.creating = false;
+      });
+
+    addListCases(builder, fetchMyMachineryBookings, 'myBookings', 'bookings');
+    addListCases(builder, fetchMachineryRequests, 'requests', 'requests');
+
+    builder
+      .addCase(fetchMachineryBookingById.pending, (state, action) => {
+        state.bookingLoading = true;
+        state.bookingError = null;
+
+        if (state.selectedBooking?._id !== action.meta.arg) {
+          state.selectedBooking = null;
+        }
+      })
+      .addCase(fetchMachineryBookingById.fulfilled, (state, action) => {
+        state.bookingLoading = false;
+        storeBooking(state, action.payload?.booking);
+      })
+      .addCase(fetchMachineryBookingById.rejected, (state, action) => {
+        state.bookingLoading = false;
+        state.bookingError = action.payload;
+      });
+
+    builder
+      .addCase(updateMachineryBooking.pending, (state, action) => {
+        state.actionInProgress = action.meta.arg.action;
+      })
+      .addCase(updateMachineryBooking.fulfilled, (state, action) => {
+        state.actionInProgress = null;
+        storeBooking(state, action.payload?.booking);
+      })
+      .addCase(updateMachineryBooking.rejected, state => {
+        state.actionInProgress = null;
+      })
+
+      .addCase(reviewMachineryBooking.pending, state => {
+        state.actionInProgress = 'review';
+      })
+      .addCase(reviewMachineryBooking.fulfilled, (state, action) => {
+        state.actionInProgress = null;
+        storeBooking(state, action.payload?.booking);
+      })
+      .addCase(reviewMachineryBooking.rejected, state => {
+        state.actionInProgress = null;
+      });
+  },
+});
+
+export const { clearSelectedMachineryBooking } = machineryBookingSlice.actions;
 
 export default machineryBookingSlice.reducer;

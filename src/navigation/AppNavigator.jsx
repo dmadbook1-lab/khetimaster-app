@@ -20,26 +20,11 @@ import CartScreen from '../screens/agriproducts/CartScreen';
 import CheckoutScreen from '../screens/agriproducts/CheckoutScreen';
 import OrderSuccessScreen from '../screens/agriproducts/OrderSuccessScreen';
 import OrderDetailsScreen from '../screens/agriproducts/OrderDetailsScreen';
-import ConfirmMachineryBookingScreen from '../screens/Machinery-rentals/ConfirmMachineryBookingScreen';
-import MachineryBookingSuccessScreen from '../screens/Machinery-rentals/MachineryBookingSuccessScreen';
-import MachineryRentalProfileScreen from '../screens/Machinery-rentals/MachineryRentalProfileScreen';
-import MachineryLiveTrackingScreen from '../screens/Machinery-rentals/MachineryLiveTrackingScreen';
-import TractorBookingScreen from '../screens/Machinery-rentals/TractorBookingScreen';
-import LabourBookingScreen from '../screens/labourbooking/LabourBookingScreen';
-import MachineryDetailsScreen from '../screens/Machinery-rentals/MachineryDetailsScreen';
-import MachineryBookingScreen from '../screens/Machinery-rentals/MachineryBookingScreen';
 import DroneServicesScreen from '../screens/drone/DroneServicesScreen';
 import DroneServiceDetailsScreen from '../screens/drone/DroneServiceDetailsScreen';
 import BookDroneServiceScreen from '../screens/drone/BookDroneServiceScreen';
 import ConfirmDroneBookingScreen from '../screens/drone/ConfirmDroneBookingScreen';
 import DroneBookingSuccessScreen from '../screens/drone/DroneBookingSuccessScreen';
-import ProvideServiceStep1Screen from '../screens/Machinery-rentals/ProvideServiceStep1Screen';
-import ProvideServiceStep2Screen from '../screens/Machinery-rentals/ProvideServiceStep2Screen';
-import ProvideServiceStep3Screen from '../screens/Machinery-rentals/ProvideServiceStep3Screen';
-import ProvideServiceStep4Screen from '../screens/Machinery-rentals/ProvideServiceStep4Screen';
-import MachineryMyBookingsScreen from '../screens/Machinery-rentals/MachineryMyBookingsScreen';
-import MachineryRequestsScreen from '../screens/Machinery-rentals/MachineryRequestsScreen';
-import ProvideServiceSuccessScreen from '../screens/Machinery-rentals/ProvideServiceSuccessScreen';
 import ProfileSetupScreen from '../screens/addfarm/ProfileSetupScreen';
 import ProfileFarmScreen from '../screens/addfarm/ProfileFarmScreen';
 import AddFarmDetailsScreen from '../screens/addfarm/FarmDetailsScreen';
@@ -81,18 +66,6 @@ import MarketUpdatesScreen from '../screens/mandi/MarketUpdatesScreen';
 import CommodityDetailScreen from '../screens/mandi/CommodityDetailScreen';
 import { MANDI_ROUTES } from '../constants/mandiRoutes';
 import DistrictWiseRatesScreen from '../screens/mandi/DistrictWiseRatesScreen';
-import WorkerDetailsScreen from '../screens/labourbooking/WorkerDetailsScreen';
-import LabourBookingDetailsScreen from '../screens/labourbooking/LabourBookingDetailsScreen';
-import ConfirmLabourBookingScreen from '../screens/labourbooking/ConfirmLabourBookingScreen';
-import LabourBookingSuccessScreen from '../screens/labourbooking/LabourBookingSuccessScreen';
-import LabourRequestsScreen from '../screens/labourbooking/LabourRequestsScreen';
-import FindWorkStep1Screen from '../screens/labourbooking/FindWorkStep1Screen';
-import FindWorkStep2Screen from '../screens/labourbooking/FindWorkStep2Screen';
-import FindWorkStep3Screen from '../screens/labourbooking/FindWorkStep3Screen';
-import FindWorkStep4Screen from '../screens/labourbooking/FindWorkStep4Screen';
-import FindWorkSuccessScreen from '../screens/labourbooking/FindWorkSuccessScreen';
-import LabourProfileScreen from '../screens/labourbooking/LabourProfileScreen';
-import MyBookingsScreen from '../screens/labourbooking/MyBookingsScreen';
 import GovernmentSchemesScreen from '../screens/gov/GovernmentSchemesScreen';
 import LatestSchemesScreen from '../screens/gov/LatestSchemesScreen';
 import DoctorMainScreen from '../screens/Doctor/DoctorMainScreen';
@@ -115,6 +88,33 @@ import NurseryOrdersScreen from '../screens/Nursery/NurseryOrdersScreen';
 import NurseryOrderDetailsScreen from '../screens/Nursery/NurseryOrderDetailsScreen';
 import SellPlantScreen from '../screens/Nursery/SellPlantScreen';
 import MyNurseryListingsScreen from '../screens/Nursery/MyNurseryListingsScreen';
+import MarketHomeScreen from '../screens/Market/MarketHomeScreen';
+import MarketListingDetailsScreen from '../screens/Market/MarketListingDetailsScreen';
+import MarketSellScreen from '../screens/Market/MarketSellScreen';
+import MarketMyListingsScreen from '../screens/Market/MarketMyListingsScreen';
+import MarketSavedScreen from '../screens/Market/MarketSavedScreen';
+import MarketDealsScreen from '../screens/Market/MarketDealsScreen';
+import MarketDealDetailsScreen from '../screens/Market/MarketDealDetailsScreen';
+import MarketSellerProfileScreen from '../screens/Market/MarketSellerProfileScreen';
+import { MARKET_ROUTES } from '../constants/marketRoutes';
+import LabourHomeScreen from '../screens/Labour/LabourHomeScreen';
+import LabourerDetailsScreen from '../screens/Labour/LabourerDetailsScreen';
+import BookLabourScreen from '../screens/Labour/BookLabourScreen';
+import LabourBookingDetailsScreen from '../screens/Labour/LabourBookingDetailsScreen';
+import MyLabourBookingsScreen from '../screens/Labour/MyLabourBookingsScreen';
+import LabourRequestsScreen from '../screens/Labour/LabourRequestsScreen';
+import MyLabourProfileScreen from '../screens/Labour/MyLabourProfileScreen';
+import LabourProfileFormScreen from '../screens/Labour/LabourProfileFormScreen';
+import { LABOUR_ROUTES } from '../constants/labourRoutes';
+import MachineryHomeScreen from '../screens/Machinery/MachineryHomeScreen';
+import MachineryDetailsScreen from '../screens/Machinery/MachineryDetailsScreen';
+import BookMachineryScreen from '../screens/Machinery/BookMachineryScreen';
+import MachineryBookingDetailsScreen from '../screens/Machinery/MachineryBookingDetailsScreen';
+import MyMachineryBookingsScreen from '../screens/Machinery/MyMachineryBookingsScreen';
+import MachineryRequestsScreen from '../screens/Machinery/MachineryRequestsScreen';
+import MyMachineryScreen from '../screens/Machinery/MyMachineryScreen';
+import MachineryFormScreen from '../screens/Machinery/MachineryFormScreen';
+import { MACHINERY_ROUTES } from '../constants/machineryRoutes';
 const Stack = createNativeStackNavigator();
 const navigationTheme = {
   ...DefaultTheme,
@@ -161,7 +161,7 @@ export default function AppNavigator() {
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Otp" component={OtpScreen} />
 
-        {/* Route names: Home, MyFarms, AIGuru, AgricultureNews, ArticleDetails, Bazaar, Profile, LabourProfile */}
+        {/* Route names: Home, MyFarms, AIGuru, AgricultureNews, ArticleDetails, Bazaar, Profile */}
         <Stack.Screen name="Home" component={HomeScreen} />
         <Stack.Screen name="MyFarms" component={MyFarmsScreen} />
 
@@ -180,14 +180,10 @@ export default function AppNavigator() {
           name="AgricultureNews"
           component={AgricultureNewsScreen}
         />
-        <Stack.Screen
-          name="ArticleDetails"
-          component={ArticleDetailsScreen}
-        />
+        <Stack.Screen name="ArticleDetails" component={ArticleDetailsScreen} />
 
         <Stack.Screen name="Bazaar" component={BazaarScreen} />
         <Stack.Screen name="Profile" component={ProfileScreen} />
-        <Stack.Screen name="LabourProfile" component={LabourProfileScreen} />
 
         {/* Route name: Sidebar */}
         <Stack.Screen
@@ -239,48 +235,38 @@ export default function AppNavigator() {
         <Stack.Screen name="ReviewFarmScreen" component={ReviewFarmScreen} />
         <Stack.Screen name="SmartFarmScreen" component={SmartFarmScreen} />
 
-        {/* Route names: TractorBooking, MachineryRentalProfile, LabourBooking, MachineryDetails, MachineryBooking, ConfirmMachineryBooking, MachineryBookingSuccess, MachineryMyBookings, MachineryRequests, MachineryLiveTracking */}
-        <Stack.Screen name="TractorBooking" component={TractorBookingScreen} />
+        {/* Route names: TractorBooking, MachineryDetails, MachineryBooking, MachineryBookingDetails, MachineryMyBookings, MachineryRequests, MachineryRentalProfile, MachineryForm */}
         <Stack.Screen
-          name="MachineryRentalProfile"
-          component={MachineryRentalProfileScreen}
+          name={MACHINERY_ROUTES.HOME}
+          component={MachineryHomeScreen}
         />
-
-        <Stack.Screen name="LabourBooking" component={LabourBookingScreen} />
         <Stack.Screen
-          name="MachineryDetails"
+          name={MACHINERY_ROUTES.DETAILS}
           component={MachineryDetailsScreen}
         />
         <Stack.Screen
-          name="MachineryBooking"
-          component={MachineryBookingScreen}
+          name={MACHINERY_ROUTES.BOOK}
+          component={BookMachineryScreen}
         />
         <Stack.Screen
-          name="ConfirmMachineryBooking"
-          component={ConfirmMachineryBookingScreen}
-        />
-
-        <Stack.Screen
-          name="MachineryBookingSuccess"
-          component={MachineryBookingSuccessScreen}
-          options={{
-            gestureEnabled: false,
-          }}
+          name={MACHINERY_ROUTES.BOOKING_DETAILS}
+          component={MachineryBookingDetailsScreen}
         />
         <Stack.Screen
-          name="MachineryMyBookings"
-          component={MachineryMyBookingsScreen}
-          options={{headerShown: false}}
+          name={MACHINERY_ROUTES.MY_BOOKINGS}
+          component={MyMachineryBookingsScreen}
         />
         <Stack.Screen
-          name="MachineryRequests"
+          name={MACHINERY_ROUTES.REQUESTS}
           component={MachineryRequestsScreen}
-          options={{headerShown: false}}
         />
-
         <Stack.Screen
-          name="MachineryLiveTracking"
-          component={MachineryLiveTrackingScreen}
+          name={MACHINERY_ROUTES.MY_MACHINERY}
+          component={MyMachineryScreen}
+        />
+        <Stack.Screen
+          name={MACHINERY_ROUTES.FORM}
+          component={MachineryFormScreen}
         />
 
         {/* Route names: DiseaseDetection, UploadCropPhoto, AIDetection, AIDiagnosis, DiseaseInformation */}
@@ -452,10 +438,7 @@ export default function AppNavigator() {
           name="DoctorConsultationDetails"
           component={DoctorConsultationDetailsScreen}
         />
-        <Stack.Screen
-          name="DoctorRequests"
-          component={DoctorRequestsScreen}
-        />
+        <Stack.Screen name="DoctorRequests" component={DoctorRequestsScreen} />
         <Stack.Screen
           name="DoctorRequestDetails"
           component={DoctorRequestDetailsScreen}
@@ -496,55 +479,61 @@ export default function AppNavigator() {
           component={MyNurseryListingsScreen}
         />
 
-        {/* Route names: ProvideServiceStep1, ProvideServiceStep2, ProvideServiceStep3, ProvideServiceStep4, ProvideServiceSuccess */}
+        {/* Route names: MarketHome, MarketListingDetails, MarketSell, MarketMyListings, MarketSaved, MarketDeals, MarketDealDetails, MarketSellerProfile */}
+        <Stack.Screen name={MARKET_ROUTES.HOME} component={MarketHomeScreen} />
         <Stack.Screen
-          name="ProvideServiceStep1"
-          component={ProvideServiceStep1Screen}
+          name={MARKET_ROUTES.LISTING_DETAILS}
+          component={MarketListingDetailsScreen}
+        />
+        <Stack.Screen name={MARKET_ROUTES.SELL} component={MarketSellScreen} />
+        <Stack.Screen
+          name={MARKET_ROUTES.MY_LISTINGS}
+          component={MarketMyListingsScreen}
         />
         <Stack.Screen
-          name="ProvideServiceStep2"
-          component={ProvideServiceStep2Screen}
+          name={MARKET_ROUTES.SAVED}
+          component={MarketSavedScreen}
         />
         <Stack.Screen
-          name="ProvideServiceStep3"
-          component={ProvideServiceStep3Screen}
+          name={MARKET_ROUTES.DEALS}
+          component={MarketDealsScreen}
         />
         <Stack.Screen
-          name="ProvideServiceStep4"
-          component={ProvideServiceStep4Screen}
+          name={MARKET_ROUTES.DEAL_DETAILS}
+          component={MarketDealDetailsScreen}
         />
         <Stack.Screen
-          name="ProvideServiceSuccess"
-          component={ProvideServiceSuccessScreen}
-          options={{
-            gestureEnabled: false,
-          }}
+          name={MARKET_ROUTES.SELLER_PROFILE}
+          component={MarketSellerProfileScreen}
         />
 
-        {/* Route names: WorkerDetails, LabourBookingDetails, ConfirmLabourBooking, LabourBookingSuccess, FindWorkStep1, FindWorkStep2, FindWorkStep3, FindWorkStep4, FindWorkSuccess, MyBookings, LabourRequests */}
-        <Stack.Screen name="WorkerDetails" component={WorkerDetailsScreen} />
+        {/* Route names: LabourBooking, WorkerDetails, BookLabour, LabourBookingDetails, MyBookings, LabourRequests, LabourProfile, LabourProfileForm */}
+        <Stack.Screen name={LABOUR_ROUTES.HOME} component={LabourHomeScreen} />
         <Stack.Screen
-          name="LabourBookingDetails"
+          name={LABOUR_ROUTES.LABOURER_DETAILS}
+          component={LabourerDetailsScreen}
+        />
+        <Stack.Screen name={LABOUR_ROUTES.BOOK} component={BookLabourScreen} />
+        <Stack.Screen
+          name={LABOUR_ROUTES.BOOKING_DETAILS}
           component={LabourBookingDetailsScreen}
         />
         <Stack.Screen
-          name="ConfirmLabourBooking"
-          component={ConfirmLabourBookingScreen}
+          name={LABOUR_ROUTES.MY_BOOKINGS}
+          component={MyLabourBookingsScreen}
         />
         <Stack.Screen
-          name="LabourBookingSuccess"
-          component={LabourBookingSuccessScreen}
+          name={LABOUR_ROUTES.REQUESTS}
+          component={LabourRequestsScreen}
         />
-        <Stack.Screen name="FindWorkStep1" component={FindWorkStep1Screen} />
-        <Stack.Screen name="FindWorkStep2" component={FindWorkStep2Screen} />
-        <Stack.Screen name="FindWorkStep3" component={FindWorkStep3Screen} />
-        <Stack.Screen name="FindWorkStep4" component={FindWorkStep4Screen} />
         <Stack.Screen
-          name="FindWorkSuccess"
-          component={FindWorkSuccessScreen}
+          name={LABOUR_ROUTES.MY_PROFILE}
+          component={MyLabourProfileScreen}
         />
-        <Stack.Screen name="MyBookings" component={MyBookingsScreen} />
-        <Stack.Screen name="LabourRequests" component={LabourRequestsScreen} />
+        <Stack.Screen
+          name={LABOUR_ROUTES.PROFILE_FORM}
+          component={LabourProfileFormScreen}
+        />
 
         {/* Route names: DroneServices, DroneServiceDetails, BookDroneService, ConfirmDroneBooking, DroneBookingSuccess */}
         <Stack.Screen name="DroneServices" component={DroneServicesScreen} />

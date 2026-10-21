@@ -118,5 +118,49 @@ const API_ENDPOINTS = {
 
   NURSERY_CANCEL_ORDER: orderId =>
     `/api/nursery/orders/${orderId}/cancel`,
+
+  /*
+  |--------------------------------------------------------------------------
+  | MARKET - LISTINGS
+  |--------------------------------------------------------------------------
+  */
+
+  MARKET_META: '/api/market/meta',
+
+  MARKET_LISTINGS: '/api/market/listings',
+
+  MARKET_MY_LISTINGS: '/api/market/listings/mine',
+
+  MARKET_LISTING_BY_ID: listingId =>
+    `/api/market/listings/${listingId}`,
+
+  MARKET_LISTING_STATUS: listingId =>
+    `/api/market/listings/${listingId}/status`,
+
+  MARKET_LISTING_SAVE: listingId =>
+    `/api/market/listings/${listingId}/save`,
+
+  MARKET_SAVED: '/api/market/saved',
+
+  MARKET_SELLER: userId =>
+    `/api/market/sellers/${userId}`,
+
+  /*
+  |--------------------------------------------------------------------------
+  | MARKET - DEALS
+  |--------------------------------------------------------------------------
+  */
+
+  MARKET_DEALS: '/api/market/deals',
+
+  MARKET_DEAL_BY_ID: dealId =>
+    `/api/market/deals/${dealId}`,
+
+  // action: counter | accept | reject | cancel | complete
+  MARKET_DEAL_ACTION: (dealId, action) =>
+    `/api/market/deals/${dealId}/${action}`,
+
+  MARKET_DEAL_REVIEW: dealId =>
+    `/api/market/deals/${dealId}/review`,
 };
 export default API_ENDPOINTS;

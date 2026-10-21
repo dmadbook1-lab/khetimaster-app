@@ -5,6 +5,7 @@ import BottomTabBar from '../../common/BottomTabBar';
 import BazaarHeader from '../../components/bazaar/BazaarHeader';
 import BazaarHero from '../../components/bazaar/BazaarHero';
 import ServicesGrid from '../../components/bazaar/ServicesGrid';
+import MarketPromoCard from '../../components/bazaar/MarketPromoCard';
 import BazaarStats from '../../components/bazaar/BazaarStats';
 import FeaturedProducts from '../../components/bazaar/FeaturedProducts';
 import BazaarRecentActivity from '../../components/bazaar/BazaarRecentActivity';
@@ -18,6 +19,8 @@ export default function BazaarScreen({ navigation }) {
       >
         <BazaarHeader />
         <BazaarHero />
+
+        <MarketPromoCard navigation={navigation} />
 
         <ServicesGrid navigation={navigation} />
 

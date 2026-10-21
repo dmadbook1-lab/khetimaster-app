@@ -1,332 +1,347 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
+
 import {
-  createMachineryApi,
+  getMachineryMetaApi,
   getAllMachineryApi,
-  getMyMachineryApi,
   getMachineryByIdApi,
+  getMyMachineryApi,
+  createMachineryApi,
   updateMachineryApi,
   deactivateMachineryApi,
   activateMachineryApi,
 } from '../../api/machineryApi';
 
-const getErrorMessage = (error, fallback) => {
-  return (
-    error?.response?.data?.message ||
-    error?.response?.data?.error ||
-    error?.message ||
-    fallback
-  );
-};
+const errorMessage = (error, fallback) =>
+  error.response?.data?.message || error.message || fallback;
 
-export const createMachinery = createAsyncThunk(
-  'machinery/createMachinery',
-  async (data, { rejectWithValue }) => {
+/*
+|--------------------------------------------------------------------------
+| META
+|--------------------------------------------------------------------------
+*/
+
+export const fetchMachineryMeta = createAsyncThunk(
+  'machinery/fetchMeta',
+  async (_, { rejectWithValue }) => {
     try {
-      return await createMachineryApi(data);
+      return await getMachineryMetaApi();
     } catch (error) {
-      return rejectWithValue(
-        getErrorMessage(error, 'Failed to add machinery'),
-      );
+      return rejectWithValue(errorMessage(error, 'Unable to load options'));
     }
   },
 );
 
-export const getAllMachinery = createAsyncThunk(
-  'machinery/getAllMachinery',
-  async (params = {}, { rejectWithValue }) => {
+/*
+|--------------------------------------------------------------------------
+| BROWSE
+|--------------------------------------------------------------------------
+|
+| {params, append} - append adds the next page to the current list.
+|
+*/
+
+export const fetchMachineryList = createAsyncThunk(
+  'machinery/fetchList',
+  async ({ params = {} } = {}, { rejectWithValue }) => {
     try {
       return await getAllMachineryApi(params);
     } catch (error) {
+      return rejectWithValue(errorMessage(error, 'Unable to load machinery'));
+    }
+  },
+);
+
+export const fetchMachineryById = createAsyncThunk(
+  'machinery/fetchById',
+  async (machineryId, { rejectWithValue }) => {
+    try {
+      return await getMachineryByIdApi(machineryId);
+    } catch (error) {
+      return rejectWithValue(errorMessage(error, 'Unable to load machinery'));
+    }
+  },
+);
+
+/*
+|--------------------------------------------------------------------------
+| OWNER
+|--------------------------------------------------------------------------
+*/
+
+export const fetchMyMachinery = createAsyncThunk(
+  'machinery/fetchMine',
+  async (_, { rejectWithValue }) => {
+    try {
+      return await getMyMachineryApi();
+    } catch (error) {
       return rejectWithValue(
-        getErrorMessage(error, 'Failed to fetch machinery'),
+        errorMessage(error, 'Unable to load your machines'),
       );
     }
   },
 );
 
-export const getMyMachinery = createAsyncThunk(
-  'machinery/getMyMachinery',
-  async (params = {}, { rejectWithValue }) => {
+/*
+ * {machineryId, machineryData} - no machineryId creates a new machine.
+ */
+export const saveMachinery = createAsyncThunk(
+  'machinery/save',
+  async ({ machineryId, machineryData }, { rejectWithValue }) => {
     try {
-      return await getMyMachineryApi(params);
+      return machineryId
+        ? await updateMachineryApi(machineryId, machineryData)
+        : await createMachineryApi(machineryData);
     } catch (error) {
-      return rejectWithValue(
-        getErrorMessage(error, 'Failed to fetch your machinery'),
-      );
+      return rejectWithValue(errorMessage(error, 'Unable to save machine'));
     }
   },
 );
 
-export const getMachineryById = createAsyncThunk(
-  'machinery/getMachineryById',
-  async (id, { rejectWithValue }) => {
+/*
+ * {machineryId, active}
+ */
+export const setMachineryActive = createAsyncThunk(
+  'machinery/setActive',
+  async ({ machineryId, active }, { rejectWithValue }) => {
     try {
-      return await getMachineryByIdApi(id);
+      return active
+        ? await activateMachineryApi(machineryId)
+        : await deactivateMachineryApi(machineryId);
     } catch (error) {
-      return rejectWithValue(
-        getErrorMessage(error, 'Failed to fetch machinery details'),
-      );
+      return rejectWithValue(errorMessage(error, 'Unable to update machine'));
     }
   },
 );
 
-export const updateMachinery = createAsyncThunk(
-  'machinery/updateMachinery',
-  async ({ id, data }, { rejectWithValue }) => {
-    try {
-      return await updateMachineryApi(id, data);
-    } catch (error) {
-      return rejectWithValue(
-        getErrorMessage(error, 'Failed to update machinery'),
-      );
-    }
-  },
-);
-
-export const deactivateMachinery = createAsyncThunk(
-  'machinery/deactivateMachinery',
-  async (id, { rejectWithValue }) => {
-    try {
-      return await deactivateMachineryApi(id);
-    } catch (error) {
-      return rejectWithValue(
-        getErrorMessage(error, 'Failed to deactivate machinery'),
-      );
-    }
-  },
-);
-
-export const activateMachinery = createAsyncThunk(
-  'machinery/activateMachinery',
-  async (id, { rejectWithValue }) => {
-    try {
-      return await activateMachineryApi(id);
-    } catch (error) {
-      return rejectWithValue(
-        getErrorMessage(error, 'Failed to activate machinery'),
-      );
-    }
-  },
-);
+/*
+|--------------------------------------------------------------------------
+| INITIAL STATE
+|--------------------------------------------------------------------------
+*/
 
 const initialState = {
-  machinery: [],
-  myMachinery: [],
-  selectedMachinery: null,
-  total: 0,
-  pagination: null,
-  isLoading: false,
-  isLoadingAll: false,
-  isLoadingMyMachinery: false,
-  isCreating: false,
-  isUpdating: false,
-  error: null,
-  message: '',
-  createSuccess: false,
-  updateSuccess: false,
+  meta: {
+    categories: [],
+    implements: [],
+    fuelTypes: [],
+    driveTypes: [],
+    enginePowerUnits: [],
+    availabilityOptions: [],
+    customPriceUnits: [],
+    paymentMethods: [],
+    maxBookingDays: 30,
+    maxBookingHours: 24,
+  },
+  metaLoading: false,
+  metaError: null,
+
+  list: [],
+  pagination: {
+    page: 1,
+    totalPages: 1,
+    total: 0,
+  },
+  listLoading: false,
+  listLoadingMore: false,
+  listError: null,
+
+  selected: null,
+  selectedLoading: false,
+  selectedError: null,
+
+  mine: [],
+  // idle | loading | loaded | error
+  mineStatus: 'idle',
+  mineError: null,
+
+  saving: false,
+  togglingActive: false,
 };
 
-const extractArray = payload => {
-  if (Array.isArray(payload)) return payload;
-  if (Array.isArray(payload?.machinery)) return payload.machinery;
-  if (Array.isArray(payload?.data)) return payload.data;
-  if (Array.isArray(payload?.items)) return payload.items;
-  return [];
+/*
+ * Apply a change to every copy of a machine held in the store.
+ */
+const patchMachine = (state, machine) => {
+  if (!machine?._id) return;
+
+  const apply = item =>
+    item._id === machine._id
+      ? { ...item, ...machine, owner: item.owner }
+      : item;
+
+  state.list = state.list.map(apply);
+  state.mine = state.mine.map(apply);
+
+  if (state.selected?._id === machine._id) {
+    state.selected = {
+      ...state.selected,
+      ...machine,
+      owner: state.selected.owner,
+    };
+  }
 };
+
+/*
+|--------------------------------------------------------------------------
+| SLICE
+|--------------------------------------------------------------------------
+*/
 
 const machinerySlice = createSlice({
   name: 'machinery',
+
   initialState,
+
   reducers: {
-    clearMachineryError: state => {
-      state.error = null;
-    },
-    clearMachineryMessage: state => {
-      state.message = '';
-    },
     clearSelectedMachinery: state => {
-      state.selectedMachinery = null;
+      state.selected = null;
+      state.selectedError = null;
     },
-    clearMachineryCreateSuccess: state => {
-      state.createSuccess = false;
-    },
-    clearMachineryUpdateSuccess: state => {
-      state.updateSuccess = false;
-    },
-    resetMachineryState: () => initialState,
   },
+
   extraReducers: builder => {
-    /* CREATE */
     builder
-      .addCase(createMachinery.pending, state => {
-        state.isCreating = true;
-        state.error = null;
-        state.message = '';
-        state.createSuccess = false;
+      .addCase(fetchMachineryMeta.pending, state => {
+        state.metaLoading = true;
+        state.metaError = null;
       })
-      .addCase(createMachinery.fulfilled, (state, action) => {
-        state.isCreating = false;
-        state.createSuccess = true;
-        state.error = null;
-        state.message =
-          action.payload?.message || 'Machinery added successfully';
+      .addCase(fetchMachineryMeta.fulfilled, (state, action) => {
+        state.metaLoading = false;
 
-        const item =
-          action.payload?.machinery || action.payload?.data || action.payload;
+        const data = action.payload || {};
 
-        if (item && typeof item === 'object' && (item._id || item.id)) {
-          state.myMachinery = [
-            item,
-            ...state.myMachinery.filter(
-              m => String(m._id || m.id) !== String(item._id || item.id),
-            ),
+        state.meta = {
+          categories: data.categories || [],
+          implements: data.implements || [],
+          fuelTypes: data.fuelTypes || [],
+          driveTypes: data.driveTypes || [],
+          enginePowerUnits: data.enginePowerUnits || [],
+          availabilityOptions: data.availabilityOptions || [],
+          customPriceUnits: data.customPriceUnits || [],
+          paymentMethods: data.paymentMethods || [],
+          maxBookingDays: data.maxBookingDays || 30,
+          maxBookingHours: data.maxBookingHours || 24,
+        };
+      })
+      .addCase(fetchMachineryMeta.rejected, (state, action) => {
+        state.metaLoading = false;
+        state.metaError = action.payload;
+      });
+
+    builder
+      .addCase(fetchMachineryList.pending, (state, action) => {
+        if (action.meta.arg?.append) {
+          state.listLoadingMore = true;
+        } else {
+          state.listLoading = true;
+        }
+
+        state.listError = null;
+      })
+      .addCase(fetchMachineryList.fulfilled, (state, action) => {
+        state.listLoading = false;
+        state.listLoadingMore = false;
+
+        const machinery = action.payload?.machinery || [];
+
+        if (action.meta.arg?.append) {
+          const known = new Set(state.list.map(item => item._id));
+          state.list = [
+            ...state.list,
+            ...machinery.filter(item => !known.has(item._id)),
           ];
-          state.selectedMachinery = item;
-        }
-      })
-      .addCase(createMachinery.rejected, (state, action) => {
-        state.isCreating = false;
-        state.createSuccess = false;
-        state.error = action.payload || 'Failed to add machinery';
-      });
-
-    /* GET ALL */
-    builder
-      .addCase(getAllMachinery.pending, state => {
-        state.isLoadingAll = true;
-        state.error = null;
-      })
-      .addCase(getAllMachinery.fulfilled, (state, action) => {
-        state.isLoadingAll = false;
-        state.machinery = extractArray(action.payload);
-        state.total =
-          action.payload?.total ??
-          action.payload?.count ??
-          state.machinery.length;
-        state.pagination = action.payload?.pagination || null;
-        state.error = null;
-      })
-      .addCase(getAllMachinery.rejected, (state, action) => {
-        state.isLoadingAll = false;
-        state.error = action.payload || 'Failed to fetch machinery';
-      });
-
-    /* GET MY MACHINERY */
-    builder
-      .addCase(getMyMachinery.pending, state => {
-        state.isLoadingMyMachinery = true;
-        state.error = null;
-      })
-      .addCase(getMyMachinery.fulfilled, (state, action) => {
-        state.isLoadingMyMachinery = false;
-        state.myMachinery = extractArray(action.payload);
-        state.error = null;
-      })
-      .addCase(getMyMachinery.rejected, (state, action) => {
-        state.isLoadingMyMachinery = false;
-        state.error = action.payload || 'Failed to fetch your machinery';
-      });
-
-    /* GET BY ID */
-    builder
-      .addCase(getMachineryById.pending, state => {
-        state.isLoading = true;
-        state.selectedMachinery = null;
-        state.error = null;
-      })
-      .addCase(getMachineryById.fulfilled, (state, action) => {
-        state.isLoading = false;
-        state.selectedMachinery =
-          action.payload?.machinery || action.payload?.data || null;
-        state.error = null;
-      })
-      .addCase(getMachineryById.rejected, (state, action) => {
-        state.isLoading = false;
-        state.error =
-          action.payload || 'Failed to fetch machinery details';
-      });
-
-    /* UPDATE */
-    builder
-      .addCase(updateMachinery.pending, state => {
-        state.isUpdating = true;
-        state.updateSuccess = false;
-        state.error = null;
-      })
-      .addCase(updateMachinery.fulfilled, (state, action) => {
-        state.isUpdating = false;
-        state.updateSuccess = true;
-        state.error = null;
-        state.message =
-          action.payload?.message || 'Machinery updated successfully';
-
-        const updated =
-          action.payload?.machinery || action.payload?.data;
-
-        if (!updated) return;
-
-        state.selectedMachinery = updated;
-
-        const myIndex = state.myMachinery.findIndex(
-          item =>
-            String(item?._id || item?.id) ===
-            String(updated?._id || updated?.id),
-        );
-        if (myIndex >= 0) {
-          state.myMachinery[myIndex] = updated;
+        } else {
+          state.list = machinery;
         }
 
-        const allIndex = state.machinery.findIndex(
-          item =>
-            String(item?._id || item?.id) ===
-            String(updated?._id || updated?.id),
-        );
-        if (allIndex >= 0) {
-          state.machinery[allIndex] = updated;
-        }
+        state.pagination = {
+          page: action.payload?.pagination?.currentPage || 1,
+          totalPages: action.payload?.pagination?.totalPages || 1,
+          total: action.payload?.total || 0,
+        };
       })
-      .addCase(updateMachinery.rejected, (state, action) => {
-        state.isUpdating = false;
-        state.updateSuccess = false;
-        state.error = action.payload || 'Failed to update machinery';
+      .addCase(fetchMachineryList.rejected, (state, action) => {
+        state.listLoading = false;
+        state.listLoadingMore = false;
+        state.listError = action.payload;
       });
 
-    /* DEACTIVATE */
-    builder.addCase(deactivateMachinery.fulfilled, (state, action) => {
-      const updated = action.payload?.machinery;
-      if (updated) {
-        const id = updated._id || updated.id;
-        const index = state.myMachinery.findIndex(
-          item => String(item?._id || item?.id) === String(id),
-        );
-        if (index >= 0) state.myMachinery[index] = updated;
-        state.machinery = state.machinery.filter(
-          item => String(item?._id || item?.id) !== String(id),
-        );
-      }
-    });
+    builder
+      .addCase(fetchMachineryById.pending, (state, action) => {
+        state.selectedLoading = true;
+        state.selectedError = null;
 
-    /* ACTIVATE */
-    builder.addCase(activateMachinery.fulfilled, (state, action) => {
-      const updated = action.payload?.machinery;
-      if (updated) {
-        const id = updated._id || updated.id;
-        const index = state.myMachinery.findIndex(
-          item => String(item?._id || item?.id) === String(id),
-        );
-        if (index >= 0) state.myMachinery[index] = updated;
-      }
-    });
+        if (state.selected?._id !== action.meta.arg) {
+          state.selected = null;
+        }
+      })
+      .addCase(fetchMachineryById.fulfilled, (state, action) => {
+        state.selectedLoading = false;
+        state.selected = action.payload?.machinery || null;
+      })
+      .addCase(fetchMachineryById.rejected, (state, action) => {
+        state.selectedLoading = false;
+        state.selectedError = action.payload;
+      });
+
+    builder
+      .addCase(fetchMyMachinery.pending, state => {
+        state.mineStatus = state.mineStatus === 'loaded' ? 'loaded' : 'loading';
+        state.mineError = null;
+      })
+      .addCase(fetchMyMachinery.fulfilled, (state, action) => {
+        state.mineStatus = 'loaded';
+        state.mine = action.payload?.machinery || [];
+      })
+      .addCase(fetchMyMachinery.rejected, (state, action) => {
+        state.mineStatus = state.mineStatus === 'loaded' ? 'loaded' : 'error';
+        state.mineError = action.payload;
+      });
+
+    builder
+      .addCase(saveMachinery.pending, state => {
+        state.saving = true;
+      })
+      .addCase(saveMachinery.fulfilled, (state, action) => {
+        state.saving = false;
+
+        const machine = action.payload?.machinery;
+
+        if (!machine?._id) return;
+
+        if (action.meta.arg.machineryId) {
+          patchMachine(state, machine);
+        } else {
+          state.mine.unshift({ ...machine, pendingRequests: 0 });
+        }
+      })
+      .addCase(saveMachinery.rejected, state => {
+        state.saving = false;
+      })
+
+      .addCase(setMachineryActive.pending, state => {
+        state.togglingActive = true;
+      })
+      .addCase(setMachineryActive.fulfilled, (state, action) => {
+        state.togglingActive = false;
+
+        const machine = action.payload?.machinery;
+
+        if (machine?._id) {
+          patchMachine(state, {
+            _id: machine._id,
+            isActive: machine.isActive,
+            availability: machine.availability,
+            ...(!machine.isActive && { pendingRequests: 0 }),
+          });
+        }
+      })
+      .addCase(setMachineryActive.rejected, state => {
+        state.togglingActive = false;
+      });
   },
 });
 
-export const {
-  clearMachineryError,
-  clearMachineryMessage,
-  clearSelectedMachinery,
-  clearMachineryCreateSuccess,
-  clearMachineryUpdateSuccess,
-  resetMachineryState,
-} = machinerySlice.actions;
+export const { clearSelectedMachinery } = machinerySlice.actions;
 
 export default machinerySlice.reducer;

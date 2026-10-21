@@ -557,6 +557,11 @@ export default function VoiceAssistantModal({
   useEffect(() => {
     mountedRef.current = true;
 
+    // react-native-tts' removeEventListener() calls
+    // NativeEventEmitter.removeListener, which no longer exists in
+    // React Native 0.86. Keep the subscriptions and remove() them instead.
+    const ttsSubscriptions = [];
+
     const handleTtsFinish = event => {
       if (
         String(event?.utteranceId) !==
@@ -614,14 +619,15 @@ export default function VoiceAssistantModal({
     };
 
     try {
-      Tts.addEventListener(
-        'tts-finish',
-        handleTtsFinish,
-      );
-
-      Tts.addEventListener(
-        'tts-error',
-        handleTtsError,
+      ttsSubscriptions.push(
+        Tts.addEventListener(
+          'tts-finish',
+          handleTtsFinish,
+        ),
+        Tts.addEventListener(
+          'tts-error',
+          handleTtsError,
+        ),
       );
 
       resultSubscriptionRef.current =
@@ -738,15 +744,16 @@ export default function VoiceAssistantModal({
       clearTimers();
       removeSubscriptions();
 
-      Tts.removeEventListener(
-        'tts-finish',
-        handleTtsFinish,
-      );
-
-      Tts.removeEventListener(
-        'tts-error',
-        handleTtsError,
-      );
+      ttsSubscriptions.forEach(subscription => {
+        try {
+          subscription?.remove?.();
+        } catch (error) {
+          console.warn(
+            '[KhetiMaster Voice] TTS listener cleanup error:',
+            error?.message,
+          );
+        }
+      });
 
       stop().catch(() => {});
 
