@@ -57,15 +57,10 @@ import AskWithPhotoScreen from '../screens/community/AskWithPhotoScreen';
 import AskQuestionScreen from '../screens/community/AskQuestionScreen';
 import AskByVoiceScreen from '../screens/community/AskByVoiceScreen';
 import AIAnswerScreen from '../screens/community/AIAnswerScreen';
-import MandiRatesScreen from '../screens/mandi/MandiRatesScreen';
-import TodaysPricesScreen from '../screens/mandi/TodaysPricesScreen';
-import NearbyMarketsScreen from '../screens/mandi/NearbyMarketsScreen';
-import PriceTrendsScreen from '../screens/mandi/PriceTrendsScreen';
-import PriceAlertsScreen from '../screens/mandi/PriceAlertsScreen';
-import MarketUpdatesScreen from '../screens/mandi/MarketUpdatesScreen';
-import CommodityDetailScreen from '../screens/mandi/CommodityDetailScreen';
+import MandiHomeScreen from '../screens/mandi/MandiHomeScreen';
+import CropPricesScreen from '../screens/mandi/CropPricesScreen';
+import CompareCropsScreen from '../screens/mandi/CompareCropsScreen';
 import { MANDI_ROUTES } from '../constants/mandiRoutes';
-import DistrictWiseRatesScreen from '../screens/mandi/DistrictWiseRatesScreen';
 import GovernmentSchemesScreen from '../screens/gov/GovernmentSchemesScreen';
 import LatestSchemesScreen from '../screens/gov/LatestSchemesScreen';
 import DoctorHomeScreen from '../screens/Doctor/DoctorHomeScreen';
@@ -355,62 +350,12 @@ export default function AppNavigator() {
           }}
         />
 
-        {/* Route names: MandiHome, TodaysPrices, NearbyMarkets, PriceTrends, PriceAlerts, MarketUpdates, CommodityDetail, DistrictWiseRates */}
+        {/* Route names: MandiHome, CommodityDetail (crop prices), MandiCompare */}
+        <Stack.Screen name={MANDI_ROUTES.HOME} component={MandiHomeScreen} />
+        <Stack.Screen name={MANDI_ROUTES.CROP} component={CropPricesScreen} />
         <Stack.Screen
-          name={MANDI_ROUTES.HOME}
-          component={MandiRatesScreen}
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name={MANDI_ROUTES.TODAYS_PRICES}
-          component={TodaysPricesScreen}
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name={MANDI_ROUTES.NEARBY_MARKETS}
-          component={NearbyMarketsScreen}
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name={MANDI_ROUTES.PRICE_TRENDS}
-          component={PriceTrendsScreen}
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name={MANDI_ROUTES.PRICE_ALERTS}
-          component={PriceAlertsScreen}
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name={MANDI_ROUTES.MARKET_UPDATES}
-          component={MarketUpdatesScreen}
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name={MANDI_ROUTES.COMMODITY_DETAIL}
-          component={CommodityDetailScreen}
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name={MANDI_ROUTES.DISTRICT_WISE_RATES}
-          component={DistrictWiseRatesScreen}
-          options={{
-            headerShown: false,
-          }}
+          name={MANDI_ROUTES.COMPARE}
+          component={CompareCropsScreen}
         />
 
         {/* Route names: GovernmentSchemes, LatestSchemes, DoctorMain, Doctors, DoctorDetails, DoctorConsultation, DoctorConsultationDetails, MyConsultations, DoctorRequests, MyDoctorProfile, DoctorRegistration (+ aliases DoctorRequestDetails, DoctorEditProfile) */}

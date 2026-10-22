@@ -132,7 +132,7 @@ const SMART_FARMING_MENU = [
     Icon: IndianRupee,
     iconColor: '#16A34A',
     iconBackground: '#ECFDF3',
-    route: null,
+    route: 'MandiHome',
   },
   {
     id: 'schemes',
