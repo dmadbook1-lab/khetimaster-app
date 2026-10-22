@@ -68,18 +68,16 @@ import { MANDI_ROUTES } from '../constants/mandiRoutes';
 import DistrictWiseRatesScreen from '../screens/mandi/DistrictWiseRatesScreen';
 import GovernmentSchemesScreen from '../screens/gov/GovernmentSchemesScreen';
 import LatestSchemesScreen from '../screens/gov/LatestSchemesScreen';
-import DoctorMainScreen from '../screens/Doctor/DoctorMainScreen';
-import DoctorsScreen from '../screens/Doctor/DoctorsScreen';
-import DoctorRegistrationScreen from '../screens/Doctor/DoctorRegistrationScreen';
-import DoctorRegistrationDetailsScreen from '../screens/Doctor/DoctorRegistrationDetailsScreen';
-import DoctorDetailsScreen from '../screens/Doctor/DoctorDetailsScreen';
-import DoctorConsultationScreen from '../screens/Doctor/DoctorConsultationScreen';
-import DoctorConsultationDetailsScreen from '../screens/Doctor/DoctorConsultationDetailsScreen';
-import DoctorRequestsScreen from '../screens/Doctor/DoctorRequestsScreen';
-import DoctorRequestDetailsScreen from '../screens/Doctor/DoctorRequestDetailsScreen';
-import DoctorEditProfileScreen from '../screens/Doctor/DoctorEditProfileScreen';
-import MyDoctorProfileScreen from '../screens/Doctor/MyDoctorProfileScreen';
+import DoctorHomeScreen from '../screens/Doctor/DoctorHomeScreen';
+import DoctorListScreen from '../screens/Doctor/DoctorListScreen';
+import DoctorProfileScreen from '../screens/Doctor/DoctorProfileScreen';
+import BookConsultationScreen from '../screens/Doctor/BookConsultationScreen';
+import ConsultationDetailsScreen from '../screens/Doctor/ConsultationDetailsScreen';
 import MyConsultationsScreen from '../screens/Doctor/MyConsultationsScreen';
+import DoctorRequestsScreen from '../screens/Doctor/DoctorRequestsScreen';
+import DoctorDashboardScreen from '../screens/Doctor/DoctorDashboardScreen';
+import DoctorProfileFormScreen from '../screens/Doctor/DoctorProfileFormScreen';
+import { DOCTOR_ROUTES } from '../constants/doctorRoutes';
 import NurseryHomeScreen from '../screens/Nursery/NurseryHomeScreen';
 import NurseryPlantDetailsScreen from '../screens/Nursery/NurseryPlantDetailsScreen';
 import NurseryCartScreen from '../screens/Nursery/NurseryCartScreen';
@@ -415,47 +413,50 @@ export default function AppNavigator() {
           }}
         />
 
-        {/* Route names: GovernmentSchemes, LatestSchemes, DoctorMain, Doctors, DoctorRegistration, DoctorRegistrationDetails, DoctorDetails, DoctorConsultation, DoctorConsultationDetails, DoctorRequests, DoctorRequestDetails, DoctorEditProfile, MyDoctorProfile, MyConsultations */}
+        {/* Route names: GovernmentSchemes, LatestSchemes, DoctorMain, Doctors, DoctorDetails, DoctorConsultation, DoctorConsultationDetails, MyConsultations, DoctorRequests, MyDoctorProfile, DoctorRegistration (+ aliases DoctorRequestDetails, DoctorEditProfile) */}
         <Stack.Screen
           name="GovernmentSchemes"
           component={GovernmentSchemesScreen}
         />
         <Stack.Screen name="LatestSchemes" component={LatestSchemesScreen} />
-        <Stack.Screen name="DoctorMain" component={DoctorMainScreen} />
-        <Stack.Screen name="Doctors" component={DoctorsScreen} />
+        <Stack.Screen name={DOCTOR_ROUTES.HOME} component={DoctorHomeScreen} />
+        <Stack.Screen name={DOCTOR_ROUTES.LIST} component={DoctorListScreen} />
         <Stack.Screen
-          name="DoctorRegistration"
-          component={DoctorRegistrationScreen}
+          name={DOCTOR_ROUTES.PROFILE}
+          component={DoctorProfileScreen}
         />
         <Stack.Screen
-          name="DoctorRegistrationDetails"
-          component={DoctorRegistrationDetailsScreen}
-        />
-        <Stack.Screen name="DoctorDetails" component={DoctorDetailsScreen} />
-        <Stack.Screen
-          name="DoctorConsultation"
-          component={DoctorConsultationScreen}
+          name={DOCTOR_ROUTES.BOOK}
+          component={BookConsultationScreen}
         />
         <Stack.Screen
-          name="DoctorConsultationDetails"
-          component={DoctorConsultationDetailsScreen}
+          name={DOCTOR_ROUTES.CONSULTATION}
+          component={ConsultationDetailsScreen}
         />
-        <Stack.Screen name="DoctorRequests" component={DoctorRequestsScreen} />
+        <Stack.Screen
+          name={DOCTOR_ROUTES.MY_CONSULTATIONS}
+          component={MyConsultationsScreen}
+        />
+        <Stack.Screen
+          name={DOCTOR_ROUTES.REQUESTS}
+          component={DoctorRequestsScreen}
+        />
+        <Stack.Screen
+          name={DOCTOR_ROUTES.DASHBOARD}
+          component={DoctorDashboardScreen}
+        />
+        <Stack.Screen
+          name={DOCTOR_ROUTES.FORM}
+          component={DoctorProfileFormScreen}
+        />
+        {/* older route names, kept so existing links still open */}
         <Stack.Screen
           name="DoctorRequestDetails"
-          component={DoctorRequestDetailsScreen}
+          component={ConsultationDetailsScreen}
         />
         <Stack.Screen
           name="DoctorEditProfile"
-          component={DoctorEditProfileScreen}
-        />
-        <Stack.Screen
-          name="MyDoctorProfile"
-          component={MyDoctorProfileScreen}
-        />
-        <Stack.Screen
-          name="MyConsultations"
-          component={MyConsultationsScreen}
+          component={DoctorProfileFormScreen}
         />
 
         {/* Route names: NurseryHome, NurseryPlantDetails, NurseryCart, NurseryCheckout, NurseryOrders, MyOrders, NurseryOrderDetails, SellPlant, MyNurseryListings, NurserySellerOrders, NurserySellerOrderDetails */}

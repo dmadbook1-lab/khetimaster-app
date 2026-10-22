@@ -43,7 +43,7 @@ import {
 import LabourerCard from '../../components/labour/LabourerCard';
 import useLabourMeta from '../../components/labour/useLabourMeta';
 import {
-  LABOUR_HERO_IMAGE,
+  LABOUR_BANNER,
   getLabourTypeImage,
 } from '../../components/labour/labourTypes';
 import { LABOUR_ROUTES } from '../../constants/labourRoutes';
@@ -171,7 +171,7 @@ export default function LabourHomeScreen({ navigation }) {
   const header = (
     <View>
       <MarketHero
-        image={LABOUR_HERO_IMAGE}
+        banner={LABOUR_BANNER}
         onBack={() => navigation.goBack()}
         eyebrow="Farm workers near you"
         title="Hire Labour"
@@ -192,6 +192,17 @@ export default function LabourHomeScreen({ navigation }) {
           </>
         }
       >
+        <View style={styles.trustRow}>
+          {TRUST_POINTS.map(({ icon: Icon, label }) => (
+            <View key={label} style={styles.trustPill}>
+              <Icon size={12} color="#BFF0D2" />
+              <Text style={styles.trustText}>{label}</Text>
+            </View>
+          ))}
+        </View>
+      </MarketHero>
+
+      <View style={styles.searchWrap}>
         <View style={styles.searchBox}>
           <Search size={19} color={C.green} />
           <TextInput
@@ -208,16 +219,7 @@ export default function LabourHomeScreen({ navigation }) {
             </TouchableOpacity>
           )}
         </View>
-
-        <View style={styles.trustRow}>
-          {TRUST_POINTS.map(({ icon: Icon, label }) => (
-            <View key={label} style={styles.trustPill}>
-              <Icon size={12} color="#BFF0D2" />
-              <Text style={styles.trustText}>{label}</Text>
-            </View>
-          ))}
-        </View>
-      </MarketHero>
+      </View>
 
       <View style={styles.section}>
         {/* SHORTCUTS */}
@@ -422,11 +424,13 @@ const styles = StyleSheet.create({
   item: { paddingHorizontal: 16 },
   flex: { flex: 1 },
 
+  searchWrap: { paddingHorizontal: 16, marginTop: 16 },
   searchBox: {
-    marginTop: 18,
     height: 52,
     borderRadius: 18,
     backgroundColor: C.white,
+    borderWidth: 1,
+    borderColor: C.border,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,

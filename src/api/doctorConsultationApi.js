@@ -1,190 +1,123 @@
 import apiClient from './client';
 
+const BASE = '/api/doctor-consultations';
+
 /*
 |--------------------------------------------------------------------------
-| CREATE DOCTOR CONSULTATION
+| CREATE CONSULTATION (FARMER)
 |--------------------------------------------------------------------------
 |
-| POST /api/doctor-consultations
+| {doctorId, consultationDate: 'YYYY-MM-DD', startTime, endTime,
+|  consultationType, problemType, symptoms, description, animalType,
+|  animalCount, animalAge, cropName, images, state, district, village,
+|  address, paymentMethod, farmerNotes}
+|
+| The fee comes from the doctor's profile.
 |
 */
 
-export const createDoctorConsultationApi = async (
-  consultationData,
-) => {
-  const response = await apiClient.post(
-    '/api/doctor-consultations',
-    consultationData,
-  );
+export const createDoctorConsultationApi = async consultationData => {
+  const response = await apiClient.post(BASE, consultationData);
 
   return response.data;
 };
 
 /*
 |--------------------------------------------------------------------------
-| GET MY CONSULTATIONS
+| LISTS
 |--------------------------------------------------------------------------
 |
-| GET /api/doctor-consultations/my
-|
-| Used by the farmer to see consultations they created.
-|
-| Supported backend query parameters:
-| - page
-| - limit
-| - status
+| params: {status: active | pending | accepted | completed | rejected |
+|          cancelled | all, page, limit}; requests also take date.
 |
 */
 
-export const getMyConsultationsApi = async (
-  params = {},
-) => {
-  const response = await apiClient.get(
-    '/api/doctor-consultations/my',
-    {
-      params,
-    },
-  );
+export const getMyConsultationsApi = async (params = {}) => {
+  const response = await apiClient.get(`${BASE}/my`, { params });
+
+  return response.data;
+};
+
+export const getDoctorRequestsApi = async (params = {}) => {
+  const response = await apiClient.get(`${BASE}/requests`, { params });
+
+  return response.data;
+};
+
+export const getDoctorConsultationByIdApi = async consultationId => {
+  const response = await apiClient.get(`${BASE}/${consultationId}`);
 
   return response.data;
 };
 
 /*
 |--------------------------------------------------------------------------
-| GET DOCTOR REQUESTS
+| ACTIONS
 |--------------------------------------------------------------------------
-|
-| GET /api/doctor-consultations/requests
-|
-| Used by a doctor to see consultation requests
-| received from farmers.
-|
-| Supported backend query parameters:
-| - page
-| - limit
-| - status
-|
 */
 
-export const getDoctorRequestsApi = async (
-  params = {},
-) => {
-  const response = await apiClient.get(
-    '/api/doctor-consultations/requests',
-    {
-      params,
-    },
-  );
+export const acceptDoctorConsultationApi = async consultationId => {
+  const response = await apiClient.patch(`${BASE}/${consultationId}/accept`);
 
   return response.data;
 };
-
-/*
-|--------------------------------------------------------------------------
-| GET CONSULTATION BY ID
-|--------------------------------------------------------------------------
-|
-| GET /api/doctor-consultations/:id
-|
-*/
-
-export const getDoctorConsultationByIdApi = async (
-  consultationId,
-) => {
-  const response = await apiClient.get(
-    `/api/doctor-consultations/${consultationId}`,
-  );
-
-  return response.data;
-};
-
-/*
-|--------------------------------------------------------------------------
-| ACCEPT CONSULTATION
-|--------------------------------------------------------------------------
-|
-| PATCH /api/doctor-consultations/:id/accept
-|
-*/
-
-export const acceptDoctorConsultationApi = async (
-  consultationId,
-) => {
-  const response = await apiClient.patch(
-    `/api/doctor-consultations/${consultationId}/accept`,
-  );
-
-  return response.data;
-};
-
-/*
-|--------------------------------------------------------------------------
-| REJECT CONSULTATION
-|--------------------------------------------------------------------------
-|
-| PATCH /api/doctor-consultations/:id/reject
-|
-| Backend accepts cancellationReason from req.body.
-|
-*/
 
 export const rejectDoctorConsultationApi = async (
   consultationId,
-  data = {},
+  reason = '',
 ) => {
-  const response = await apiClient.patch(
-    `/api/doctor-consultations/${consultationId}/reject`,
-    data,
-  );
+  const response = await apiClient.patch(`${BASE}/${consultationId}/reject`, {
+    reason,
+  });
 
   return response.data;
 };
-
-/*
-|--------------------------------------------------------------------------
-| CANCEL CONSULTATION
-|--------------------------------------------------------------------------
-|
-| PATCH /api/doctor-consultations/:id/cancel
-|
-| Backend accepts cancellationReason from req.body.
-|
-*/
 
 export const cancelDoctorConsultationApi = async (
   consultationId,
-  data = {},
+  reason = '',
 ) => {
-  const response = await apiClient.patch(
-    `/api/doctor-consultations/${consultationId}/cancel`,
-    data,
-  );
+  const response = await apiClient.patch(`${BASE}/${consultationId}/cancel`, {
+    reason,
+  });
 
   return response.data;
 };
 
 /*
-|--------------------------------------------------------------------------
-| COMPLETE CONSULTATION
-|--------------------------------------------------------------------------
-|
-| PATCH /api/doctor-consultations/:id/complete
-|
-| Backend can receive:
-| - doctorNotes
-| - diagnosis
-| - prescription
-|
-*/
-
+ * On or after the consultation date. The doctor may send
+ * {doctorNotes, diagnosis, prescription, followUpDate}.
+ */
 export const completeDoctorConsultationApi = async (
   consultationId,
-  data = {},
+  outcome = {},
 ) => {
   const response = await apiClient.patch(
-    `/api/doctor-consultations/${consultationId}/complete`,
-    data,
+    `${BASE}/${consultationId}/complete`,
+    outcome,
   );
+
+  return response.data;
+};
+
+// doctor: add or correct the outcome on accepted / completed ones
+export const updateConsultationNotesApi = async (consultationId, outcome) => {
+  const response = await apiClient.patch(
+    `${BASE}/${consultationId}/notes`,
+    outcome,
+  );
+
+  return response.data;
+};
+
+export const reviewDoctorConsultationApi = async (
+  consultationId,
+  { rating, comment },
+) => {
+  const response = await apiClient.post(`${BASE}/${consultationId}/review`, {
+    rating,
+    comment,
+  });
 
   return response.data;
 };

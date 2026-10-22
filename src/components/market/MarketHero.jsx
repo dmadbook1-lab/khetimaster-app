@@ -12,6 +12,10 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ArrowLeft } from 'lucide-react-native';
 
 import { MARKET_COLORS as C, MARKET_GRADIENTS } from './theme';
+import HeroBanner, { bannerHeightFor } from '../common/HeroBanner';
+
+// colour the wide banners fade into
+const BANNER_TINT = '#0A3D20';
 
 /*
  * White strip behind the status bar. Hero screens render it first, above
@@ -50,6 +54,8 @@ export function GlassButton({ children, onPress, badge, style }) {
  *
  * gradient   one of MARKET_GRADIENTS keys
  * image      optional background photo
+ * banner     optional wide banner shown across the top, fading into
+ *            the hero colour (text sits below the subjects)
  * eyebrow    small label above the title
  * right      header action buttons (use GlassButton)
  * children   extra hero content (search, stats...)
@@ -62,6 +68,8 @@ export default function MarketHero({
   right,
   gradient = 'green',
   image,
+  banner,
+  bannerTint = BANNER_TINT,
   children,
   compact = false,
   style,
@@ -87,6 +95,8 @@ export default function MarketHero({
         <View style={styles.rightRow}>{right}</View>
       </View>
 
+      {!!banner && <View style={{ height: bannerHeightFor() - 150 }} />}
+
       {!!eyebrow && <Text style={styles.eyebrow}>{eyebrow}</Text>}
       {!!title && (
         <Text
@@ -105,6 +115,15 @@ export default function MarketHero({
       {children}
     </View>
   );
+
+  if (banner) {
+    return (
+      <View style={[styles.hero, { backgroundColor: bannerTint }, style]}>
+        <HeroBanner source={banner} tint={bannerTint} />
+        {content}
+      </View>
+    );
+  }
 
   if (image) {
     return (

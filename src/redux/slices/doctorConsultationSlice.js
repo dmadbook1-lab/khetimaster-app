@@ -1,7 +1,4 @@
-import {
-  createAsyncThunk,
-  createSlice,
-} from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 import {
   createDoctorConsultationApi,
@@ -12,1008 +9,293 @@ import {
   rejectDoctorConsultationApi,
   cancelDoctorConsultationApi,
   completeDoctorConsultationApi,
+  updateConsultationNotesApi,
+  reviewDoctorConsultationApi,
 } from '../../api/doctorConsultationApi';
 
-/*
-|--------------------------------------------------------------------------
-| ERROR HELPER
-|--------------------------------------------------------------------------
-*/
-
-const getErrorMessage = (
-  error,
-  fallback = 'Something went wrong',
-) => {
-  return (
-    error?.response?.data?.message ||
-    error?.response?.data?.error ||
-    error?.message ||
-    fallback
-  );
-};
+const errorMessage = (error, fallback) =>
+  error.response?.data?.message || error.message || fallback;
 
 /*
 |--------------------------------------------------------------------------
-| CREATE CONSULTATION
+| CREATE (FARMER)
 |--------------------------------------------------------------------------
+|
+| Rejects with {message, consultationId}. consultationId is set when the
+| farmer already has a consultation with this doctor that day (409).
+|
 */
 
-export const createDoctorConsultation =
-  createAsyncThunk(
-    'doctorConsultation/createDoctorConsultation',
-    async (
-      consultationData,
-      { rejectWithValue },
-    ) => {
-      try {
-        const response =
-          await createDoctorConsultationApi(
-            consultationData,
-          );
-
-        return response;
-      } catch (error) {
-        return rejectWithValue(
-          getErrorMessage(
-            error,
-            'Failed to create consultation',
-          ),
-        );
-      }
-    },
-  );
-
-/*
-|--------------------------------------------------------------------------
-| GET MY CONSULTATIONS
-|--------------------------------------------------------------------------
-*/
-
-export const getMyConsultations =
-  createAsyncThunk(
-    'doctorConsultation/getMyConsultations',
-    async (
-      params = {},
-      { rejectWithValue },
-    ) => {
-      try {
-        const response =
-          await getMyConsultationsApi(
-            params,
-          );
-
-        return response;
-      } catch (error) {
-        return rejectWithValue(
-          getErrorMessage(
-            error,
-            'Failed to fetch consultations',
-          ),
-        );
-      }
-    },
-  );
-
-/*
-|--------------------------------------------------------------------------
-| GET DOCTOR REQUESTS
-|--------------------------------------------------------------------------
-*/
-
-export const getDoctorRequests =
-  createAsyncThunk(
-    'doctorConsultation/getDoctorRequests',
-    async (
-      params = {},
-      { rejectWithValue },
-    ) => {
-      try {
-        const response =
-          await getDoctorRequestsApi(
-            params,
-          );
-
-        return response;
-      } catch (error) {
-        return rejectWithValue(
-          getErrorMessage(
-            error,
-            'Failed to fetch consultation requests',
-          ),
-        );
-      }
-    },
-  );
-
-/*
-|--------------------------------------------------------------------------
-| GET CONSULTATION BY ID
-|--------------------------------------------------------------------------
-*/
-
-export const getDoctorConsultationById =
-  createAsyncThunk(
-    'doctorConsultation/getDoctorConsultationById',
-    async (
-      consultationId,
-      { rejectWithValue },
-    ) => {
-      try {
-        const response =
-          await getDoctorConsultationByIdApi(
-            consultationId,
-          );
-
-        return response;
-      } catch (error) {
-        return rejectWithValue(
-          getErrorMessage(
-            error,
-            'Failed to fetch consultation',
-          ),
-        );
-      }
-    },
-  );
-
-/*
-|--------------------------------------------------------------------------
-| ACCEPT
-|--------------------------------------------------------------------------
-*/
-
-export const acceptDoctorConsultation =
-  createAsyncThunk(
-    'doctorConsultation/acceptDoctorConsultation',
-    async (
-      consultationId,
-      { rejectWithValue },
-    ) => {
-      try {
-        const response =
-          await acceptDoctorConsultationApi(
-            consultationId,
-          );
-
-        return response;
-      } catch (error) {
-        return rejectWithValue(
-          getErrorMessage(
-            error,
-            'Failed to accept consultation',
-          ),
-        );
-      }
-    },
-  );
-
-/*
-|--------------------------------------------------------------------------
-| REJECT
-|--------------------------------------------------------------------------
-*/
-
-export const rejectDoctorConsultation =
-  createAsyncThunk(
-    'doctorConsultation/rejectDoctorConsultation',
-    async (
-      {
-        consultationId,
-        cancellationReason = '',
-      },
-      { rejectWithValue },
-    ) => {
-      try {
-        const response =
-          await rejectDoctorConsultationApi(
-            consultationId,
-            {
-              cancellationReason,
-            },
-          );
-
-        return response;
-      } catch (error) {
-        return rejectWithValue(
-          getErrorMessage(
-            error,
-            'Failed to reject consultation',
-          ),
-        );
-      }
-    },
-  );
-
-/*
-|--------------------------------------------------------------------------
-| CANCEL
-|--------------------------------------------------------------------------
-*/
-
-export const cancelDoctorConsultation =
-  createAsyncThunk(
-    'doctorConsultation/cancelDoctorConsultation',
-    async (
-      {
-        consultationId,
-        cancellationReason = '',
-      },
-      { rejectWithValue },
-    ) => {
-      try {
-        const response =
-          await cancelDoctorConsultationApi(
-            consultationId,
-            {
-              cancellationReason,
-            },
-          );
-
-        return response;
-      } catch (error) {
-        return rejectWithValue(
-          getErrorMessage(
-            error,
-            'Failed to cancel consultation',
-          ),
-        );
-      }
-    },
-  );
-
-/*
-|--------------------------------------------------------------------------
-| COMPLETE
-|--------------------------------------------------------------------------
-*/
-
-export const completeDoctorConsultation =
-  createAsyncThunk(
-    'doctorConsultation/completeDoctorConsultation',
-    async (
-      {
-        consultationId,
-        doctorNotes = '',
-        diagnosis = '',
-        prescription = '',
-      },
-      { rejectWithValue },
-    ) => {
-      try {
-        const response =
-          await completeDoctorConsultationApi(
-            consultationId,
-            {
-              doctorNotes,
-              diagnosis,
-              prescription,
-            },
-          );
-
-        return response;
-      } catch (error) {
-        return rejectWithValue(
-          getErrorMessage(
-            error,
-            'Failed to complete consultation',
-          ),
-        );
-      }
-    },
-  );
-
-/*
-|--------------------------------------------------------------------------
-| INITIAL STATE
-|--------------------------------------------------------------------------
-*/
-
-const initialState = {
-  myConsultations: [],
-
-  myConsultationsPagination: {
-    page: 1,
-    limit: 10,
-    total: 0,
-    totalPages: 0,
+export const createConsultation = createAsyncThunk(
+  'doctorConsultation/create',
+  async (consultationData, { rejectWithValue }) => {
+    try {
+      return await createDoctorConsultationApi(consultationData);
+    } catch (error) {
+      return rejectWithValue({
+        message: errorMessage(error, 'Unable to send the request'),
+        consultationId: error.response?.data?.consultation?._id || null,
+      });
+    }
   },
-
-  doctorRequests: [],
-
-  doctorRequestsPagination: {
-    page: 1,
-    limit: 10,
-    total: 0,
-    totalPages: 0,
-  },
-
-  selectedConsultation: null,
-
-  isCreating: false,
-  isLoadingMyConsultations: false,
-  isLoadingDoctorRequests: false,
-  isLoadingConsultation: false,
-
-  isAccepting: false,
-  isRejecting: false,
-  isCancelling: false,
-  isCompleting: false,
-
-  error: null,
-  createError: null,
-  myConsultationsError: null,
-  doctorRequestsError: null,
-  consultationError: null,
-  actionError: null,
-};
+);
 
 /*
 |--------------------------------------------------------------------------
-| SLICE
+| LISTS
 |--------------------------------------------------------------------------
+|
+| {params: {status, date, page, limit}, append}
+|
 */
 
-const doctorConsultationSlice =
-  createSlice({
-    name: 'doctorConsultation',
-
-    initialState,
-
-    reducers: {
-      /*
-      |--------------------------------------------------------------------------
-      | CLEAR ERRORS
-      |--------------------------------------------------------------------------
-      */
-
-      clearDoctorConsultationErrors:
-        state => {
-          state.error = null;
-          state.createError = null;
-          state.myConsultationsError = null;
-          state.doctorRequestsError = null;
-          state.consultationError = null;
-          state.actionError = null;
-        },
-
-      /*
-      |--------------------------------------------------------------------------
-      | CLEAR SELECTED
-      |--------------------------------------------------------------------------
-      */
-
-      clearSelectedConsultation:
-        state => {
-          state.selectedConsultation = null;
-          state.consultationError = null;
-        },
-
-      /*
-      |--------------------------------------------------------------------------
-      | CLEAR MY CONSULTATIONS
-      |--------------------------------------------------------------------------
-      */
-
-      clearMyConsultations: state => {
-        state.myConsultations = [];
-
-        state.myConsultationsPagination = {
-          page: 1,
-          limit: 10,
-          total: 0,
-          totalPages: 0,
-        };
-
-        state.myConsultationsError = null;
-      },
-
-      /*
-      |--------------------------------------------------------------------------
-      | CLEAR DOCTOR REQUESTS
-      |--------------------------------------------------------------------------
-      */
-
-      clearDoctorRequests: state => {
-        state.doctorRequests = [];
-
-        state.doctorRequestsPagination = {
-          page: 1,
-          limit: 10,
-          total: 0,
-          totalPages: 0,
-        };
-
-        state.doctorRequestsError = null;
-      },
-
-      /*
-      |--------------------------------------------------------------------------
-      | RESET COMPLETE STATE
-      |--------------------------------------------------------------------------
-      */
-
-      resetDoctorConsultationState:
-        () => {
-          return {
-            ...initialState,
-
-            myConsultationsPagination: {
-              ...initialState.myConsultationsPagination,
-            },
-
-            doctorRequestsPagination: {
-              ...initialState.doctorRequestsPagination,
-            },
-          };
-        },
-    },
-
-    extraReducers: builder => {
-      /*
-      |--------------------------------------------------------------------------
-      | CREATE
-      |--------------------------------------------------------------------------
-      */
-
-      builder
-
-        .addCase(
-          createDoctorConsultation.pending,
-          state => {
-            state.isCreating = true;
-            state.createError = null;
-          },
-        )
-
-        .addCase(
-          createDoctorConsultation.fulfilled,
-          (state, action) => {
-            state.isCreating = false;
-            state.createError = null;
-
-            const consultation =
-              action.payload
-                ?.consultation;
-
-            if (consultation) {
-              state.selectedConsultation =
-                consultation;
-
-              /*
-               * Add newest consultation to
-               * current user's list.
-               */
-
-              state.myConsultations = [
-                consultation,
-                ...state.myConsultations,
-              ];
-            }
-          },
-        )
-
-        .addCase(
-          createDoctorConsultation.rejected,
-          (state, action) => {
-            state.isCreating = false;
-
-            state.createError =
-              action.payload ||
-              'Failed to create consultation';
-          },
-        );
-
-      /*
-      |--------------------------------------------------------------------------
-      | GET MY CONSULTATIONS
-      |--------------------------------------------------------------------------
-      */
-
-      builder
-
-        .addCase(
-          getMyConsultations.pending,
-          state => {
-            state.isLoadingMyConsultations =
-              true;
-
-            /*
-             * VERY IMPORTANT:
-             * Clear previous user's consultations
-             * immediately.
-             */
-
-            state.myConsultations = [];
-
-            state.myConsultationsPagination = {
-              page: 1,
-              limit: 10,
-              total: 0,
-              totalPages: 0,
-            };
-
-            state.myConsultationsError = null;
-          },
-        )
-
-        .addCase(
-          getMyConsultations.fulfilled,
-          (state, action) => {
-            state.isLoadingMyConsultations =
-              false;
-
-            state.myConsultations =
-              action.payload
-                ?.consultations || [];
-
-            state.myConsultationsPagination =
-              action.payload
-                ?.pagination || {
-                page: 1,
-                limit: 10,
-                total: 0,
-                totalPages: 0,
-              };
-
-            state.myConsultationsError =
-              null;
-          },
-        )
-
-        .addCase(
-          getMyConsultations.rejected,
-          (state, action) => {
-            state.isLoadingMyConsultations =
-              false;
-
-            /*
-             * VERY IMPORTANT:
-             * Never keep old user's bookings.
-             */
-
-            state.myConsultations = [];
-
-            state.myConsultationsPagination = {
-              page: 1,
-              limit: 10,
-              total: 0,
-              totalPages: 0,
-            };
-
-            state.myConsultationsError =
-              action.payload ||
-              'Failed to fetch consultations';
-          },
-        );
-
-      /*
-      |--------------------------------------------------------------------------
-      | GET DOCTOR REQUESTS
-      |--------------------------------------------------------------------------
-      */
-
-      builder
-
-        .addCase(
-          getDoctorRequests.pending,
-          state => {
-            state.isLoadingDoctorRequests =
-              true;
-
-            state.doctorRequests = [];
-
-            state.doctorRequestsPagination = {
-              page: 1,
-              limit: 10,
-              total: 0,
-              totalPages: 0,
-            };
-
-            state.doctorRequestsError = null;
-          },
-        )
-
-        .addCase(
-          getDoctorRequests.fulfilled,
-          (state, action) => {
-            state.isLoadingDoctorRequests =
-              false;
-
-            state.doctorRequests =
-              action.payload
-                ?.consultations || [];
-
-            state.doctorRequestsPagination =
-              action.payload
-                ?.pagination || {
-                page: 1,
-                limit: 10,
-                total: 0,
-                totalPages: 0,
-              };
-
-            state.doctorRequestsError =
-              null;
-          },
-        )
-
-        .addCase(
-          getDoctorRequests.rejected,
-          (state, action) => {
-            state.isLoadingDoctorRequests =
-              false;
-
-            state.doctorRequests = [];
-
-            state.doctorRequestsPagination = {
-              page: 1,
-              limit: 10,
-              total: 0,
-              totalPages: 0,
-            };
-
-            state.doctorRequestsError =
-              action.payload ||
-              'Failed to fetch consultation requests';
-          },
-        );
-
-      /*
-      |--------------------------------------------------------------------------
-      | GET CONSULTATION BY ID
-      |--------------------------------------------------------------------------
-      */
-
-      builder
-
-        .addCase(
-          getDoctorConsultationById.pending,
-          state => {
-            state.isLoadingConsultation =
-              true;
-
-            state.selectedConsultation = null;
-
-            state.consultationError = null;
-          },
-        )
-
-        .addCase(
-          getDoctorConsultationById.fulfilled,
-          (state, action) => {
-            state.isLoadingConsultation =
-              false;
-
-            state.selectedConsultation =
-              action.payload
-                ?.consultation || null;
-
-            state.consultationError = null;
-          },
-        )
-
-        .addCase(
-          getDoctorConsultationById.rejected,
-          (state, action) => {
-            state.isLoadingConsultation =
-              false;
-
-            state.selectedConsultation = null;
-
-            state.consultationError =
-              action.payload ||
-              'Failed to fetch consultation';
-          },
-        );
-
-      /*
-      |--------------------------------------------------------------------------
-      | ACCEPT
-      |--------------------------------------------------------------------------
-      */
-
-      builder
-
-        .addCase(
-          acceptDoctorConsultation.pending,
-          state => {
-            state.isAccepting = true;
-            state.actionError = null;
-          },
-        )
-
-        .addCase(
-          acceptDoctorConsultation.fulfilled,
-          (state, action) => {
-            state.isAccepting = false;
-            state.actionError = null;
-
-            const consultation =
-              action.payload
-                ?.consultation;
-
-            if (consultation) {
-              state.selectedConsultation =
-                consultation;
-
-              state.myConsultations =
-                state.myConsultations.map(
-                  item =>
-                    item._id ===
-                    consultation._id
-                      ? consultation
-                      : item,
-                );
-
-              state.doctorRequests =
-                state.doctorRequests.map(
-                  item =>
-                    item._id ===
-                    consultation._id
-                      ? consultation
-                      : item,
-                );
-            }
-          },
-        )
-
-        .addCase(
-          acceptDoctorConsultation.rejected,
-          (state, action) => {
-            state.isAccepting = false;
-
-            state.actionError =
-              action.payload ||
-              'Failed to accept consultation';
-          },
-        );
-
-      /*
-      |--------------------------------------------------------------------------
-      | REJECT
-      |--------------------------------------------------------------------------
-      */
-
-      builder
-
-        .addCase(
-          rejectDoctorConsultation.pending,
-          state => {
-            state.isRejecting = true;
-            state.actionError = null;
-          },
-        )
-
-        .addCase(
-          rejectDoctorConsultation.fulfilled,
-          (state, action) => {
-            state.isRejecting = false;
-            state.actionError = null;
-
-            const consultation =
-              action.payload
-                ?.consultation;
-
-            if (consultation) {
-              state.selectedConsultation =
-                consultation;
-
-              state.myConsultations =
-                state.myConsultations.map(
-                  item =>
-                    item._id ===
-                    consultation._id
-                      ? consultation
-                      : item,
-                );
-
-              state.doctorRequests =
-                state.doctorRequests.filter(
-                  item =>
-                    item._id !==
-                    consultation._id,
-                );
-            }
-          },
-        )
-
-        .addCase(
-          rejectDoctorConsultation.rejected,
-          (state, action) => {
-            state.isRejecting = false;
-
-            state.actionError =
-              action.payload ||
-              'Failed to reject consultation';
-          },
-        );
-
-      /*
-      |--------------------------------------------------------------------------
-      | CANCEL
-      |--------------------------------------------------------------------------
-      */
-
-      builder
-
-        .addCase(
-          cancelDoctorConsultation.pending,
-          state => {
-            state.isCancelling = true;
-            state.actionError = null;
-          },
-        )
-
-        .addCase(
-          cancelDoctorConsultation.fulfilled,
-          (state, action) => {
-            state.isCancelling = false;
-            state.actionError = null;
-
-            const consultation =
-              action.payload
-                ?.consultation;
-
-            if (consultation) {
-              state.selectedConsultation =
-                consultation;
-
-              state.myConsultations =
-                state.myConsultations.map(
-                  item =>
-                    item._id ===
-                    consultation._id
-                      ? consultation
-                      : item,
-                );
-
-              state.doctorRequests =
-                state.doctorRequests.filter(
-                  item =>
-                    item._id !==
-                    consultation._id,
-                );
-            }
-          },
-        )
-
-        .addCase(
-          cancelDoctorConsultation.rejected,
-          (state, action) => {
-            state.isCancelling = false;
-
-            state.actionError =
-              action.payload ||
-              'Failed to cancel consultation';
-          },
-        );
-
-      /*
-      |--------------------------------------------------------------------------
-      | COMPLETE
-      |--------------------------------------------------------------------------
-      */
-
-      builder
-
-        .addCase(
-          completeDoctorConsultation.pending,
-          state => {
-            state.isCompleting = true;
-            state.actionError = null;
-          },
-        )
-
-        .addCase(
-          completeDoctorConsultation.fulfilled,
-          (state, action) => {
-            state.isCompleting = false;
-            state.actionError = null;
-
-            const consultation =
-              action.payload
-                ?.consultation;
-
-            if (consultation) {
-              state.selectedConsultation =
-                consultation;
-
-              state.myConsultations =
-                state.myConsultations.map(
-                  item =>
-                    item._id ===
-                    consultation._id
-                      ? consultation
-                      : item,
-                );
-
-              state.doctorRequests =
-                state.doctorRequests.filter(
-                  item =>
-                    item._id !==
-                    consultation._id,
-                );
-            }
-          },
-        )
-
-        .addCase(
-          completeDoctorConsultation.rejected,
-          (state, action) => {
-            state.isCompleting = false;
-
-            state.actionError =
-              action.payload ||
-              'Failed to complete consultation';
-          },
-        );
-    },
-  });
+export const fetchMyConsultations = createAsyncThunk(
+  'doctorConsultation/fetchMine',
+  async ({ params = {} } = {}, { rejectWithValue }) => {
+    try {
+      return await getMyConsultationsApi(params);
+    } catch (error) {
+      return rejectWithValue(
+        errorMessage(error, 'Unable to load your consultations'),
+      );
+    }
+  },
+);
+
+export const fetchDoctorRequests = createAsyncThunk(
+  'doctorConsultation/fetchRequests',
+  async ({ params = {} } = {}, { rejectWithValue }) => {
+    try {
+      return await getDoctorRequestsApi(params);
+    } catch (error) {
+      return rejectWithValue(errorMessage(error, 'Unable to load requests'));
+    }
+  },
+);
+
+export const fetchConsultationById = createAsyncThunk(
+  'doctorConsultation/fetchById',
+  async (consultationId, { rejectWithValue }) => {
+    try {
+      return await getDoctorConsultationByIdApi(consultationId);
+    } catch (error) {
+      return rejectWithValue(
+        errorMessage(error, 'Unable to load consultation'),
+      );
+    }
+  },
+);
 
 /*
 |--------------------------------------------------------------------------
 | ACTIONS
 |--------------------------------------------------------------------------
+|
+| {consultationId, action, reason, outcome}
+|   accept | reject (reason) | cancel (reason) |
+|   complete (outcome) | notes (outcome)
+|
 */
 
-export const {
-  clearDoctorConsultationErrors,
-  clearSelectedConsultation,
-  clearMyConsultations,
-  clearDoctorRequests,
-  resetDoctorConsultationState,
-} =
-  doctorConsultationSlice.actions;
+const ACTION_APIS = {
+  accept: ({ consultationId }) => acceptDoctorConsultationApi(consultationId),
+  reject: ({ consultationId, reason }) =>
+    rejectDoctorConsultationApi(consultationId, reason),
+  cancel: ({ consultationId, reason }) =>
+    cancelDoctorConsultationApi(consultationId, reason),
+  complete: ({ consultationId, outcome }) =>
+    completeDoctorConsultationApi(consultationId, outcome),
+  notes: ({ consultationId, outcome }) =>
+    updateConsultationNotesApi(consultationId, outcome),
+};
+
+export const updateConsultation = createAsyncThunk(
+  'doctorConsultation/update',
+  async (arg, { rejectWithValue }) => {
+    try {
+      return await ACTION_APIS[arg.action](arg);
+    } catch (error) {
+      return rejectWithValue(
+        errorMessage(error, 'Unable to update consultation'),
+      );
+    }
+  },
+);
+
+export const reviewConsultation = createAsyncThunk(
+  'doctorConsultation/review',
+  async ({ consultationId, rating, comment }, { rejectWithValue }) => {
+    try {
+      return await reviewDoctorConsultationApi(consultationId, {
+        rating,
+        comment,
+      });
+    } catch (error) {
+      return rejectWithValue(errorMessage(error, 'Unable to submit review'));
+    }
+  },
+);
 
 /*
 |--------------------------------------------------------------------------
-| SELECTORS
+| STATE
 |--------------------------------------------------------------------------
 */
 
-export const selectMyConsultations =
-  state =>
-    state.doctorConsultation
-      ?.myConsultations || [];
+const emptyList = {
+  items: [],
+  page: 1,
+  totalPages: 1,
+  total: 0,
+  loading: false,
+  loadingMore: false,
+  error: null,
+};
 
-export const selectDoctorRequests =
-  state =>
-    state.doctorConsultation
-      ?.doctorRequests || [];
+const initialState = {
+  myConsultations: emptyList,
+  requests: emptyList,
 
-export const selectSelectedConsultation =
-  state =>
-    state.doctorConsultation
-      ?.selectedConsultation || null;
+  selected: null,
+  selectedLoading: false,
+  selectedError: null,
 
-export const selectDoctorConsultationLoading =
-  state =>
-    state.doctorConsultation
-      ?.isLoadingConsultation || false;
+  creating: false,
+  // name of the action in flight, e.g. 'accept'
+  actionInProgress: null,
+  // consultation the action is for (list quick actions)
+  actionTargetId: null,
+};
 
-export const selectCreatingConsultation =
-  state =>
-    state.doctorConsultation
-      ?.isCreating || false;
+const storeConsultation = (state, consultation) => {
+  if (!consultation?._id) return;
 
-export const selectAcceptingConsultation =
-  state =>
-    state.doctorConsultation
-      ?.isAccepting || false;
+  if (state.selected?._id === consultation._id || !state.selected) {
+    state.selected = consultation;
+  }
 
-export const selectRejectingConsultation =
-  state =>
-    state.doctorConsultation
-      ?.isRejecting || false;
+  for (const key of ['myConsultations', 'requests']) {
+    state[key].items = state[key].items.map(item =>
+      item._id === consultation._id ? consultation : item,
+    );
+  }
+};
 
-export const selectCancellingConsultation =
-  state =>
-    state.doctorConsultation
-      ?.isCancelling || false;
+const addListCases = (builder, thunk, key) => {
+  builder
+    .addCase(thunk.pending, (state, action) => {
+      const list = state[key];
 
-export const selectCompletingConsultation =
-  state =>
-    state.doctorConsultation
-      ?.isCompleting || false;
+      if (action.meta.arg?.append) {
+        list.loadingMore = true;
+      } else {
+        list.loading = true;
+      }
+
+      list.error = null;
+    })
+    .addCase(thunk.fulfilled, (state, action) => {
+      const list = state[key];
+      const consultations = action.payload?.consultations || [];
+
+      list.loading = false;
+      list.loadingMore = false;
+
+      if (action.meta.arg?.append) {
+        const known = new Set(list.items.map(item => item._id));
+        list.items = [
+          ...list.items,
+          ...consultations.filter(item => !known.has(item._id)),
+        ];
+      } else {
+        list.items = consultations;
+      }
+
+      list.page = action.payload?.pagination?.currentPage || 1;
+      list.totalPages = action.payload?.pagination?.totalPages || 1;
+      list.total = action.payload?.total || 0;
+    })
+    .addCase(thunk.rejected, (state, action) => {
+      const list = state[key];
+
+      list.loading = false;
+      list.loadingMore = false;
+      list.error = action.payload;
+    });
+};
+
+const doctorConsultationSlice = createSlice({
+  name: 'doctorConsultation',
+
+  initialState,
+
+  reducers: {
+    clearSelectedConsultation: state => {
+      state.selected = null;
+      state.selectedError = null;
+    },
+  },
+
+  extraReducers: builder => {
+    builder
+      .addCase(createConsultation.pending, state => {
+        state.creating = true;
+      })
+      .addCase(createConsultation.fulfilled, (state, action) => {
+        state.creating = false;
+
+        const consultation = action.payload?.consultation;
+
+        if (consultation?._id) {
+          state.selected = consultation;
+          state.myConsultations.items.unshift(consultation);
+        }
+      })
+      .addCase(createConsultation.rejected, state => {
+        state.creating = false;
+      });
+
+    addListCases(builder, fetchMyConsultations, 'myConsultations');
+    addListCases(builder, fetchDoctorRequests, 'requests');
+
+    builder
+      .addCase(fetchConsultationById.pending, (state, action) => {
+        state.selectedLoading = true;
+        state.selectedError = null;
+
+        if (state.selected?._id !== action.meta.arg) {
+          state.selected = null;
+        }
+      })
+      .addCase(fetchConsultationById.fulfilled, (state, action) => {
+        state.selectedLoading = false;
+        state.selected = action.payload?.consultation || null;
+        storeConsultation(state, state.selected);
+      })
+      .addCase(fetchConsultationById.rejected, (state, action) => {
+        state.selectedLoading = false;
+        state.selectedError = action.payload;
+      });
+
+    for (const thunk of [updateConsultation, reviewConsultation]) {
+      builder
+        .addCase(thunk.pending, (state, action) => {
+          state.actionInProgress = action.meta.arg.action || 'review';
+          state.actionTargetId = action.meta.arg.consultationId;
+        })
+        .addCase(thunk.fulfilled, (state, action) => {
+          state.actionInProgress = null;
+          state.actionTargetId = null;
+          storeConsultation(state, action.payload?.consultation);
+        })
+        .addCase(thunk.rejected, state => {
+          state.actionInProgress = null;
+          state.actionTargetId = null;
+        });
+    }
+  },
+});
+
+export const { clearSelectedConsultation } = doctorConsultationSlice.actions;
 
 export default doctorConsultationSlice.reducer;

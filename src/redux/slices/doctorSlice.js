@@ -1,160 +1,130 @@
-import {
-  createAsyncThunk,
-  createSlice,
-} from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 import {
-  createDoctorApi,
+  getDoctorMetaApi,
   getAllDoctorsApi,
-  getMyDoctorProfileApi,
   getDoctorByIdApi,
+  createDoctorApi,
+  getMyDoctorProfileApi,
   updateMyDoctorProfileApi,
   deactivateMyDoctorProfileApi,
   activateMyDoctorProfileApi,
 } from '../../api/doctorApi';
 
-/*
-|--------------------------------------------------------------------------
-| ERROR HELPER
-|--------------------------------------------------------------------------
-*/
-
-const getErrorMessage = (
-  error,
-  fallback = 'Something went wrong',
-) => {
-  return (
-    error?.response?.data?.message ||
-    error?.response?.data?.error ||
-    error?.message ||
-    fallback
-  );
-};
+const errorMessage = (error, fallback) =>
+  error.response?.data?.message || error.message || fallback;
 
 /*
 |--------------------------------------------------------------------------
-| CREATE DOCTOR
+| META
 |--------------------------------------------------------------------------
 */
 
-export const createDoctor = createAsyncThunk(
-  'doctor/createDoctor',
-  async (doctorData, { rejectWithValue }) => {
-    try {
-      const response = await createDoctorApi(
-        doctorData,
-      );
-
-      return response;
-    } catch (error) {
-      return rejectWithValue(
-        getErrorMessage(
-          error,
-          'Failed to create doctor profile',
-        ),
-      );
-    }
-  },
-);
-
-/*
-|--------------------------------------------------------------------------
-| GET ALL DOCTORS
-|--------------------------------------------------------------------------
-*/
-
-export const getAllDoctors = createAsyncThunk(
-  'doctor/getAllDoctors',
-  async (params = {}, { rejectWithValue }) => {
-    try {
-      const response = await getAllDoctorsApi(
-        params,
-      );
-
-      return response;
-    } catch (error) {
-      return rejectWithValue(
-        getErrorMessage(
-          error,
-          'Failed to fetch doctors',
-        ),
-      );
-    }
-  },
-);
-
-/*
-|--------------------------------------------------------------------------
-| GET MY DOCTOR PROFILE
-|--------------------------------------------------------------------------
-*/
-
-export const getMyDoctorProfile = createAsyncThunk(
-  'doctor/getMyDoctorProfile',
+export const fetchDoctorMeta = createAsyncThunk(
+  'doctor/fetchMeta',
   async (_, { rejectWithValue }) => {
     try {
-      const response =
-        await getMyDoctorProfileApi();
-
-      return response;
+      return await getDoctorMetaApi();
     } catch (error) {
-      return rejectWithValue(
-        getErrorMessage(
-          error,
-          'Failed to fetch your doctor profile',
-        ),
-      );
+      return rejectWithValue(errorMessage(error, 'Unable to load options'));
     }
   },
 );
 
 /*
 |--------------------------------------------------------------------------
-| GET DOCTOR BY ID
+| FIND DOCTORS
 |--------------------------------------------------------------------------
+|
+| {params, append} - append adds the next page to the current list.
+|
 */
 
-export const getDoctorById = createAsyncThunk(
-  'doctor/getDoctorById',
+export const fetchDoctors = createAsyncThunk(
+  'doctor/fetchList',
+  async ({ params = {} } = {}, { rejectWithValue }) => {
+    try {
+      return await getAllDoctorsApi(params);
+    } catch (error) {
+      return rejectWithValue(errorMessage(error, 'Unable to load doctors'));
+    }
+  },
+);
+
+export const fetchDoctorById = createAsyncThunk(
+  'doctor/fetchById',
   async (doctorId, { rejectWithValue }) => {
     try {
-      const response =
-        await getDoctorByIdApi(doctorId);
-
-      return response;
+      return await getDoctorByIdApi(doctorId);
     } catch (error) {
-      return rejectWithValue(
-        getErrorMessage(
-          error,
-          'Failed to fetch doctor',
-        ),
-      );
+      return rejectWithValue(errorMessage(error, 'Unable to load doctor'));
     }
   },
 );
 
 /*
 |--------------------------------------------------------------------------
-| UPDATE MY DOCTOR PROFILE
+| MY DOCTOR PROFILE
 |--------------------------------------------------------------------------
+|
+| A 404 means the user has no doctor profile yet (status 'missing').
+|
 */
 
-export const updateMyDoctorProfile = createAsyncThunk(
-  'doctor/updateMyDoctorProfile',
-  async (doctorData, { rejectWithValue }) => {
+export const fetchMyDoctorProfile = createAsyncThunk(
+  'doctor/fetchMine',
+  async (_, { rejectWithValue }) => {
     try {
-      const response =
-        await updateMyDoctorProfileApi(
-          doctorData,
-        );
+      return await getMyDoctorProfileApi();
+    } catch (error) {
+      return rejectWithValue({
+        message: errorMessage(error, 'Unable to load your doctor profile'),
+        missing: error.response?.status === 404,
+      });
+    }
+  },
+);
 
-      return response;
+/*
+ * {doctorData, isCreate}
+ */
+export const saveMyDoctorProfile = createAsyncThunk(
+  'doctor/saveMine',
+  async ({ doctorData, isCreate }, { rejectWithValue }) => {
+    try {
+      return isCreate
+        ? await createDoctorApi(doctorData)
+        : await updateMyDoctorProfileApi(doctorData);
+    } catch (error) {
+      return rejectWithValue(errorMessage(error, 'Unable to save profile'));
+    }
+  },
+);
+
+export const setMyDoctorActive = createAsyncThunk(
+  'doctor/setActive',
+  async (active, { rejectWithValue }) => {
+    try {
+      return active
+        ? await activateMyDoctorProfileApi()
+        : await deactivateMyDoctorProfileApi();
+    } catch (error) {
+      return rejectWithValue(errorMessage(error, 'Unable to update profile'));
+    }
+  },
+);
+
+/*
+ * Quick availability switch from the dashboard.
+ */
+export const setMyDoctorAvailability = createAsyncThunk(
+  'doctor/setAvailability',
+  async (availability, { rejectWithValue }) => {
+    try {
+      return await updateMyDoctorProfileApi({ availability });
     } catch (error) {
       return rejectWithValue(
-        getErrorMessage(
-          error,
-          'Failed to update doctor profile',
-        ),
+        errorMessage(error, 'Unable to update availability'),
       );
     }
   },
@@ -162,95 +132,58 @@ export const updateMyDoctorProfile = createAsyncThunk(
 
 /*
 |--------------------------------------------------------------------------
-| DEACTIVATE DOCTOR PROFILE
-|--------------------------------------------------------------------------
-*/
-
-export const deactivateMyDoctorProfile =
-  createAsyncThunk(
-    'doctor/deactivateMyDoctorProfile',
-    async (_, { rejectWithValue }) => {
-      try {
-        const response =
-          await deactivateMyDoctorProfileApi();
-
-        return response;
-      } catch (error) {
-        return rejectWithValue(
-          getErrorMessage(
-            error,
-            'Failed to deactivate doctor profile',
-          ),
-        );
-      }
-    },
-  );
-
-/*
-|--------------------------------------------------------------------------
-| ACTIVATE DOCTOR PROFILE
-|--------------------------------------------------------------------------
-*/
-
-export const activateMyDoctorProfile =
-  createAsyncThunk(
-    'doctor/activateMyDoctorProfile',
-    async (_, { rejectWithValue }) => {
-      try {
-        const response =
-          await activateMyDoctorProfileApi();
-
-        return response;
-      } catch (error) {
-        return rejectWithValue(
-          getErrorMessage(
-            error,
-            'Failed to activate doctor profile',
-          ),
-        );
-      }
-    },
-  );
-
-/*
-|--------------------------------------------------------------------------
-| INITIAL STATE
+| STATE
 |--------------------------------------------------------------------------
 */
 
 const initialState = {
-  myDoctor: null,
-
-  selectedDoctor: null,
-
-  doctors: [],
-
-  pagination: {
-    page: 1,
-    limit: 10,
-    total: 0,
-    totalPages: 0,
+  meta: {
+    doctorTypes: [],
+    specializations: {},
+    problemTypes: {},
+    animalTypes: [],
+    languages: [],
+    paymentMethods: ['cod', 'upi', 'card', 'wallet'],
+    availabilityOptions: ['available', 'busy', 'unavailable'],
+    defaultSlotMinutes: 30,
+    maxImages: 5,
   },
+  metaLoaded: false,
+  metaLoading: false,
+  metaError: null,
 
-  isLoading: false,
-  isCreating: false,
-  isLoadingMyDoctor: false,
-  isLoadingDoctor: false,
-  isUpdating: false,
-  isActivating: false,
-  isDeactivating: false,
+  list: [],
+  pagination: { page: 1, totalPages: 1, total: 0 },
+  listLoading: false,
+  listLoadingMore: false,
+  listError: null,
 
-  error: null,
-  createError: null,
-  myDoctorError: null,
-  selectedDoctorError: null,
+  selected: null,
+  selectedLoading: false,
+  selectedError: null,
+
+  myProfile: null,
+  // idle | loading | loaded | missing | error
+  myProfileStatus: 'idle',
+  myProfileError: null,
+
+  saving: false,
+  updating: false,
 };
 
 /*
-|--------------------------------------------------------------------------
-| SLICE
-|--------------------------------------------------------------------------
-*/
+ * Keep the dashboard counts when the server returns a plain profile.
+ */
+const storeMyProfile = (state, doctor) => {
+  if (!doctor?._id) return;
+
+  state.myProfile = {
+    pendingRequests: state.myProfile?.pendingRequests || 0,
+    upcomingConsultations: state.myProfile?.upcomingConsultations || 0,
+    ...doctor,
+  };
+  state.myProfileStatus = 'loaded';
+};
 
 const doctorSlice = createSlice({
   name: 'doctor',
@@ -258,392 +191,148 @@ const doctorSlice = createSlice({
   initialState,
 
   reducers: {
-    /*
-    |--------------------------------------------------------------------------
-    | CLEAR ERRORS
-    |--------------------------------------------------------------------------
-    */
-
-    clearDoctorError: state => {
-      state.error = null;
-      state.createError = null;
-      state.myDoctorError = null;
-      state.selectedDoctorError = null;
-    },
-
-    /*
-    |--------------------------------------------------------------------------
-    | CLEAR SELECTED DOCTOR
-    |--------------------------------------------------------------------------
-    */
-
     clearSelectedDoctor: state => {
-      state.selectedDoctor = null;
-      state.selectedDoctorError = null;
-    },
-
-    /*
-    |--------------------------------------------------------------------------
-    | CLEAR MY DOCTOR
-    |--------------------------------------------------------------------------
-    */
-
-    clearMyDoctor: state => {
-      state.myDoctor = null;
-      state.myDoctorError = null;
-    },
-
-    /*
-    |--------------------------------------------------------------------------
-    | RESET COMPLETE DOCTOR STATE
-    |--------------------------------------------------------------------------
-    */
-
-    resetDoctorState: () => {
-      return {
-        ...initialState,
-        pagination: {
-          ...initialState.pagination,
-        },
-      };
+      state.selected = null;
+      state.selectedError = null;
     },
   },
 
   extraReducers: builder => {
-    /*
-    |--------------------------------------------------------------------------
-    | CREATE DOCTOR
-    |--------------------------------------------------------------------------
-    */
+    builder
+      .addCase(fetchDoctorMeta.pending, state => {
+        state.metaLoading = true;
+        state.metaError = null;
+      })
+      .addCase(fetchDoctorMeta.fulfilled, (state, action) => {
+        const data = action.payload || {};
+
+        state.metaLoading = false;
+        state.metaLoaded = true;
+        state.meta = {
+          doctorTypes: data.doctorTypes || [],
+          specializations: data.specializations || {},
+          problemTypes: data.problemTypes || {},
+          animalTypes: data.animalTypes || [],
+          languages: data.languages || [],
+          paymentMethods:
+            data.paymentMethods || initialState.meta.paymentMethods,
+          availabilityOptions:
+            data.availabilityOptions || initialState.meta.availabilityOptions,
+          defaultSlotMinutes: data.defaultSlotMinutes || 30,
+          maxImages: data.maxImages || 5,
+        };
+      })
+      .addCase(fetchDoctorMeta.rejected, (state, action) => {
+        state.metaLoading = false;
+        state.metaError = action.payload;
+      });
 
     builder
+      .addCase(fetchDoctors.pending, (state, action) => {
+        if (action.meta.arg?.append) {
+          state.listLoadingMore = true;
+        } else {
+          state.listLoading = true;
+        }
 
-      .addCase(
-        createDoctor.pending,
-        state => {
-          state.isCreating = true;
-          state.createError = null;
-        },
-      )
+        state.listError = null;
+      })
+      .addCase(fetchDoctors.fulfilled, (state, action) => {
+        state.listLoading = false;
+        state.listLoadingMore = false;
 
-      .addCase(
-        createDoctor.fulfilled,
-        (state, action) => {
-          state.isCreating = false;
-          state.createError = null;
+        const doctors = action.payload?.doctors || [];
 
-          if (action.payload?.doctor) {
-            state.myDoctor =
-              action.payload.doctor;
-          }
-        },
-      )
+        if (action.meta.arg?.append) {
+          const known = new Set(state.list.map(item => item._id));
+          state.list = [
+            ...state.list,
+            ...doctors.filter(item => !known.has(item._id)),
+          ];
+        } else {
+          state.list = doctors;
+        }
 
-      .addCase(
-        createDoctor.rejected,
-        (state, action) => {
-          state.isCreating = false;
-
-          state.createError =
-            action.payload ||
-            'Failed to create doctor profile';
-        },
-      );
-
-    /*
-    |--------------------------------------------------------------------------
-    | GET ALL DOCTORS
-    |--------------------------------------------------------------------------
-    */
-
-    builder
-
-      .addCase(
-        getAllDoctors.pending,
-        state => {
-          state.isLoading = true;
-          state.error = null;
-        },
-      )
-
-      .addCase(
-        getAllDoctors.fulfilled,
-        (state, action) => {
-          state.isLoading = false;
-          state.error = null;
-
-          state.doctors =
-            action.payload?.doctors || [];
-
-          if (action.payload?.pagination) {
-            state.pagination =
-              action.payload.pagination;
-          }
-        },
-      )
-
-      .addCase(
-        getAllDoctors.rejected,
-        (state, action) => {
-          state.isLoading = false;
-
-          state.doctors = [];
-
-          state.error =
-            action.payload ||
-            'Failed to fetch doctors';
-        },
-      );
-
-    /*
-    |--------------------------------------------------------------------------
-    | GET MY DOCTOR
-    |--------------------------------------------------------------------------
-    */
+        const pagination = action.payload?.pagination || {};
+        state.pagination = {
+          page: pagination.page || 1,
+          totalPages: pagination.totalPages || 1,
+          total: pagination.total || 0,
+        };
+      })
+      .addCase(fetchDoctors.rejected, (state, action) => {
+        state.listLoading = false;
+        state.listLoadingMore = false;
+        state.listError = action.payload;
+      });
 
     builder
+      .addCase(fetchDoctorById.pending, (state, action) => {
+        state.selectedLoading = true;
+        state.selectedError = null;
 
-      /*
-      | IMPORTANT:
-      | Clear the previous user's doctor immediately
-      | when a new request starts.
-      */
-
-      .addCase(
-        getMyDoctorProfile.pending,
-        state => {
-          state.isLoadingMyDoctor = true;
-
-          state.myDoctor = null;
-
-          state.myDoctorError = null;
-        },
-      )
-
-      .addCase(
-        getMyDoctorProfile.fulfilled,
-        (state, action) => {
-          state.isLoadingMyDoctor = false;
-
-          state.myDoctorError = null;
-
-          state.myDoctor =
-            action.payload?.doctor || null;
-        },
-      )
-
-      .addCase(
-        getMyDoctorProfile.rejected,
-        (state, action) => {
-          state.isLoadingMyDoctor = false;
-
-          /*
-           * IMPORTANT:
-           * If this user doesn't have a doctor profile,
-           * the previous user's doctor must not remain.
-           */
-
-          state.myDoctor = null;
-
-          state.myDoctorError =
-            action.payload ||
-            'Doctor profile not found';
-        },
-      );
-
-    /*
-    |--------------------------------------------------------------------------
-    | GET DOCTOR BY ID
-    |--------------------------------------------------------------------------
-    */
+        if (state.selected?._id !== action.meta.arg) {
+          state.selected = null;
+        }
+      })
+      .addCase(fetchDoctorById.fulfilled, (state, action) => {
+        state.selectedLoading = false;
+        state.selected = action.payload?.doctor || null;
+      })
+      .addCase(fetchDoctorById.rejected, (state, action) => {
+        state.selectedLoading = false;
+        state.selectedError = action.payload;
+      });
 
     builder
+      .addCase(fetchMyDoctorProfile.pending, state => {
+        if (state.myProfileStatus !== 'loaded')
+          state.myProfileStatus = 'loading';
+        state.myProfileError = null;
+      })
+      .addCase(fetchMyDoctorProfile.fulfilled, (state, action) => {
+        state.myProfile = action.payload?.doctor || null;
+        state.myProfileStatus = state.myProfile ? 'loaded' : 'missing';
+      })
+      .addCase(fetchMyDoctorProfile.rejected, (state, action) => {
+        if (action.payload?.missing) {
+          state.myProfile = null;
+          state.myProfileStatus = 'missing';
+          return;
+        }
 
-      .addCase(
-        getDoctorById.pending,
-        state => {
-          state.isLoadingDoctor = true;
-
-          state.selectedDoctor = null;
-
-          state.selectedDoctorError = null;
-        },
-      )
-
-      .addCase(
-        getDoctorById.fulfilled,
-        (state, action) => {
-          state.isLoadingDoctor = false;
-
-          state.selectedDoctorError = null;
-
-          state.selectedDoctor =
-            action.payload?.doctor || null;
-        },
-      )
-
-      .addCase(
-        getDoctorById.rejected,
-        (state, action) => {
-          state.isLoadingDoctor = false;
-
-          state.selectedDoctor = null;
-
-          state.selectedDoctorError =
-            action.payload ||
-            'Failed to fetch doctor';
-        },
-      );
-
-    /*
-    |--------------------------------------------------------------------------
-    | UPDATE MY DOCTOR
-    |--------------------------------------------------------------------------
-    */
+        if (state.myProfileStatus !== 'loaded') state.myProfileStatus = 'error';
+        state.myProfileError = action.payload?.message;
+      });
 
     builder
+      .addCase(saveMyDoctorProfile.pending, state => {
+        state.saving = true;
+      })
+      .addCase(saveMyDoctorProfile.fulfilled, (state, action) => {
+        state.saving = false;
+        storeMyProfile(state, action.payload?.doctor);
+      })
+      .addCase(saveMyDoctorProfile.rejected, state => {
+        state.saving = false;
+      });
 
-      .addCase(
-        updateMyDoctorProfile.pending,
-        state => {
-          state.isUpdating = true;
-          state.error = null;
-        },
-      )
-
-      .addCase(
-        updateMyDoctorProfile.fulfilled,
-        (state, action) => {
-          state.isUpdating = false;
-          state.error = null;
-
-          if (action.payload?.doctor) {
-            state.myDoctor =
-              action.payload.doctor;
-          }
-        },
-      )
-
-      .addCase(
-        updateMyDoctorProfile.rejected,
-        (state, action) => {
-          state.isUpdating = false;
-
-          state.error =
-            action.payload ||
-            'Failed to update doctor profile';
-        },
-      );
-
-    /*
-    |--------------------------------------------------------------------------
-    | DEACTIVATE
-    |--------------------------------------------------------------------------
-    */
-
-    builder
-
-      .addCase(
-        deactivateMyDoctorProfile.pending,
-        state => {
-          state.isDeactivating = true;
-          state.error = null;
-        },
-      )
-
-      .addCase(
-        deactivateMyDoctorProfile.fulfilled,
-        (state, action) => {
-          state.isDeactivating = false;
-          state.error = null;
-
-          if (action.payload?.doctor) {
-            state.myDoctor =
-              action.payload.doctor;
-          } else if (state.myDoctor) {
-            state.myDoctor.isActive = false;
-
-            state.myDoctor.availability =
-              'unavailable';
-          }
-        },
-      )
-
-      .addCase(
-        deactivateMyDoctorProfile.rejected,
-        (state, action) => {
-          state.isDeactivating = false;
-
-          state.error =
-            action.payload ||
-            'Failed to deactivate doctor profile';
-        },
-      );
-
-    /*
-    |--------------------------------------------------------------------------
-    | ACTIVATE
-    |--------------------------------------------------------------------------
-    */
-
-    builder
-
-      .addCase(
-        activateMyDoctorProfile.pending,
-        state => {
-          state.isActivating = true;
-          state.error = null;
-        },
-      )
-
-      .addCase(
-        activateMyDoctorProfile.fulfilled,
-        (state, action) => {
-          state.isActivating = false;
-          state.error = null;
-
-          if (action.payload?.doctor) {
-            state.myDoctor =
-              action.payload.doctor;
-          } else if (state.myDoctor) {
-            state.myDoctor.isActive = true;
-
-            state.myDoctor.availability =
-              'available';
-          }
-        },
-      )
-
-      .addCase(
-        activateMyDoctorProfile.rejected,
-        (state, action) => {
-          state.isActivating = false;
-
-          state.error =
-            action.payload ||
-            'Failed to activate doctor profile';
-        },
-      );
+    for (const thunk of [setMyDoctorActive, setMyDoctorAvailability]) {
+      builder
+        .addCase(thunk.pending, state => {
+          state.updating = true;
+        })
+        .addCase(thunk.fulfilled, (state, action) => {
+          state.updating = false;
+          storeMyProfile(state, action.payload?.doctor);
+        })
+        .addCase(thunk.rejected, state => {
+          state.updating = false;
+        });
+    }
   },
 });
 
-/*
-|--------------------------------------------------------------------------
-| ACTIONS
-|--------------------------------------------------------------------------
-*/
-
-export const {
-  clearDoctorError,
-  clearSelectedDoctor,
-  clearMyDoctor,
-  resetDoctorState,
-} = doctorSlice.actions;
-
-/*
-|--------------------------------------------------------------------------
-| REDUCER
-|--------------------------------------------------------------------------
-*/
+export const { clearSelectedDoctor } = doctorSlice.actions;
 
 export default doctorSlice.reducer;

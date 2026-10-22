@@ -43,7 +43,7 @@ import {
 import MachineryGridCard from '../../components/machinery/MachineryGridCard';
 import useMachineryMeta from '../../components/machinery/useMachineryMeta';
 import {
-  MACHINERY_HERO_IMAGE,
+  MACHINERY_BANNER,
   getMachineryCategoryImage,
 } from '../../components/machinery/machineryImages';
 import { MACHINERY_ROUTES } from '../../constants/machineryRoutes';
@@ -168,7 +168,7 @@ export default function MachineryHomeScreen({ navigation }) {
   const header = (
     <View>
       <MarketHero
-        image={MACHINERY_HERO_IMAGE}
+        banner={MACHINERY_BANNER}
         onBack={() => navigation.goBack()}
         eyebrow="Machinery on rent"
         title="Rent Machinery"
@@ -189,6 +189,17 @@ export default function MachineryHomeScreen({ navigation }) {
           </>
         }
       >
+        <View style={styles.trustRow}>
+          {TRUST_POINTS.map(({ icon: Icon, label }) => (
+            <View key={label} style={styles.trustPill}>
+              <Icon size={12} color="#BFF0D2" />
+              <Text style={styles.trustText}>{label}</Text>
+            </View>
+          ))}
+        </View>
+      </MarketHero>
+
+      <View style={styles.searchWrap}>
         <View style={styles.searchBox}>
           <Search size={19} color={C.green} />
           <TextInput
@@ -205,16 +216,7 @@ export default function MachineryHomeScreen({ navigation }) {
             </TouchableOpacity>
           )}
         </View>
-
-        <View style={styles.trustRow}>
-          {TRUST_POINTS.map(({ icon: Icon, label }) => (
-            <View key={label} style={styles.trustPill}>
-              <Icon size={12} color="#BFF0D2" />
-              <Text style={styles.trustText}>{label}</Text>
-            </View>
-          ))}
-        </View>
-      </MarketHero>
+      </View>
 
       <View style={styles.section}>
         <View style={styles.ctaRow}>
@@ -411,11 +413,13 @@ const styles = StyleSheet.create({
   section: { paddingHorizontal: GUTTER },
   flex: { flex: 1 },
 
+  searchWrap: { paddingHorizontal: 16, marginTop: 16 },
   searchBox: {
-    marginTop: 18,
     height: 52,
     borderRadius: 18,
     backgroundColor: C.white,
+    borderWidth: 1,
+    borderColor: C.border,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,

@@ -40,5 +40,5 @@ export const getLabourTypeImage = type => {
   return IMAGES[match ? match[1] : 'general'];
 };
 
-export const LABOUR_HERO_IMAGE = require('../../assets/labour/success-hero.jpg');
+export const LABOUR_BANNER = require('../../assets/labour/labour-banner.png');
 export const WORKER_HERO_IMAGE = require('../../assets/labour/hero6.jpg');

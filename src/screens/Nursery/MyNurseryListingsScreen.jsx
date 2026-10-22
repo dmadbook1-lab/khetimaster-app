@@ -47,7 +47,7 @@ import FeedbackModal, {
 } from '../../components/common/FeedbackModal';
 import Toast, { useToast } from '../../components/common/Toast';
 import { PlantImage } from '../../components/nursery/NurseryBits';
-import { NURSERY_HERO_IMAGE } from '../../components/nursery/nurseryVisuals';
+import { NURSERY_BANNER } from '../../components/nursery/nurseryVisuals';
 import { NURSERY_ROUTES } from '../../constants/nurseryRoutes';
 import {
   fetchMyNurseryListings,
@@ -154,7 +154,7 @@ export default function MyNurseryListingsScreen({ navigation }) {
           contentContainerStyle={styles.scrollContent}
         >
           <MarketHero
-            image={NURSERY_HERO_IMAGE}
+            banner={NURSERY_BANNER}
             onBack={() => navigation.goBack()}
             eyebrow="For nurseries & growers"
             title={'Sell your plants\nto farmers nearby'}

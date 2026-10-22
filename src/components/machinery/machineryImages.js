@@ -47,5 +47,6 @@ export const machineryImageSource = machinery =>
     ? { uri: machinery.images[0] }
     : getMachineryCategoryImage(machinery?.category);
 
-export const MACHINERY_HERO_IMAGE = require('../../assets/machinery/sonalika-di-745.jpg');
 export const OWNER_HERO_IMAGE = require('../../assets/machinery/provide-hero-1.png');
+
+export const MACHINERY_BANNER = require('../../assets/machinery/machinery-banner.png');

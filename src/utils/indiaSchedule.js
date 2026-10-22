@@ -48,6 +48,14 @@ export const todayInIndiaKey = (now = Date.now()) => {
 };
 
 /*
+ * Minutes since midnight right now in India.
+ */
+export const nowMinutesInIndia = (now = Date.now()) => {
+  const indian = new Date(now + IST_OFFSET_MS);
+  return indian.getUTCHours() * 60 + indian.getUTCMinutes();
+};
+
+/*
  * A stored booking day (UTC midnight, or 'YYYY-MM-DD') -> 'YYYY-MM-DD'.
  */
 export const dayKeyOf = value => {

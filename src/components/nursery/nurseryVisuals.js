@@ -12,7 +12,7 @@ import {
   Wheat,
 } from 'lucide-react-native';
 
-export const NURSERY_HERO_IMAGE = require('../../assets/homescreen/nursery.png');
+export const NURSERY_BANNER = require('../../assets/nursery/nursery-banner.png');
 
 /*
  * Icon and colours per suggested category (server PLANT_CATEGORIES).

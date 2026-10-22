@@ -45,7 +45,7 @@ import {
 import PlantGridCard from '../../components/nursery/PlantGridCard';
 import useNurseryMeta from '../../components/nursery/useNurseryMeta';
 import {
-  NURSERY_HERO_IMAGE,
+  NURSERY_BANNER,
   categoryVisual,
 } from '../../components/nursery/nurseryVisuals';
 import { NURSERY_ROUTES } from '../../constants/nurseryRoutes';
@@ -193,7 +193,7 @@ export default function NurseryHomeScreen({ navigation }) {
   const header = (
     <View>
       <MarketHero
-        image={NURSERY_HERO_IMAGE}
+        banner={NURSERY_BANNER}
         onBack={() => navigation.goBack()}
         eyebrow="Plant nursery"
         title={'Healthy plants,\ndelivered home'}
@@ -214,6 +214,21 @@ export default function NurseryHomeScreen({ navigation }) {
           </>
         }
       >
+        <View style={styles.trustRow}>
+          <View style={styles.trustPill}>
+            <Truck size={12} color="#BFF0D2" />
+            <Text style={styles.trustText}>
+              Free delivery above {formatRupees(meta.delivery.freeAbove)}
+            </Text>
+          </View>
+          <View style={styles.trustPill}>
+            <Banknote size={12} color="#BFF0D2" />
+            <Text style={styles.trustText}>Cash on delivery</Text>
+          </View>
+        </View>
+      </MarketHero>
+
+      <View style={styles.searchWrap}>
         <View style={styles.searchBox}>
           <Search size={19} color={C.green} />
           <TextInput
@@ -230,20 +245,7 @@ export default function NurseryHomeScreen({ navigation }) {
             </TouchableOpacity>
           )}
         </View>
-
-        <View style={styles.trustRow}>
-          <View style={styles.trustPill}>
-            <Truck size={12} color="#BFF0D2" />
-            <Text style={styles.trustText}>
-              Free delivery above {formatRupees(meta.delivery.freeAbove)}
-            </Text>
-          </View>
-          <View style={styles.trustPill}>
-            <Banknote size={12} color="#BFF0D2" />
-            <Text style={styles.trustText}>Cash on delivery</Text>
-          </View>
-        </View>
-      </MarketHero>
+      </View>
 
       <View style={styles.section}>
         <View style={styles.ctaRow}>
@@ -466,11 +468,13 @@ const styles = StyleSheet.create({
   section: { paddingHorizontal: GUTTER },
   flex: { flex: 1 },
 
+  searchWrap: { paddingHorizontal: 16, marginTop: 16 },
   searchBox: {
-    marginTop: 18,
     height: 52,
     borderRadius: 18,
     backgroundColor: C.white,
+    borderWidth: 1,
+    borderColor: C.border,
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,
