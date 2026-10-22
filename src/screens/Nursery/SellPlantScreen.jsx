@@ -1,533 +1,611 @@
-import React, {useEffect, useState, useCallback, useMemo, memo} from 'react';
+import React, { useRef, useState } from 'react';
 import {
-  ActivityIndicator,
-  Alert,
   Image,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  StatusBar,
   StyleSheet,
+  Switch,
   Text,
-  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from 'react-native-safe-area-context';
 import {
   ArrowLeft,
+  ArrowRight,
+  Boxes,
   ImagePlus,
-  Leaf,
   MapPin,
-  Plus,
+  Save,
+  Sprout,
   Trash2,
   UploadCloud,
 } from 'lucide-react-native';
-import {useDispatch, useSelector} from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+
+import MarketHero, { TopInset } from '../../components/market/MarketHero';
+import { MarketButton } from '../../components/market/MarketBits';
+import { MARKET_COLORS as C } from '../../components/market/theme';
+import FeedbackModal, {
+  useFeedbackModal,
+} from '../../components/common/FeedbackModal';
 import {
-  createNurseryPlant,
-  fetchNurseryCategories,
-  updateNurseryPlant,
-} from '../../redux/slices/nurserySlice';
-import {pickNurseryImages} from '../../utils/nurseryImagePicker';
-import {uploadNurseryImages} from '../../utils/nurseryCloudinary';
+  Field,
+  FormCard,
+  FormInput,
+  SectionHeading,
+  SelectChips,
+} from '../../components/labour/FormBits';
+import PlantGridCard from '../../components/nursery/PlantGridCard';
+import useNurseryMeta from '../../components/nursery/useNurseryMeta';
+import { NURSERY_ROUTES } from '../../constants/nurseryRoutes';
+import { saveNurseryPlant } from '../../redux/slices/nurserySlice';
+import { pickNurseryImages } from '../../utils/nurseryImagePicker';
+import { uploadNurseryImages } from '../../utils/nurseryCloudinary';
+import { formatRupees } from '../../utils/marketFormat';
+import { MAX_PLANT_IMAGES, buildPlantPayload } from '../../utils/nurseryFormat';
 
-const GREEN = '#159447';
-const DARK = '#151C2B';
-const BG = '#F6F8F7';
-const MUTED = '#747B78';
-const BORDER = '#E1E6E3';
-const LIGHT_GREEN = '#EAF7EF';
-const WHITE = '#FFFFFF';
+const STEPS = [
+  { title: 'Your plant', text: 'Name, category and photos' },
+  { title: 'Price & stock', text: 'What you charge and how many you have' },
+  { title: 'Location & details', text: 'Where buyers get it from' },
+];
 
-/* ---------- Memoized Local Image Thumbnail ---------- */
-const SelectedImageItem = memo(({uri, onRemove, isExisting, index}) => (
-  <View style={styles.imageBox}>
-    <Image source={{uri}} style={styles.selectedImage} />
-    {!isExisting && (
-      <View style={styles.newImageBadge}>
-        <UploadCloud size={11} color={WHITE} />
-      </View>
-    )}
-    <TouchableOpacity
-      activeOpacity={0.7}
-      style={styles.removeImageButton}
-      onPress={() => onRemove(index, isExisting)}>
-      <Trash2 size={13} color={WHITE} />
-    </TouchableOpacity>
-  </View>
-));
+// page each validated field lives on (fields from buildPlantPayload)
+const STEP_OF_FIELD = {
+  name: 0,
+  category: 0,
+  images: 0,
+  price: 1,
+  quantity: 1,
+  description: 2,
+};
 
-/* ---------- Memoized Category Selector ---------- */
-const CategoryChipItem = memo(({item, selected, onPress}) => (
-  <TouchableOpacity
-    activeOpacity={0.8}
-    style={[
-      styles.categoryChip,
-      selected && styles.selectedCategoryChip,
-    ]}
-    onPress={() => onPress(item)}>
-    <Text
-      style={[
-        styles.categoryChipText,
-        selected && styles.selectedCategoryText,
-      ]}>
-      {item}
-    </Text>
-  </TouchableOpacity>
-));
+const toText = value =>
+  value === undefined || value === null ? '' : String(value);
 
-const SellPlantScreen = ({navigation, route}) => {
+const initialForm = (plant, user) => ({
+  name: plant?.name || '',
+  category: plant?.category || '',
+  images: plant?.images || [],
+  price: toText(plant?.price),
+  quantity: toText(plant?.quantity),
+  description: plant?.description || '',
+  district: plant?.location?.district ?? user?.district ?? '',
+  state: plant?.location?.state ?? user?.state ?? '',
+  isActive: plant?.isActive !== false,
+});
+
+export default function SellPlantScreen({ navigation, route }) {
+  const editing = route.params?.plant || null;
+  const isCreate = !editing;
+
   const dispatch = useDispatch();
-  const editingPlant = route?.params?.plant || null;
-  const isEditMode = Boolean(editingPlant);
+  const insets = useSafeAreaInsets();
+  const feedback = useFeedbackModal();
+  const scrollRef = useRef(null);
+  const meta = useNurseryMeta();
 
-  const {categories = [], categoriesLoading, creating, updating} = useSelector(
-    state => state.nursery,
-  );
+  const user = useSelector(state => state.auth.user);
+  const saving = useSelector(state => state.nursery.saving);
 
-  const [name, setName] = useState(editingPlant?.name || '');
-  const [category, setCategory] = useState(editingPlant?.category || '');
-  const [description, setDescription] = useState(editingPlant?.description || '');
-  const [price, setPrice] = useState(editingPlant?.price ? String(editingPlant.price) : '');
-  const [quantity, setQuantity] = useState(editingPlant?.quantity ? String(editingPlant.quantity) : '');
-  const [stateName, setStateName] = useState(editingPlant?.location?.state || '');
-  const [district, setDistrict] = useState(editingPlant?.location?.district || '');
-  const [images, setImages] = useState(editingPlant?.images || []);
-  const [selectedAssets, setSelectedAssets] = useState([]);
+  const [form, setForm] = useState(() => initialForm(editing, user));
+  const [assets, setAssets] = useState([]);
   const [uploading, setUploading] = useState(false);
+  const [step, setStep] = useState(0);
 
-  useEffect(() => {
-    if (!categories?.length) {
-      dispatch(fetchNurseryCategories());
+  const setField = (key, value) =>
+    setForm(previous => ({ ...previous, [key]: value }));
+
+  const shows = index => !isCreate || step === index;
+  const isLastStep = !isCreate || step === STEPS.length - 1;
+
+  const goToStep = index => {
+    setStep(index);
+    scrollRef.current?.scrollTo({ y: 0, animated: false });
+  };
+
+  const handleBack = () => {
+    if (isCreate && step > 0) goToStep(step - 1);
+    else navigation.goBack();
+  };
+
+  const validate = () =>
+    buildPlantPayload(
+      { ...form, images: [...form.images, ...assets.map(asset => asset.uri)] },
+      { isCreate },
+    );
+
+  const handleNext = () => {
+    const { error, field } = validate();
+    const errorStep = STEP_OF_FIELD[field];
+
+    if (error && errorStep <= step) {
+      if (errorStep < step) goToStep(errorStep);
+      feedback.error('Check your plant details', error);
+      return;
     }
-  }, [dispatch, categories]);
 
-  const chooseImages = useCallback(async () => {
+    goToStep(step + 1);
+  };
+
+  /* PHOTOS */
+
+  const totalImages = form.images.length + assets.length;
+
+  const choosePhotos = async () => {
+    const remaining = MAX_PLANT_IMAGES - totalImages;
+
+    if (remaining <= 0) {
+      feedback.info(
+        'Maximum reached',
+        `You can add up to ${MAX_PLANT_IMAGES} photos.`,
+      );
+      return;
+    }
+
     try {
-      const remaining = 5 - (images.length + selectedAssets.length);
-      if (remaining <= 0) {
-        Alert.alert('Maximum reached', 'You can add up to 5 images.');
-        return;
-      }
-
-      const assets = await pickNurseryImages({selectionLimit: remaining});
-      if (assets.length > 0) {
-        setSelectedAssets(prev => [...prev, ...assets]);
+      const picked = await pickNurseryImages({ selectionLimit: remaining });
+      if (picked.length) {
+        setAssets(previous =>
+          [...previous, ...picked].slice(0, MAX_PLANT_IMAGES),
+        );
       }
     } catch (error) {
-      Alert.alert('Image selection failed', error?.message || 'Unable to select images.');
+      feedback.error('Could not open photos', error?.message);
     }
-  }, [images.length, selectedAssets.length]);
+  };
 
-  const handleRemoveImage = useCallback((index, isExisting) => {
-    if (isExisting) {
-      setImages(prev => prev.filter((_, idx) => idx !== index));
-    } else {
-      setSelectedAssets(prev => prev.filter((_, idx) => idx !== index));
-    }
-  }, []);
+  /* SAVE */
 
-  const validateForm = useCallback(() => {
-    if (!name.trim()) {
-      Alert.alert('Plant name required', 'Please enter the plant name.');
-      return false;
-    }
-    if (!category.trim()) {
-      Alert.alert('Category required', 'Please select a plant category.');
-      return false;
-    }
-    if (!price || Number(price) <= 0) {
-      Alert.alert('Invalid price', 'Please enter a valid plant price.');
-      return false;
-    }
-    if (!quantity || Number(quantity) <= 0) {
-      Alert.alert('Invalid quantity', 'Please enter the available quantity.');
-      return false;
-    }
-    return true;
-  }, [name, category, price, quantity]);
+  const handleSave = async () => {
+    const { error, field } = validate();
 
-  const handleSubmit = useCallback(async () => {
-    if (!validateForm()) return;
+    if (error) {
+      if (isCreate && STEP_OF_FIELD[field] !== undefined) {
+        goToStep(STEP_OF_FIELD[field]);
+      }
+      feedback.error('Check your plant details', error);
+      return;
+    }
+
+    const { payload } = buildPlantPayload(form, { isCreate });
+    if (!isCreate) payload.isActive = form.isActive;
 
     try {
-      let finalImages = [...images];
-
-      if (selectedAssets.length > 0) {
+      if (assets.length) {
         setUploading(true);
-        const uploadedUrls = await uploadNurseryImages(selectedAssets);
-        finalImages = [...finalImages, ...uploadedUrls];
+        const uploaded = await uploadNurseryImages(assets);
+        payload.images = [...payload.images, ...uploaded];
         setUploading(false);
       }
 
-      const payload = {
-        name: name.trim(),
-        category: category.trim(),
-        description: description.trim(),
-        images: finalImages,
-        price: Number(price),
-        quantity: Number(quantity),
-        state: stateName.trim(),
-        district: district.trim(),
-      };
+      const result = await dispatch(
+        saveNurseryPlant({ plantId: editing?._id, plantData: payload }),
+      ).unwrap();
 
-      if (isEditMode) {
-        await dispatch(
-          updateNurseryPlant({
-            plantId: editingPlant._id,
-            data: payload,
-          }),
-        ).unwrap();
-
-        Alert.alert(
-          'Listing updated',
-          'Your plant listing has been updated successfully.',
-          [{text: 'OK', onPress: () => navigation.goBack()}],
+      if (isCreate) {
+        feedback.success(
+          'Your plant is listed!',
+          'Buyers can now find it and order with cash on delivery.',
+          {
+            primaryLabel: 'View Listing',
+            secondaryLabel: 'My Nursery',
+            dismissable: false,
+            onPrimary: () =>
+              navigation.replace(NURSERY_ROUTES.PLANT, {
+                plantId: result.data._id,
+              }),
+            onSecondary: () => navigation.goBack(),
+          },
         );
       } else {
-        await dispatch(createNurseryPlant(payload)).unwrap();
-        Alert.alert(
-          'Plant listed',
-          'Your plant has been added to the Nursery marketplace.',
-          [
-            {
-              text: 'View Listings',
-              onPress: () => navigation.replace('MyNurseryListings'),
-            },
-          ],
+        feedback.success(
+          'Plant updated',
+          'New prices apply to new orders. Orders already placed keep their price.',
+          {
+            primaryLabel: 'Done',
+            dismissable: false,
+            onPrimary: () => navigation.goBack(),
+          },
         );
       }
-    } catch (error) {
+    } catch (failure) {
       setUploading(false);
-      Alert.alert(
-        'Unable to save listing',
-        error?.message || error?.error || 'Something went wrong. Please try again.',
+      feedback.error(
+        'Could not save plant',
+        typeof failure === 'string' ? failure : failure?.message,
       );
     }
-  }, [
-    validateForm,
-    images,
-    selectedAssets,
-    name,
-    category,
-    description,
-    price,
-    quantity,
-    stateName,
-    district,
-    isEditMode,
-    editingPlant?._id,
-    dispatch,
-    navigation,
-  ]);
+  };
 
-  const handleCategoryPress = useCallback((item) => {
-    setCategory(item);
-  }, []);
+  const suggested = meta.categories || [];
+  const isCustomCategory =
+    !!form.category &&
+    !suggested.some(
+      item => item.toLowerCase() === form.category.trim().toLowerCase(),
+    );
 
-  const totalImageCount = useMemo(() => {
-    return images.length + selectedAssets.length;
-  }, [images.length, selectedAssets.length]);
-
-  const busy = creating || updating || uploading;
+  const preview = {
+    _id: 'preview',
+    name: form.name || 'Your plant name',
+    category: form.category || 'Category',
+    price: Number(form.price) || 0,
+    quantity: Number(form.quantity) || 0,
+    images: [...form.images, ...assets.map(asset => asset.uri)],
+    location: { district: form.district, state: form.state },
+  };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
-
-      {/* HEADER */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          activeOpacity={0.7}
-          style={styles.backButton}
-          onPress={() => navigation.goBack()}>
-          <ArrowLeft size={21} color={DARK} />
-        </TouchableOpacity>
-
-        <Text style={styles.headerTitle}>
-          {isEditMode ? 'Edit Plant' : 'Sell Your Plant'}
-        </Text>
-        <View style={styles.headerSpacer} />
-      </View>
-
+    <SafeAreaView style={styles.container} edges={['left', 'right']}>
+      <TopInset />
       <KeyboardAvoidingView
-        style={{flex: 1}}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-        
+        style={styles.flex}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      >
         <ScrollView
+          ref={scrollRef}
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
-          contentContainerStyle={styles.scrollContent}>
-          
-          {/* INTRO HERO */}
-          <View style={styles.introCard}>
-            <View style={styles.introIcon}>
-              <Leaf size={22} color={GREEN} />
-            </View>
-            <View style={{flex: 1}}>
-              <Text style={styles.introTitle}>
-                {isEditMode ? 'Update your listing' : 'List your plant'}
-              </Text>
-              <Text style={styles.introText}>
-                Add accurate details so buyers can easily find your plant listing.
-              </Text>
-            </View>
-          </View>
-
-          {/* IMAGE ROW */}
-          <Text style={styles.sectionTitle}>Plant Photos</Text>
-          <Text style={styles.sectionSubtitle}>Add up to 5 clear photos of your plant.</Text>
-
-          <ScrollView
-            horizontal
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.imageList}>
-            
-            {/* EXISTING CLOUDINARY IMAGES */}
-            {images.map((img, index) => (
-              <SelectedImageItem
-                key={`existing-${img}-${index}`}
-                uri={img}
-                index={index}
-                isExisting={true}
-                onRemove={handleRemoveImage}
-              />
-            ))}
-
-            {/* NEW LOCAL SELECTED ASSETS */}
-            {selectedAssets.map((asset, index) => (
-              <SelectedImageItem
-                key={`asset-${index}`}
-                uri={asset.uri}
-                index={index}
-                isExisting={false}
-                onRemove={handleRemoveImage}
-              />
-            ))}
-
-            {totalImageCount < 5 && (
-              <TouchableOpacity
-                activeOpacity={0.8}
-                style={styles.addImageBox}
-                onPress={chooseImages}>
-                <ImagePlus size={26} color={GREEN} />
-                <Text style={styles.addImageText}>Add Photos</Text>
-              </TouchableOpacity>
-            )}
-          </ScrollView>
-
-          {/* FORM CARD */}
-          <View style={styles.formCard}>
-            <Text style={styles.fieldLabel}>Plant Name *</Text>
-            <TextInput
-              value={name}
-              onChangeText={setName}
-              placeholder="e.g. Alphonso Mango Plant"
-              placeholderTextColor="#A3AAA7"
-              style={styles.input}
-            />
-
-            <Text style={styles.fieldLabel}>Category *</Text>
-            {categoriesLoading ? (
-              <ActivityIndicator size="small" color={GREEN} style={{alignSelf: 'flex-start', marginVertical: 8}} />
-            ) : (
-              <ScrollView
-                horizontal
-                showsHorizontalScrollIndicator={false}
-                contentContainerStyle={styles.categoryList}>
-                {categories.map((item) => (
-                  <CategoryChipItem
-                    key={item}
-                    item={item}
-                    selected={category === item}
-                    onPress={handleCategoryPress}
-                  />
-                ))}
-              </ScrollView>
-            )}
-
-            <TextInput
-              value={category}
-              onChangeText={setCategory}
-              placeholder="Or enter custom category"
-              placeholderTextColor="#A3AAA7"
-              style={[styles.input, {marginTop: 10}]}
-            />
-
-            <Text style={styles.fieldLabel}>Description</Text>
-            <TextInput
-              value={description}
-              onChangeText={setDescription}
-              placeholder="Describe plant growth, age, watering needs..."
-              placeholderTextColor="#A3AAA7"
-              style={[styles.input, styles.textArea]}
-              multiline
-              numberOfLines={4}
-              textAlignVertical="top"
-            />
-
-            <View style={styles.row}>
-              <View style={styles.halfField}>
-                <Text style={styles.fieldLabel}>Price *</Text>
-                <View style={styles.priceInputWrapper}>
-                  <Text style={styles.rupeeSymbol}>₹</Text>
-                  <TextInput
-                    value={price}
-                    onChangeText={setPrice}
-                    placeholder="150"
-                    placeholderTextColor="#A3AAA7"
-                    keyboardType="numeric"
-                    style={styles.priceInput}
-                  />
+          contentContainerStyle={styles.scrollContent}
+        >
+          <MarketHero
+            compact
+            gradient={isCreate ? 'amber' : 'forest'}
+            onBack={handleBack}
+            eyebrow={isCreate ? 'Sell a plant' : 'Edit listing'}
+            title={isCreate ? 'List your plant' : editing.name}
+            subtitle={
+              isCreate
+                ? STEPS[step].text
+                : 'Price changes only apply to new orders.'
+            }
+          >
+            {isCreate && (
+              <View style={styles.progress}>
+                <Text style={styles.progressLabel}>
+                  Step {step + 1} of {STEPS.length} · {STEPS[step].title}
+                </Text>
+                <View style={styles.progressBar}>
+                  {STEPS.map((item, index) => (
+                    <View
+                      key={item.title}
+                      style={[
+                        styles.progressSegment,
+                        index <= step && styles.progressSegmentDone,
+                      ]}
+                    />
+                  ))}
                 </View>
               </View>
+            )}
+          </MarketHero>
 
-              <View style={styles.halfField}>
-                <Text style={styles.fieldLabel}>Quantity *</Text>
-                <TextInput
-                  value={quantity}
-                  onChangeText={setQuantity}
-                  placeholder="20"
-                  placeholderTextColor="#A3AAA7"
-                  keyboardType="numeric"
-                  style={styles.input}
-                />
-              </View>
-            </View>
-          </View>
-
-          {/* LOCATION CARD */}
-          <View style={styles.formCard}>
-            <View style={styles.locationTitleRow}>
-              <MapPin size={18} color={GREEN} />
-              <Text style={styles.cardTitle}>Seller Location</Text>
-            </View>
-            <Text style={styles.sectionSubtitle}>Allows buyers in your area to locate you.</Text>
-
-            <Text style={styles.fieldLabel}>State</Text>
-            <TextInput
-              value={stateName}
-              onChangeText={setStateName}
-              placeholder="Maharashtra"
-              placeholderTextColor="#A3AAA7"
-              style={styles.input}
-            />
-
-            <Text style={styles.fieldLabel}>District</Text>
-            <TextInput
-              value={district}
-              onChangeText={setDistrict}
-              placeholder="Pune"
-              placeholderTextColor="#A3AAA7"
-              style={styles.input}
-            />
-          </View>
-
-          {/* COD NOTIFICATION */}
-          <View style={styles.codCard}>
-            <Text style={styles.codTitle}>🌱 Simple Marketplace Model</Text>
-            <Text style={styles.codText}>
-              Buyers will purchase using Cash on Delivery. Hand-to-hand transactions keep process simple and direct.
-            </Text>
-          </View>
-
-          {/* SUBMIT BUTTON */}
-          <TouchableOpacity
-            activeOpacity={0.85}
-            disabled={busy}
-            style={[styles.submitButton, busy && styles.disabledButton]}
-            onPress={handleSubmit}>
-            {busy ? (
-              <ActivityIndicator color="#FFFFFF" />
-            ) : (
+          <View style={styles.body}>
+            {shows(0) && (
               <>
-                <Plus size={18} color="#FFFFFF" />
-                <Text style={styles.submitButtonText}>
-                  {isEditMode ? 'Update Listing' : 'List Plant'}
-                </Text>
+                <SectionHeading
+                  icon={<Sprout size={16} color={C.green} />}
+                  title="Your plant"
+                />
+                <FormCard>
+                  <Field
+                    label="Photos"
+                    hint={`Real photos of your plants sell faster. Up to ${MAX_PLANT_IMAGES}.`}
+                  >
+                    <ScrollView
+                      horizontal
+                      showsHorizontalScrollIndicator={false}
+                      contentContainerStyle={styles.imageList}
+                    >
+                      {form.images.map((uri, index) => (
+                        <View key={`url-${uri}`} style={styles.imageBox}>
+                          <Image source={{ uri }} style={styles.image} />
+                          <TouchableOpacity
+                            style={styles.removeImage}
+                            onPress={() =>
+                              setField(
+                                'images',
+                                form.images.filter((_, i) => i !== index),
+                              )
+                            }
+                          >
+                            <Trash2 size={13} color={C.white} />
+                          </TouchableOpacity>
+                        </View>
+                      ))}
+                      {assets.map((asset, index) => (
+                        <View
+                          key={`asset-${asset.uri}`}
+                          style={styles.imageBox}
+                        >
+                          <Image
+                            source={{ uri: asset.uri }}
+                            style={styles.image}
+                          />
+                          <View style={styles.newBadge}>
+                            <UploadCloud size={11} color={C.white} />
+                          </View>
+                          <TouchableOpacity
+                            style={styles.removeImage}
+                            onPress={() =>
+                              setAssets(previous =>
+                                previous.filter((_, i) => i !== index),
+                              )
+                            }
+                          >
+                            <Trash2 size={13} color={C.white} />
+                          </TouchableOpacity>
+                        </View>
+                      ))}
+                      {totalImages < MAX_PLANT_IMAGES && (
+                        <TouchableOpacity
+                          activeOpacity={0.8}
+                          style={styles.addImage}
+                          onPress={choosePhotos}
+                        >
+                          <ImagePlus size={24} color={C.green} />
+                          <Text style={styles.addImageText}>Add Photos</Text>
+                        </TouchableOpacity>
+                      )}
+                    </ScrollView>
+                  </Field>
+
+                  <Field label="Plant name *">
+                    <FormInput
+                      value={form.name}
+                      onChangeText={value => setField('name', value)}
+                      placeholder="e.g. Alphonso Mango grafted sapling"
+                      maxLength={100}
+                    />
+                  </Field>
+
+                  <Field label="Category *">
+                    <SelectChips
+                      options={suggested}
+                      value={isCustomCategory ? null : form.category}
+                      onChange={value => setField('category', value)}
+                    />
+                  </Field>
+                  <Field
+                    label="Or type your own category"
+                    hint="Use this if none of the above fits."
+                  >
+                    <FormInput
+                      value={isCustomCategory ? form.category : ''}
+                      onChangeText={value => setField('category', value)}
+                      placeholder="e.g. Bonsai"
+                      maxLength={100}
+                    />
+                  </Field>
+                </FormCard>
               </>
             )}
-          </TouchableOpacity>
+
+            {shows(1) && (
+              <>
+                <SectionHeading
+                  icon={<Boxes size={16} color={C.blue} />}
+                  color={C.blue}
+                  title="Price & stock"
+                />
+                <FormCard>
+                  <View style={styles.row}>
+                    <View style={styles.flex}>
+                      <Field label="Price per plant *">
+                        <View style={styles.moneyBox}>
+                          <Text style={styles.rupee}>₹</Text>
+                          <FormInput
+                            value={form.price}
+                            onChangeText={value =>
+                              setField('price', value.replace(/[^0-9.]/g, ''))
+                            }
+                            placeholder="0"
+                            keyboardType="decimal-pad"
+                            style={styles.moneyInput}
+                          />
+                        </View>
+                      </Field>
+                    </View>
+                    <View style={styles.flex}>
+                      <Field label="Plants in stock *">
+                        <FormInput
+                          value={form.quantity}
+                          onChangeText={value =>
+                            setField('quantity', value.replace(/\D/g, ''))
+                          }
+                          placeholder="e.g. 50"
+                          keyboardType="number-pad"
+                          style={styles.moneyInput}
+                        />
+                      </Field>
+                    </View>
+                  </View>
+
+                  <View style={styles.deliveryNote}>
+                    <Text style={styles.deliveryNoteText}>
+                      Buyers pay {formatRupees(meta.delivery.fee)} delivery on
+                      orders below {formatRupees(meta.delivery.freeAbove)}.
+                      Stock goes down automatically when someone orders, and
+                      comes back if the order is cancelled.
+                    </Text>
+                  </View>
+                </FormCard>
+
+                {isCreate && (
+                  <>
+                    <Text style={styles.previewTitle}>
+                      How buyers will see it
+                    </Text>
+                    <View style={styles.preview}>
+                      <PlantGridCard plant={preview} width={180} />
+                    </View>
+                  </>
+                )}
+              </>
+            )}
+
+            {shows(2) && (
+              <>
+                <SectionHeading
+                  icon={<MapPin size={16} color={C.orange} />}
+                  color={C.orange}
+                  title="Location & details"
+                />
+                <FormCard>
+                  <View style={styles.row}>
+                    <View style={styles.flex}>
+                      <Field label="District">
+                        <FormInput
+                          value={form.district}
+                          onChangeText={value => setField('district', value)}
+                          placeholder="District"
+                        />
+                      </Field>
+                    </View>
+                    <View style={styles.flex}>
+                      <Field label="State">
+                        <FormInput
+                          value={form.state}
+                          onChangeText={value => setField('state', value)}
+                          placeholder="State"
+                        />
+                      </Field>
+                    </View>
+                  </View>
+                  <Field
+                    label="About this plant"
+                    hint="Age, height, variety, care tips, pot or bag size..."
+                  >
+                    <FormInput
+                      value={form.description}
+                      onChangeText={value => setField('description', value)}
+                      placeholder="e.g. 2 year old grafted sapling, 2-3 ft tall, in 8 inch bag"
+                      maxLength={1000}
+                      multiline
+                      textAlignVertical="top"
+                      style={styles.textArea}
+                    />
+                  </Field>
+
+                  {!isCreate && (
+                    <View style={styles.switchRow}>
+                      <View style={styles.flex}>
+                        <Text style={styles.switchLabel}>Show to buyers</Text>
+                        <Text style={styles.switchText}>
+                          Turn off to pause this listing
+                        </Text>
+                      </View>
+                      <Switch
+                        value={form.isActive}
+                        onValueChange={value => setField('isActive', value)}
+                        trackColor={{ true: C.green, false: '#D0D5D2' }}
+                        thumbColor={C.white}
+                      />
+                    </View>
+                  )}
+                </FormCard>
+              </>
+            )}
+          </View>
         </ScrollView>
       </KeyboardAvoidingView>
+
+      <View
+        style={[
+          styles.bottomBar,
+          { paddingBottom: Math.max(insets.bottom, 14) + 6 },
+        ]}
+      >
+        {isCreate && step > 0 && (
+          <MarketButton
+            variant="outline"
+            label="Back"
+            icon={<ArrowLeft size={16} color={C.green} />}
+            disabled={saving || uploading}
+            onPress={handleBack}
+            style={styles.flex}
+          />
+        )}
+        {isLastStep ? (
+          <MarketButton
+            label={
+              uploading
+                ? 'Uploading photos…'
+                : isCreate
+                ? 'List Plant'
+                : 'Save Changes'
+            }
+            icon={<Save size={17} color={C.white} />}
+            loading={saving || uploading}
+            onPress={handleSave}
+            style={styles.flexWide}
+          />
+        ) : (
+          <MarketButton
+            label="Next"
+            icon={<ArrowRight size={17} color={C.white} />}
+            onPress={handleNext}
+            style={styles.flexWide}
+          />
+        )}
+      </View>
+
+      <FeedbackModal {...feedback.modalProps} />
     </SafeAreaView>
   );
-};
+}
 
 const styles = StyleSheet.create({
-  container: {flex: 1, backgroundColor: BG},
-  header: {
-    height: 64,
-    backgroundColor: '#FFFFFF',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: BORDER,
-  },
-  backButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 13,
-    backgroundColor: '#F4F6F5',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  headerTitle: {fontSize: 16, fontWeight: '900', color: DARK, letterSpacing: -0.3},
-  headerSpacer: {width: 40},
-  scrollContent: {padding: 16, paddingBottom: 40},
+  container: { flex: 1, backgroundColor: C.bg },
+  flex: { flex: 1 },
+  flexWide: { flex: 1.6 },
+  scrollContent: { paddingBottom: 30 },
+  body: { paddingHorizontal: 16 },
+  row: { flexDirection: 'row', gap: 12 },
 
-  /* HERO */
-  introCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: LIGHT_GREEN,
-    borderRadius: 18,
-    padding: 15,
-    marginBottom: 22,
+  progress: { marginTop: 16 },
+  progressLabel: { color: '#FFF3D6', fontSize: 12, fontWeight: '900' },
+  progressBar: { flexDirection: 'row', gap: 6, marginTop: 8 },
+  progressSegment: {
+    flex: 1,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: 'rgba(255,255,255,0.28)',
   },
-  introIcon: {
-    width: 46,
-    height: 46,
-    borderRadius: 13,
-    backgroundColor: WHITE,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
-  },
-  introTitle: {fontSize: 15, fontWeight: '900', color: DARK, letterSpacing: -0.2},
-  introText: {marginTop: 4, fontSize: 11.5, lineHeight: 17, color: MUTED, fontWeight: '500'},
+  progressSegmentDone: { backgroundColor: C.white },
 
-  /* SECTIONS */
-  sectionTitle: {fontSize: 16, fontWeight: '900', color: DARK, letterSpacing: -0.2},
-  sectionSubtitle: {fontSize: 11.5, color: MUTED, lineHeight: 17, marginTop: 4, fontWeight: '500'},
-
-  /* IMAGES */
-  imageList: {gap: 10, paddingVertical: 12},
+  imageList: { gap: 10 },
   imageBox: {
-    width: 100,
-    height: 100,
+    width: 92,
+    height: 92,
     borderRadius: 14,
     overflow: 'hidden',
-    position: 'relative',
     backgroundColor: '#E9EFEB',
   },
-  selectedImage: {width: '100%', height: '100%'},
-  addImageBox: {
-    width: 100,
-    height: 100,
+  image: { width: '100%', height: '100%' },
+  addImage: {
+    width: 92,
+    height: 92,
     borderRadius: 14,
     borderWidth: 1.5,
     borderStyle: 'dashed',
-    borderColor: GREEN,
+    borderColor: C.green,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: LIGHT_GREEN,
+    backgroundColor: C.lightGreen,
   },
-  addImageText: {marginTop: 6, color: GREEN, fontSize: 10.5, fontWeight: '800'},
-  removeImageButton: {
+  addImageText: {
+    marginTop: 6,
+    color: C.green,
+    fontSize: 10.5,
+    fontWeight: '800',
+  },
+  removeImage: {
     position: 'absolute',
     top: 6,
     right: 6,
@@ -538,97 +616,73 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  newImageBadge: {
+  newBadge: {
     position: 'absolute',
     left: 6,
     bottom: 6,
-    width: 24,
-    height: 24,
-    borderRadius: 12,
-    backgroundColor: GREEN,
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    backgroundColor: C.green,
     alignItems: 'center',
     justifyContent: 'center',
   },
 
-  /* FORM CARD */
-  formCard: {
-    backgroundColor: WHITE,
-    borderRadius: 18,
-    padding: 16,
-    marginTop: 10,
-    borderWidth: 1,
-    borderColor: BORDER,
+  moneyBox: { flexDirection: 'row', alignItems: 'center' },
+  rupee: {
+    position: 'absolute',
+    left: 13,
+    zIndex: 1,
+    fontSize: 15,
+    fontWeight: '900',
+    color: C.green,
+  },
+  moneyInput: { flex: 1, paddingLeft: 30, fontSize: 15, fontWeight: '800' },
+  deliveryNote: {
+    marginTop: 14,
+    marginBottom: 8,
+    padding: 12,
+    borderRadius: 12,
+    backgroundColor: C.lightBlue,
+  },
+  deliveryNoteText: {
+    fontSize: 11.5,
+    fontWeight: '600',
+    color: '#1E3A8A',
+    lineHeight: 17,
+  },
+  previewTitle: {
+    fontSize: 13,
+    fontWeight: '900',
+    color: C.muted,
+    marginTop: 20,
     marginBottom: 10,
   },
-  fieldLabel: {fontSize: 12, fontWeight: '800', color: DARK, marginTop: 14, marginBottom: 7},
-  input: {
-    height: 48,
-    borderWidth: 1,
-    borderColor: BORDER,
-    borderRadius: 12,
-    paddingHorizontal: 13,
-    fontSize: 13.5,
-    color: DARK,
-    backgroundColor: '#FBFCFB',
-  },
-  textArea: {height: 100, paddingTop: 12},
+  preview: { alignItems: 'center' },
 
-  /* CHIPS */
-  categoryList: {gap: 8, paddingVertical: 2},
-  categoryChip: {
-    paddingHorizontal: 13,
-    paddingVertical: 8,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: BORDER,
-    backgroundColor: WHITE,
-  },
-  selectedCategoryChip: {backgroundColor: LIGHT_GREEN, borderColor: GREEN},
-  categoryChipText: {fontSize: 11.5, color: MUTED, fontWeight: '700'},
-  selectedCategoryText: {color: GREEN},
-
-  /* PRICING ROW */
-  row: {flexDirection: 'row', gap: 12},
-  halfField: {flex: 1},
-  priceInputWrapper: {
-    height: 48,
-    borderWidth: 1,
-    borderColor: BORDER,
-    borderRadius: 12,
+  textArea: { height: 110, paddingTop: 12 },
+  switchRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FBFCFB',
+    gap: 12,
+    marginTop: 16,
+    marginBottom: 6,
   },
-  rupeeSymbol: {paddingLeft: 13, fontSize: 14.5, fontWeight: '800', color: GREEN},
-  priceInput: {flex: 1, height: '100%', paddingHorizontal: 8, fontSize: 13.5, color: DARK, paddingVertical: 0},
+  switchLabel: { fontSize: 13, fontWeight: '800', color: C.dark },
+  switchText: { fontSize: 11, color: C.muted, marginTop: 2, fontWeight: '500' },
 
-  /* LOCATION */
-  locationTitleRow: {flexDirection: 'row', alignItems: 'center', gap: 8},
-  cardTitle: {fontSize: 15, fontWeight: '900', color: DARK, letterSpacing: -0.2},
-
-  /* COD */
-  codCard: {backgroundColor: '#FFF9E8', borderRadius: 16, padding: 15, marginTop: 12},
-  codTitle: {color: '#725C19', fontWeight: '900', fontSize: 13.5, letterSpacing: -0.2},
-  codText: {color: '#806E36', fontSize: 11.5, lineHeight: 17, marginTop: 5, fontWeight: '500'},
-
-  /* SUBMIT */
-  submitButton: {
-    height: 52,
-    borderRadius: 14,
-    backgroundColor: GREEN,
-    alignItems: 'center',
-    justifyContent: 'center',
+  bottomBar: {
     flexDirection: 'row',
-    gap: 8,
-    marginTop: 22,
-    shadowColor: GREEN,
-    shadowOffset: {width: 0, height: 4},
-    shadowOpacity: 0.25,
-    shadowRadius: 8,
-    elevation: 4,
+    gap: 10,
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    backgroundColor: C.white,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    shadowColor: '#0F172A',
+    shadowOpacity: 0.08,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: -4 },
+    elevation: 12,
   },
-  disabledButton: {opacity: 0.65},
-  submitButtonText: {color: WHITE, fontSize: 14, fontWeight: '900'},
 });
-
-export default SellPlantScreen;

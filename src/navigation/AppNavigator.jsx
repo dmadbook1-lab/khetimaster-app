@@ -88,6 +88,8 @@ import NurseryOrdersScreen from '../screens/Nursery/NurseryOrdersScreen';
 import NurseryOrderDetailsScreen from '../screens/Nursery/NurseryOrderDetailsScreen';
 import SellPlantScreen from '../screens/Nursery/SellPlantScreen';
 import MyNurseryListingsScreen from '../screens/Nursery/MyNurseryListingsScreen';
+import NurserySellerOrdersScreen from '../screens/Nursery/NurserySellerOrdersScreen';
+import NurserySellerOrderDetailsScreen from '../screens/Nursery/NurserySellerOrderDetailsScreen';
 import MarketHomeScreen from '../screens/Market/MarketHomeScreen';
 import MarketListingDetailsScreen from '../screens/Market/MarketListingDetailsScreen';
 import MarketSellScreen from '../screens/Market/MarketSellScreen';
@@ -456,7 +458,7 @@ export default function AppNavigator() {
           component={MyConsultationsScreen}
         />
 
-        {/* Route names: NurseryHome, NurseryPlantDetails, NurseryCart, NurseryCheckout, NurseryOrders, MyOrders, NurseryOrderDetails, SellPlant, MyNurseryListings */}
+        {/* Route names: NurseryHome, NurseryPlantDetails, NurseryCart, NurseryCheckout, NurseryOrders, MyOrders, NurseryOrderDetails, SellPlant, MyNurseryListings, NurserySellerOrders, NurserySellerOrderDetails */}
         <Stack.Screen name="NurseryHome" component={NurseryHomeScreen} />
         <Stack.Screen
           name="NurseryPlantDetails"
@@ -477,6 +479,14 @@ export default function AppNavigator() {
         <Stack.Screen
           name="MyNurseryListings"
           component={MyNurseryListingsScreen}
+        />
+        <Stack.Screen
+          name="NurserySellerOrders"
+          component={NurserySellerOrdersScreen}
+        />
+        <Stack.Screen
+          name="NurserySellerOrderDetails"
+          component={NurserySellerOrderDetailsScreen}
         />
 
         {/* Route names: MarketHome, MarketListingDetails, MarketSell, MarketMyListings, MarketSaved, MarketDeals, MarketDealDetails, MarketSellerProfile */}

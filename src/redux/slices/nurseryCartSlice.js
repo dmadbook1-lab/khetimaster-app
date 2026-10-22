@@ -1,7 +1,4 @@
-import {
-  createAsyncThunk,
-  createSlice,
-} from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 import {
   getNurseryCartApi,
@@ -10,490 +7,206 @@ import {
   removeNurseryCartItemApi,
   clearNurseryCartApi,
 } from '../../api/nurseryCartApi';
+import { placeNurseryOrder } from './nurseryOrderSlice';
+
+const errorMessage = (error, fallback) =>
+  error.response?.data?.message || error.message || fallback;
 
 /*
 |--------------------------------------------------------------------------
-| HELPER — NORMALIZE CART RESPONSE
+| THUNKS
 |--------------------------------------------------------------------------
 |
-| Backend response:
-|
-| {
-|   success: true,
-|   data: {
-|     items: [],
-|     subtotal: 0,
-|     totalItems: 0
-|   }
-| }
+| Each one resolves with the whole cart from the server.
 |
 */
 
-const getCartData = response => {
-  return (
-    response?.data ||
-    response?.cart ||
-    response ||
-    {}
-  );
+export const fetchNurseryCart = createAsyncThunk(
+  'nurseryCart/fetch',
+  async (_, { rejectWithValue }) => {
+    try {
+      return await getNurseryCartApi();
+    } catch (error) {
+      return rejectWithValue(errorMessage(error, 'Unable to load cart'));
+    }
+  },
+);
+
+export const addToNurseryCart = createAsyncThunk(
+  'nurseryCart/add',
+  async ({ plantId, quantity = 1 }, { rejectWithValue }) => {
+    try {
+      return await addToNurseryCartApi({ plantId, quantity });
+    } catch (error) {
+      return rejectWithValue(errorMessage(error, 'Unable to add to cart'));
+    }
+  },
+);
+
+export const updateNurseryCartItem = createAsyncThunk(
+  'nurseryCart/update',
+  async ({ itemId, quantity }, { rejectWithValue }) => {
+    try {
+      return await updateNurseryCartItemApi(itemId, quantity);
+    } catch (error) {
+      return rejectWithValue(errorMessage(error, 'Unable to update cart'));
+    }
+  },
+);
+
+export const removeNurseryCartItem = createAsyncThunk(
+  'nurseryCart/remove',
+  async (itemId, { rejectWithValue }) => {
+    try {
+      return await removeNurseryCartItemApi(itemId);
+    } catch (error) {
+      return rejectWithValue(errorMessage(error, 'Unable to remove item'));
+    }
+  },
+);
+
+/*
+ * The cart view caps items at the stock left (quantityAdjusted), but
+ * checkout uses the saved quantity. Save the capped quantities first so
+ * the order doesn't fail with "Only N left".
+ */
+export const syncAdjustedCartItems = createAsyncThunk(
+  'nurseryCart/syncAdjusted',
+  async (_, { getState, rejectWithValue }) => {
+    try {
+      const adjusted = getState().nurseryCart.cart.items.filter(
+        item => item.quantityAdjusted,
+      );
+
+      let latest = null;
+      for (const item of adjusted) {
+        latest = await updateNurseryCartItemApi(item._id, item.quantity);
+      }
+
+      return latest;
+    } catch (error) {
+      return rejectWithValue(errorMessage(error, 'Unable to update cart'));
+    }
+  },
+);
+
+export const clearNurseryCart = createAsyncThunk(
+  'nurseryCart/clear',
+  async (_, { rejectWithValue }) => {
+    try {
+      return await clearNurseryCartApi();
+    } catch (error) {
+      return rejectWithValue(errorMessage(error, 'Unable to clear cart'));
+    }
+  },
+);
+
+/*
+|--------------------------------------------------------------------------
+| STATE
+|--------------------------------------------------------------------------
+*/
+
+const emptyCart = {
+  items: [],
+  unavailableItems: [],
+  subtotal: 0,
+  deliveryFee: 0,
+  total: 0,
+  totalItems: 0,
 };
-
-/*
-|--------------------------------------------------------------------------
-| GET CART
-|--------------------------------------------------------------------------
-*/
-
-export const fetchNurseryCart =
-  createAsyncThunk(
-    'nurseryCart/fetch',
-    async (_, {rejectWithValue}) => {
-      try {
-        return await getNurseryCartApi();
-      } catch (error) {
-        console.error(
-          'Fetch nursery cart error:',
-          error?.response?.data || error,
-        );
-
-        return rejectWithValue(
-          error.response?.data?.message ||
-            error.message ||
-            'Unable to load cart',
-        );
-      }
-    },
-  );
-
-/*
-|--------------------------------------------------------------------------
-| ADD TO CART
-|--------------------------------------------------------------------------
-*/
-
-export const addToNurseryCart =
-  createAsyncThunk(
-    'nurseryCart/add',
-    async (
-      {plantId, quantity = 1},
-      {rejectWithValue},
-    ) => {
-      try {
-        return await addToNurseryCartApi({
-          plantId,
-          quantity,
-        });
-      } catch (error) {
-        console.error(
-          'Add nursery cart error:',
-          error?.response?.data || error,
-        );
-
-        return rejectWithValue(
-          error.response?.data?.message ||
-            error.message ||
-            'Unable to add to cart',
-        );
-      }
-    },
-  );
-
-/*
-|--------------------------------------------------------------------------
-| UPDATE CART ITEM
-|--------------------------------------------------------------------------
-*/
-
-export const updateNurseryCartItem =
-  createAsyncThunk(
-    'nurseryCart/update',
-    async (
-      {itemId, quantity},
-      {rejectWithValue},
-    ) => {
-      try {
-        return await updateNurseryCartItemApi(
-          itemId,
-          quantity,
-        );
-      } catch (error) {
-        console.error(
-          'Update nursery cart error:',
-          error?.response?.data || error,
-        );
-
-        return rejectWithValue(
-          error.response?.data?.message ||
-            error.message ||
-            'Unable to update cart',
-        );
-      }
-    },
-  );
-
-/*
-|--------------------------------------------------------------------------
-| REMOVE ITEM
-|--------------------------------------------------------------------------
-*/
-
-export const removeNurseryCartItem =
-  createAsyncThunk(
-    'nurseryCart/remove',
-    async (
-      itemId,
-      {rejectWithValue},
-    ) => {
-      try {
-        return await removeNurseryCartItemApi(
-          itemId,
-        );
-      } catch (error) {
-        console.error(
-          'Remove nursery cart item error:',
-          error?.response?.data || error,
-        );
-
-        return rejectWithValue(
-          error.response?.data?.message ||
-            error.message ||
-            'Unable to remove item',
-        );
-      }
-    },
-  );
-
-/*
-|--------------------------------------------------------------------------
-| CLEAR CART
-|--------------------------------------------------------------------------
-*/
-
-export const clearNurseryCart =
-  createAsyncThunk(
-    'nurseryCart/clear',
-    async (_, {rejectWithValue}) => {
-      try {
-        return await clearNurseryCartApi();
-      } catch (error) {
-        console.error(
-          'Clear nursery cart error:',
-          error?.response?.data || error,
-        );
-
-        return rejectWithValue(
-          error.response?.data?.message ||
-            error.message ||
-            'Unable to clear cart',
-        );
-      }
-    },
-  );
-
-/*
-|--------------------------------------------------------------------------
-| INITIAL STATE
-|--------------------------------------------------------------------------
-*/
 
 const initialState = {
-  items: [],
-  subtotal: 0,
-  totalItems: 0,
-
+  cart: emptyCart,
+  loaded: false,
   loading: false,
-
-  addLoading: false,
-  updateLoading: false,
-  removeLoading: false,
-  clearLoading: false,
-
   error: null,
+
+  adding: false,
+  // cart item id being changed or removed, or 'all' while clearing
+  busyItemId: null,
 };
 
-/*
-|--------------------------------------------------------------------------
-| APPLY CART RESPONSE
-|--------------------------------------------------------------------------
-*/
-
-const applyCartResponse = (
-  state,
-  response,
-) => {
-  const cartData =
-    getCartData(response);
-
-  /*
-  |--------------------------------------------------------------------------
-  | Items
-  |--------------------------------------------------------------------------
-  */
-
-  state.items = Array.isArray(
-    cartData?.items,
-  )
-    ? cartData.items
-    : [];
-
-  /*
-  |--------------------------------------------------------------------------
-  | Subtotal
-  |--------------------------------------------------------------------------
-  */
-
-  state.subtotal =
-    Number(cartData?.subtotal) || 0;
-
-  /*
-  |--------------------------------------------------------------------------
-  | Total Items
-  |--------------------------------------------------------------------------
-  */
-
-  if (
-    cartData?.totalItems !==
-    undefined &&
-    cartData?.totalItems !== null
-  ) {
-    state.totalItems =
-      Number(cartData.totalItems) || 0;
-  } else {
-    state.totalItems =
-      state.items.reduce(
-        (total, item) =>
-          total +
-          Number(
-            item?.quantity || 0,
-          ),
-        0,
-      );
-  }
+const storeCart = (state, action) => {
+  state.cart = { ...emptyCart, ...(action.payload?.data || {}) };
+  state.loaded = true;
 };
 
-/*
-|--------------------------------------------------------------------------
-| SLICE
-|--------------------------------------------------------------------------
-*/
+const nurseryCartSlice = createSlice({
+  name: 'nurseryCart',
 
-const nurseryCartSlice =
-  createSlice({
-    name: 'nurseryCart',
+  initialState,
 
-    initialState,
+  reducers: {},
 
-    reducers: {
-      clearNurseryCartError: state => {
+  extraReducers: builder => {
+    builder
+      .addCase(fetchNurseryCart.pending, state => {
+        state.loading = true;
         state.error = null;
-      },
-    },
+      })
+      .addCase(fetchNurseryCart.fulfilled, (state, action) => {
+        state.loading = false;
+        storeCart(state, action);
+      })
+      .addCase(fetchNurseryCart.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
 
-    extraReducers: builder => {
-      /*
-      |--------------------------------------------------------------------------
-      | FETCH CART
-      |--------------------------------------------------------------------------
-      */
+      .addCase(addToNurseryCart.pending, state => {
+        state.adding = true;
+      })
+      .addCase(addToNurseryCart.fulfilled, (state, action) => {
+        state.adding = false;
+        storeCart(state, action);
+      })
+      .addCase(addToNurseryCart.rejected, state => {
+        state.adding = false;
+      })
 
-      builder
-        .addCase(
-          fetchNurseryCart.pending,
-          state => {
-            state.loading = true;
-            state.error = null;
-          },
-        )
+      .addCase(updateNurseryCartItem.pending, (state, action) => {
+        state.busyItemId = action.meta.arg.itemId;
+      })
+      .addCase(updateNurseryCartItem.fulfilled, (state, action) => {
+        state.busyItemId = null;
+        storeCart(state, action);
+      })
+      .addCase(updateNurseryCartItem.rejected, state => {
+        state.busyItemId = null;
+      })
 
-        .addCase(
-          fetchNurseryCart.fulfilled,
-          (state, action) => {
-            state.loading = false;
+      .addCase(removeNurseryCartItem.pending, (state, action) => {
+        state.busyItemId = action.meta.arg;
+      })
+      .addCase(removeNurseryCartItem.fulfilled, (state, action) => {
+        state.busyItemId = null;
+        storeCart(state, action);
+      })
+      .addCase(removeNurseryCartItem.rejected, state => {
+        state.busyItemId = null;
+      })
 
-            applyCartResponse(
-              state,
-              action.payload,
-            );
-          },
-        )
+      .addCase(syncAdjustedCartItems.fulfilled, (state, action) => {
+        if (action.payload) storeCart(state, action);
+      })
 
-        .addCase(
-          fetchNurseryCart.rejected,
-          (state, action) => {
-            state.loading = false;
+      .addCase(clearNurseryCart.pending, state => {
+        state.busyItemId = 'all';
+      })
+      .addCase(clearNurseryCart.fulfilled, (state, action) => {
+        state.busyItemId = null;
+        storeCart(state, action);
+      })
+      .addCase(clearNurseryCart.rejected, state => {
+        state.busyItemId = null;
+      })
 
-            state.error =
-              action.payload ||
-              'Unable to load cart';
-          },
-        );
-
-      /*
-      |--------------------------------------------------------------------------
-      | ADD TO CART
-      |--------------------------------------------------------------------------
-      */
-
-      builder
-        .addCase(
-          addToNurseryCart.pending,
-          state => {
-            state.addLoading = true;
-            state.error = null;
-          },
-        )
-
-        .addCase(
-          addToNurseryCart.fulfilled,
-          (state, action) => {
-            state.addLoading = false;
-
-            applyCartResponse(
-              state,
-              action.payload,
-            );
-          },
-        )
-
-        .addCase(
-          addToNurseryCart.rejected,
-          (state, action) => {
-            state.addLoading = false;
-
-            state.error =
-              action.payload ||
-              'Unable to add to cart';
-          },
-        );
-
-      /*
-      |--------------------------------------------------------------------------
-      | UPDATE CART
-      |--------------------------------------------------------------------------
-      */
-
-      builder
-        .addCase(
-          updateNurseryCartItem.pending,
-          state => {
-            state.updateLoading = true;
-            state.error = null;
-          },
-        )
-
-        .addCase(
-          updateNurseryCartItem.fulfilled,
-          (state, action) => {
-            state.updateLoading = false;
-
-            applyCartResponse(
-              state,
-              action.payload,
-            );
-          },
-        )
-
-        .addCase(
-          updateNurseryCartItem.rejected,
-          (state, action) => {
-            state.updateLoading = false;
-
-            state.error =
-              action.payload ||
-              'Unable to update cart';
-          },
-        );
-
-      /*
-      |--------------------------------------------------------------------------
-      | REMOVE ITEM
-      |--------------------------------------------------------------------------
-      */
-
-      builder
-        .addCase(
-          removeNurseryCartItem.pending,
-          state => {
-            state.removeLoading = true;
-            state.error = null;
-          },
-        )
-
-        .addCase(
-          removeNurseryCartItem.fulfilled,
-          (state, action) => {
-            state.removeLoading = false;
-
-            applyCartResponse(
-              state,
-              action.payload,
-            );
-          },
-        )
-
-        .addCase(
-          removeNurseryCartItem.rejected,
-          (state, action) => {
-            state.removeLoading = false;
-
-            state.error =
-              action.payload ||
-              'Unable to remove item';
-          },
-        );
-
-      /*
-      |--------------------------------------------------------------------------
-      | CLEAR CART
-      |--------------------------------------------------------------------------
-      */
-
-      builder
-        .addCase(
-          clearNurseryCart.pending,
-          state => {
-            state.clearLoading = true;
-            state.error = null;
-          },
-        )
-
-        .addCase(
-          clearNurseryCart.fulfilled,
-          (state, action) => {
-            state.clearLoading = false;
-
-            applyCartResponse(
-              state,
-              action.payload,
-            );
-
-            /*
-            | In case backend only returns success
-            | without cart data.
-            */
-
-            state.items = [];
-            state.subtotal = 0;
-            state.totalItems = 0;
-          },
-        )
-
-        .addCase(
-          clearNurseryCart.rejected,
-          (state, action) => {
-            state.clearLoading = false;
-
-            state.error =
-              action.payload ||
-              'Unable to clear cart';
-          },
-        );
-    },
-  });
-
-export const {
-  clearNurseryCartError,
-} =
-  nurseryCartSlice.actions;
+      // the server empties the cart when an order is placed
+      .addCase(placeNurseryOrder.fulfilled, state => {
+        state.cart = emptyCart;
+      });
+  },
+});
 
 export default nurseryCartSlice.reducer;

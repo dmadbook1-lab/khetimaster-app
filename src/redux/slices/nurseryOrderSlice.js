@@ -1,348 +1,331 @@
-import {
-  createAsyncThunk,
-  createSlice,
-} from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 import {
   createNurseryOrderApi,
   getMyNurseryOrdersApi,
   getNurseryOrderByIdApi,
   cancelNurseryOrderApi,
+  reviewNurseryOrderItemApi,
+  getSellerNurseryOrdersApi,
+  updateSellerNurseryOrderApi,
 } from '../../api/nurseryOrderApi';
 
-/*
-|--------------------------------------------------------------------------
-| CREATE COD ORDER
-|--------------------------------------------------------------------------
-*/
-
-export const createNurseryOrder =
-  createAsyncThunk(
-    'nurseryOrder/create',
-    async (
-      deliveryAddress,
-      {rejectWithValue},
-    ) => {
-      try {
-        return await createNurseryOrderApi(
-          deliveryAddress,
-        );
-      } catch (error) {
-        return rejectWithValue(
-          error.response?.data?.message ||
-            error.message ||
-            'Unable to place order',
-        );
-      }
-    },
-  );
+const errorMessage = (error, fallback) =>
+  error.response?.data?.message || error.message || fallback;
 
 /*
 |--------------------------------------------------------------------------
-| GET MY ORDERS
+| BUYER
 |--------------------------------------------------------------------------
 */
 
-export const fetchMyNurseryOrders =
-  createAsyncThunk(
-    'nurseryOrder/fetch',
-    async (_, {rejectWithValue}) => {
-      try {
-        return await getMyNurseryOrdersApi();
-      } catch (error) {
-        return rejectWithValue(
-          error.response?.data?.message ||
-            error.message ||
-            'Unable to load orders',
-        );
-      }
-    },
-  );
+export const placeNurseryOrder = createAsyncThunk(
+  'nurseryOrder/place',
+  async (deliveryAddress, { rejectWithValue }) => {
+    try {
+      return await createNurseryOrderApi(deliveryAddress);
+    } catch (error) {
+      return rejectWithValue(errorMessage(error, 'Unable to place order'));
+    }
+  },
+);
+
+/*
+ * {params: {status, page, limit}, append}
+ */
+export const fetchMyNurseryOrders = createAsyncThunk(
+  'nurseryOrder/fetchMine',
+  async ({ params = {} } = {}, { rejectWithValue }) => {
+    try {
+      return await getMyNurseryOrdersApi(params);
+    } catch (error) {
+      return rejectWithValue(errorMessage(error, 'Unable to load your orders'));
+    }
+  },
+);
+
+export const fetchNurseryOrderById = createAsyncThunk(
+  'nurseryOrder/fetchById',
+  async (orderId, { rejectWithValue }) => {
+    try {
+      return await getNurseryOrderByIdApi(orderId);
+    } catch (error) {
+      return rejectWithValue(errorMessage(error, 'Unable to load order'));
+    }
+  },
+);
+
+export const cancelNurseryOrder = createAsyncThunk(
+  'nurseryOrder/cancel',
+  async ({ orderId, reason }, { rejectWithValue }) => {
+    try {
+      return await cancelNurseryOrderApi(orderId, reason);
+    } catch (error) {
+      return rejectWithValue(errorMessage(error, 'Unable to cancel order'));
+    }
+  },
+);
+
+export const reviewNurseryOrderItem = createAsyncThunk(
+  'nurseryOrder/review',
+  async ({ orderId, itemId, rating, comment }, { rejectWithValue }) => {
+    try {
+      return await reviewNurseryOrderItemApi(orderId, itemId, {
+        rating,
+        comment,
+      });
+    } catch (error) {
+      return rejectWithValue(errorMessage(error, 'Unable to submit review'));
+    }
+  },
+);
 
 /*
 |--------------------------------------------------------------------------
-| GET ORDER
+| SELLER
 |--------------------------------------------------------------------------
 */
 
-export const fetchNurseryOrderById =
-  createAsyncThunk(
-    'nurseryOrder/fetchById',
-    async (
-      orderId,
-      {rejectWithValue},
-    ) => {
-      try {
-        return await getNurseryOrderByIdApi(
-          orderId,
-        );
-      } catch (error) {
-        return rejectWithValue(
-          error.response?.data?.message ||
-            error.message ||
-            'Unable to load order',
-        );
-      }
-    },
-  );
+/*
+ * {params: {status, page, limit}, append}
+ */
+export const fetchSellerNurseryOrders = createAsyncThunk(
+  'nurseryOrder/fetchSeller',
+  async ({ params = {} } = {}, { rejectWithValue }) => {
+    try {
+      return await getSellerNurseryOrdersApi(params);
+    } catch (error) {
+      return rejectWithValue(
+        errorMessage(error, 'Unable to load orders received'),
+      );
+    }
+  },
+);
+
+/*
+ * {orderId, status, reason}
+ */
+export const updateSellerNurseryOrder = createAsyncThunk(
+  'nurseryOrder/updateSeller',
+  async ({ orderId, status, reason }, { rejectWithValue }) => {
+    try {
+      return await updateSellerNurseryOrderApi(orderId, status, reason);
+    } catch (error) {
+      return rejectWithValue(errorMessage(error, 'Unable to update order'));
+    }
+  },
+);
 
 /*
 |--------------------------------------------------------------------------
-| CANCEL
+| STATE
 |--------------------------------------------------------------------------
 */
 
-export const cancelNurseryOrder =
-  createAsyncThunk(
-    'nurseryOrder/cancel',
-    async (
-      orderId,
-      {rejectWithValue},
-    ) => {
-      try {
-        return await cancelNurseryOrderApi(
-          orderId,
-        );
-      } catch (error) {
-        return rejectWithValue(
-          error.response?.data?.message ||
-            error.message ||
-            'Unable to cancel order',
-        );
-      }
-    },
-  );
-
-/*
-|--------------------------------------------------------------------------
-| INITIAL STATE
-|--------------------------------------------------------------------------
-*/
-
-const initialState = {
-  orders: [],
-  selectedOrder: null,
-
+const emptyList = {
+  items: [],
+  page: 1,
+  totalPages: 1,
+  total: 0,
   loading: false,
-  orderLoading: false,
-  createLoading: false,
-  cancelLoading: false,
-
+  loadingMore: false,
   error: null,
-  orderError: null,
-  createError: null,
-  cancelError: null,
 };
 
-/*
-|--------------------------------------------------------------------------
-| SLICE
-|--------------------------------------------------------------------------
-*/
+const initialState = {
+  myOrders: emptyList,
+  sellerOrders: emptyList,
 
-const nurseryOrderSlice =
-  createSlice({
-    name: 'nurseryOrder',
+  selectedOrder: null,
+  orderLoading: false,
+  orderError: null,
 
-    initialState,
+  // seller views by order id, kept for the seller order screen
+  sellerOrderById: {},
 
-    reducers: {
-      clearNurseryOrderErrors:
-        state => {
-          state.error = null;
-          state.orderError = null;
-          state.createError = null;
-          state.cancelError = null;
-        },
+  placing: false,
+  // 'cancel' | 'review' | a seller status while it is being saved
+  actionInProgress: null,
+};
 
-      clearSelectedNurseryOrder:
-        state => {
+const storeBuyerOrder = (state, order) => {
+  if (!order?._id) return;
+
+  state.selectedOrder = order;
+  state.myOrders.items = state.myOrders.items.map(item =>
+    item._id === order._id ? order : item,
+  );
+};
+
+const storeSellerOrder = (state, order) => {
+  if (!order?._id) return;
+
+  state.sellerOrderById[order._id] = order;
+  state.sellerOrders.items = state.sellerOrders.items.map(item =>
+    item._id === order._id ? order : item,
+  );
+};
+
+const addListCases = (builder, thunk, key, onLoaded) => {
+  builder
+    .addCase(thunk.pending, (state, action) => {
+      const list = state[key];
+
+      if (action.meta.arg?.append) {
+        list.loadingMore = true;
+      } else {
+        list.loading = true;
+      }
+
+      list.error = null;
+    })
+    .addCase(thunk.fulfilled, (state, action) => {
+      const list = state[key];
+      const orders = action.payload?.data || [];
+
+      list.loading = false;
+      list.loadingMore = false;
+
+      if (action.meta.arg?.append) {
+        const known = new Set(list.items.map(item => item._id));
+        list.items = [
+          ...list.items,
+          ...orders.filter(item => !known.has(item._id)),
+        ];
+      } else {
+        list.items = orders;
+      }
+
+      const pagination = action.payload?.pagination || {};
+      list.page = pagination.page || 1;
+      list.totalPages = pagination.totalPages || 1;
+      list.total = pagination.total || 0;
+
+      onLoaded?.(state, orders);
+    })
+    .addCase(thunk.rejected, (state, action) => {
+      const list = state[key];
+
+      list.loading = false;
+      list.loadingMore = false;
+      list.error = action.payload;
+    });
+};
+
+const nurseryOrderSlice = createSlice({
+  name: 'nurseryOrder',
+
+  initialState,
+
+  reducers: {
+    clearSelectedNurseryOrder: state => {
+      state.selectedOrder = null;
+      state.orderError = null;
+    },
+  },
+
+  extraReducers: builder => {
+    builder
+      .addCase(placeNurseryOrder.pending, state => {
+        state.placing = true;
+      })
+      .addCase(placeNurseryOrder.fulfilled, (state, action) => {
+        state.placing = false;
+
+        const order = action.payload?.data;
+
+        if (order?._id) {
+          state.selectedOrder = order;
+          state.myOrders.items.unshift(order);
+        }
+      })
+      .addCase(placeNurseryOrder.rejected, state => {
+        state.placing = false;
+      });
+
+    addListCases(builder, fetchMyNurseryOrders, 'myOrders');
+    addListCases(
+      builder,
+      fetchSellerNurseryOrders,
+      'sellerOrders',
+      (state, orders) => {
+        for (const order of orders) {
+          state.sellerOrderById[order._id] = order;
+        }
+      },
+    );
+
+    builder
+      .addCase(fetchNurseryOrderById.pending, (state, action) => {
+        state.orderLoading = true;
+        state.orderError = null;
+
+        if (state.selectedOrder?._id !== action.meta.arg) {
           state.selectedOrder = null;
-        },
-    },
+        }
+      })
+      .addCase(fetchNurseryOrderById.fulfilled, (state, action) => {
+        state.orderLoading = false;
+        storeBuyerOrder(state, action.payload?.data);
+      })
+      .addCase(fetchNurseryOrderById.rejected, (state, action) => {
+        state.orderLoading = false;
+        state.orderError = action.payload;
+      });
 
-    extraReducers: builder => {
-      /*
-      |--------------------------------------------------------------------------
-      | CREATE ORDER
-      |--------------------------------------------------------------------------
-      */
+    builder
+      .addCase(cancelNurseryOrder.pending, state => {
+        state.actionInProgress = 'cancel';
+      })
+      .addCase(cancelNurseryOrder.fulfilled, (state, action) => {
+        state.actionInProgress = null;
+        storeBuyerOrder(state, action.payload?.data);
+      })
+      .addCase(cancelNurseryOrder.rejected, state => {
+        state.actionInProgress = null;
+      })
 
-      builder
-        .addCase(
-          createNurseryOrder.pending,
-          state => {
-            state.createLoading = true;
-            state.createError = null;
-          },
-        )
+      .addCase(reviewNurseryOrderItem.pending, state => {
+        state.actionInProgress = 'review';
+      })
+      .addCase(reviewNurseryOrderItem.fulfilled, (state, action) => {
+        state.actionInProgress = null;
 
-        .addCase(
-          createNurseryOrder.fulfilled,
-          (state, action) => {
-            state.createLoading = false;
+        // the review response has no seller phone numbers; keep them
+        const order = action.payload?.data;
+        const previous = state.selectedOrder;
 
-            const order =
-              action.payload?.order ||
-              action.payload?.data;
+        if (order?._id && previous?._id === order._id) {
+          storeBuyerOrder(state, {
+            ...order,
+            items: order.items.map(item => {
+              const old = previous.items.find(entry => entry._id === item._id);
+              return old?.seller?.phoneNumber
+                ? { ...item, seller: old.seller }
+                : item;
+            }),
+          });
+        } else {
+          storeBuyerOrder(state, order);
+        }
+      })
+      .addCase(reviewNurseryOrderItem.rejected, state => {
+        state.actionInProgress = null;
+      })
 
-            if (order) {
-              state.orders.unshift(
-                order,
-              );
+      .addCase(updateSellerNurseryOrder.pending, (state, action) => {
+        state.actionInProgress = action.meta.arg.status;
+      })
+      .addCase(updateSellerNurseryOrder.fulfilled, (state, action) => {
+        state.actionInProgress = null;
+        storeSellerOrder(state, action.payload?.data);
+      })
+      .addCase(updateSellerNurseryOrder.rejected, state => {
+        state.actionInProgress = null;
+      });
+  },
+});
 
-              state.selectedOrder =
-                order;
-            }
-          },
-        )
-
-        .addCase(
-          createNurseryOrder.rejected,
-          (state, action) => {
-            state.createLoading = false;
-
-            state.createError =
-              action.payload;
-          },
-        );
-
-      /*
-      |--------------------------------------------------------------------------
-      | FETCH ORDERS
-      |--------------------------------------------------------------------------
-      */
-
-      builder
-        .addCase(
-          fetchMyNurseryOrders.pending,
-          state => {
-            state.loading = true;
-            state.error = null;
-          },
-        )
-
-        .addCase(
-          fetchMyNurseryOrders.fulfilled,
-          (state, action) => {
-            state.loading = false;
-
-            state.orders =
-              action.payload?.orders ||
-              action.payload?.data ||
-              action.payload ||
-              [];
-          },
-        )
-
-        .addCase(
-          fetchMyNurseryOrders.rejected,
-          (state, action) => {
-            state.loading = false;
-
-            state.error =
-              action.payload;
-          },
-        );
-
-      /*
-      |--------------------------------------------------------------------------
-      | FETCH ORDER
-      |--------------------------------------------------------------------------
-      */
-
-      builder
-        .addCase(
-          fetchNurseryOrderById.pending,
-          state => {
-            state.orderLoading = true;
-            state.orderError = null;
-          },
-        )
-
-        .addCase(
-          fetchNurseryOrderById.fulfilled,
-          (state, action) => {
-            state.orderLoading = false;
-
-            state.selectedOrder =
-              action.payload?.order ||
-              action.payload?.data ||
-              action.payload;
-          },
-        )
-
-        .addCase(
-          fetchNurseryOrderById.rejected,
-          (state, action) => {
-            state.orderLoading = false;
-
-            state.orderError =
-              action.payload;
-          },
-        );
-
-      /*
-      |--------------------------------------------------------------------------
-      | CANCEL ORDER
-      |--------------------------------------------------------------------------
-      */
-
-      builder
-        .addCase(
-          cancelNurseryOrder.pending,
-          state => {
-            state.cancelLoading = true;
-            state.cancelError = null;
-          },
-        )
-
-        .addCase(
-          cancelNurseryOrder.fulfilled,
-          (state, action) => {
-            state.cancelLoading = false;
-
-            const order =
-              action.payload?.order ||
-              action.payload?.data;
-
-            if (!order?._id) {
-              return;
-            }
-
-            state.orders =
-              state.orders.map(
-                item =>
-                  item._id === order._id
-                    ? order
-                    : item,
-              );
-
-            if (
-              state.selectedOrder?._id ===
-              order._id
-            ) {
-              state.selectedOrder =
-                order;
-            }
-          },
-        )
-
-        .addCase(
-          cancelNurseryOrder.rejected,
-          (state, action) => {
-            state.cancelLoading = false;
-
-            state.cancelError =
-              action.payload;
-          },
-        );
-    },
-  });
-
-export const {
-  clearNurseryOrderErrors,
-  clearSelectedNurseryOrder,
-} = nurseryOrderSlice.actions;
+export const { clearSelectedNurseryOrder } = nurseryOrderSlice.actions;
 
 export default nurseryOrderSlice.reducer;

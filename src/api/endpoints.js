@@ -62,6 +62,8 @@ const API_ENDPOINTS = {
 
   NURSERY_CATEGORIES: '/api/nursery/categories',
 
+  NURSERY_META: '/api/nursery/meta',
+
   /*
   |--------------------------------------------------------------------------
   | NURSERY - SELLER
@@ -118,6 +120,21 @@ const API_ENDPOINTS = {
 
   NURSERY_CANCEL_ORDER: orderId =>
     `/api/nursery/orders/${orderId}/cancel`,
+
+  NURSERY_REVIEW_ORDER_ITEM: (orderId, itemId) =>
+    `/api/nursery/orders/${orderId}/items/${itemId}/review`,
+
+  /*
+  |--------------------------------------------------------------------------
+  | NURSERY - SELLER ORDERS
+  |--------------------------------------------------------------------------
+  */
+
+  NURSERY_SELLER_ORDERS:
+    '/api/nursery/orders/seller',
+
+  NURSERY_SELLER_STATUS: orderId =>
+    `/api/nursery/orders/${orderId}/seller-status`,
 
   /*
   |--------------------------------------------------------------------------

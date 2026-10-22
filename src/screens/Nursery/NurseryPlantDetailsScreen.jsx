@@ -1,592 +1,662 @@
-import React, {useEffect, useState, useCallback, useMemo, memo} from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
-  ActivityIndicator,
-  Alert,
   Dimensions,
-  FlatList,
   Image,
+  RefreshControl,
   ScrollView,
-  StatusBar,
   StyleSheet,
   Text,
-  TouchableOpacity,
   View,
 } from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from 'react-native-safe-area-context';
+import LinearGradient from 'react-native-linear-gradient';
+import { useFocusEffect } from '@react-navigation/native';
 import {
   ArrowLeft,
-  CheckCircle2,
-  ChevronLeft,
-  ChevronRight,
-  Leaf,
+  Banknote,
+  BadgeCheck,
   MapPin,
-  Minus,
-  Plus,
+  Package,
+  Pencil,
+  Power,
+  RotateCcw,
   ShoppingCart,
-  Store,
+  Star,
+  Truck,
 } from 'lucide-react-native';
-import {useDispatch, useSelector} from 'react-redux';
-import {fetchNurseryPlantById} from '../../redux/slices/nurserySlice';
-import {addToNurseryCart, fetchNurseryCart} from '../../redux/slices/nurseryCartSlice';
+import { useDispatch, useSelector } from 'react-redux';
 
-const {width} = Dimensions.get('window');
+import { GlassButton, TopInset } from '../../components/market/MarketHero';
+import MarketHeader from '../../components/market/MarketHeader';
+import {
+  EmptyState,
+  LoadingState,
+  MarketButton,
+} from '../../components/market/MarketBits';
+import {
+  MARKET_COLORS as C,
+  MARKET_SHADOW,
+} from '../../components/market/theme';
+import FeedbackModal, {
+  useFeedbackModal,
+} from '../../components/common/FeedbackModal';
+import Toast, { useToast } from '../../components/common/Toast';
+import PersonAvatar from '../../components/labour/PersonAvatar';
+import { PlantImage, QtyStepper } from '../../components/nursery/NurseryBits';
+import { categoryVisual } from '../../components/nursery/nurseryVisuals';
+import useNurseryMeta from '../../components/nursery/useNurseryMeta';
+import { NURSERY_ROUTES } from '../../constants/nurseryRoutes';
+import {
+  fetchNurseryPlantById,
+  setNurseryPlantActive,
+} from '../../redux/slices/nurserySlice';
+import {
+  addToNurseryCart,
+  fetchNurseryCart,
+} from '../../redux/slices/nurseryCartSlice';
+import { formatRupees, timeAgo } from '../../utils/marketFormat';
+import { plantLocation, stockInfo } from '../../utils/nurseryFormat';
 
-const GREEN = '#159447';
-const DARK = '#151C2B';
-const BG = '#F6F8F7';
-const MUTED = '#747B78';
-const BORDER = '#E5E9E7';
-const LIGHT_GREEN = '#EAF7EF';
-const WHITE = '#FFFFFF';
+const { width } = Dimensions.get('window');
+const HERO_HEIGHT = 340;
 
-/* ---------- Memoized Thumbnail Item ---------- */
-const ThumbnailItem = memo(({item, active, index, onPress}) => (
-  <TouchableOpacity
-    activeOpacity={0.8}
-    onPress={() => onPress(index)}
-    style={[
-      styles.thumbnailWrapper,
-      active && styles.activeThumbnail,
-    ]}>
-    <Image source={{uri: item}} style={styles.thumbnail} />
-  </TouchableOpacity>
-));
+const userIdOf = user => user?._id || user?.id || user?.userId;
 
-const NurseryPlantDetailsScreen = ({navigation, route}) => {
+export default function NurseryPlantDetailsScreen({ navigation, route }) {
+  const { plantId } = route.params;
   const dispatch = useDispatch();
-  const plantId = route?.params?.plantId;
+  const insets = useSafeAreaInsets();
+  const feedback = useFeedbackModal();
+  const toast = useToast();
+  const { delivery } = useNurseryMeta();
 
-  const {selectedPlant, plantLoading} = useSelector(state => state.nursery);
-  const {adding} = useSelector(state => state.nurseryCart);
+  const user = useSelector(state => state.auth.user);
+  const { selected, selectedLoading, selectedError, togglingId } = useSelector(
+    state => state.nursery,
+  );
+  const { cart, adding } = useSelector(state => state.nurseryCart);
 
+  const [imageIndex, setImageIndex] = useState(0);
   const [quantity, setQuantity] = useState(1);
-  const [activeImage, setActiveImage] = useState(0);
 
+  const plant = selected?._id === plantId ? selected : null;
+
+  const load = useCallback(
+    () => dispatch(fetchNurseryPlantById(plantId)),
+    [dispatch, plantId],
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      load();
+      dispatch(fetchNurseryCart());
+    }, [dispatch, load]),
+  );
+
+  const inCart = cart.items.find(item => item.plant?._id === plantId);
+  const available = Math.max(
+    (plant?.quantity || 0) - (inCart?.quantity || 0),
+    0,
+  );
+
+  // keep the picked quantity within what can still be added
   useEffect(() => {
-    if (plantId) {
-      dispatch(fetchNurseryPlantById(plantId));
-    }
-  }, [dispatch, plantId]);
+    if (available > 0 && quantity > available) setQuantity(available);
+  }, [available, quantity]);
 
-  useEffect(() => {
-    setActiveImage(0);
-    setQuantity(1);
-  }, [selectedPlant?._id]);
+  if (!plant) {
+    return (
+      <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
+        <MarketHeader title="Plant" onBack={() => navigation.goBack()} />
+        {selectedError && !selectedLoading ? (
+          <EmptyState
+            title="Plant not available"
+            message={selectedError}
+            actionLabel="Go Back"
+            onAction={() => navigation.goBack()}
+          />
+        ) : (
+          <LoadingState />
+        )}
+      </SafeAreaView>
+    );
+  }
 
-  const images = useMemo(() => selectedPlant?.images || [], [selectedPlant]);
-  const maxQuantity = useMemo(() => Number(selectedPlant?.quantity || 0), [selectedPlant]);
-  const price = useMemo(() => Number(selectedPlant?.price || 0), [selectedPlant]);
-  const totalPrice = useMemo(() => price * quantity, [price, quantity]);
+  const isMine =
+    !!userIdOf(user) && String(plant.seller?.userId) === String(userIdOf(user));
+  const images = (plant.images || []).filter(Boolean);
+  const visual = categoryVisual(plant.category);
+  const stock = stockInfo(plant.quantity);
+  const location = plantLocation(plant);
+  const reviews = plant.recentReviews || [];
+  const sellerName = plant.seller?.name || 'Nursery';
+  const outOfStock = plant.quantity <= 0;
 
-  const increaseQuantity = useCallback(() => {
-    if (quantity < maxQuantity) {
-      setQuantity(prev => prev + 1);
-    }
-  }, [quantity, maxQuantity]);
-
-  const decreaseQuantity = useCallback(() => {
-    if (quantity > 1) {
-      setQuantity(prev => prev - 1);
-    }
-  }, [quantity]);
-
-  const handleAddToCart = useCallback(async () => {
-    if (!selectedPlant?._id) return;
-
-    if (maxQuantity <= 0) {
-      Alert.alert('Out of stock', 'This plant is currently unavailable.');
-      return;
-    }
-
+  const handleAdd = async () => {
     try {
-      await dispatch(
-        addToNurseryCart({
-          plantId: selectedPlant._id,
-          quantity,
-        }),
-      ).unwrap();
-
-      await dispatch(fetchNurseryCart());
-
-      Alert.alert(
-        'Added to cart',
-        `${selectedPlant.name} has been added to your cart.`,
-        [
-          {text: 'Continue Shopping', style: 'cancel'},
-          {
-            text: 'View Cart',
-            onPress: () => navigation.navigate('NurseryCart'),
-          },
-        ],
-      );
-    } catch (err) {
-      Alert.alert(
-        'Unable to add',
-        err?.message || err?.error || 'Could not add this plant to your cart.',
-      );
+      await dispatch(addToNurseryCart({ plantId, quantity })).unwrap();
+      toast.show(`${quantity} × ${plant.name} added to cart`);
+      setQuantity(1);
+    } catch (error) {
+      feedback.error('Could not add to cart', String(error));
+      load();
     }
-  }, [dispatch, selectedPlant, quantity, maxQuantity, navigation]);
+  };
 
-  const handleThumbnailPress = useCallback((index) => {
-    setActiveImage(index);
-  }, []);
+  const togglePaused = () => {
+    const active = plant.isActive === false;
 
-  const renderThumbnail = useCallback(({item, index}) => (
-    <ThumbnailItem
-      item={item}
-      active={activeImage === index}
-      index={index}
-      onPress={handleThumbnailPress}
-    />
-  ), [activeImage, handleThumbnailPress]);
-
-  const thumbnailKeyExtractor = useCallback((item, index) => `${item}-${index}`, []);
-
-  const handlePrevImage = useCallback(() => {
-    setActiveImage(prev => (prev === 0 ? images.length - 1 : prev - 1));
-  }, [images.length]);
-
-  const handleNextImage = useCallback(() => {
-    setActiveImage(prev => (prev === images.length - 1 ? 0 : prev + 1));
-  }, [images.length]);
-
-  if (plantLoading && !selectedPlant) {
-    return (
-      <SafeAreaView style={styles.centerContainer} edges={['top', 'left', 'right']}>
-        <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
-        <ActivityIndicator size="large" color={GREEN} />
-        <Text style={styles.loadingText}>Loading plant details...</Text>
-      </SafeAreaView>
-    );
-  }
-
-  if (!selectedPlant) {
-    return (
-      <SafeAreaView style={styles.centerContainer} edges={['top', 'left', 'right']}>
-        <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
-        <Leaf size={48} color={GREEN} />
-        <Text style={styles.emptyTitle}>Plant not found</Text>
-        <Text style={styles.emptyText}>
-          This plant may have been removed or is no longer available.
-        </Text>
-        <TouchableOpacity
-          activeOpacity={0.8}
-          style={styles.primaryButton}
-          onPress={() => navigation.goBack()}>
-          <Text style={styles.primaryButtonText}>Go Back</Text>
-        </TouchableOpacity>
-      </SafeAreaView>
-    );
-  }
+    feedback.confirm({
+      title: active ? 'Show this plant again?' : 'Pause this listing?',
+      message: active
+        ? 'Buyers will be able to find and order it again.'
+        : 'Buyers will not see it. Orders already placed are not affected.',
+      confirmLabel: active ? 'Show Again' : 'Pause',
+      destructive: !active,
+      onConfirm: async () => {
+        try {
+          await dispatch(setNurseryPlantActive({ plantId, active })).unwrap();
+          toast.show(active ? 'Plant is live again' : 'Listing paused');
+          if (!active) navigation.goBack();
+        } catch (error) {
+          feedback.error('Could not update', String(error));
+        }
+      },
+    });
+  };
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
-
-      {/* HEADER */}
-      <View style={styles.header}>
-        <TouchableOpacity
-          activeOpacity={0.7}
-          style={styles.headerButton}
-          onPress={() => navigation.goBack()}>
-          <ArrowLeft size={21} color={DARK} />
-        </TouchableOpacity>
-
-        <Text style={styles.headerTitle}>Plant Details</Text>
-
-        <TouchableOpacity
-          activeOpacity={0.7}
-          style={styles.headerButton}
-          onPress={() => navigation.navigate('NurseryCart')}>
-          <ShoppingCart size={20} color={DARK} />
-        </TouchableOpacity>
-      </View>
-
+    <SafeAreaView style={styles.container} edges={['left', 'right']}>
+      <TopInset />
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}>
-        
-        {/* IMAGE SECTION */}
-        <View style={styles.imageSection}>
-          {images.length > 0 ? (
-            <>
-              <Image
-                source={{uri: images[activeImage]}}
-                style={styles.mainImage}
-                resizeMode="cover"
-              />
-
-              {images.length > 1 && (
-                <>
-                  <TouchableOpacity
-                    activeOpacity={0.8}
-                    style={[styles.imageArrow, styles.leftArrow]}
-                    onPress={handlePrevImage}>
-                    <ChevronLeft size={20} color={DARK} />
-                  </TouchableOpacity>
-
-                  <TouchableOpacity
-                    activeOpacity={0.8}
-                    style={[styles.imageArrow, styles.rightArrow]}
-                    onPress={handleNextImage}>
-                    <ChevronRight size={20} color={DARK} />
-                  </TouchableOpacity>
-                </>
-              )}
-            </>
+        contentContainerStyle={styles.scrollContent}
+        refreshControl={
+          <RefreshControl
+            refreshing={selectedLoading}
+            onRefresh={load}
+            colors={[C.green]}
+            tintColor={C.green}
+          />
+        }
+      >
+        {/* PHOTO HERO */}
+        <View style={styles.hero}>
+          {images.length ? (
+            <ScrollView
+              horizontal
+              pagingEnabled
+              showsHorizontalScrollIndicator={false}
+              onMomentumScrollEnd={event =>
+                setImageIndex(
+                  Math.round(event.nativeEvent.contentOffset.x / width),
+                )
+              }
+            >
+              {images.map(uri => (
+                <Image key={uri} source={{ uri }} style={styles.heroImage} />
+              ))}
+            </ScrollView>
           ) : (
-            <View style={styles.noImage}>
-              <Leaf size={65} color={GREEN} />
-              <Text style={styles.noImageText}>No image available</Text>
+            <PlantImage plant={plant} style={styles.heroImage} iconSize={86} />
+          )}
+
+          <LinearGradient
+            pointerEvents="none"
+            colors={['rgba(0,0,0,0.42)', 'rgba(0,0,0,0)']}
+            style={styles.topShade}
+          />
+
+          <View style={styles.heroButtons}>
+            <GlassButton
+              style={styles.darkGlass}
+              onPress={() => navigation.goBack()}
+            >
+              <ArrowLeft size={20} color={C.white} />
+            </GlassButton>
+            {!isMine && (
+              <GlassButton
+                style={styles.darkGlass}
+                badge={cart.totalItems}
+                onPress={() => navigation.navigate(NURSERY_ROUTES.CART)}
+              >
+                <ShoppingCart size={19} color={C.white} />
+              </GlassButton>
+            )}
+          </View>
+
+          {images.length > 1 && (
+            <View style={styles.dots}>
+              {images.map((uri, index) => (
+                <View
+                  key={uri}
+                  style={[styles.dot, index === imageIndex && styles.dotActive]}
+                />
+              ))}
             </View>
           )}
         </View>
 
-        {/* THUMBNAILS */}
-        {images.length > 1 && (
-          <FlatList
-            horizontal
-            data={images}
-            keyExtractor={thumbnailKeyExtractor}
-            showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.thumbnailList}
-            renderItem={renderThumbnail}
-            removeClippedSubviews
-          />
-        )}
+        {/* CONTENT */}
+        <View style={styles.sheet}>
+          <Text
+            style={[
+              styles.categoryTag,
+              { color: visual.color, backgroundColor: visual.bg },
+            ]}
+          >
+            {plant.category}
+          </Text>
+          <Text style={styles.title}>{plant.name}</Text>
 
-        {/* CONTENT INFO */}
-        <View style={styles.content}>
-          <View style={styles.categoryRow}>
-            <View style={styles.categoryBadge}>
-              <Leaf size={12} color={GREEN} />
-              <Text style={styles.categoryText}>{selectedPlant.category}</Text>
-            </View>
-
-            {maxQuantity > 0 ? (
-              <View style={styles.availableBadge}>
-                <CheckCircle2 size={13} color={GREEN} fill={LIGHT_GREEN} />
-                <Text style={styles.availableText}>Available</Text>
-              </View>
-            ) : (
-              <Text style={styles.outOfStock}>Out of stock</Text>
+          <View style={styles.ratingRow}>
+            <Star size={14} color={C.gold} fill={C.gold} />
+            <Text style={styles.ratingText}>
+              {plant.totalReviews
+                ? `${plant.rating} · ${plant.totalReviews} reviews`
+                : 'No reviews yet'}
+            </Text>
+            {!!plant.totalSold && (
+              <>
+                <BadgeCheck size={14} color={C.green} />
+                <Text style={styles.ratingText}>{plant.totalSold} sold</Text>
+              </>
             )}
           </View>
 
-          <Text style={styles.title}>{selectedPlant.name}</Text>
-          <Text style={styles.price}>₹{price.toLocaleString('en-IN')}</Text>
-
-          {/* SELLER */}
-          {selectedPlant.seller && (
-            <View style={styles.sellerCard}>
-              <View style={styles.sellerIcon}>
-                <Store size={19} color={GREEN} />
-              </View>
-              <View style={styles.sellerInfo}>
-                <Text style={styles.sellerLabel}>Sold by</Text>
-                <Text style={styles.sellerName}>
-                  {selectedPlant.seller.name || 'KhetiMaster Seller'}
-                </Text>
-              </View>
+          <View style={styles.priceRow}>
+            <View>
+              <Text style={styles.price}>{formatRupees(plant.price)}</Text>
+              <Text style={styles.priceUnit}>per plant</Text>
             </View>
-          )}
-
-          {/* LOCATION */}
-          {selectedPlant.location && (
-            <View style={styles.locationCard}>
-              <View style={styles.locationIcon}>
-                <MapPin size={18} color={GREEN} />
-              </View>
-              <View style={styles.locationInfo}>
-                <Text style={styles.locationLabel}>Seller location</Text>
-                <Text style={styles.locationValue}>
-                  {selectedPlant.location.district || ''}
-                  {selectedPlant.location.state ? `, ${selectedPlant.location.state}` : ''}
-                </Text>
-              </View>
-            </View>
-          )}
-
-          {/* DESCRIPTION */}
-          <View style={styles.section}>
-            <Text style={styles.sectionTitle}>About this plant</Text>
-            <Text style={styles.description}>
-              {selectedPlant.description || 'No description available for this plant.'}
+            <Text
+              style={[
+                styles.stock,
+                stock.tone === 'low' && styles.stockLow,
+                stock.tone === 'out' && styles.stockOut,
+              ]}
+            >
+              {stock.label}
             </Text>
           </View>
 
-          {/* STOCK INFO */}
-          <View style={styles.stockInfo}>
-            <Text style={styles.stockLabel}>Available quantity</Text>
-            <Text style={styles.stockValue}>{maxQuantity} plants</Text>
+          {isMine && (
+            <View style={[styles.card, styles.ownerNotice]}>
+              <Package size={18} color={C.blue} />
+              <Text style={styles.ownerNoticeText}>
+                This is your listing
+                {plant.isActive === false ? ' (paused)' : ''}. Buyers see it
+                like this.
+              </Text>
+            </View>
+          )}
+
+          {!isMine && !!inCart && (
+            <View style={[styles.card, styles.ownerNotice]}>
+              <ShoppingCart size={18} color={C.green} />
+              <Text style={styles.ownerNoticeText}>
+                {inCart.quantity} already in your cart
+              </Text>
+            </View>
+          )}
+
+          {/* DELIVERY */}
+          <View style={styles.perks}>
+            <View style={styles.perk}>
+              <Truck size={17} color={C.green} />
+              <Text style={styles.perkTitle}>
+                {formatRupees(delivery.fee)} delivery
+              </Text>
+              <Text style={styles.perkText}>
+                Free above {formatRupees(delivery.freeAbove)}
+              </Text>
+            </View>
+            <View style={styles.perk}>
+              <Banknote size={17} color={C.blue} />
+              <Text style={styles.perkTitle}>Cash on delivery</Text>
+              <Text style={styles.perkText}>Pay when it arrives</Text>
+            </View>
+            <View style={styles.perk}>
+              <RotateCcw size={17} color={C.orange} />
+              <Text style={styles.perkTitle}>Free cancel</Text>
+              <Text style={styles.perkText}>Until dispatched</Text>
+            </View>
           </View>
 
-          {/* QUANTITY PICKER */}
-          {maxQuantity > 0 && (
-            <View style={styles.quantitySection}>
-              <Text style={styles.sectionTitle}>Quantity</Text>
-
-              <View style={styles.quantityRow}>
-                <View style={styles.quantityControl}>
-                  <TouchableOpacity
-                    activeOpacity={0.7}
-                    style={styles.quantityButton}
-                    onPress={decreaseQuantity}>
-                    <Minus size={16} color={DARK} />
-                  </TouchableOpacity>
-
-                  <Text style={styles.quantityText}>{quantity}</Text>
-
-                  <TouchableOpacity
-                    activeOpacity={0.7}
-                    style={styles.quantityButton}
-                    onPress={increaseQuantity}>
-                    <Plus size={16} color={DARK} />
-                  </TouchableOpacity>
-                </View>
-
-                <Text style={styles.totalPrice}>
-                  ₹{totalPrice.toLocaleString('en-IN')}
-                </Text>
+          {!!plant.description && (
+            <>
+              <Text style={styles.blockTitle}>About this plant</Text>
+              <View style={styles.card}>
+                <Text style={styles.paragraph}>{plant.description}</Text>
               </View>
+            </>
+          )}
+
+          {/* SELLER */}
+          <Text style={styles.blockTitle}>Sold by</Text>
+          <View style={[styles.card, styles.sellerRow]}>
+            <PersonAvatar name={sellerName} size={50} />
+            <View style={styles.flex}>
+              <Text style={styles.sellerName}>{sellerName}</Text>
+              {!!location && (
+                <View style={styles.inline}>
+                  <MapPin size={11} color={C.muted} />
+                  <Text style={styles.cardText} numberOfLines={1}>
+                    {location}
+                  </Text>
+                </View>
+              )}
+              <Text style={styles.cardText}>
+                Phone number shared once they confirm your order
+              </Text>
             </View>
+          </View>
+
+          {/* REVIEWS */}
+          {reviews.length > 0 && (
+            <>
+              <Text style={styles.blockTitle}>What buyers say</Text>
+              {reviews.map((review, index) => (
+                <View
+                  key={`${review.createdAt}-${index}`}
+                  style={styles.reviewCard}
+                >
+                  <View style={styles.reviewHeader}>
+                    <PersonAvatar
+                      name={review.buyerName}
+                      size={36}
+                      gradient="blue"
+                    />
+                    <View style={styles.flex}>
+                      <Text style={styles.reviewer}>
+                        {review.buyerName || 'Buyer'}
+                      </Text>
+                      <Text style={styles.reviewMeta}>
+                        {timeAgo(review.createdAt)}
+                      </Text>
+                    </View>
+                    <View style={styles.reviewStars}>
+                      <Star size={12} color={C.gold} fill={C.gold} />
+                      <Text style={styles.reviewRating}>{review.rating}</Text>
+                    </View>
+                  </View>
+                  {!!review.comment && (
+                    <Text style={styles.paragraph}>{review.comment}</Text>
+                  )}
+                </View>
+              ))}
+            </>
           )}
         </View>
       </ScrollView>
 
-      {/* BOTTOM ADD TO CART */}
-      {maxQuantity > 0 && (
-        <View style={styles.bottomBar}>
-          <TouchableOpacity
-            activeOpacity={0.85}
-            style={styles.addCartButton}
-            disabled={adding}
-            onPress={handleAddToCart}>
-            {adding ? (
-              <ActivityIndicator color="#FFFFFF" />
-            ) : (
-              <>
-                <ShoppingCart size={19} color="#FFFFFF" />
-                <Text style={styles.addCartText}>Add to Cart</Text>
-              </>
-            )}
-          </TouchableOpacity>
-        </View>
-      )}
+      {/* BOTTOM BAR */}
+      <View
+        style={[
+          styles.bottomBar,
+          { paddingBottom: Math.max(insets.bottom, 14) + 6 },
+        ]}
+      >
+        {isMine ? (
+          <>
+            <MarketButton
+              variant={plant.isActive === false ? 'outline' : 'danger'}
+              label={plant.isActive === false ? 'Show Again' : 'Pause'}
+              icon={
+                <Power
+                  size={16}
+                  color={plant.isActive === false ? C.green : C.red}
+                />
+              }
+              loading={togglingId === plantId}
+              onPress={togglePaused}
+              style={styles.flex}
+            />
+            <MarketButton
+              label="Edit Listing"
+              icon={<Pencil size={16} color={C.white} />}
+              onPress={() =>
+                navigation.navigate(NURSERY_ROUTES.FORM, { plant })
+              }
+              style={styles.flexWide}
+            />
+          </>
+        ) : outOfStock || available <= 0 ? (
+          <MarketButton
+            label={outOfStock ? 'Out of Stock' : 'Go to Cart'}
+            icon={
+              outOfStock ? null : <ShoppingCart size={17} color={C.white} />
+            }
+            disabled={outOfStock}
+            onPress={() => navigation.navigate(NURSERY_ROUTES.CART)}
+            style={styles.flex}
+          />
+        ) : (
+          <>
+            <View>
+              <QtyStepper
+                value={quantity}
+                onChange={setQuantity}
+                max={available}
+              />
+              <Text style={styles.lineTotal}>
+                {formatRupees(plant.price * quantity)}
+              </Text>
+            </View>
+            <MarketButton
+              label="Add to Cart"
+              icon={<ShoppingCart size={17} color={C.white} />}
+              loading={adding}
+              onPress={handleAdd}
+              style={styles.flex}
+            />
+          </>
+        )}
+      </View>
+
+      <FeedbackModal {...feedback.modalProps} />
+      <Toast {...toast.toastProps} />
     </SafeAreaView>
   );
-};
+}
 
 const styles = StyleSheet.create({
-  container: {flex: 1, backgroundColor: BG},
-  centerContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#FFFFFF',
-    padding: 24,
-  },
-  loadingText: {marginTop: 12, fontSize: 13, color: MUTED},
-  emptyTitle: {marginTop: 16, fontSize: 19, fontWeight: '900', color: DARK, letterSpacing: -0.3},
-  emptyText: {marginTop: 8, textAlign: 'center', color: MUTED, lineHeight: 20, fontSize: 12},
-  primaryButton: {
-    marginTop: 24,
-    backgroundColor: GREEN,
-    paddingHorizontal: 26,
-    paddingVertical: 12,
-    borderRadius: 12,
-  },
-  primaryButtonText: {color: '#FFFFFF', fontWeight: '900', fontSize: 13},
+  container: { flex: 1, backgroundColor: C.bg },
+  scrollContent: { paddingBottom: 30 },
+  flex: { flex: 1 },
+  flexWide: { flex: 1.5 },
+  inline: { flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: 2 },
 
-  /* HEADER */
-  header: {
-    height: 64,
-    backgroundColor: '#FFFFFF',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    paddingHorizontal: 16,
-    borderBottomWidth: 1,
-    borderBottomColor: BORDER,
-  },
-  headerButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 13,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#F5F7F6',
-  },
-  headerTitle: {fontSize: 16, fontWeight: '900', color: DARK, letterSpacing: -0.3},
-  scrollContent: {paddingBottom: 110},
-
-  /* IMAGE SECTION */
-  imageSection: {
-    width: width,
-    height: width * 0.82,
-    backgroundColor: '#EAF2EC',
-    position: 'relative',
-  },
-  mainImage: {width: '100%', height: '100%'},
-  noImage: {flex: 1, alignItems: 'center', justifyContent: 'center'},
-  noImageText: {marginTop: 10, color: MUTED, fontSize: 13, fontWeight: '600'},
-  imageArrow: {
+  hero: { height: HERO_HEIGHT, backgroundColor: '#DDE8E1' },
+  heroImage: { width, height: HERO_HEIGHT },
+  topShade: { position: 'absolute', top: 0, left: 0, right: 0, height: 90 },
+  heroButtons: {
     position: 'absolute',
-    top: '44%',
-    width: 38,
-    height: 38,
-    borderRadius: 19,
-    backgroundColor: 'rgba(255,255,255,0.95)',
+    top: 12,
+    left: 16,
+    right: 16,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: DARK,
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
   },
-  leftArrow: {left: 14},
-  rightArrow: {right: 14},
-
-  /* THUMBNAILS */
-  thumbnailList: {paddingHorizontal: 16, paddingVertical: 12, gap: 10},
-  thumbnailWrapper: {
-    width: 64,
-    height: 64,
+  darkGlass: {
+    backgroundColor: 'rgba(0,0,0,0.32)',
+    borderColor: 'rgba(255,255,255,0.25)',
+  },
+  dots: {
+    position: 'absolute',
+    bottom: 44,
+    alignSelf: 'center',
+    flexDirection: 'row',
+    gap: 6,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
     borderRadius: 12,
+    backgroundColor: 'rgba(0,0,0,0.3)',
+  },
+  dot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: 'rgba(255,255,255,0.55)',
+  },
+  dotActive: { width: 18, backgroundColor: C.white },
+
+  sheet: {
+    marginTop: -30,
+    borderTopLeftRadius: 30,
+    borderTopRightRadius: 30,
+    backgroundColor: C.bg,
+    paddingHorizontal: 16,
+    paddingTop: 22,
+  },
+  categoryTag: {
+    alignSelf: 'flex-start',
+    fontSize: 10.5,
+    fontWeight: '900',
+    paddingHorizontal: 9,
+    paddingVertical: 4,
+    borderRadius: 10,
     overflow: 'hidden',
-    borderWidth: 2,
-    borderColor: 'transparent',
-    backgroundColor: WHITE,
   },
-  activeThumbnail: {borderColor: GREEN},
-  thumbnail: {width: '100%', height: '100%'},
-
-  /* INFO CONTENT */
-  content: {paddingHorizontal: 18},
-  categoryRow: {flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginTop: 10},
-  categoryBadge: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: LIGHT_GREEN,
-    paddingHorizontal: 11,
-    paddingVertical: 5,
-    borderRadius: 20,
-    gap: 5,
-  },
-  categoryText: {fontSize: 11.5, fontWeight: '800', color: GREEN},
-  availableBadge: {flexDirection: 'row', alignItems: 'center', gap: 4},
-  availableText: {fontSize: 11.5, fontWeight: '800', color: GREEN},
-  outOfStock: {fontSize: 11.5, fontWeight: '800', color: '#D64545'},
-  title: {fontSize: 22, fontWeight: '900', color: DARK, marginTop: 14, letterSpacing: -0.4},
-  price: {fontSize: 22, fontWeight: '900', color: GREEN, marginTop: 6},
-
-  /* CARD BADGES */
-  sellerCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: WHITE,
-    borderRadius: 16,
-    padding: 14,
-    marginTop: 18,
-    borderWidth: 1,
-    borderColor: BORDER,
-  },
-  sellerIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
-    backgroundColor: LIGHT_GREEN,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  sellerInfo: {marginLeft: 12},
-  sellerLabel: {color: MUTED, fontSize: 10, fontWeight: '600'},
-  sellerName: {color: DARK, fontSize: 14, fontWeight: '800', marginTop: 2},
-
-  locationCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: WHITE,
-    borderRadius: 16,
-    padding: 14,
+  title: {
+    fontSize: 24,
+    fontWeight: '900',
+    color: C.dark,
     marginTop: 10,
-    borderWidth: 1,
-    borderColor: BORDER,
+    letterSpacing: -0.6,
   },
-  locationIcon: {
-    width: 40,
-    height: 40,
-    borderRadius: 12,
-    backgroundColor: LIGHT_GREEN,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  locationInfo: {marginLeft: 12},
-  locationLabel: {fontSize: 10, color: MUTED, fontWeight: '600'},
-  locationValue: {marginTop: 2, fontSize: 14, color: DARK, fontWeight: '800'},
-
-  /* SECTIONS */
-  section: {marginTop: 22},
-  sectionTitle: {fontSize: 15, fontWeight: '900', color: DARK, letterSpacing: -0.2},
-  description: {fontSize: 13, lineHeight: 21, color: '#5E6663', marginTop: 8, fontWeight: '500'},
-
-  stockInfo: {
+  ratingRow: {
     flexDirection: 'row',
     alignItems: 'center',
+    gap: 5,
+    marginTop: 8,
+  },
+  ratingText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: C.text,
+    marginRight: 8,
+  },
+  priceRow: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
     justifyContent: 'space-between',
-    marginTop: 22,
-    paddingVertical: 14,
-    borderTopWidth: 1,
-    borderBottomWidth: 1,
-    borderColor: BORDER,
+    marginTop: 14,
   },
-  stockLabel: {color: MUTED, fontSize: 12.5, fontWeight: '600'},
-  stockValue: {color: DARK, fontWeight: '800', fontSize: 13.5},
-
-  /* QUANTITY */
-  quantitySection: {marginTop: 20},
-  quantityRow: {marginTop: 12, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'},
-  quantityControl: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: WHITE,
-    borderWidth: 1,
-    borderColor: BORDER,
+  price: {
+    fontSize: 30,
+    fontWeight: '900',
+    color: C.green,
+    letterSpacing: -1,
+  },
+  priceUnit: { fontSize: 12, fontWeight: '700', color: C.muted },
+  stock: {
+    fontSize: 12,
+    fontWeight: '900',
+    color: C.green,
+    backgroundColor: C.lightGreen,
+    paddingHorizontal: 11,
+    paddingVertical: 6,
     borderRadius: 12,
     overflow: 'hidden',
   },
-  quantityButton: {width: 40, height: 40, alignItems: 'center', justifyContent: 'center'},
-  quantityText: {width: 40, textAlign: 'center', fontSize: 15, fontWeight: '900', color: DARK},
-  totalPrice: {fontSize: 19, fontWeight: '900', color: GREEN},
+  stockLow: { color: C.amber, backgroundColor: C.lightAmber },
+  stockOut: { color: C.red, backgroundColor: C.lightRed },
 
-  /* FOOTER */
-  bottomBar: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    bottom: 0,
-    backgroundColor: WHITE,
-    borderTopWidth: 1,
-    borderTopColor: BORDER,
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+  card: {
+    backgroundColor: C.white,
+    borderRadius: 20,
+    padding: 16,
+    marginTop: 14,
+    ...MARKET_SHADOW,
   },
-  addCartButton: {
-    height: 50,
-    borderRadius: 13,
-    backgroundColor: GREEN,
+  ownerNotice: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  ownerNoticeText: {
+    flex: 1,
+    fontSize: 12.5,
+    fontWeight: '800',
+    color: C.text,
+  },
+
+  perks: { flexDirection: 'row', gap: 8, marginTop: 16 },
+  perk: {
+    flex: 1,
+    backgroundColor: C.white,
+    borderRadius: 16,
+    padding: 11,
+    ...MARKET_SHADOW,
+  },
+  perkTitle: { fontSize: 12, fontWeight: '900', color: C.dark, marginTop: 7 },
+  perkText: {
+    fontSize: 10,
+    fontWeight: '600',
+    color: C.muted,
+    marginTop: 2,
+  },
+
+  blockTitle: {
+    fontSize: 17,
+    fontWeight: '900',
+    color: C.dark,
+    marginTop: 22,
+    marginBottom: -2,
+  },
+  paragraph: {
+    fontSize: 13,
+    lineHeight: 20,
+    color: C.text,
+    fontWeight: '500',
+  },
+  sellerRow: { flexDirection: 'row', alignItems: 'center', gap: 12 },
+  sellerName: { fontSize: 15.5, fontWeight: '900', color: C.dark },
+  cardText: { fontSize: 11.5, fontWeight: '600', color: C.muted, marginTop: 3 },
+
+  reviewCard: {
+    backgroundColor: C.white,
+    borderRadius: 18,
+    padding: 14,
+    marginTop: 12,
+    gap: 8,
+    ...MARKET_SHADOW,
+  },
+  reviewHeader: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  reviewer: { fontSize: 13, fontWeight: '900', color: C.dark },
+  reviewMeta: { fontSize: 11, color: C.muted, fontWeight: '600', marginTop: 1 },
+  reviewStars: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    gap: 8,
-    shadowColor: GREEN,
-    shadowOffset: {width: 0, height: 4},
-    shadowOpacity: 0.25,
-    shadowRadius: 8,
-    elevation: 4,
+    gap: 3,
+    backgroundColor: C.lightAmber,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 10,
   },
-  addCartText: {color: WHITE, fontSize: 14, fontWeight: '900'},
-});
+  reviewRating: { fontSize: 12, fontWeight: '900', color: C.amber },
 
-export default NurseryPlantDetailsScreen;
+  bottomBar: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    paddingHorizontal: 16,
+    paddingTop: 12,
+    backgroundColor: C.white,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    shadowColor: '#0F172A',
+    shadowOpacity: 0.08,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: -4 },
+    elevation: 12,
+  },
+  lineTotal: {
+    fontSize: 11,
+    fontWeight: '800',
+    color: C.muted,
+    textAlign: 'center',
+    marginTop: 4,
+  },
+});

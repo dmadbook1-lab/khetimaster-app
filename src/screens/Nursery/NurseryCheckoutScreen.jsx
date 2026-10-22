@@ -1,813 +1,563 @@
-import React, {useCallback, useEffect, useMemo, useState, memo} from 'react';
+import React, { useCallback, useState } from 'react';
 import {
-  ActivityIndicator,
-  Alert,
-  Image,
   KeyboardAvoidingView,
   Platform,
   ScrollView,
-  StatusBar,
   StyleSheet,
   Text,
-  TextInput,
-  TouchableOpacity,
   View,
 } from 'react-native';
-import {SafeAreaView} from 'react-native-safe-area-context';
 import {
-  ArrowLeft,
-  CheckCircle2,
-  ChevronRight,
-  CircleUserRound,
-  CreditCard,
-  Home,
+  SafeAreaView,
+  useSafeAreaInsets,
+} from 'react-native-safe-area-context';
+import { useFocusEffect } from '@react-navigation/native';
+import {
+  Banknote,
+  CircleCheck,
   MapPin,
-  Package,
-  Phone,
-  ShoppingBag,
-  Truck,
+  ShieldCheck,
+  Store,
+  UserRound,
 } from 'lucide-react-native';
-import {useDispatch, useSelector} from 'react-redux';
-import {fetchNurseryCart} from '../../redux/slices/nurseryCartSlice';
-import {createNurseryOrder} from '../../redux/slices/nurseryOrderSlice';
+import { useDispatch, useSelector } from 'react-redux';
 
-const GREEN = '#159447';
-const DARK = '#151C2B';
-const BG = '#F6F8F7';
-const WHITE = '#FFFFFF';
-const MUTED = '#747B78';
-const BORDER = '#E2E8E4';
-const LIGHT_GREEN = '#EAF7EF';
-const RED = '#D64545';
+import MarketHero, { TopInset } from '../../components/market/MarketHero';
+import {
+  EmptyState,
+  InfoRow,
+  LoadingState,
+  MarketButton,
+} from '../../components/market/MarketBits';
+import {
+  MARKET_COLORS as C,
+  MARKET_SHADOW,
+} from '../../components/market/theme';
+import FeedbackModal, {
+  useFeedbackModal,
+} from '../../components/common/FeedbackModal';
+import {
+  Field,
+  FormCard,
+  FormInput,
+  SectionHeading,
+} from '../../components/labour/FormBits';
+import { PlantImage } from '../../components/nursery/NurseryBits';
+import { NURSERY_ROUTES } from '../../constants/nurseryRoutes';
+import {
+  fetchNurseryCart,
+  syncAdjustedCartItems,
+} from '../../redux/slices/nurseryCartSlice';
+import { placeNurseryOrder } from '../../redux/slices/nurseryOrderSlice';
+import { formatRupees } from '../../utils/marketFormat';
+import { validateAddress } from '../../utils/nurseryFormat';
 
-/* ---------- Memoized Input ---------- */
-const FormInput = memo(
-  ({
-    label,
-    value,
-    onChangeText,
-    placeholder,
-    icon: Icon,
-    keyboardType = 'default',
-    error,
-    multiline = false,
-  }) => (
-    <View style={styles.inputGroup}>
-      <Text style={styles.inputLabel}>{label}</Text>
-      <View
-        style={[
-          styles.inputWrapper,
-          error && styles.inputError,
-          multiline && styles.multilineWrapper,
-        ]}>
-        <Icon size={16} color={error ? RED : MUTED} />
-        <TextInput
-          value={value}
-          onChangeText={onChangeText}
-          placeholder={placeholder}
-          placeholderTextColor="#A0A7A4"
-          keyboardType={keyboardType}
-          multiline={multiline}
-          numberOfLines={multiline ? 3 : 1}
-          textAlignVertical={multiline ? 'top' : 'center'}
-          style={[styles.input, multiline && styles.multilineInput]}
-        />
-      </View>
-      {error ? <Text style={styles.errorText}>{error}</Text> : null}
-    </View>
-  ),
-);
-
-/* ---------- Memoized Order Item ---------- */
-const OrderItemRow = memo(({item, isLast}) => {
-  const plant = item?.plant || {};
-  const image = item?.image || plant?.images?.[0] || null;
-  const name = item?.name || plant?.name || 'Plant';
-  const quantity = Number(item?.quantity || 1);
-  const price = Number(item?.price || plant?.price || 0);
-
-  return (
-    <View style={[styles.orderItem, isLast && styles.lastOrderItem]}>
-      {image ? (
-        <Image source={{uri: image}} style={styles.itemImage} />
-      ) : (
-        <View style={styles.itemImagePlaceholder}>
-          <Package size={19} color={GREEN} />
-        </View>
-      )}
-      <View style={styles.itemDetails}>
-        <Text numberOfLines={2} style={styles.itemName}>
-          {name}
-        </Text>
-        <Text style={styles.itemQuantity}>Qty: {quantity}</Text>
-      </View>
-      <Text style={styles.itemPrice}>
-        ₹{(price * quantity).toLocaleString('en-IN')}
-      </Text>
-    </View>
-  );
+const initialAddress = user => ({
+  fullName: user?.fullName || user?.name || '',
+  phoneNumber: user?.phoneNumber || user?.phone || '',
+  address: user?.address || '',
+  village: user?.village || '',
+  taluka: user?.taluka || '',
+  district: user?.district || '',
+  state: user?.state || '',
+  pincode: user?.pincode || '',
 });
 
-const NurseryCheckoutScreen = ({navigation}) => {
+/*
+ * Cart items grouped by seller, for the summary.
+ */
+const groupCartBySeller = items => {
+  const groups = new Map();
+
+  for (const item of items) {
+    const seller = item.plant?.seller || {};
+    const key = String(seller.userId || 'seller');
+
+    if (!groups.has(key)) {
+      groups.set(key, { key, name: seller.name || 'Nursery', items: [] });
+    }
+    groups.get(key).items.push(item);
+  }
+
+  return [...groups.values()];
+};
+
+export default function NurseryCheckoutScreen({ navigation }) {
   const dispatch = useDispatch();
+  const insets = useSafeAreaInsets();
+  const feedback = useFeedbackModal();
 
-  const {
-    items = [],
-    subtotal = 0,
-    totalItems = 0,
-    loading: cartLoading,
-  } = useSelector(state => state.nurseryCart);
+  const user = useSelector(state => state.auth.user);
+  const { cart, loaded } = useSelector(state => state.nurseryCart);
+  const placing = useSelector(state => state.nurseryOrder.placing);
 
-  const {creating, error: orderError} = useSelector(
-    state => state.nurseryOrder,
+  const [form, setForm] = useState(() => initialAddress(user));
+  const [errorField, setErrorField] = useState(null);
+
+  useFocusEffect(
+    useCallback(() => {
+      dispatch(fetchNurseryCart());
+    }, [dispatch]),
   );
 
-  const user = useSelector(
-    state => state.auth?.user || state.auth?.profile || null,
-  );
+  const setField = (key, value) => {
+    setForm(previous => ({ ...previous, [key]: value }));
+    if (errorField === key) setErrorField(null);
+  };
 
-  const [fullName, setFullName] = useState('');
-  const [phoneNumber, setPhoneNumber] = useState('');
-  const [address, setAddress] = useState('');
-  const [village, setVillage] = useState('');
-  const [taluka, setTaluka] = useState('');
-  const [district, setDistrict] = useState('');
-  const [stateName, setStateName] = useState('');
-  const [pincode, setPincode] = useState('');
-  const [errors, setErrors] = useState({});
+  const items = cart.items || [];
+  const sellers = groupCartBySeller(items);
 
-  useEffect(() => {
-    dispatch(fetchNurseryCart());
-  }, [dispatch]);
+  const handlePlace = async () => {
+    const { address, error, field } = validateAddress(form);
 
-  useEffect(() => {
-    if (!user) return;
-    setFullName(user.fullName || user.name || '');
-    setPhoneNumber(user.phoneNumber || user.phone || '');
-    setVillage(user.village || '');
-    setTaluka(user.taluka || '');
-    setDistrict(user.district || '');
-    setStateName(user.state || '');
-  }, [user]);
-
-  const {deliveryFee, total} = useMemo(() => {
-    const fee = Number(subtotal) >= 500 ? 0 : 50;
-    return {deliveryFee: fee, total: Number(subtotal) + fee};
-  }, [subtotal]);
-
-  const validate = useCallback(() => {
-    const nextErrors = {};
-    if (!fullName.trim()) nextErrors.fullName = 'Enter your full name';
-    if (!phoneNumber.trim()) nextErrors.phoneNumber = 'Enter your phone number';
-    else if (!/^[6-9]\d{9}$/.test(phoneNumber.trim()))
-      nextErrors.phoneNumber = 'Enter a valid 10-digit phone number';
-    if (!address.trim()) nextErrors.address = 'Enter your delivery address';
-    if (!village.trim()) nextErrors.village = 'Enter your village';
-    if (!taluka.trim()) nextErrors.taluka = 'Enter your taluka';
-    if (!district.trim()) nextErrors.district = 'Enter your district';
-    if (!stateName.trim()) nextErrors.state = 'Enter your state';
-    if (!pincode.trim()) nextErrors.pincode = 'Enter your pincode';
-    else if (!/^\d{6}$/.test(pincode.trim()))
-      nextErrors.pincode = 'Enter a valid 6-digit pincode';
-
-    setErrors(nextErrors);
-    return Object.keys(nextErrors).length === 0;
-  }, [
-    fullName,
-    phoneNumber,
-    address,
-    village,
-    taluka,
-    district,
-    stateName,
-    pincode,
-  ]);
-
-  const handlePlaceOrder = useCallback(async () => {
-    if (!validate()) return;
-    if (!items || items.length === 0) {
-      Alert.alert(
-        'Cart is empty',
-        'Please add plants to your cart before checkout.',
-      );
+    if (error) {
+      setErrorField(field);
+      feedback.error('Check delivery details', error);
       return;
     }
 
-    const deliveryAddress = {
-      fullName: fullName.trim(),
-      phoneNumber: phoneNumber.trim(),
-      address: address.trim(),
-      village: village.trim(),
-      taluka: taluka.trim(),
-      district: district.trim(),
-      state: stateName.trim(),
-      pincode: pincode.trim(),
-    };
-
     try {
-      const result = await dispatch(
-        createNurseryOrder(deliveryAddress),
-      ).unwrap();
-      const order = result?.order || result?.data || result;
-      const orderId = order?._id || order?.id;
+      await dispatch(syncAdjustedCartItems()).unwrap();
+      const result = await dispatch(placeNurseryOrder(address)).unwrap();
+      const order = result?.data;
 
-      Alert.alert(
-        'Order placed successfully',
-        'Your plant order has been placed with Cash on Delivery.',
-        [
-          {
-            text: 'View Order',
-            onPress: () => {
-              if (orderId) {
-                navigation.replace('NurseryOrderDetails', {orderId});
-              } else {
-                navigation.replace('NurseryOrders');
-              }
-            },
-          },
-        ],
-        {cancelable: false},
+      feedback.success(
+        'Order placed!',
+        `Pay ${formatRupees(
+          order?.total,
+        )} in cash when your plants arrive. Sellers will confirm soon.`,
+        {
+          primaryLabel: 'Track Order',
+          secondaryLabel: 'Keep Shopping',
+          dismissable: false,
+          onPrimary: () =>
+            navigation.replace(NURSERY_ROUTES.ORDER_DETAILS, {
+              orderId: order?._id,
+            }),
+          onSecondary: () => navigation.navigate(NURSERY_ROUTES.HOME),
+        },
       );
-    } catch (error) {
-      Alert.alert(
-        'Unable to place order',
-        error?.message || 'Something went wrong. Please try again.',
-      );
+    } catch (failure) {
+      dispatch(fetchNurseryCart());
+      feedback.error('Could not place order', String(failure), {
+        primaryLabel: 'Review Cart',
+        secondaryLabel: 'Close',
+        onPrimary: () => navigation.navigate(NURSERY_ROUTES.CART),
+      });
     }
-  }, [
-    validate,
-    items,
-    fullName,
-    phoneNumber,
-    address,
-    village,
-    taluka,
-    district,
-    stateName,
-    pincode,
-    dispatch,
-    navigation,
-  ]);
+  };
 
-  if (!cartLoading && (!items || items.length === 0)) {
+  const inputStyle = key => errorField === key && styles.inputError;
+
+  if (!loaded) {
     return (
-      <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
-        <StatusBar barStyle="dark-content" backgroundColor={WHITE} />
-        <View style={styles.topBar}>
-          <TouchableOpacity
-            activeOpacity={0.75}
-            style={styles.backButton}
-            onPress={() => navigation.goBack()}>
-            <ArrowLeft size={20} color={DARK} />
-          </TouchableOpacity>
-          <Text style={styles.topTitle}>Checkout</Text>
-          <View style={styles.headerSpacer} />
-        </View>
-
-        <View style={styles.emptyContainer}>
-          <View style={styles.emptyIcon}>
-            <ShoppingBag size={40} color={GREEN} />
-          </View>
-          <Text style={styles.emptyTitle}>Your cart is empty</Text>
-          <Text style={styles.emptyText}>
-            Add some plants before proceeding to checkout.
-          </Text>
-          <TouchableOpacity
-            activeOpacity={0.85}
-            style={styles.primaryButton}
-            onPress={() => navigation.navigate('NurseryHome')}>
-            <Text style={styles.primaryButtonText}>Browse Plants</Text>
-          </TouchableOpacity>
-        </View>
+      <SafeAreaView style={styles.container} edges={['left', 'right']}>
+        <TopInset />
+        <MarketHero
+          compact
+          gradient="forest"
+          onBack={() => navigation.goBack()}
+          title="Checkout"
+        />
+        <LoadingState />
       </SafeAreaView>
     );
   }
 
   return (
-    <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
-      <StatusBar barStyle="dark-content" backgroundColor={WHITE} />
-
+    <SafeAreaView style={styles.container} edges={['left', 'right']}>
+      <TopInset />
       <KeyboardAvoidingView
-        style={{flex: 1}}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}>
-        {/* HEADER */}
-        <View style={styles.topBar}>
-          <TouchableOpacity
-            activeOpacity={0.75}
-            style={styles.backButton}
-            onPress={() => navigation.goBack()}>
-            <ArrowLeft size={20} color={DARK} />
-          </TouchableOpacity>
-
-          <View style={styles.headerCenter}>
-            <Text style={styles.topTitle}>Checkout</Text>
-            <Text style={styles.topSubtitle}>
-              {totalItems} item{totalItems === 1 ? '' : 's'}
-            </Text>
-          </View>
-
-          <View style={styles.codHeader}>
-            <Truck size={16} color={GREEN} />
-          </View>
-        </View>
-
+        style={styles.flex}
+        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      >
         <ScrollView
           showsVerticalScrollIndicator={false}
           keyboardShouldPersistTaps="handled"
-          contentContainerStyle={styles.scrollContent}>
-          {/* ORDER SUMMARY */}
-          <View style={styles.sectionCard}>
-            <View style={styles.sectionHeader}>
-              <View style={styles.sectionIcon}>
-                <Package size={16} color={GREEN} />
-              </View>
-              <View>
-                <Text style={styles.sectionTitle}>Order Summary</Text>
-                <Text style={styles.sectionSubtitle}>
-                  {totalItems} item{totalItems === 1 ? '' : 's'} in your cart
-                </Text>
-              </View>
+          contentContainerStyle={styles.scrollContent}
+        >
+          <MarketHero
+            compact
+            gradient="forest"
+            onBack={() => navigation.goBack()}
+            eyebrow="Checkout"
+            title="Where should we deliver?"
+            subtitle="Cash on delivery. Pay only when the plants reach you."
+          >
+            <View style={styles.heroSteps}>
+              {['Cart', 'Address', 'Place order'].map((label, index) => (
+                <View key={label} style={styles.heroStep}>
+                  <View
+                    style={[
+                      styles.heroStepDot,
+                      index <= 1 && styles.heroStepDotDone,
+                    ]}
+                  >
+                    {index === 0 ? (
+                      <CircleCheck size={13} color={C.greenDark} />
+                    ) : (
+                      <Text
+                        style={[
+                          styles.heroStepNumber,
+                          index === 1 && styles.heroStepNumberDone,
+                        ]}
+                      >
+                        {index + 1}
+                      </Text>
+                    )}
+                  </View>
+                  <Text style={styles.heroStepLabel}>{label}</Text>
+                </View>
+              ))}
             </View>
+          </MarketHero>
 
-            {items.map((item, index) => (
-              <OrderItemRow
-                key={String(
-                  item?._id || item?.id || item?.plant?._id || index,
-                )}
-                item={item}
-                isLast={index === items.length - 1}
+          <View style={styles.body}>
+            {!items.length ? (
+              <EmptyState
+                title="Your cart is empty"
+                message="Add some plants before checking out."
+                actionLabel="Browse Plants"
+                onAction={() => navigation.navigate(NURSERY_ROUTES.HOME)}
               />
-            ))}
-          </View>
-
-          {/* DELIVERY ADDRESS */}
-          <View style={styles.sectionCard}>
-            <View style={styles.sectionHeader}>
-              <View style={styles.sectionIcon}>
-                <MapPin size={16} color={GREEN} />
-              </View>
-              <View>
-                <Text style={styles.sectionTitle}>Delivery Address</Text>
-                <Text style={styles.sectionSubtitle}>
-                  Where should we deliver?
-                </Text>
-              </View>
-            </View>
-
-            <FormInput
-              label="Full Name"
-              value={fullName}
-              onChangeText={setFullName}
-              placeholder="Enter full name"
-              icon={CircleUserRound}
-              error={errors.fullName}
-            />
-
-            <FormInput
-              label="Phone Number"
-              value={phoneNumber}
-              onChangeText={setPhoneNumber}
-              placeholder="10-digit mobile number"
-              icon={Phone}
-              keyboardType="phone-pad"
-              error={errors.phoneNumber}
-            />
-
-            <FormInput
-              label="Address"
-              value={address}
-              onChangeText={setAddress}
-              placeholder="House no., street, landmark..."
-              icon={Home}
-              error={errors.address}
-              multiline
-            />
-
-            <View style={styles.twoColumn}>
-              <View style={styles.halfInput}>
-                <FormInput
-                  label="Village"
-                  value={village}
-                  onChangeText={setVillage}
-                  placeholder="Village"
-                  icon={MapPin}
-                  error={errors.village}
-                />
-              </View>
-              <View style={styles.halfInput}>
-                <FormInput
-                  label="Taluka"
-                  value={taluka}
-                  onChangeText={setTaluka}
-                  placeholder="Taluka"
-                  icon={MapPin}
-                  error={errors.taluka}
-                />
-              </View>
-            </View>
-
-            <View style={styles.twoColumn}>
-              <View style={styles.halfInput}>
-                <FormInput
-                  label="District"
-                  value={district}
-                  onChangeText={setDistrict}
-                  placeholder="District"
-                  icon={MapPin}
-                  error={errors.district}
-                />
-              </View>
-              <View style={styles.halfInput}>
-                <FormInput
-                  label="State"
-                  value={stateName}
-                  onChangeText={setStateName}
-                  placeholder="State"
-                  icon={MapPin}
-                  error={errors.state}
-                />
-              </View>
-            </View>
-
-            <FormInput
-              label="Pincode"
-              value={pincode}
-              onChangeText={setPincode}
-              placeholder="6-digit pincode"
-              icon={MapPin}
-              keyboardType="number-pad"
-              error={errors.pincode}
-            />
-          </View>
-
-          {/* PAYMENT */}
-          <View style={styles.sectionCard}>
-            <View style={styles.sectionHeader}>
-              <View style={styles.sectionIcon}>
-                <CreditCard size={16} color={GREEN} />
-              </View>
-              <View>
-                <Text style={styles.sectionTitle}>Payment Method</Text>
-                <Text style={styles.sectionSubtitle}>Simple and secure</Text>
-              </View>
-            </View>
-
-            <View style={styles.codCard}>
-              <View style={styles.codIcon}>
-                <Truck size={20} color={GREEN} />
-              </View>
-              <View style={styles.codContent}>
-                <Text style={styles.codTitle}>Cash on Delivery</Text>
-                <Text style={styles.codDescription}>
-                  Pay when your plants are delivered to you.
-                </Text>
-              </View>
-              <View style={styles.selectedCheck}>
-                <CheckCircle2 size={22} color={GREEN} fill={LIGHT_GREEN} />
-              </View>
-            </View>
-          </View>
-
-          {/* PRICE DETAILS */}
-          <View style={styles.sectionCard}>
-            <Text style={styles.priceDetailsTitle}>Price Details</Text>
-
-            <View style={styles.priceRow}>
-              <Text style={styles.priceLabel}>Subtotal</Text>
-              <Text style={styles.priceValue}>
-                ₹{Number(subtotal).toLocaleString('en-IN')}
-              </Text>
-            </View>
-
-            <View style={styles.priceRow}>
-              <Text style={styles.priceLabel}>Delivery</Text>
-              <Text
-                style={[
-                  styles.priceValue,
-                  deliveryFee === 0 && styles.freeText,
-                ]}>
-                {deliveryFee === 0 ? 'FREE' : `₹${deliveryFee}`}
-              </Text>
-            </View>
-
-            {deliveryFee === 0 && (
-              <Text style={styles.freeDeliveryNote}>
-                Free delivery on orders above ₹500
-              </Text>
-            )}
-
-            <View style={styles.totalDivider} />
-
-            <View style={styles.priceRow}>
-              <Text style={styles.totalLabel}>Total</Text>
-              <Text style={styles.totalValue}>
-                ₹{total.toLocaleString('en-IN')}
-              </Text>
-            </View>
-          </View>
-
-          {orderError ? (
-            <View style={styles.errorBanner}>
-              <Text style={styles.errorBannerText}>
-                {typeof orderError === 'string'
-                  ? orderError
-                  : 'Unable to place order. Please try again.'}
-              </Text>
-            </View>
-          ) : null}
-        </ScrollView>
-
-        {/* BOTTOM */}
-        <View style={styles.bottomBar}>
-          <View>
-            <Text style={styles.bottomTotalLabel}>Total Amount</Text>
-            <Text style={styles.bottomTotal}>
-              ₹{total.toLocaleString('en-IN')}
-            </Text>
-          </View>
-
-          <TouchableOpacity
-            activeOpacity={0.85}
-            disabled={creating}
-            style={[styles.placeOrderButton, creating && styles.disabledButton]}
-            onPress={handlePlaceOrder}>
-            {creating ? (
-              <ActivityIndicator size="small" color={WHITE} />
             ) : (
               <>
-                <Text style={styles.placeOrderText}>Place Order</Text>
-                <ChevronRight size={18} color={WHITE} />
+                {/* ADDRESS */}
+                <SectionHeading
+                  icon={<UserRound size={16} color={C.green} />}
+                  title="Receiver"
+                  subtitle="Who will receive the plants"
+                />
+                <FormCard>
+                  <Field label="Full name *">
+                    <FormInput
+                      value={form.fullName}
+                      onChangeText={value => setField('fullName', value)}
+                      placeholder="Receiver name"
+                      maxLength={100}
+                      style={inputStyle('fullName')}
+                    />
+                  </Field>
+                  <Field
+                    label="Phone number *"
+                    hint="The seller calls this number for delivery."
+                  >
+                    <FormInput
+                      value={form.phoneNumber}
+                      onChangeText={value => setField('phoneNumber', value)}
+                      placeholder="10 digit mobile number"
+                      keyboardType="phone-pad"
+                      maxLength={15}
+                      style={inputStyle('phoneNumber')}
+                    />
+                  </Field>
+                </FormCard>
+
+                <SectionHeading
+                  icon={<MapPin size={16} color={C.blue} />}
+                  color={C.blue}
+                  title="Delivery address"
+                />
+                <FormCard>
+                  <Field label="House / street / landmark *">
+                    <FormInput
+                      value={form.address}
+                      onChangeText={value => setField('address', value)}
+                      placeholder="e.g. Near Hanuman temple, Shivaji Nagar"
+                      maxLength={300}
+                      multiline
+                      textAlignVertical="top"
+                      style={[styles.textArea, inputStyle('address')]}
+                    />
+                  </Field>
+                  <View style={styles.row}>
+                    <View style={styles.flex}>
+                      <Field label="Village">
+                        <FormInput
+                          value={form.village}
+                          onChangeText={value => setField('village', value)}
+                          placeholder="Village"
+                        />
+                      </Field>
+                    </View>
+                    <View style={styles.flex}>
+                      <Field label="Taluka">
+                        <FormInput
+                          value={form.taluka}
+                          onChangeText={value => setField('taluka', value)}
+                          placeholder="Taluka"
+                        />
+                      </Field>
+                    </View>
+                  </View>
+                  <View style={styles.row}>
+                    <View style={styles.flex}>
+                      <Field label="District">
+                        <FormInput
+                          value={form.district}
+                          onChangeText={value => setField('district', value)}
+                          placeholder="District"
+                        />
+                      </Field>
+                    </View>
+                    <View style={styles.flex}>
+                      <Field label="State">
+                        <FormInput
+                          value={form.state}
+                          onChangeText={value => setField('state', value)}
+                          placeholder="State"
+                        />
+                      </Field>
+                    </View>
+                  </View>
+                  <Field label="Pincode *">
+                    <FormInput
+                      value={form.pincode}
+                      onChangeText={value =>
+                        setField('pincode', value.replace(/\D/g, ''))
+                      }
+                      placeholder="6 digit pincode"
+                      keyboardType="number-pad"
+                      maxLength={6}
+                      style={inputStyle('pincode')}
+                    />
+                  </Field>
+                </FormCard>
+
+                {/* SUMMARY */}
+                <SectionHeading
+                  icon={<Store size={16} color={C.orange} />}
+                  color={C.orange}
+                  title="Order summary"
+                  subtitle={
+                    sellers.length > 1
+                      ? `From ${sellers.length} nurseries · each sends their own plants`
+                      : `From ${sellers[0]?.name}`
+                  }
+                />
+                <View style={styles.card}>
+                  {sellers.map((group, groupIndex) => (
+                    <View
+                      key={group.key}
+                      style={groupIndex > 0 && styles.sellerGap}
+                    >
+                      {sellers.length > 1 && (
+                        <Text style={styles.sellerName}>{group.name}</Text>
+                      )}
+                      {group.items.map(item => (
+                        <View key={item._id} style={styles.summaryRow}>
+                          <PlantImage
+                            plant={item.plant}
+                            style={styles.summaryImage}
+                            iconSize={18}
+                          />
+                          <View style={styles.flex}>
+                            <Text style={styles.summaryName} numberOfLines={1}>
+                              {item.plant?.name}
+                            </Text>
+                            <Text style={styles.summaryMeta}>
+                              {item.quantity} ×{' '}
+                              {formatRupees(item.plant?.price)}
+                            </Text>
+                          </View>
+                          <Text style={styles.summaryTotal}>
+                            {formatRupees(item.itemTotal)}
+                          </Text>
+                        </View>
+                      ))}
+                    </View>
+                  ))}
+
+                  <View style={styles.divider} />
+                  <InfoRow
+                    label={`Plants (${cart.totalItems})`}
+                    value={formatRupees(cart.subtotal)}
+                  />
+                  <InfoRow
+                    label="Delivery"
+                    value={
+                      cart.deliveryFee ? formatRupees(cart.deliveryFee) : 'FREE'
+                    }
+                  />
+                  <View style={styles.totalRow}>
+                    <Text style={styles.totalLabel}>To pay on delivery</Text>
+                    <Text style={styles.totalValue}>
+                      {formatRupees(cart.total)}
+                    </Text>
+                  </View>
+                </View>
+
+                {/* PAYMENT */}
+                <View style={[styles.card, styles.payCard]}>
+                  <View style={styles.payIcon}>
+                    <Banknote size={20} color={C.green} />
+                  </View>
+                  <View style={styles.flex}>
+                    <Text style={styles.payTitle}>Cash on delivery</Text>
+                    <Text style={styles.payText}>
+                      Pay the delivery person in cash or UPI when your plants
+                      arrive.
+                    </Text>
+                  </View>
+                  <CircleCheck size={20} color={C.green} />
+                </View>
+
+                <View style={styles.safeRow}>
+                  <ShieldCheck size={14} color={C.muted} />
+                  <Text style={styles.safeText}>
+                    You can cancel free of charge until the plants are
+                    dispatched.
+                  </Text>
+                </View>
               </>
             )}
-          </TouchableOpacity>
-        </View>
+          </View>
+        </ScrollView>
       </KeyboardAvoidingView>
+
+      {items.length > 0 && (
+        <View
+          style={[
+            styles.bottomBar,
+            { paddingBottom: Math.max(insets.bottom, 14) + 6 },
+          ]}
+        >
+          <View style={styles.flex}>
+            <Text style={styles.bottomLabel}>Pay on delivery</Text>
+            <Text style={styles.bottomPrice}>{formatRupees(cart.total)}</Text>
+          </View>
+          <MarketButton
+            label="Place Order"
+            icon={<CircleCheck size={17} color={C.white} />}
+            loading={placing}
+            onPress={handlePlace}
+            style={styles.flexWide}
+          />
+        </View>
+      )}
+
+      <FeedbackModal {...feedback.modalProps} />
     </SafeAreaView>
   );
-};
+}
 
 const styles = StyleSheet.create({
-  container: {flex: 1, backgroundColor: BG},
+  container: { flex: 1, backgroundColor: C.bg },
+  flex: { flex: 1 },
+  flexWide: { flex: 1.4 },
+  scrollContent: { paddingBottom: 30 },
+  body: { paddingHorizontal: 16 },
+  row: { flexDirection: 'row', gap: 12 },
 
-  topBar: {
-    height: 66,
-    backgroundColor: WHITE,
-    borderBottomWidth: 1,
-    borderBottomColor: BORDER,
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 16,
-  },
-  backButton: {
-    width: 40,
-    height: 40,
-    borderRadius: 13,
-    backgroundColor: '#F2F5F3',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  headerCenter: {flex: 1, alignItems: 'center'},
-  topTitle: {
-    color: DARK,
-    fontSize: 17,
-    fontWeight: '900',
-    letterSpacing: -0.3,
-  },
-  topSubtitle: {color: MUTED, fontSize: 10, marginTop: 2, fontWeight: '600'},
-  headerSpacer: {width: 40},
-  codHeader: {
-    width: 40,
-    height: 40,
-    borderRadius: 13,
-    backgroundColor: LIGHT_GREEN,
+  heroSteps: { flexDirection: 'row', gap: 14, marginTop: 16 },
+  heroStep: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  heroStepDot: {
+    width: 22,
+    height: 22,
+    borderRadius: 11,
+    borderWidth: 1.5,
+    borderColor: 'rgba(255,255,255,0.45)',
     alignItems: 'center',
     justifyContent: 'center',
   },
+  heroStepDotDone: { backgroundColor: C.white, borderColor: C.white },
+  heroStepNumber: { color: C.white, fontSize: 11, fontWeight: '900' },
+  heroStepNumberDone: { color: C.greenDark },
+  heroStepLabel: { color: C.white, fontSize: 11.5, fontWeight: '800' },
 
-  scrollContent: {padding: 16, paddingBottom: 25},
+  inputError: { borderColor: C.red, backgroundColor: '#FFF8F7' },
+  textArea: { height: 76, paddingTop: 12 },
 
-  sectionCard: {
-    backgroundColor: WHITE,
-    borderRadius: 18,
-    borderWidth: 1,
-    borderColor: BORDER,
+  card: {
+    backgroundColor: C.white,
+    borderRadius: 20,
     padding: 16,
-    marginBottom: 13,
+    marginTop: 12,
+    ...MARKET_SHADOW,
   },
-  sectionHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
-  },
-  sectionIcon: {
-    width: 38,
-    height: 38,
-    borderRadius: 12,
-    backgroundColor: LIGHT_GREEN,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 11,
-  },
-  sectionTitle: {
-    color: DARK,
-    fontSize: 14,
+  sellerGap: { marginTop: 12 },
+  sellerName: {
+    fontSize: 11.5,
     fontWeight: '900',
-    letterSpacing: -0.2,
+    color: C.orange,
+    marginBottom: 4,
   },
-  sectionSubtitle: {color: MUTED, fontSize: 10, marginTop: 3},
-
-  orderItem: {
+  summaryRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 11,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F0F3F1',
+    gap: 10,
+    paddingVertical: 6,
   },
-  lastOrderItem: {borderBottomWidth: 0, paddingBottom: 0},
-  itemImage: {
-    width: 54,
-    height: 54,
+  summaryImage: { width: 42, height: 42, borderRadius: 12 },
+  summaryName: { fontSize: 13, fontWeight: '800', color: C.dark },
+  summaryMeta: { fontSize: 11.5, fontWeight: '600', color: C.muted },
+  summaryTotal: { fontSize: 13.5, fontWeight: '900', color: C.dark },
+  divider: { height: 1, backgroundColor: '#F0F2F1', marginVertical: 6 },
+  totalRow: {
+    marginTop: 12,
+    padding: 12,
     borderRadius: 12,
-    backgroundColor: '#EAF1EC',
-  },
-  itemImagePlaceholder: {
-    width: 54,
-    height: 54,
-    borderRadius: 12,
-    backgroundColor: LIGHT_GREEN,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  itemDetails: {flex: 1, marginLeft: 12, marginRight: 8},
-  itemName: {color: DARK, fontSize: 12, fontWeight: '800'},
-  itemQuantity: {color: MUTED, fontSize: 10, marginTop: 4, fontWeight: '600'},
-  itemPrice: {color: DARK, fontSize: 12, fontWeight: '900'},
-
-  inputGroup: {marginBottom: 13},
-  inputLabel: {color: DARK, fontSize: 11, fontWeight: '800', marginBottom: 7},
-  inputWrapper: {
-    minHeight: 47,
-    borderWidth: 1,
-    borderColor: BORDER,
-    borderRadius: 12,
-    backgroundColor: '#FAFBFA',
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingHorizontal: 13,
-  },
-  multilineWrapper: {alignItems: 'flex-start', paddingTop: 13},
-  inputError: {borderColor: '#E8A0A0', backgroundColor: '#FFF9F9'},
-  input: {
-    flex: 1,
-    color: DARK,
-    fontSize: 12,
-    marginLeft: 9,
-    paddingVertical: 0,
-  },
-  multilineInput: {minHeight: 70, paddingTop: 0},
-  errorText: {color: RED, fontSize: 10, marginTop: 5, marginLeft: 3},
-
-  twoColumn: {flexDirection: 'row', gap: 10},
-  halfInput: {flex: 1},
-
-  codCard: {
-    minHeight: 78,
-    borderRadius: 15,
-    backgroundColor: LIGHT_GREEN,
-    borderWidth: 1,
-    borderColor: '#CBEBD7',
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 13,
-  },
-  codIcon: {
-    width: 44,
-    height: 44,
-    borderRadius: 13,
-    backgroundColor: WHITE,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  codContent: {flex: 1, marginLeft: 12},
-  codTitle: {color: DARK, fontSize: 13, fontWeight: '900'},
-  codDescription: {
-    color: MUTED,
-    fontSize: 10,
-    marginTop: 4,
-    lineHeight: 15,
-    fontWeight: '600',
-  },
-  selectedCheck: {marginLeft: 8},
-
-  priceDetailsTitle: {
-    color: DARK,
-    fontSize: 14,
-    fontWeight: '900',
-    marginBottom: 15,
-    letterSpacing: -0.2,
-  },
-  priceRow: {
+    backgroundColor: C.lightGreen,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    marginBottom: 10,
   },
-  priceLabel: {color: MUTED, fontSize: 12, fontWeight: '600'},
-  priceValue: {color: DARK, fontSize: 12, fontWeight: '800'},
-  freeText: {color: GREEN, fontWeight: '900'},
-  freeDeliveryNote: {color: GREEN, fontSize: 10, marginBottom: 5, fontWeight: '600'},
-  totalDivider: {height: 1, backgroundColor: BORDER, marginVertical: 8},
-  totalLabel: {color: DARK, fontSize: 14, fontWeight: '900'},
-  totalValue: {color: GREEN, fontSize: 19, fontWeight: '900'},
+  totalLabel: { fontSize: 13, fontWeight: '800', color: C.text },
+  totalValue: { fontSize: 18, fontWeight: '900', color: C.green },
 
-  errorBanner: {
-    backgroundColor: '#FFF2F2',
-    borderWidth: 1,
-    borderColor: '#F0C8C8',
-    borderRadius: 12,
-    padding: 13,
-    marginBottom: 12,
+  payCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+    borderWidth: 1.5,
+    borderColor: C.green,
   },
-  errorBannerText: {color: RED, fontSize: 11, lineHeight: 17, fontWeight: '600'},
+  payIcon: {
+    width: 42,
+    height: 42,
+    borderRadius: 14,
+    backgroundColor: C.lightGreen,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  payTitle: { fontSize: 14, fontWeight: '900', color: C.dark },
+  payText: {
+    fontSize: 11.5,
+    fontWeight: '600',
+    color: C.muted,
+    marginTop: 2,
+    lineHeight: 16,
+  },
+  safeRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginTop: 14,
+    paddingHorizontal: 4,
+  },
+  safeText: { flex: 1, fontSize: 11.5, fontWeight: '600', color: C.muted },
 
   bottomBar: {
-    backgroundColor: WHITE,
-    borderTopWidth: 1,
-    borderTopColor: BORDER,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
     paddingHorizontal: 16,
     paddingTop: 12,
-    paddingBottom: Platform.OS === 'ios' ? 8 : 14,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    backgroundColor: C.white,
+    borderTopLeftRadius: 24,
+    borderTopRightRadius: 24,
+    shadowColor: '#0F172A',
+    shadowOpacity: 0.08,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: -4 },
+    elevation: 12,
   },
-  bottomTotalLabel: {color: MUTED, fontSize: 10, fontWeight: '600'},
-  bottomTotal: {
-    color: DARK,
+  bottomLabel: { fontSize: 11, color: C.muted, fontWeight: '700' },
+  bottomPrice: {
     fontSize: 19,
+    color: C.dark,
     fontWeight: '900',
-    marginTop: 2,
-    letterSpacing: -0.3,
+    letterSpacing: -0.4,
   },
-  placeOrderButton: {
-    height: 50,
-    minWidth: 160,
-    borderRadius: 14,
-    backgroundColor: GREEN,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    gap: 6,
-    shadowColor: GREEN,
-    shadowOffset: {width: 0, height: 4},
-    shadowOpacity: 0.25,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  placeOrderText: {color: WHITE, fontSize: 13, fontWeight: '900'},
-  disabledButton: {opacity: 0.65},
-
-  emptyContainer: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 35,
-  },
-  emptyIcon: {
-    width: 86,
-    height: 86,
-    borderRadius: 43,
-    backgroundColor: LIGHT_GREEN,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  emptyTitle: {
-    color: DARK,
-    fontSize: 19,
-    fontWeight: '900',
-    marginTop: 18,
-    letterSpacing: -0.3,
-  },
-  emptyText: {
-    color: MUTED,
-    fontSize: 12,
-    lineHeight: 19,
-    textAlign: 'center',
-    marginTop: 7,
-  },
-  primaryButton: {
-    backgroundColor: GREEN,
-    paddingHorizontal: 24,
-    paddingVertical: 13,
-    borderRadius: 13,
-    marginTop: 22,
-    shadowColor: GREEN,
-    shadowOffset: {width: 0, height: 4},
-    shadowOpacity: 0.25,
-    shadowRadius: 8,
-    elevation: 4,
-  },
-  primaryButtonText: {color: WHITE, fontSize: 13, fontWeight: '900'},
 });
-
-export default NurseryCheckoutScreen;

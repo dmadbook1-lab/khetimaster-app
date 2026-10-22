@@ -1,9 +1,7 @@
-import {
-  createAsyncThunk,
-  createSlice,
-} from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice } from '@reduxjs/toolkit';
 
 import {
+  getNurseryMetaApi,
   getNurseryPlantsApi,
   getNurseryPlantByIdApi,
   getNurseryCategoriesApi,
@@ -12,183 +10,119 @@ import {
   updateNurseryPlantApi,
   deleteNurseryPlantApi,
 } from '../../api/nurseryApi';
+import { DEFAULT_DELIVERY } from '../../utils/nurseryFormat';
+
+const errorMessage = (error, fallback) =>
+  error.response?.data?.message || error.message || fallback;
 
 /*
 |--------------------------------------------------------------------------
-| GET PLANTS
+| META + CATEGORIES
 |--------------------------------------------------------------------------
 */
 
-export const fetchNurseryPlants =
-  createAsyncThunk(
-    'nursery/fetchPlants',
-    async (params, {rejectWithValue}) => {
-      try {
-        return await getNurseryPlantsApi(
-          params,
-        );
-      } catch (error) {
-        return rejectWithValue(
-          error.response?.data?.message ||
-            error.message ||
-            'Unable to load plants',
-        );
-      }
-    },
-  );
+export const fetchNurseryMeta = createAsyncThunk(
+  'nursery/fetchMeta',
+  async (_, { rejectWithValue }) => {
+    try {
+      return await getNurseryMetaApi();
+    } catch (error) {
+      return rejectWithValue(errorMessage(error, 'Unable to load options'));
+    }
+  },
+);
+
+// categories that currently have plants
+export const fetchNurseryCategories = createAsyncThunk(
+  'nursery/fetchCategories',
+  async (_, { rejectWithValue }) => {
+    try {
+      return await getNurseryCategoriesApi();
+    } catch (error) {
+      return rejectWithValue(errorMessage(error, 'Unable to load categories'));
+    }
+  },
+);
 
 /*
 |--------------------------------------------------------------------------
-| GET PLANT BY ID
+| BROWSE
 |--------------------------------------------------------------------------
+|
+| {params, append} - append adds the next page to the current list.
+|
 */
 
-export const fetchNurseryPlantById =
-  createAsyncThunk(
-    'nursery/fetchPlantById',
-    async (plantId, {rejectWithValue}) => {
-      try {
-        return await getNurseryPlantByIdApi(
-          plantId,
-        );
-      } catch (error) {
-        return rejectWithValue(
-          error.response?.data?.message ||
-            error.message ||
-            'Unable to load plant',
-        );
-      }
-    },
-  );
+export const fetchNurseryPlants = createAsyncThunk(
+  'nursery/fetchPlants',
+  async ({ params = {} } = {}, { rejectWithValue }) => {
+    try {
+      return await getNurseryPlantsApi(params);
+    } catch (error) {
+      return rejectWithValue(errorMessage(error, 'Unable to load plants'));
+    }
+  },
+);
+
+export const fetchNurseryPlantById = createAsyncThunk(
+  'nursery/fetchPlantById',
+  async (plantId, { rejectWithValue }) => {
+    try {
+      return await getNurseryPlantByIdApi(plantId);
+    } catch (error) {
+      return rejectWithValue(errorMessage(error, 'Unable to load plant'));
+    }
+  },
+);
 
 /*
 |--------------------------------------------------------------------------
-| GET CATEGORIES
+| SELLER
 |--------------------------------------------------------------------------
 */
 
-export const fetchNurseryCategories =
-  createAsyncThunk(
-    'nursery/fetchCategories',
-    async (_, {rejectWithValue}) => {
-      try {
-        return await getNurseryCategoriesApi();
-      } catch (error) {
-        return rejectWithValue(
-          error.response?.data?.message ||
-            error.message ||
-            'Unable to load categories',
-        );
-      }
-    },
-  );
+export const fetchMyNurseryListings = createAsyncThunk(
+  'nursery/fetchMine',
+  async (_, { rejectWithValue }) => {
+    try {
+      return await getMyNurseryListingsApi();
+    } catch (error) {
+      return rejectWithValue(errorMessage(error, 'Unable to load your plants'));
+    }
+  },
+);
 
 /*
-|--------------------------------------------------------------------------
-| CREATE LISTING
-|--------------------------------------------------------------------------
-*/
-
-export const createNurseryPlant =
-  createAsyncThunk(
-    'nursery/createPlant',
-    async (plantData, {rejectWithValue}) => {
-      try {
-        return await createNurseryPlantApi(
-          plantData,
-        );
-      } catch (error) {
-        return rejectWithValue(
-          error.response?.data?.message ||
-            error.message ||
-            'Unable to create listing',
-        );
-      }
-    },
-  );
+ * {plantId, plantData} - no plantId lists a new plant.
+ */
+export const saveNurseryPlant = createAsyncThunk(
+  'nursery/save',
+  async ({ plantId, plantData }, { rejectWithValue }) => {
+    try {
+      return plantId
+        ? await updateNurseryPlantApi(plantId, plantData)
+        : await createNurseryPlantApi(plantData);
+    } catch (error) {
+      return rejectWithValue(errorMessage(error, 'Unable to save plant'));
+    }
+  },
+);
 
 /*
-|--------------------------------------------------------------------------
-| GET MY LISTINGS
-|--------------------------------------------------------------------------
-*/
-
-export const fetchMyNurseryListings =
-  createAsyncThunk(
-    'nursery/myListings',
-    async (_, {rejectWithValue}) => {
-      try {
-        return await getMyNurseryListingsApi();
-      } catch (error) {
-        return rejectWithValue(
-          error.response?.data?.message ||
-            error.message ||
-            'Unable to load your listings',
-        );
-      }
-    },
-  );
-
-/*
-|--------------------------------------------------------------------------
-| UPDATE LISTING
-|--------------------------------------------------------------------------
-*/
-
-export const updateNurseryPlant =
-  createAsyncThunk(
-    'nursery/updatePlant',
-    async (
-      {plantId, plantData},
-      {rejectWithValue},
-    ) => {
-      try {
-        return await updateNurseryPlantApi(
-          plantId,
-          plantData,
-        );
-      } catch (error) {
-        return rejectWithValue(
-          error.response?.data?.message ||
-            error.message ||
-            'Unable to update listing',
-        );
-      }
-    },
-  );
-
-/*
-|--------------------------------------------------------------------------
-| DELETE LISTING
-|--------------------------------------------------------------------------
-*/
-
-export const deleteNurseryPlant =
-  createAsyncThunk(
-    'nursery/deletePlant',
-    async (
-      plantId,
-      {rejectWithValue},
-    ) => {
-      try {
-        const data =
-          await deleteNurseryPlantApi(
-            plantId,
-          );
-
-        return {
-          plantId,
-          data,
-        };
-      } catch (error) {
-        return rejectWithValue(
-          error.response?.data?.message ||
-            error.message ||
-            'Unable to delete listing',
-        );
-      }
-    },
-  );
+ * {plantId, active} - pausing hides the plant, resuming shows it again.
+ */
+export const setNurseryPlantActive = createAsyncThunk(
+  'nursery/setActive',
+  async ({ plantId, active }, { rejectWithValue }) => {
+    try {
+      return active
+        ? await updateNurseryPlantApi(plantId, { isActive: true })
+        : await deleteNurseryPlantApi(plantId);
+    } catch (error) {
+      return rejectWithValue(errorMessage(error, 'Unable to update plant'));
+    }
+  },
+);
 
 /*
 |--------------------------------------------------------------------------
@@ -197,35 +131,51 @@ export const deleteNurseryPlant =
 */
 
 const initialState = {
-  plants: [],
-  selectedPlant: null,
-  categories: [],
-  myListings: [],
-
-  pagination: {
-    page: 1,
-    limit: 20,
-    total: 0,
-    pages: 1,
+  meta: {
+    categories: [],
+    delivery: DEFAULT_DELIVERY,
+    paymentMethods: ['COD'],
   },
+  metaLoading: false,
+  metaError: null,
 
-  loading: false,
-  plantLoading: false,
-  categoriesLoading: false,
-  listingsLoading: false,
+  // categories that have plants right now
+  liveCategories: [],
 
-  createLoading: false,
-  updateLoading: false,
-  deleteLoading: false,
+  list: [],
+  pagination: { page: 1, totalPages: 1, total: 0 },
+  listLoading: false,
+  listLoadingMore: false,
+  listError: null,
 
-  error: null,
-  plantError: null,
-  categoriesError: null,
-  listingsError: null,
+  selected: null,
+  selectedLoading: false,
+  selectedError: null,
 
-  createError: null,
-  updateError: null,
-  deleteError: null,
+  mine: [],
+  // idle | loading | loaded | error
+  mineStatus: 'idle',
+  mineError: null,
+
+  saving: false,
+  // plantId being paused / resumed
+  togglingId: null,
+};
+
+/*
+ * Apply a change to every copy of a plant held in the store.
+ */
+const patchPlant = (state, plant) => {
+  if (!plant?._id) return;
+
+  const apply = item => (item._id === plant._id ? { ...item, ...plant } : item);
+
+  state.list = state.list.map(apply);
+  state.mine = state.mine.map(apply);
+
+  if (state.selected?._id === plant._id) {
+    state.selected = { ...state.selected, ...plant };
+  }
 };
 
 /*
@@ -234,381 +184,158 @@ const initialState = {
 |--------------------------------------------------------------------------
 */
 
-const nurserySlice =
-  createSlice({
-    name: 'nursery',
+const nurserySlice = createSlice({
+  name: 'nursery',
 
-    initialState,
+  initialState,
 
-    reducers: {
-      clearNurseryErrors: state => {
-        state.error = null;
-        state.plantError = null;
-        state.categoriesError = null;
-        state.listingsError = null;
-        state.createError = null;
-        state.updateError = null;
-        state.deleteError = null;
-      },
-
-      clearSelectedPlant: state => {
-        state.selectedPlant = null;
-        state.plantError = null;
-      },
-
-      clearNurseryPlants: state => {
-        state.plants = [];
-      },
-
-      clearMyListings: state => {
-        state.myListings = [];
-      },
+  reducers: {
+    clearSelectedPlant: state => {
+      state.selected = null;
+      state.selectedError = null;
     },
+  },
 
-    extraReducers: builder => {
-      /*
-      |--------------------------------------------------------------------------
-      | FETCH PLANTS
-      |--------------------------------------------------------------------------
-      */
+  extraReducers: builder => {
+    builder
+      .addCase(fetchNurseryMeta.pending, state => {
+        state.metaLoading = true;
+        state.metaError = null;
+      })
+      .addCase(fetchNurseryMeta.fulfilled, (state, action) => {
+        state.metaLoading = false;
 
-      builder
-        .addCase(
-          fetchNurseryPlants.pending,
-          state => {
-            state.loading = true;
-            state.error = null;
+        const data = action.payload?.data || {};
+
+        state.meta = {
+          categories: data.categories || [],
+          delivery: {
+            fee: data.delivery?.fee ?? DEFAULT_DELIVERY.fee,
+            freeAbove: data.delivery?.freeAbove ?? DEFAULT_DELIVERY.freeAbove,
           },
-        )
+          paymentMethods: data.paymentMethods || ['COD'],
+        };
+      })
+      .addCase(fetchNurseryMeta.rejected, (state, action) => {
+        state.metaLoading = false;
+        state.metaError = action.payload;
+      })
 
-        .addCase(
-          fetchNurseryPlants.fulfilled,
-          (state, action) => {
-            state.loading = false;
+      .addCase(fetchNurseryCategories.fulfilled, (state, action) => {
+        state.liveCategories = action.payload?.data || [];
+      });
 
-            const response =
-              action.payload;
+    builder
+      .addCase(fetchNurseryPlants.pending, (state, action) => {
+        if (action.meta.arg?.append) {
+          state.listLoadingMore = true;
+        } else {
+          state.listLoading = true;
+        }
 
-            state.plants =
-              response?.plants ||
-              response?.data ||
-              [];
+        state.listError = null;
+      })
+      .addCase(fetchNurseryPlants.fulfilled, (state, action) => {
+        state.listLoading = false;
+        state.listLoadingMore = false;
 
-            if (response?.pagination) {
-              state.pagination =
-                response.pagination;
-            }
-          },
-        )
+        const plants = action.payload?.data || [];
 
-        .addCase(
-          fetchNurseryPlants.rejected,
-          (state, action) => {
-            state.loading = false;
+        if (action.meta.arg?.append) {
+          const known = new Set(state.list.map(item => item._id));
+          state.list = [
+            ...state.list,
+            ...plants.filter(item => !known.has(item._id)),
+          ];
+        } else {
+          state.list = plants;
+        }
 
-            state.error =
-              action.payload ||
-              'Unable to load plants';
-          },
-        );
+        const pagination = action.payload?.pagination || {};
 
-      /*
-      |--------------------------------------------------------------------------
-      | FETCH PLANT
-      |--------------------------------------------------------------------------
-      */
+        state.pagination = {
+          page: pagination.page || 1,
+          totalPages: pagination.totalPages || 1,
+          total: pagination.total || 0,
+        };
+      })
+      .addCase(fetchNurseryPlants.rejected, (state, action) => {
+        state.listLoading = false;
+        state.listLoadingMore = false;
+        state.listError = action.payload;
+      });
 
-      builder
-        .addCase(
-          fetchNurseryPlantById.pending,
-          state => {
-            state.plantLoading = true;
-            state.plantError = null;
-          },
-        )
+    builder
+      .addCase(fetchNurseryPlantById.pending, (state, action) => {
+        state.selectedLoading = true;
+        state.selectedError = null;
 
-        .addCase(
-          fetchNurseryPlantById.fulfilled,
-          (state, action) => {
-            state.plantLoading = false;
+        if (state.selected?._id !== action.meta.arg) {
+          state.selected = null;
+        }
+      })
+      .addCase(fetchNurseryPlantById.fulfilled, (state, action) => {
+        state.selectedLoading = false;
+        state.selected = action.payload?.data || null;
+      })
+      .addCase(fetchNurseryPlantById.rejected, (state, action) => {
+        state.selectedLoading = false;
+        state.selectedError = action.payload;
+      });
 
-            state.selectedPlant =
-              action.payload?.plant ||
-              action.payload?.data ||
-              action.payload;
-          },
-        )
+    builder
+      .addCase(fetchMyNurseryListings.pending, state => {
+        state.mineStatus = state.mineStatus === 'loaded' ? 'loaded' : 'loading';
+        state.mineError = null;
+      })
+      .addCase(fetchMyNurseryListings.fulfilled, (state, action) => {
+        state.mineStatus = 'loaded';
+        state.mine = action.payload?.data || [];
+      })
+      .addCase(fetchMyNurseryListings.rejected, (state, action) => {
+        state.mineStatus = state.mineStatus === 'loaded' ? 'loaded' : 'error';
+        state.mineError = action.payload;
+      });
 
-        .addCase(
-          fetchNurseryPlantById.rejected,
-          (state, action) => {
-            state.plantLoading = false;
+    builder
+      .addCase(saveNurseryPlant.pending, state => {
+        state.saving = true;
+      })
+      .addCase(saveNurseryPlant.fulfilled, (state, action) => {
+        state.saving = false;
 
-            state.plantError =
-              action.payload ||
-              'Unable to load plant';
-          },
-        );
+        const plant = action.payload?.data;
+        if (!plant?._id) return;
 
-      /*
-      |--------------------------------------------------------------------------
-      | CATEGORIES
-      |--------------------------------------------------------------------------
-      */
+        if (action.meta.arg.plantId) {
+          patchPlant(state, plant);
+        } else {
+          state.mine.unshift({ ...plant, pendingOrders: 0 });
+        }
+      })
+      .addCase(saveNurseryPlant.rejected, state => {
+        state.saving = false;
+      })
 
-      builder
-        .addCase(
-          fetchNurseryCategories.pending,
-          state => {
-            state.categoriesLoading = true;
-            state.categoriesError = null;
-          },
-        )
+      .addCase(setNurseryPlantActive.pending, (state, action) => {
+        state.togglingId = action.meta.arg.plantId;
+      })
+      .addCase(setNurseryPlantActive.fulfilled, (state, action) => {
+        state.togglingId = null;
 
-        .addCase(
-          fetchNurseryCategories.fulfilled,
-          (state, action) => {
-            state.categoriesLoading = false;
+        const { plantId, active } = action.meta.arg;
+        patchPlant(state, { _id: plantId, isActive: active });
 
-            state.categories =
-              action.payload?.categories ||
-              action.payload?.data ||
-              action.payload ||
-              [];
-          },
-        )
+        if (!active) {
+          state.list = state.list.filter(item => item._id !== plantId);
+        }
+      })
+      .addCase(setNurseryPlantActive.rejected, state => {
+        state.togglingId = null;
+      });
+  },
+});
 
-        .addCase(
-          fetchNurseryCategories.rejected,
-          (state, action) => {
-            state.categoriesLoading = false;
-
-            state.categoriesError =
-              action.payload ||
-              'Unable to load categories';
-          },
-        );
-
-      /*
-      |--------------------------------------------------------------------------
-      | CREATE PLANT
-      |--------------------------------------------------------------------------
-      */
-
-      builder
-        .addCase(
-          createNurseryPlant.pending,
-          state => {
-            state.createLoading = true;
-            state.createError = null;
-          },
-        )
-
-        .addCase(
-          createNurseryPlant.fulfilled,
-          (state, action) => {
-            state.createLoading = false;
-
-            const plant =
-              action.payload?.plant ||
-              action.payload?.data;
-
-            if (plant) {
-              state.myListings.unshift(
-                plant,
-              );
-
-              if (
-                plant.isActive !== false &&
-                Number(plant.quantity) > 0
-              ) {
-                state.plants.unshift(
-                  plant,
-                );
-              }
-            }
-          },
-        )
-
-        .addCase(
-          createNurseryPlant.rejected,
-          (state, action) => {
-            state.createLoading = false;
-
-            state.createError =
-              action.payload ||
-              'Unable to create listing';
-          },
-        );
-
-      /*
-      |--------------------------------------------------------------------------
-      | MY LISTINGS
-      |--------------------------------------------------------------------------
-      */
-
-      builder
-        .addCase(
-          fetchMyNurseryListings.pending,
-          state => {
-            state.listingsLoading = true;
-            state.listingsError = null;
-          },
-        )
-
-        .addCase(
-          fetchMyNurseryListings.fulfilled,
-          (state, action) => {
-            state.listingsLoading = false;
-
-            state.myListings =
-              action.payload?.plants ||
-              action.payload?.listings ||
-              action.payload?.data ||
-              action.payload ||
-              [];
-          },
-        )
-
-        .addCase(
-          fetchMyNurseryListings.rejected,
-          (state, action) => {
-            state.listingsLoading = false;
-
-            state.listingsError =
-              action.payload ||
-              'Unable to load listings';
-          },
-        );
-
-      /*
-      |--------------------------------------------------------------------------
-      | UPDATE
-      |--------------------------------------------------------------------------
-      */
-
-      builder
-        .addCase(
-          updateNurseryPlant.pending,
-          state => {
-            state.updateLoading = true;
-            state.updateError = null;
-          },
-        )
-
-        .addCase(
-          updateNurseryPlant.fulfilled,
-          (state, action) => {
-            state.updateLoading = false;
-
-            const plant =
-              action.payload?.plant ||
-              action.payload?.data;
-
-            if (!plant?._id) {
-              return;
-            }
-
-            state.myListings =
-              state.myListings.map(
-                item =>
-                  item._id === plant._id
-                    ? plant
-                    : item,
-              );
-
-            state.plants =
-              state.plants.map(
-                item =>
-                  item._id === plant._id
-                    ? plant
-                    : item,
-              );
-
-            if (
-              state.selectedPlant?._id ===
-              plant._id
-            ) {
-              state.selectedPlant =
-                plant;
-            }
-          },
-        )
-
-        .addCase(
-          updateNurseryPlant.rejected,
-          (state, action) => {
-            state.updateLoading = false;
-
-            state.updateError =
-              action.payload ||
-              'Unable to update listing';
-          },
-        );
-
-      /*
-      |--------------------------------------------------------------------------
-      | DELETE
-      |--------------------------------------------------------------------------
-      */
-
-      builder
-        .addCase(
-          deleteNurseryPlant.pending,
-          state => {
-            state.deleteLoading = true;
-            state.deleteError = null;
-          },
-        )
-
-        .addCase(
-          deleteNurseryPlant.fulfilled,
-          (state, action) => {
-            state.deleteLoading = false;
-
-            const plantId =
-              action.payload?.plantId;
-
-            state.myListings =
-              state.myListings.filter(
-                item =>
-                  item._id !== plantId,
-              );
-
-            state.plants =
-              state.plants.filter(
-                item =>
-                  item._id !== plantId,
-              );
-
-            if (
-              state.selectedPlant?._id ===
-              plantId
-            ) {
-              state.selectedPlant =
-                null;
-            }
-          },
-        )
-
-        .addCase(
-          deleteNurseryPlant.rejected,
-          (state, action) => {
-            state.deleteLoading = false;
-
-            state.deleteError =
-              action.payload ||
-              'Unable to delete listing';
-          },
-        );
-    },
-  });
-
-export const {
-  clearNurseryErrors,
-  clearSelectedPlant,
-  clearNurseryPlants,
-  clearMyListings,
-} = nurserySlice.actions;
+export const { clearSelectedPlant } = nurserySlice.actions;
 
 export default nurserySlice.reducer;

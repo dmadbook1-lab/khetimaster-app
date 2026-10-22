@@ -1,2207 +1,676 @@
-import React, {
-  useCallback,
-  useEffect,
-  useMemo,
-  useState,
-  memo,
-} from 'react';
-
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import {
   ActivityIndicator,
+  Dimensions,
   FlatList,
-  Image,
-  Platform,
   RefreshControl,
-  StatusBar,
+  ScrollView,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
-
-import {SafeAreaView} from 'react-native-safe-area-context';
-
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from 'react-native-safe-area-context';
+import LinearGradient from 'react-native-linear-gradient';
+import { useFocusEffect } from '@react-navigation/native';
 import {
   ArrowRight,
-  Filter,
-  Leaf,
-  MapPin,
+  ArrowUpDown,
+  Banknote,
+  LayoutGrid,
   Package,
-  Plus,
   Search,
   ShoppingCart,
-  SlidersHorizontal,
+  Sprout,
   Store,
+  Truck,
   X,
 } from 'lucide-react-native';
+import { useDispatch, useSelector } from 'react-redux';
 
-import {useDispatch, useSelector} from 'react-redux';
-
+import MarketHero, {
+  GlassButton,
+  TopInset,
+} from '../../components/market/MarketHero';
+import { EmptyState, LoadingState } from '../../components/market/MarketBits';
 import {
+  MARKET_COLORS as C,
+  MARKET_SHADOW,
+  MARKET_SHADOW_STRONG,
+} from '../../components/market/theme';
+import PlantGridCard from '../../components/nursery/PlantGridCard';
+import useNurseryMeta from '../../components/nursery/useNurseryMeta';
+import {
+  NURSERY_HERO_IMAGE,
+  categoryVisual,
+} from '../../components/nursery/nurseryVisuals';
+import { NURSERY_ROUTES } from '../../constants/nurseryRoutes';
+import {
+  fetchMyNurseryListings,
   fetchNurseryCategories,
   fetchNurseryPlants,
 } from '../../redux/slices/nurserySlice';
-
-import {fetchNurseryCart} from '../../redux/slices/nurseryCartSlice';
-
-// ======================================================
-// COLORS
-// ======================================================
-
-const GREEN = '#159447';
-const DARK = '#151C2B';
-const BG = '#F5F7F6';
-const WHITE = '#FFFFFF';
-const MUTED = '#747B78';
-const BORDER = '#E3E8E5';
-const LIGHT_GREEN = '#EAF7EF';
-const RED = '#D64545';
-
-// ======================================================
-// PLANT CARD
-// ======================================================
-
-const PlantCard = memo(({item, onPress}) => {
-  const image =
-    item?.images?.length > 0
-      ? item.images[0]
-      : null;
-
-  const price = Number(item?.price || 0);
-
-  const quantity = Number(
-    item?.quantity || 0,
-  );
-
-  const outOfStock = quantity <= 0;
-
-  const plantName =
-    item?.name || 'Plant';
-
-  const category =
-    item?.category || 'Plants';
-
-  const district =
-    item?.location?.district || '';
-
-  const state =
-    item?.location?.state || '';
-
-  return (
-    <TouchableOpacity
-      activeOpacity={0.9}
-      style={styles.plantCard}
-      onPress={() =>
-        onPress(
-          item?._id || item?.id,
-        )
-      }>
-
-      {/* ============================================ */}
-      {/* IMAGE */}
-      {/* ============================================ */}
-
-      <View style={styles.plantImageContainer}>
-
-        {image ? (
-          <Image
-            source={{uri: image}}
-            style={styles.plantImage}
-            resizeMode="cover"
-          />
-        ) : (
-          <View
-            style={
-              styles.noImageContainer
-            }>
-
-            <Leaf
-              size={34}
-              color={GREEN}
-            />
-
-            <Text
-              style={
-                styles.noImageText
-              }>
-              No Image
-            </Text>
-
-          </View>
-        )}
-
-        {/* subtle image overlay */}
-
-        <View
-          pointerEvents="none"
-          style={
-            styles.imageBottomOverlay
-          }
-        />
-
-        {/* ======================================== */}
-        {/* STOCK */}
-        {/* ======================================== */}
-
-        <View
-          style={[
-            styles.stockBadge,
-            outOfStock &&
-              styles.outOfStockBadge,
-          ]}>
-
-          <View
-            style={[
-              styles.stockDot,
-              outOfStock &&
-                styles.outOfStockDot,
-            ]}
-          />
-
-          <Text
-            style={[
-              styles.stockText,
-              outOfStock &&
-                styles.outOfStockText,
-            ]}>
-
-            {quantity > 0
-              ? `${quantity} left`
-              : 'Out of stock'}
-
-          </Text>
-
-        </View>
-
-        {/* ======================================== */}
-        {/* CATEGORY */}
-        {/* ======================================== */}
-
-        <View
-          style={
-            styles.imageCategoryBadge
-          }>
-
-          <Leaf
-            size={10}
-            color={WHITE}
-          />
-
-          <Text
-            numberOfLines={1}
-            style={
-              styles.imageCategoryText
-            }>
-            {category}
-          </Text>
-
-        </View>
-
-      </View>
-
-      {/* ============================================ */}
-      {/* CONTENT */}
-      {/* ============================================ */}
-
-      <View
-        style={
-          styles.plantInfo
-        }>
-
-        {/* NAME */}
-
-        <Text
-          numberOfLines={2}
-          style={
-            styles.plantName
-          }>
-          {plantName}
-        </Text>
-
-        {/* LOCATION */}
-
-        {district ? (
-          <View
-            style={
-              styles.locationRow
-            }>
-
-            <MapPin
-              size={11}
-              color={MUTED}
-            />
-
-            <Text
-              numberOfLines={1}
-              style={
-                styles.locationText
-              }>
-
-              {district}
-              {state
-                ? `, ${state}`
-                : ''}
-
-            </Text>
-
-          </View>
-        ) : (
-          <View
-            style={
-              styles.locationRow
-            }>
-
-            <Store
-              size={11}
-              color={MUTED}
-            />
-
-            <Text
-              numberOfLines={1}
-              style={
-                styles.locationText
-              }>
-              Local nursery seller
-            </Text>
-
-          </View>
-        )}
-
-        {/* DIVIDER */}
-
-        <View
-          style={
-            styles.cardDivider
-          }
-        />
-
-        {/* PRICE */}
-
-        <View
-          style={
-            styles.priceRow
-          }>
-
-          <View>
-
-            <Text
-              style={
-                styles.priceLabel
-              }>
-              PRICE
-            </Text>
-
-            <Text
-              style={
-                styles.plantPrice
-              }>
-
-              ₹
-              {price.toLocaleString(
-                'en-IN',
-              )}
-
-            </Text>
-
-          </View>
-
-          {/* VIEW BUTTON */}
-
-          <View
-            style={
-              styles.arrowButton
-            }>
-
-            <ArrowRight
-              size={16}
-              color={GREEN}
-            />
-
-          </View>
-
-        </View>
-
-      </View>
-
-    </TouchableOpacity>
-  );
-});
-
-// ======================================================
-// CATEGORY CHIP
-// ======================================================
-
-const CategoryChip = memo(
-  ({
-    item,
-    selected,
-    onPress,
-  }) => (
-    <TouchableOpacity
-      activeOpacity={0.8}
-      style={[
-        styles.categoryChip,
-        selected &&
-          styles.selectedCategoryChip,
-      ]}
-      onPress={() =>
-        onPress(item)
-      }>
-
-      <Leaf
-        size={13}
-        color={
-          selected
-            ? WHITE
-            : GREEN
-        }
-      />
-
-      <Text
-        style={[
-          styles.categoryChipText,
-          selected &&
-            styles.selectedCategoryText,
-        ]}>
-        {item}
-      </Text>
-
-    </TouchableOpacity>
-  ),
-);
-
-// ======================================================
-// SCREEN
-// ======================================================
-
-const NurseryHomeScreen = ({
-  navigation,
-}) => {
-  const dispatch = useDispatch();
-
-  const {
-    plants = [],
-    categories = [],
-    loading,
-    categoriesLoading,
-    pagination,
-  } = useSelector(
-    state => state.nursery,
-  );
-
-  const {
-    totalItems = 0,
-  } = useSelector(
-    state => state.nurseryCart,
-  );
-
-  const [
-    searchText,
-    setSearchText,
-  ] = useState('');
-
-  const [
-    activeCategory,
-    setActiveCategory,
-  ] = useState('');
-
-  const [
-    refreshing,
-    setRefreshing,
-  ] = useState(false);
-
-  // ====================================================
-  // LOAD PLANTS
-  // ====================================================
-
-  const loadPlants = useCallback(
-    async (
-      page = 1,
-      search = '',
-      category = '',
-    ) => {
-      try {
-        await dispatch(
-          fetchNurseryPlants({
-            search:
-              search?.trim() ||
-              undefined,
-
-            category:
-              category ||
-              undefined,
-
-            page,
-
-            limit: 20,
-          }),
-        ).unwrap();
-      } catch (err) {
-        console.log(
-          'Nursery plants error:',
-          err,
-        );
-      }
-    },
-    [dispatch],
-  );
-
-  // ====================================================
-  // INITIAL LOAD
-  // ====================================================
-
-  useEffect(() => {
-    loadPlants(
-      1,
-      '',
-      '',
-    );
-
-    dispatch(
-      fetchNurseryCategories(),
-    );
-
-    dispatch(
-      fetchNurseryCart(),
-    );
-  }, [
-    dispatch,
-    loadPlants,
-  ]);
-
-  // ====================================================
-  // REFRESH
-  // ====================================================
-
-  const handleRefresh =
-    useCallback(async () => {
-      setRefreshing(true);
-
-      try {
-        await Promise.all([
-          loadPlants(
-            1,
-            searchText,
-            activeCategory,
-          ),
-
-          dispatch(
-            fetchNurseryCategories(),
-          ).unwrap(),
-
-          dispatch(
-            fetchNurseryCart(),
-          ).unwrap(),
-        ]);
-      } catch (err) {
-        console.log(
-          'Refresh error:',
-          err,
-        );
-      } finally {
-        setRefreshing(false);
-      }
-    }, [
-      dispatch,
-      loadPlants,
-      searchText,
-      activeCategory,
-    ]);
-
-  // ====================================================
-  // SEARCH
-  // ====================================================
-
-  const handleSearch =
-    useCallback(() => {
-      loadPlants(
-        1,
-        searchText,
-        activeCategory,
-      );
-    }, [
-      loadPlants,
-      searchText,
-      activeCategory,
-    ]);
-
-  // ====================================================
-  // CLEAR SEARCH
-  // ====================================================
-
-  const clearSearch =
-    useCallback(() => {
-      setSearchText('');
-
-      loadPlants(
-        1,
-        '',
-        activeCategory,
-      );
-    }, [
-      loadPlants,
-      activeCategory,
-    ]);
-
-  // ====================================================
-  // CATEGORY
-  // ====================================================
-
-  const handleCategoryPress =
-    useCallback(
-      category => {
-        const nextCategory =
-          activeCategory === category
-            ? ''
-            : category;
-
-        setActiveCategory(
-          nextCategory,
-        );
-
-        loadPlants(
-          1,
-          searchText,
-          nextCategory,
-        );
-      },
-      [
-        activeCategory,
-        searchText,
-        loadPlants,
-      ],
-    );
-
-  // ====================================================
-  // LOAD MORE
-  // ====================================================
-
-  const handleLoadMore =
-    useCallback(() => {
-      if (
-        loading ||
-        !pagination
-      ) {
-        return;
-      }
-
-      const currentPage =
-        Number(
-          pagination.page || 1,
-        );
-
-      const totalPages =
-        Number(
-          pagination.pages || 1,
-        );
-
-      if (
-        currentPage >=
-        totalPages
-      ) {
-        return;
-      }
-
-      loadPlants(
-        currentPage + 1,
-        searchText,
-        activeCategory,
-      );
-    }, [
-      loading,
-      pagination,
-      loadPlants,
-      searchText,
-      activeCategory,
-    ]);
-
-  // ====================================================
-  // CART
-  // ====================================================
-
-  const openCart =
-    useCallback(() => {
-      navigation.navigate(
-        'NurseryCart',
-      );
-    }, [navigation]);
-
-  // ====================================================
-  // PLANT DETAILS
-  // ====================================================
-
-  const openPlantDetails =
-    useCallback(
-      plantId => {
-        navigation.navigate(
-          'NurseryPlantDetails',
-          {
-            plantId,
-          },
-        );
-      },
-      [navigation],
-    );
-
-  // ====================================================
-  // PLANT RENDER
-  // ====================================================
-
-  const renderPlant =
-    useCallback(
-      ({item}) => (
-        <PlantCard
-          item={item}
-          onPress={
-            openPlantDetails
-          }
-        />
-      ),
-      [openPlantDetails],
-    );
-
-  // ====================================================
-  // KEY
-  // ====================================================
-
-  const keyExtractor =
-    useCallback(
-      (item, index) =>
-        String(
-          item?._id ||
-            item?.id ||
-            index,
-        ),
-      [],
-    );
-
-  // ====================================================
-  // CATEGORY RENDER
-  // ====================================================
-
-  const renderCategory =
-    useCallback(
-      ({item}) => (
-        <CategoryChip
-          item={item}
-          selected={
-            activeCategory ===
-            item
-          }
-          onPress={
-            handleCategoryPress
-          }
-        />
-      ),
-      [
-        activeCategory,
-        handleCategoryPress,
-      ],
-    );
-
-  // ====================================================
-  // HEADER
-  // ====================================================
-
-  const ListHeader =
-    useMemo(
-      () => (
-        <View>
-
-          {/* ======================================== */}
-          {/* TOP HEADER */}
-          {/* ======================================== */}
-
-          <View
-            style={
-              styles.topHeader
-            }>
-
-            <View>
-
-              <Text
-                style={
-                  styles.smallGreeting
-                }>
-                KHETIMASTER
-              </Text>
-
-              <Text
-                style={
-                  styles.headerTitle
-                }>
-                Nursery
-              </Text>
-
-            </View>
-
-            <View
-              style={
-                styles.headerActions
-              }>
-
-              {/* ORDERS */}
-
-              <TouchableOpacity
-                activeOpacity={0.8}
-                style={
-                  styles.headerIconButton
-                }
-                onPress={() =>
-                  navigation.navigate(
-                    'MyOrders',
-                  )
-                }>
-
-                <Package
-                  size={19}
-                  color={DARK}
-                />
-
-              </TouchableOpacity>
-
-              {/* MY LISTINGS */}
-
-              <TouchableOpacity
-                activeOpacity={0.8}
-                style={
-                  styles.headerIconButton
-                }
-                onPress={() =>
-                  navigation.navigate(
-                    'MyNurseryListings',
-                  )
-                }>
-
-                <Store
-                  size={19}
-                  color={DARK}
-                />
-
-              </TouchableOpacity>
-
-              {/* CART */}
-
-              <TouchableOpacity
-                activeOpacity={0.85}
-                style={
-                  styles.cartButton
-                }
-                onPress={
-                  openCart
-                }>
-
-                <ShoppingCart
-                  size={19}
-                  color={WHITE}
-                />
-
-                {totalItems >
-                  0 && (
-                  <View
-                    style={
-                      styles.cartBadge
-                    }>
-
-                    <Text
-                      style={
-                        styles.cartBadgeText
-                      }>
-                      {totalItems >
-                      99
-                        ? '99+'
-                        : totalItems}
-                    </Text>
-
-                  </View>
-                )}
-
-              </TouchableOpacity>
-
-            </View>
-
-          </View>
-
-          {/* ======================================== */}
-          {/* HERO */}
-          {/* ======================================== */}
-
-          <View
-            style={
-              styles.heroCard
-            }>
-
-            <View
-              style={
-                styles.heroContent
-              }>
-
-              <View
-                style={
-                  styles.heroIcon
-                }>
-
-                <Leaf
-                  size={20}
-                  color={WHITE}
-                />
-
-              </View>
-
-              <Text
-                style={
-                  styles.heroTitle
-                }>
-                Grow something{'\n'}
-                beautiful 🌱
-              </Text>
-
-              <Text
-                style={
-                  styles.heroSubtitle
-                }>
-                Buy from local sellers
-                or sell plants from
-                your nursery.
-              </Text>
-
-              <View
-                style={
-                  styles.heroButtons
-                }>
-
-                <TouchableOpacity
-                  activeOpacity={0.85}
-                  style={
-                    styles.heroBuyButton
-                  }
-                  onPress={() =>
-                    loadPlants(
-                      1,
-                      '',
-                      '',
-                    )
-                  }>
-
-                  <Text
-                    style={
-                      styles.heroBuyText
-                    }>
-                    Explore
-                  </Text>
-
-                  <ArrowRight
-                    size={15}
-                    color={GREEN}
-                  />
-
-                </TouchableOpacity>
-
-                <TouchableOpacity
-                  activeOpacity={0.85}
-                  style={
-                    styles.heroSellButton
-                  }
-                  onPress={() =>
-                    navigation.navigate(
-                      'SellPlant',
-                    )
-                  }>
-
-                  <Plus
-                    size={15}
-                    color={WHITE}
-                  />
-
-                  <Text
-                    style={
-                      styles.heroSellText
-                    }>
-                    Sell
-                  </Text>
-
-                </TouchableOpacity>
-
-              </View>
-
-            </View>
-
-            <View
-              style={
-                styles.heroCircleOne
-              }>
-
-              <Leaf
-                size={110}
-                color="rgba(255,255,255,0.07)"
-              />
-
-            </View>
-
-            <View
-              style={
-                styles.heroCircleTwo
-              }>
-
-              <Leaf
-                size={60}
-                color="rgba(255,255,255,0.07)"
-              />
-
-            </View>
-
-          </View>
-
-          {/* ======================================== */}
-          {/* SEARCH */}
-          {/* ======================================== */}
-
-          <View
-            style={
-              styles.searchSection
-            }>
-
-            <View
-              style={
-                styles.searchBox
-              }>
-
-              <Search
-                size={18}
-                color={MUTED}
-              />
-
-              <TextInput
-                value={searchText}
-                onChangeText={
-                  setSearchText
-                }
-                placeholder="Search plants..."
-                placeholderTextColor="#9AA19E"
-                style={
-                  styles.searchInput
-                }
-                returnKeyType="search"
-                onSubmitEditing={
-                  handleSearch
-                }
-              />
-
-              {searchText.length >
-                0 && (
-                <TouchableOpacity
-                  onPress={
-                    clearSearch
-                  }
-                  hitSlop={{
-                    top: 10,
-                    bottom: 10,
-                    left: 10,
-                    right: 10,
-                  }}>
-
-                  <X
-                    size={17}
-                    color={MUTED}
-                  />
-
-                </TouchableOpacity>
-              )}
-
-            </View>
-
-            <TouchableOpacity
-              activeOpacity={0.85}
-              style={
-                styles.filterButton
-              }
-              onPress={
-                handleSearch
-              }>
-
-              <SlidersHorizontal
-                size={18}
-                color={WHITE}
-              />
-
-            </TouchableOpacity>
-
-          </View>
-
-          {/* ======================================== */}
-          {/* CATEGORY TITLE */}
-          {/* ======================================== */}
-
-          <View
-            style={
-              styles.categoryHeader
-            }>
-
-            <View>
-
-              <Text
-                style={
-                  styles.sectionTitle
-                }>
-                Browse Plants
-              </Text>
-
-              <Text
-                style={
-                  styles.sectionSubtitle
-                }>
-                Find the right plant
-                for your farm
-              </Text>
-
-            </View>
-
-            {activeCategory ? (
-              <TouchableOpacity
-                onPress={() =>
-                  handleCategoryPress(
-                    activeCategory,
-                  )
-                }
-                hitSlop={{
-                  top: 10,
-                  bottom: 10,
-                  left: 10,
-                  right: 10,
-                }}>
-
-                <Text
-                  style={
-                    styles.clearFilterText
-                  }>
-                  Clear
-                </Text>
-
-              </TouchableOpacity>
-            ) : null}
-
-          </View>
-
-          {/* ======================================== */}
-          {/* CATEGORIES */}
-          {/* ======================================== */}
-
-          {categoriesLoading ? (
-            <View
-              style={
-                styles.categoryLoading
-              }>
-
-              <ActivityIndicator
-                size="small"
-                color={GREEN}
-              />
-
-              <Text
-                style={
-                  styles.categoryLoadingText
-                }>
-                Loading categories...
-              </Text>
-
-            </View>
-          ) : (
-            <FlatList
-              horizontal
-              data={categories}
-              keyExtractor={(
-                item,
-                index,
-              ) =>
-                `${item}-${index}`
-              }
-              showsHorizontalScrollIndicator={
-                false
-              }
-              contentContainerStyle={
-                styles.categoryList
-              }
-              renderItem={
-                renderCategory
-              }
-              removeClippedSubviews
-            />
-          )}
-
-          {/* ======================================== */}
-          {/* RESULT HEADER */}
-          {/* ======================================== */}
-
-          <View
-            style={
-              styles.resultHeader
-            }>
-
-            <View>
-
-              <Text
-                style={
-                  styles.resultTitle
-                }>
-                Plants
-              </Text>
-
-              <Text
-                style={
-                  styles.resultText
-                }>
-                {loading
-                  ? 'Finding plants...'
-                  : `${plants.length} plants available`}
-              </Text>
-
-            </View>
-
-            {activeCategory ? (
-              <View
-                style={
-                  styles.activeFilter
-                }>
-
-                <Filter
-                  size={11}
-                  color={GREEN}
-                />
-
-                <Text
-                  style={
-                    styles.activeFilterText
-                  }>
-                  {activeCategory}
-                </Text>
-
-              </View>
-            ) : null}
-
-          </View>
-
-        </View>
-      ),
-      [
-        navigation,
-        openCart,
-        totalItems,
-        loadPlants,
-        searchText,
-        handleSearch,
-        clearSearch,
-        activeCategory,
-        handleCategoryPress,
-        categoriesLoading,
-        categories,
-        renderCategory,
-        loading,
-        plants.length,
-      ],
-    );
-
-  // ====================================================
-  // FOOTER
-  // ====================================================
-
-  const ListFooter =
-    useMemo(() => {
-      if (
-        !loading ||
-        plants.length === 0
-      ) {
-        return null;
-      }
-
-      return (
-        <View
-          style={
-            styles.loadMoreContainer
-          }>
-
-          <ActivityIndicator
-            size="small"
-            color={GREEN}
-          />
-
-          <Text
-            style={
-              styles.loadMoreText
-            }>
-            Loading more...
-          </Text>
-
-        </View>
-      );
-    }, [
-      loading,
-      plants.length,
-    ]);
-
-  // ====================================================
-  // EMPTY
-  // ====================================================
-
-  const ListEmpty =
-    useMemo(() => {
-      if (loading) {
-        return (
-          <View
-            style={
-              styles.loadingContainer
-            }>
-
-            <View
-              style={
-                styles.loadingCircle
-              }>
-
-              <Leaf
-                size={28}
-                color={GREEN}
-              />
-
-            </View>
-
-            <ActivityIndicator
-              size="small"
-              color={GREEN}
-            />
-
-            <Text
-              style={
-                styles.loadingTitle
-              }>
-              Finding plants...
-            </Text>
-
-            <Text
-              style={
-                styles.loadingSubtitle
-              }>
-              Please wait while we
-              load the marketplace.
-            </Text>
-
-          </View>
-        );
-      }
-
-      return (
-        <View
-          style={
-            styles.emptyContainer
-          }>
-
-          <View
-            style={
-              styles.emptyIcon
-            }>
-
-            <Leaf
-              size={40}
-              color={GREEN}
-            />
-
-          </View>
-
-          <Text
-            style={
-              styles.emptyTitle
-            }>
-            No plants found
-          </Text>
-
-          <Text
-            style={
-              styles.emptySubtitle
-            }>
-
-            {searchText ||
-            activeCategory
-              ? 'Try changing your search or category.'
-              : 'There are no plants available right now.'}
-
-          </Text>
-
-          {(searchText ||
-            activeCategory) && (
-            <TouchableOpacity
-              activeOpacity={0.85}
-              style={
-                styles.resetButton
-              }
-              onPress={() => {
-                setSearchText('');
-                setActiveCategory('');
-
-                loadPlants(
-                  1,
-                  '',
-                  '',
-                );
-              }}>
-
-              <Text
-                style={
-                  styles.resetButtonText
-                }>
-                View All Plants
-              </Text>
-
-            </TouchableOpacity>
-          )}
-
-        </View>
-      );
-    }, [
-      loading,
-      searchText,
-      activeCategory,
-      loadPlants,
-    ]);
-
-  // ====================================================
-  // RETURN
-  // ====================================================
-
-  return (
-    <SafeAreaView
-      style={
-        styles.container
-      }
-      edges={[
-        'top',
-        'left',
-        'right',
-      ]}>
-
-      <StatusBar
-        barStyle="dark-content"
-        backgroundColor={WHITE}
-      />
-
-      <FlatList
-        data={plants}
-        renderItem={renderPlant}
-        keyExtractor={keyExtractor}
-
-        // ============================================
-        // TWO COLUMN GRID
-        // ============================================
-
-        numColumns={2}
-
-        columnWrapperStyle={
-          styles.columnWrapper
-        }
-
-        showsVerticalScrollIndicator={
-          false
-        }
-
-        contentContainerStyle={
-          styles.listContent
-        }
-
-        ListHeaderComponent={
-          ListHeader
-        }
-
-        ListEmptyComponent={
-          ListEmpty
-        }
-
-        ListFooterComponent={
-          ListFooter
-        }
-
-        refreshControl={
-          <RefreshControl
-            refreshing={
-              refreshing
-            }
-            onRefresh={
-              handleRefresh
-            }
-            tintColor={GREEN}
-            colors={[
-              GREEN,
-            ]}
-          />
-        }
-
-        onEndReached={
-          handleLoadMore
-        }
-
-        onEndReachedThreshold={
-          0.5
-        }
-
-        initialNumToRender={6}
-        maxToRenderPerBatch={6}
-        windowSize={7}
-
-        removeClippedSubviews={
-          Platform.OS ===
-          'android'
-        }
-
-        updateCellsBatchingPeriod={
-          50
-        }
-      />
-
-    </SafeAreaView>
-  );
+import { fetchNurseryCart } from '../../redux/slices/nurseryCartSlice';
+import { formatRupees } from '../../utils/marketFormat';
+
+const { width } = Dimensions.get('window');
+const GUTTER = 16;
+const CARD_WIDTH = (width - GUTTER * 2 - 12) / 2;
+const PAGE_SIZE = 20;
+
+const SORTS = [
+  { key: 'newest', label: 'Newest' },
+  { key: 'popular', label: 'Best selling' },
+  { key: 'rating', label: 'Top rated' },
+  { key: 'price_asc', label: 'Price: low to high' },
+  { key: 'price_desc', label: 'Price: high to low' },
+];
+
+/*
+ * Case-insensitive merge of the suggested categories and the ones that
+ * have plants right now; live ones first.
+ */
+const mergeCategories = (live, suggested) => {
+  const seen = new Map();
+
+  for (const category of [...live, ...suggested]) {
+    const key = String(category || '')
+      .trim()
+      .toLowerCase();
+    if (key && !seen.has(key)) seen.set(key, category.trim());
+  }
+
+  return [...seen.values()];
 };
 
-// ======================================================
-// STYLES
-// ======================================================
-
-const styles =
-  StyleSheet.create({
-
-    // ==================================================
-    // CONTAINER
-    // ==================================================
-
-    container: {
-      flex: 1,
-      backgroundColor: BG,
-    },
-
-    listContent: {
-      paddingBottom: 35,
-    },
-
-    // ==================================================
-    // HEADER
-    // ==================================================
-
-    topHeader: {
-      backgroundColor: WHITE,
-      paddingHorizontal: 18,
-      paddingVertical: 14,
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      borderBottomWidth: 1,
-      borderBottomColor: BORDER,
-    },
-
-    smallGreeting: {
-      fontSize: 10,
-      color: GREEN,
-      fontWeight: '800',
-      letterSpacing: 1.2,
-    },
-
-    headerTitle: {
-      marginTop: 2,
-      fontSize: 24,
-      color: DARK,
-      fontWeight: '900',
-      letterSpacing: -0.5,
-    },
-
-    headerActions: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: 8,
-    },
-
-    headerIconButton: {
-      width: 40,
-      height: 40,
-      borderRadius: 13,
-      backgroundColor: '#F2F5F3',
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-
-    cartButton: {
-      width: 42,
-      height: 42,
-      borderRadius: 14,
-      backgroundColor: GREEN,
-      alignItems: 'center',
-      justifyContent: 'center',
-
-      shadowColor: GREEN,
-      shadowOffset: {
-        width: 0,
-        height: 4,
-      },
-      shadowOpacity: 0.22,
-      shadowRadius: 8,
-      elevation: 4,
-    },
-
-    cartBadge: {
-      position: 'absolute',
-      top: -4,
-      right: -4,
-      minWidth: 18,
-      height: 18,
-      borderRadius: 9,
-      backgroundColor: '#E74C3C',
-      alignItems: 'center',
-      justifyContent: 'center',
-      paddingHorizontal: 3,
-      borderWidth: 2,
-      borderColor: WHITE,
-    },
-
-    cartBadgeText: {
-      color: WHITE,
-      fontSize: 8,
-      fontWeight: '900',
-    },
-
-    // ==================================================
-    // HERO
-    // ==================================================
-
-    heroCard: {
-      marginHorizontal: 16,
-      marginTop: 16,
-      minHeight: 195,
-      borderRadius: 24,
-      overflow: 'hidden',
-      backgroundColor: GREEN,
-      position: 'relative',
-
-      shadowColor: GREEN,
-      shadowOffset: {
-        width: 0,
-        height: 8,
-      },
-      shadowOpacity: 0.2,
-      shadowRadius: 16,
-      elevation: 6,
-    },
-
-    heroContent: {
-      padding: 22,
-      zIndex: 2,
-    },
-
-    heroIcon: {
-      width: 42,
-      height: 42,
-      borderRadius: 14,
-      backgroundColor:
-        'rgba(255,255,255,0.18)',
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-
-    heroTitle: {
-      color: WHITE,
-      fontSize: 22,
-      fontWeight: '900',
-      marginTop: 14,
-      lineHeight: 28,
-      letterSpacing: -0.4,
-    },
-
-    heroSubtitle: {
-      color:
-        'rgba(255,255,255,0.85)',
-      fontSize: 12,
-      lineHeight: 18,
-      marginTop: 6,
-      maxWidth: 260,
-    },
-
-    heroButtons: {
-      flexDirection: 'row',
-      marginTop: 18,
-      gap: 9,
-    },
-
-    heroBuyButton: {
-      backgroundColor: WHITE,
-      height: 40,
-      paddingHorizontal: 15,
-      borderRadius: 12,
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: 6,
-    },
-
-    heroBuyText: {
-      color: GREEN,
-      fontSize: 12,
-      fontWeight: '900',
-    },
-
-    heroSellButton: {
-      height: 40,
-      paddingHorizontal: 15,
-      borderRadius: 12,
-      backgroundColor:
-        'rgba(255,255,255,0.15)',
-      borderWidth: 1,
-      borderColor:
-        'rgba(255,255,255,0.28)',
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: 5,
-    },
-
-    heroSellText: {
-      color: WHITE,
-      fontSize: 12,
-      fontWeight: '900',
-    },
-
-    heroCircleOne: {
-      position: 'absolute',
-      right: -20,
-      top: 20,
-      transform: [
-        {
-          rotate: '-25deg',
-        },
-      ],
-    },
-
-    heroCircleTwo: {
-      position: 'absolute',
-      right: 30,
-      bottom: -5,
-      transform: [
-        {
-          rotate: '25deg',
-        },
-      ],
-    },
-
-    // ==================================================
-    // SEARCH
-    // ==================================================
-
-    searchSection: {
-      paddingHorizontal: 16,
-      marginTop: 18,
-      flexDirection: 'row',
-      gap: 10,
-    },
-
-    searchBox: {
-      flex: 1,
-      height: 50,
-      backgroundColor: WHITE,
-      borderWidth: 1,
-      borderColor: BORDER,
-      borderRadius: 15,
-      flexDirection: 'row',
-      alignItems: 'center',
-      paddingHorizontal: 14,
-    },
-
-    searchInput: {
-      flex: 1,
-      height: '100%',
-      marginLeft: 10,
-      color: DARK,
-      fontSize: 13,
-      padding: 0,
-    },
-
-    filterButton: {
-      width: 50,
-      height: 50,
-      borderRadius: 15,
-      backgroundColor: GREEN,
-      alignItems: 'center',
-      justifyContent: 'center',
-
-      shadowColor: GREEN,
-      shadowOffset: {
-        width: 0,
-        height: 4,
-      },
-      shadowOpacity: 0.2,
-      shadowRadius: 6,
-      elevation: 3,
-    },
-
-    // ==================================================
-    // CATEGORY
-    // ==================================================
-
-    categoryHeader: {
-      paddingHorizontal: 18,
-      marginTop: 22,
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-    },
-
-    sectionTitle: {
-      color: DARK,
-      fontSize: 17,
-      fontWeight: '900',
-      letterSpacing: -0.3,
-    },
-
-    sectionSubtitle: {
-      color: MUTED,
-      fontSize: 11,
-      marginTop: 3,
-    },
-
-    clearFilterText: {
-      color: GREEN,
-      fontSize: 12,
-      fontWeight: '800',
-    },
-
-    categoryLoading: {
-      height: 50,
-      flexDirection: 'row',
-      alignItems: 'center',
-      paddingHorizontal: 18,
-      gap: 8,
-    },
-
-    categoryLoadingText: {
-      fontSize: 11,
-      color: MUTED,
-    },
-
-    categoryList: {
-      paddingHorizontal: 16,
-      paddingTop: 13,
-      paddingBottom: 4,
-      gap: 8,
-    },
-
-    categoryChip: {
-      height: 38,
-      paddingHorizontal: 14,
-      borderRadius: 20,
-      backgroundColor: WHITE,
-      borderWidth: 1,
-      borderColor: BORDER,
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: 6,
-    },
-
-    selectedCategoryChip: {
-      backgroundColor: GREEN,
-      borderColor: GREEN,
-
-      shadowColor: GREEN,
-      shadowOffset: {
-        width: 0,
-        height: 3,
-      },
-      shadowOpacity: 0.25,
-      shadowRadius: 5,
-      elevation: 3,
-    },
-
-    categoryChipText: {
-      color: DARK,
-      fontSize: 11,
-      fontWeight: '700',
-    },
-
-    selectedCategoryText: {
-      color: WHITE,
-    },
-
-    // ==================================================
-    // RESULT HEADER
-    // ==================================================
-
-    resultHeader: {
-      paddingHorizontal: 18,
-      paddingTop: 19,
-      paddingBottom: 13,
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-    },
-
-    resultTitle: {
-      color: DARK,
-      fontSize: 15,
-      fontWeight: '900',
-    },
-
-    resultText: {
-      color: MUTED,
-      fontSize: 10,
-      fontWeight: '600',
-      marginTop: 2,
-    },
-
-    activeFilter: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: 5,
-      backgroundColor: LIGHT_GREEN,
-      paddingHorizontal: 10,
-      paddingVertical: 6,
-      borderRadius: 10,
-    },
-
-    activeFilterText: {
-      color: GREEN,
-      fontSize: 10,
-      fontWeight: '800',
-    },
-
-    // ==================================================
-    // GRID
-    // ==================================================
-
-    columnWrapper: {
-      paddingHorizontal: 16,
-      justifyContent: 'space-between',
-      alignItems: 'flex-start',
-    },
-
-    // ==================================================
-    // PLANT CARD
-    // ==================================================
-
-    plantCard: {
-      width: '48%',
-      backgroundColor: WHITE,
-      borderRadius: 18,
-      overflow: 'hidden',
-      marginBottom: 14,
-
-      borderWidth: 1,
-      borderColor: '#E5EAE7',
-
-      shadowColor: '#183B27',
-      shadowOffset: {
-        width: 0,
-        height: 5,
-      },
-      shadowOpacity: 0.075,
-      shadowRadius: 10,
-      elevation: 3,
-    },
-
-    // ==================================================
-    // IMAGE
-    // ==================================================
-
-    plantImageContainer: {
-      height: 150,
-      backgroundColor: '#EEF7F0',
-      position: 'relative',
-      overflow: 'hidden',
-    },
-
-    plantImage: {
-      width: '100%',
-      height: '100%',
-    },
-
-    imageBottomOverlay: {
-      position: 'absolute',
-      left: 0,
-      right: 0,
-      bottom: 0,
-      height: 45,
-      backgroundColor:
-        'rgba(0,0,0,0.08)',
-    },
-
-    noImageContainer: {
-      flex: 1,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-
-    noImageText: {
-      marginTop: 5,
-      color: MUTED,
-      fontSize: 9,
-      fontWeight: '600',
-    },
-
-    // ==================================================
-    // STOCK
-    // ==================================================
-
-    stockBadge: {
-      position: 'absolute',
-      left: 8,
-      top: 8,
-
-      backgroundColor:
-        'rgba(255,255,255,0.96)',
-
-      paddingHorizontal: 8,
-      paddingVertical: 5,
-
-      borderRadius: 9,
-
-      flexDirection: 'row',
-      alignItems: 'center',
-
-      gap: 4,
-
-      shadowColor: '#000',
-      shadowOffset: {
-        width: 0,
-        height: 1,
-      },
-      shadowOpacity: 0.08,
-      shadowRadius: 3,
-      elevation: 1,
-    },
-
-    stockDot: {
-      width: 6,
-      height: 6,
-      borderRadius: 3,
-      backgroundColor: GREEN,
-    },
-
-    stockText: {
-      color: GREEN,
-      fontSize: 9,
-      fontWeight: '800',
-    },
-
-    outOfStockBadge: {
-      backgroundColor:
-        'rgba(255,255,255,0.96)',
-    },
-
-    outOfStockDot: {
-      backgroundColor: RED,
-    },
-
-    outOfStockText: {
-      color: RED,
-    },
-
-    // ==================================================
-    // CATEGORY BADGE
-    // ==================================================
-
-    imageCategoryBadge: {
-      position: 'absolute',
-      left: 9,
-      bottom: 8,
-
-      maxWidth: '72%',
-
-      paddingHorizontal: 8,
-      paddingVertical: 5,
-
-      borderRadius: 8,
-
-      backgroundColor:
-        'rgba(21,148,71,0.92)',
-
-      flexDirection: 'row',
-      alignItems: 'center',
-
-      gap: 4,
-    },
-
-    imageCategoryText: {
-      color: WHITE,
-      fontSize: 8,
-      fontWeight: '800',
-    },
-
-    // ==================================================
-    // CARD CONTENT
-    // ==================================================
-
-    plantInfo: {
-      paddingHorizontal: 12,
-      paddingTop: 11,
-      paddingBottom: 12,
-    },
-
-    plantName: {
-      color: DARK,
-      fontSize: 13,
-      fontWeight: '800',
-      lineHeight: 17,
-      letterSpacing: -0.15,
-      minHeight: 34,
-    },
-
-    // ==================================================
-    // LOCATION
-    // ==================================================
-
-    locationRow: {
-      marginTop: 6,
-      flexDirection: 'row',
-      alignItems: 'center',
-      gap: 4,
-    },
-
-    locationText: {
-      flex: 1,
-      color: MUTED,
-      fontSize: 9,
-      fontWeight: '600',
-    },
-
-    // ==================================================
-    // DIVIDER
-    // ==================================================
-
-    cardDivider: {
-      height: 1,
-      backgroundColor: '#EDF0EE',
-      marginTop: 10,
-      marginBottom: 9,
-    },
-
-    // ==================================================
-    // PRICE
-    // ==================================================
-
-    priceRow: {
-      flexDirection: 'row',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-    },
-
-    priceLabel: {
-      color: '#9AA19E',
-      fontSize: 7,
-      fontWeight: '800',
-      letterSpacing: 0.8,
-      marginBottom: 1,
-    },
-
-    plantPrice: {
-      color: GREEN,
-      fontSize: 17,
-      fontWeight: '900',
-      letterSpacing: -0.3,
-    },
-
-    arrowButton: {
-      width: 30,
-      height: 30,
-      borderRadius: 10,
-      backgroundColor: LIGHT_GREEN,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-
-    // ==================================================
-    // LOADING
-    // ==================================================
-
-    loadingContainer: {
-      minHeight: 350,
-      alignItems: 'center',
-      justifyContent: 'center',
-      paddingHorizontal: 30,
-    },
-
-    loadingCircle: {
-      width: 72,
-      height: 72,
-      borderRadius: 36,
-      backgroundColor: LIGHT_GREEN,
-      alignItems: 'center',
-      justifyContent: 'center',
-      marginBottom: 15,
-    },
-
-    loadingTitle: {
-      marginTop: 12,
-      color: DARK,
-      fontSize: 16,
-      fontWeight: '800',
-    },
-
-    loadingSubtitle: {
-      marginTop: 5,
-      color: MUTED,
-      fontSize: 11,
-      textAlign: 'center',
-      lineHeight: 18,
-    },
-
-    loadMoreContainer: {
-      height: 65,
-      alignItems: 'center',
-      justifyContent: 'center',
-      flexDirection: 'row',
-      gap: 8,
-    },
-
-    loadMoreText: {
-      color: MUTED,
-      fontSize: 11,
-    },
-
-    // ==================================================
-    // EMPTY
-    // ==================================================
-
-    emptyContainer: {
-      minHeight: 350,
-      alignItems: 'center',
-      justifyContent: 'center',
-      paddingHorizontal: 35,
-    },
-
-    emptyIcon: {
-      width: 82,
-      height: 82,
-      borderRadius: 41,
-      backgroundColor: LIGHT_GREEN,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-
-    emptyTitle: {
-      marginTop: 17,
-      color: DARK,
-      fontSize: 19,
-      fontWeight: '900',
-    },
-
-    emptySubtitle: {
-      marginTop: 7,
-      color: MUTED,
-      fontSize: 12,
-      lineHeight: 19,
-      textAlign: 'center',
-    },
-
-    resetButton: {
-      marginTop: 18,
-      backgroundColor: GREEN,
-      paddingHorizontal: 20,
-      paddingVertical: 12,
-      borderRadius: 12,
-    },
-
-    resetButtonText: {
-      color: WHITE,
-      fontSize: 12,
-      fontWeight: '800',
-    },
-  });
-
-export default NurseryHomeScreen;
+export default function NurseryHomeScreen({ navigation }) {
+  const dispatch = useDispatch();
+  const insets = useSafeAreaInsets();
+  const meta = useNurseryMeta();
+
+  const user = useSelector(state => state.auth.user);
+  const { list, pagination, listLoading, listLoadingMore, listError } =
+    useSelector(state => state.nursery);
+  const liveCategories = useSelector(state => state.nursery.liveCategories);
+  const mine = useSelector(state => state.nursery.mine);
+  const cart = useSelector(state => state.nurseryCart.cart);
+
+  const [category, setCategory] = useState('');
+  const [searchText, setSearchText] = useState('');
+  const [search, setSearch] = useState('');
+  const [sortIndex, setSortIndex] = useState(0);
+  const [nearMe, setNearMe] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const sort = SORTS[sortIndex];
+  const categories = mergeCategories(liveCategories, meta.categories);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setSearch(searchText.trim()), 400);
+    return () => clearTimeout(timer);
+  }, [searchText]);
+
+  // cart badge and seller card stay fresh when coming back
+  useFocusEffect(
+    useCallback(() => {
+      dispatch(fetchNurseryCart());
+      dispatch(fetchMyNurseryListings());
+      dispatch(fetchNurseryCategories());
+    }, [dispatch]),
+  );
+
+  const params = useMemo(
+    () => ({
+      search,
+      category,
+      sort: sort.key,
+      district: nearMe ? user?.district : '',
+      limit: PAGE_SIZE,
+    }),
+    [search, category, sort.key, nearMe, user?.district],
+  );
+
+  const loadFirstPage = useCallback(
+    () => dispatch(fetchNurseryPlants({ params: { ...params, page: 1 } })),
+    [dispatch, params],
+  );
+
+  useEffect(() => {
+    loadFirstPage();
+  }, [loadFirstPage]);
+
+  const handleRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await Promise.all([
+      loadFirstPage(),
+      dispatch(fetchNurseryCart()),
+      dispatch(fetchNurseryCategories()),
+    ]);
+    setRefreshing(false);
+  }, [dispatch, loadFirstPage]);
+
+  const handleLoadMore = useCallback(() => {
+    if (
+      listLoading ||
+      listLoadingMore ||
+      pagination.page >= pagination.totalPages
+    ) {
+      return;
+    }
+
+    dispatch(
+      fetchNurseryPlants({
+        params: { ...params, page: pagination.page + 1 },
+        append: true,
+      }),
+    );
+  }, [dispatch, params, pagination, listLoading, listLoadingMore]);
+
+  const isSeller = mine.length > 0;
+  const pendingOrders = mine.reduce(
+    (sum, plant) => sum + (plant.pendingOrders || 0),
+    0,
+  );
+  const cartCount = cart.totalItems || 0;
+
+  const renderItem = useCallback(
+    ({ item }) => (
+      <PlantGridCard
+        plant={item}
+        width={CARD_WIDTH}
+        onPress={() =>
+          navigation.navigate(NURSERY_ROUTES.PLANT, { plantId: item._id })
+        }
+      />
+    ),
+    [navigation],
+  );
+
+  const header = (
+    <View>
+      <MarketHero
+        image={NURSERY_HERO_IMAGE}
+        onBack={() => navigation.goBack()}
+        eyebrow="Plant nursery"
+        title={'Healthy plants,\ndelivered home'}
+        subtitle="Saplings, seedlings and grafted plants from nurseries near you."
+        right={
+          <>
+            <GlassButton
+              onPress={() => navigation.navigate(NURSERY_ROUTES.ORDERS)}
+            >
+              <Package size={19} color={C.white} />
+            </GlassButton>
+            <GlassButton
+              badge={cartCount}
+              onPress={() => navigation.navigate(NURSERY_ROUTES.CART)}
+            >
+              <ShoppingCart size={19} color={C.white} />
+            </GlassButton>
+          </>
+        }
+      >
+        <View style={styles.searchBox}>
+          <Search size={19} color={C.green} />
+          <TextInput
+            value={searchText}
+            onChangeText={setSearchText}
+            placeholder="Search mango, tulsi, rose..."
+            placeholderTextColor={C.placeholder}
+            style={styles.searchInput}
+            returnKeyType="search"
+          />
+          {!!searchText && (
+            <TouchableOpacity hitSlop={10} onPress={() => setSearchText('')}>
+              <X size={17} color={C.muted} />
+            </TouchableOpacity>
+          )}
+        </View>
+
+        <View style={styles.trustRow}>
+          <View style={styles.trustPill}>
+            <Truck size={12} color="#BFF0D2" />
+            <Text style={styles.trustText}>
+              Free delivery above {formatRupees(meta.delivery.freeAbove)}
+            </Text>
+          </View>
+          <View style={styles.trustPill}>
+            <Banknote size={12} color="#BFF0D2" />
+            <Text style={styles.trustText}>Cash on delivery</Text>
+          </View>
+        </View>
+      </MarketHero>
+
+      <View style={styles.section}>
+        <View style={styles.ctaRow}>
+          <TouchableOpacity
+            activeOpacity={0.88}
+            style={styles.shortcut}
+            onPress={() => navigation.navigate(NURSERY_ROUTES.ORDERS)}
+          >
+            <View
+              style={[styles.shortcutIcon, { backgroundColor: C.lightBlue }]}
+            >
+              <Package size={19} color={C.blue} />
+            </View>
+            <Text style={styles.shortcutTitle}>My Orders</Text>
+            <Text style={styles.shortcutText}>Track your plants</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            activeOpacity={0.9}
+            style={styles.sellCtaWrap}
+            onPress={() => navigation.navigate(NURSERY_ROUTES.MY_LISTINGS)}
+          >
+            <LinearGradient
+              colors={['#F7B733', '#E8890C']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={styles.sellCta}
+            >
+              <View style={styles.sellIcon}>
+                <Store size={19} color="#A25200" />
+              </View>
+              <Text style={styles.sellTitle}>
+                {isSeller ? 'My Nursery' : 'Sell plants'}
+              </Text>
+              <View style={styles.sellLink}>
+                <Text style={styles.sellLinkText}>
+                  {isSeller
+                    ? pendingOrders
+                      ? `${pendingOrders} plants to send`
+                      : `${mine.length} listed`
+                    : 'List for free'}
+                </Text>
+                <ArrowRight size={13} color="#3A2400" strokeWidth={2.8} />
+              </View>
+            </LinearGradient>
+          </TouchableOpacity>
+        </View>
+
+        <Text style={styles.sectionTitle}>Shop by category</Text>
+      </View>
+
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.typeList}
+      >
+        <TouchableOpacity
+          activeOpacity={0.88}
+          onPress={() => setCategory('')}
+          style={[styles.typeTile, !category && styles.typeTileSelected]}
+        >
+          <View style={[styles.typeIcon, styles.typeAll]}>
+            <LayoutGrid size={24} color={C.dark} />
+          </View>
+          <Text
+            style={[styles.typeLabel, !category && styles.typeLabelSelected]}
+          >
+            All plants
+          </Text>
+        </TouchableOpacity>
+
+        {categories.map(item => {
+          const selected = category.toLowerCase() === item.toLowerCase();
+          const visual = categoryVisual(item);
+          const Icon = visual.icon;
+
+          return (
+            <TouchableOpacity
+              key={item}
+              activeOpacity={0.88}
+              onPress={() => setCategory(selected ? '' : item)}
+              style={[styles.typeTile, selected && styles.typeTileSelected]}
+            >
+              <View style={[styles.typeIcon, { backgroundColor: visual.bg }]}>
+                <Icon size={24} color={visual.color} />
+              </View>
+              <Text
+                style={[styles.typeLabel, selected && styles.typeLabelSelected]}
+                numberOfLines={2}
+              >
+                {item}
+              </Text>
+            </TouchableOpacity>
+          );
+        })}
+      </ScrollView>
+
+      <View style={styles.section}>
+        <View style={styles.resultsHeader}>
+          <View style={styles.flex}>
+            <Text style={styles.sectionTitleFlat}>
+              {category || (search ? 'Search results' : 'Fresh from nurseries')}
+            </Text>
+            <Text style={styles.resultCount}>
+              {listLoading ? 'Searching…' : `${pagination.total} plants found`}
+            </Text>
+          </View>
+
+          <TouchableOpacity
+            activeOpacity={0.8}
+            style={styles.sortButton}
+            onPress={() => setSortIndex(index => (index + 1) % SORTS.length)}
+          >
+            <ArrowUpDown size={14} color={C.green} />
+            <Text style={styles.sortText}>{sort.label}</Text>
+          </TouchableOpacity>
+        </View>
+
+        {!!user?.district && (
+          <TouchableOpacity
+            activeOpacity={0.8}
+            onPress={() => setNearMe(value => !value)}
+            style={[styles.toggleChip, nearMe && styles.toggleChipActive]}
+          >
+            <Text
+              style={[styles.toggleText, nearMe && styles.toggleTextActive]}
+            >
+              Only near {user.district}
+            </Text>
+          </TouchableOpacity>
+        )}
+        <View style={styles.headerEnd} />
+      </View>
+    </View>
+  );
+
+  return (
+    <SafeAreaView style={styles.container} edges={['left', 'right']}>
+      <TopInset />
+      <FlatList
+        data={listLoading && !refreshing ? [] : list}
+        keyExtractor={item => item._id}
+        renderItem={renderItem}
+        numColumns={2}
+        columnWrapperStyle={styles.columns}
+        ListHeaderComponent={header}
+        contentContainerStyle={[
+          styles.listContent,
+          cartCount > 0 && styles.listContentWithCart,
+        ]}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        onEndReached={handleLoadMore}
+        onEndReachedThreshold={0.4}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={handleRefresh}
+            colors={[C.green]}
+            tintColor={C.green}
+          />
+        }
+        ListEmptyComponent={
+          listLoading ? (
+            <LoadingState />
+          ) : listError ? (
+            <EmptyState
+              icon={<Sprout size={30} color={C.green} />}
+              title="Couldn't load plants"
+              message={listError}
+              actionLabel="Try Again"
+              onAction={loadFirstPage}
+            />
+          ) : (
+            <EmptyState
+              icon={<Sprout size={30} color={C.green} />}
+              title="No plants found"
+              message="Try another category or search, or turn off the location filter."
+            />
+          )
+        }
+        ListFooterComponent={
+          listLoadingMore ? (
+            <ActivityIndicator color={C.green} style={styles.footerLoader} />
+          ) : null
+        }
+      />
+
+      {cartCount > 0 && (
+        <TouchableOpacity
+          activeOpacity={0.92}
+          style={[styles.cartBar, { bottom: Math.max(insets.bottom, 12) + 4 }]}
+          onPress={() => navigation.navigate(NURSERY_ROUTES.CART)}
+        >
+          <View style={styles.cartIcon}>
+            <ShoppingCart size={18} color={C.green} />
+          </View>
+          <View style={styles.flex}>
+            <Text style={styles.cartTitle}>
+              {cartCount} {cartCount === 1 ? 'plant' : 'plants'} in cart
+            </Text>
+            <Text style={styles.cartSub}>
+              {formatRupees(cart.total)}
+              {cart.deliveryFee ? ' incl. delivery' : ' · free delivery'}
+            </Text>
+          </View>
+          <Text style={styles.cartAction}>View Cart</Text>
+          <ArrowRight size={17} color={C.white} strokeWidth={2.6} />
+        </TouchableOpacity>
+      )}
+    </SafeAreaView>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: C.bg },
+  listContent: { paddingBottom: 40 },
+  listContentWithCart: { paddingBottom: 110 },
+  columns: { justifyContent: 'space-between', paddingHorizontal: GUTTER },
+  section: { paddingHorizontal: GUTTER },
+  flex: { flex: 1 },
+
+  searchBox: {
+    marginTop: 18,
+    height: 52,
+    borderRadius: 18,
+    backgroundColor: C.white,
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: 16,
+    gap: 10,
+    ...MARKET_SHADOW_STRONG,
+  },
+  searchInput: {
+    flex: 1,
+    fontSize: 14,
+    color: C.dark,
+    paddingVertical: 0,
+    fontWeight: '600',
+  },
+  trustRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 14 },
+  trustPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255,255,255,0.14)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.18)',
+  },
+  trustText: { color: C.white, fontSize: 10.5, fontWeight: '800' },
+
+  ctaRow: { flexDirection: 'row', gap: 12, marginTop: 18 },
+  shortcut: {
+    flex: 1,
+    borderRadius: 22,
+    backgroundColor: C.white,
+    padding: 15,
+    minHeight: 132,
+    ...MARKET_SHADOW,
+  },
+  shortcutIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 13,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  shortcutTitle: {
+    marginTop: 'auto',
+    fontSize: 15,
+    fontWeight: '900',
+    color: C.dark,
+  },
+  shortcutText: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: C.muted,
+    marginTop: 2,
+  },
+  sellCtaWrap: { flex: 1, borderRadius: 22, ...MARKET_SHADOW },
+  sellCta: { flex: 1, borderRadius: 22, padding: 15, minHeight: 132 },
+  sellIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 13,
+    backgroundColor: 'rgba(255,255,255,0.9)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  sellTitle: {
+    marginTop: 'auto',
+    color: '#2E1C00',
+    fontSize: 15,
+    fontWeight: '900',
+  },
+  sellLink: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    alignSelf: 'flex-start',
+    marginTop: 6,
+    backgroundColor: 'rgba(255,255,255,0.55)',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  sellLinkText: { color: '#3A2400', fontSize: 11, fontWeight: '900' },
+
+  sectionTitle: {
+    marginTop: 24,
+    marginBottom: 12,
+    fontSize: 18,
+    fontWeight: '900',
+    color: C.dark,
+    letterSpacing: -0.4,
+  },
+  sectionTitleFlat: {
+    fontSize: 18,
+    fontWeight: '900',
+    color: C.dark,
+    letterSpacing: -0.4,
+  },
+
+  typeList: { paddingHorizontal: GUTTER, gap: 10, paddingBottom: 6 },
+  typeTile: {
+    width: 92,
+    backgroundColor: C.white,
+    borderRadius: 18,
+    padding: 8,
+    paddingBottom: 9,
+    alignItems: 'center',
+    borderWidth: 1.5,
+    borderColor: 'transparent',
+    ...MARKET_SHADOW,
+  },
+  typeTileSelected: { borderColor: C.green, backgroundColor: C.lightGreen },
+  typeIcon: {
+    width: 54,
+    height: 54,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  typeAll: { backgroundColor: '#EEF1EF' },
+  typeLabel: {
+    marginTop: 7,
+    fontSize: 11,
+    fontWeight: '800',
+    color: C.dark,
+    textAlign: 'center',
+    minHeight: 28,
+  },
+  typeLabelSelected: { color: C.green },
+
+  resultsHeader: {
+    marginTop: 22,
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    gap: 10,
+  },
+  resultCount: {
+    marginTop: 2,
+    fontSize: 11.5,
+    fontWeight: '700',
+    color: C.muted,
+  },
+  sortButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 11,
+    paddingVertical: 8,
+    borderRadius: 12,
+    backgroundColor: C.lightGreen,
+  },
+  sortText: { fontSize: 11, fontWeight: '900', color: C.green },
+  toggleChip: {
+    alignSelf: 'flex-start',
+    marginTop: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 7,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderStyle: 'dashed',
+    borderColor: '#C3CDC7',
+    backgroundColor: C.white,
+  },
+  toggleChipActive: {
+    borderStyle: 'solid',
+    borderColor: C.blue,
+    backgroundColor: C.lightBlue,
+  },
+  toggleText: { fontSize: 11, fontWeight: '800', color: C.muted },
+  toggleTextActive: { color: C.blue },
+  headerEnd: { height: 14 },
+  footerLoader: { marginVertical: 16 },
+
+  cartBar: {
+    position: 'absolute',
+    left: GUTTER,
+    right: GUTTER,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+    padding: 10,
+    paddingRight: 16,
+    borderRadius: 20,
+    backgroundColor: C.greenDeep,
+    ...MARKET_SHADOW_STRONG,
+  },
+  cartIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 13,
+    backgroundColor: C.white,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  cartTitle: { color: C.white, fontSize: 13.5, fontWeight: '900' },
+  cartSub: {
+    color: 'rgba(255,255,255,0.75)',
+    fontSize: 11,
+    fontWeight: '700',
+    marginTop: 1,
+  },
+  cartAction: { color: C.white, fontSize: 13, fontWeight: '900' },
+});
