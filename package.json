@@ -13,6 +13,7 @@
   "dependencies": {
     "@dbkable/react-native-speech-to-text": "^1.2.2",
     "@maplibre/maplibre-react-native": "^11.3.6",
+    "@react-native-community/blur": "^4.4.1",
     "@react-native-community/datetimepicker": "^9.1.0",
     "@react-native-community/geolocation": "^3.4.0",
     "@react-native-firebase/app": "^26.2.0",

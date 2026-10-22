@@ -1,1482 +1,1019 @@
-import React, {
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
-
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Animated,
+  BackHandler,
+  Dimensions,
   Easing,
-  Modal,
+  Image,
   PermissionsAndroid,
   Platform,
+  Pressable,
   StatusBar,
   StyleSheet,
   Text,
   TouchableOpacity,
+  Vibration,
   View,
 } from 'react-native';
-
+import { BlurView } from '@react-native-community/blur';
+import LinearGradient from 'react-native-linear-gradient';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
-  addSpeechResultListener,
-  addSpeechErrorListener,
+  addAudioMeterUpdateListener,
   addSpeechEndListener,
+  addSpeechErrorListener,
+  addSpeechResultListener,
   isAvailable,
   requestPermissions,
   start,
   stop,
 } from '@dbkable/react-native-speech-to-text';
-
 import Tts from 'react-native-tts';
+import { Mic, RotateCcw, Square, X } from 'lucide-react-native';
 
-import {
-  Mic,
-  X,
-  Volume2,
-  AlertCircle,
-  CheckCircle2,
-  LoaderCircle,
-} from 'lucide-react-native';
+import ScreenGlow from './ScreenGlow';
+import { resolveVoiceCommand } from '../../utils/voiceCommandResolver';
 
-import {
-  resolveVoiceCommand,
-} from '../../utils/voiceCommandResolver';
+/*
+|--------------------------------------------------------------------------
+| VOICE ASSISTANT
+|--------------------------------------------------------------------------
+|
+| A full-screen overlay (not a Modal: on Android a Modal is a separate
+| window, so it couldn't blur the app). The app behind is blurred and
+| can't be touched, the screen border glows, and a tall panel at the
+| bottom shows what is being heard.
+|
+| Render it last inside a screen whose SafeAreaView pads the top edge;
+| it extends up behind the status bar by that inset.
+|
+| open -> listen (words appear live) -> final words ->
+| resolveVoiceCommand -> open a screen / answer / ask again
+|
+| onNavigate(routeName, params)
+|
+*/
 
 const STATUS = {
-  IDLE: 'idle',
+  STARTING: 'starting',
   LISTENING: 'listening',
-  PROCESSING: 'processing',
-  SUCCESS: 'success',
+  THINKING: 'thinking',
+  DONE: 'done',
   ERROR: 'error',
+  IDLE: 'idle',
 };
 
-export default function VoiceAssistantModal({
-  visible,
-  onClose,
-  onNavigate,
-}) {
-  const [status, setStatus] = useState(STATUS.IDLE);
+// border glow colours per state
+// screen-edge glow: light green only
+const EDGE_GLOW = ['#86EFAC', '#4ADE80', '#BBF7D0', '#86EFAC'];
+
+const KHETIMASTER_LOGO = require('../../assets/images/logoo.png');
+
+const LABELS = {
+  starting: 'Getting ready…',
+  listening: 'Listening…',
+  thinking: 'Understanding…',
+  done: 'Got it',
+  error: 'Didn’t get that',
+  idle: 'Tap the mic to speak',
+};
+
+// colours of the orb, status pill, message and mic per state
+const TONES = {
+  idle: {
+    orb: ['#4ADE80', '#16A34A', '#BBF7D0', '#22C55E'],
+    main: '#15803D',
+    soft: '#DCFCE7',
+    text: '#166534',
+    button: ['#16A34A', '#0EA5E9'],
+  },
+  listening: {
+    orb: ['#4ADE80', '#16A34A', '#BBF7D0', '#22C55E'],
+    main: '#15803D',
+    soft: '#DCFCE7',
+    text: '#166534',
+    button: ['#DC2626', '#F97316'],
+  },
+  thinking: {
+    orb: ['#4ADE80', '#16A34A', '#BBF7D0', '#22C55E'],
+    main: '#4F46E5',
+    soft: '#E0E7FF',
+    text: '#3730A3',
+    button: ['#16A34A', '#0EA5E9'],
+  },
+  done: {
+    orb: ['#4ADE80', '#16A34A', '#BBF7D0', '#22C55E'],
+    main: '#15803D',
+    soft: '#DCFCE7',
+    text: '#166534',
+    button: ['#16A34A', '#0EA5E9'],
+  },
+  error: {
+    orb: ['#F97316', '#EF4444', '#F59E0B'],
+    main: '#C2410C',
+    soft: '#FFEDD5',
+    text: '#9A3412',
+    button: ['#16A34A', '#0EA5E9'],
+  },
+};
+TONES.starting = TONES.thinking;
+
+// stop waiting when nothing at all is heard
+const SILENCE_TIMEOUT_MS = 8000;
+// the panel takes at least this share of the screen height
+const PANEL_MIN_HEIGHT = Math.round(Dimensions.get('window').height * 0.52);
+
+const ORB = 112;
+
+// how long "Got it" shows before the screen opens
+const NAVIGATE_DELAY_MS = 650;
+
+/*
+ * Never throws: vibration needs the VIBRATE permission on Android.
+ */
+const buzz = ms => {
+  try {
+    Vibration.vibrate(ms);
+  } catch {
+    // no permission or no motor
+  }
+};
+
+/*
+ * Stops text-to-speech without waiting; never throws.
+ */
+const stopSpeaking = () => {
+  try {
+    Tts.stop()?.catch?.(() => {});
+  } catch {
+    // TTS not ready
+  }
+};
+
+// if the recogniser never confirms it started, give the mic back
+const START_TIMEOUT_MS = 6000;
+
+/*
+ * Android reports RMS dB (about -2 to 10), iOS a 0-1 level.
+ */
+const normalizeLevel = raw => {
+  const value = Number(raw);
+  if (!Number.isFinite(value)) return 0;
+  const level = value > 1 || value < 0 ? (value + 2) / 12 : value;
+  return Math.min(Math.max(level, 0), 1);
+};
+
+const speechText = result =>
+  typeof result === 'string'
+    ? result.trim()
+    : String(
+        result?.transcript ??
+          result?.text ??
+          result?.results?.[0]?.transcript ??
+          '',
+      ).trim();
+
+export default function VoiceAssistantModal({ visible, onClose, onNavigate }) {
+  const insets = useSafeAreaInsets();
+
+  const [status, setStatus] = useState(STATUS.STARTING);
   const [transcript, setTranscript] = useState('');
+  const [message, setMessage] = useState('');
 
-  const [message, setMessage] = useState(
-    'Tap the microphone and speak naturally',
-  );
+  const appear = useRef(new Animated.Value(0)).current;
+  const level = useRef(new Animated.Value(0)).current;
+  const ring = useRef(new Animated.Value(0)).current;
+  const spin = useRef(new Animated.Value(0)).current;
 
-  const [permissionError, setPermissionError] = useState('');
-
-  const mountedRef = useRef(false);
-  const closingRef = useRef(false);
-  const processingRef = useRef(false);
-  const listeningRef = useRef(false);
   const visibleRef = useRef(visible);
-
-  const handleFinalTranscriptRef = useRef(null);
+  const listeningRef = useRef(false);
+  const handledRef = useRef(false);
+  const closingRef = useRef(false);
+  const partialRef = useRef('');
+  const utteranceRef = useRef(null);
+  const timersRef = useRef([]);
+  const silenceTimerRef = useRef(null);
+  const handleFinalRef = useRef(null);
   const startListeningRef = useRef(null);
-  const greetingUtteranceRef = useRef(null);
+  const closeRef = useRef(null);
 
-  const resultSubscriptionRef = useRef(null);
-  const errorSubscriptionRef = useRef(null);
-  const endSubscriptionRef = useRef(null);
+  visibleRef.current = visible;
 
-  const navigationTimerRef = useRef(null);
-  const restartTimerRef = useRef(null);
+  /* TIMERS */
 
-  // Entrance animation
-  const animation = useRef(
-    new Animated.Value(0),
-  ).current;
+  const later = useCallback((callback, ms) => {
+    const timer = setTimeout(() => {
+      timersRef.current = timersRef.current.filter(item => item !== timer);
+      callback();
+    }, ms);
+    timersRef.current.push(timer);
+  }, []);
 
-  // Microphone pulse animation
-  const pulseAnimation = useRef(
-    new Animated.Value(1),
-  ).current;
-
-  // Green glow animation
-  const glowAnimation = useRef(
-    new Animated.Value(0),
-  ).current;
-
-  useEffect(() => {
-    visibleRef.current = visible;
-  }, [visible]);
-
-  // ------------------------------------------
-  // TIMER CLEANUP
-  // ------------------------------------------
-
-  const clearTimers = useCallback(() => {
-    if (navigationTimerRef.current) {
-      clearTimeout(navigationTimerRef.current);
-      navigationTimerRef.current = null;
-    }
-
-    if (restartTimerRef.current) {
-      clearTimeout(restartTimerRef.current);
-      restartTimerRef.current = null;
+  const clearSilenceTimer = useCallback(() => {
+    if (silenceTimerRef.current) {
+      clearTimeout(silenceTimerRef.current);
+      silenceTimerRef.current = null;
     }
   }, []);
 
-  // ------------------------------------------
-  // SPEECH LISTENER CLEANUP
-  // ------------------------------------------
+  const clearAllTimers = useCallback(() => {
+    timersRef.current.forEach(clearTimeout);
+    timersRef.current = [];
+    clearSilenceTimer();
+  }, [clearSilenceTimer]);
 
-  const removeSubscriptions = useCallback(() => {
-    [
-      resultSubscriptionRef,
-      errorSubscriptionRef,
-      endSubscriptionRef,
-    ].forEach(subscriptionRef => {
-      const subscription = subscriptionRef.current;
-
-      if (!subscription) {
-        return;
-      }
-
-      try {
-        if (typeof subscription.remove === 'function') {
-          subscription.remove();
-        } else if (typeof subscription === 'function') {
-          subscription();
-        }
-      } catch (error) {
-        console.warn(
-          '[KhetiMaster Voice] Listener cleanup error:',
-          error?.message,
-        );
-      }
-
-      subscriptionRef.current = null;
-    });
-  }, []);
-
-  // ------------------------------------------
-  // STOP LISTENING
-  // ------------------------------------------
+  /* SPEECH */
 
   const stopListening = useCallback(async () => {
+    clearSilenceTimer();
     listeningRef.current = false;
+    level.setValue(0);
 
     try {
       await stop();
-    } catch (error) {
-      console.log(
-        '[KhetiMaster Voice] Stop recognition:',
-        error?.message,
-      );
+    } catch {
+      // already stopped
     }
-  }, []);
+  }, [clearSilenceTimer, level]);
 
-  // ------------------------------------------
-  // CLOSE ASSISTANT
-  // ------------------------------------------
-
-  const closeAssistant = useCallback(async () => {
-    closingRef.current = true;
-    processingRef.current = true;
-
-    clearTimers();
-
-    setStatus(STATUS.IDLE);
-
-    await stopListening();
-
-    try {
-      await Tts.stop();
-    } catch (error) {
-      console.warn(
-        '[KhetiMaster Voice] Text-to-speech stop error:',
-        error?.message,
-      );
-    }
-
-    onClose?.();
-  }, [clearTimers, onClose, stopListening]);
-
-  // ------------------------------------------
-  // MICROPHONE PERMISSION
-  // ------------------------------------------
-
-  const requestSpeechPermission = useCallback(async () => {
+  const requestPermission = useCallback(async () => {
     try {
       if (Platform.OS === 'android') {
-        const permission =
-          PermissionsAndroid.PERMISSIONS.RECORD_AUDIO;
+        const permission = PermissionsAndroid.PERMISSIONS.RECORD_AUDIO;
+        if (await PermissionsAndroid.check(permission)) return true;
 
-        const alreadyGranted =
-          await PermissionsAndroid.check(permission);
+        const result = await PermissionsAndroid.request(permission, {
+          title: 'Microphone permission',
+          message: 'KhetiMaster needs the microphone to understand your voice.',
+          buttonPositive: 'Allow',
+          buttonNegative: 'Not now',
+        });
 
-        if (alreadyGranted) {
-          return true;
-        }
-
-        const result = await PermissionsAndroid.request(
-          permission,
-          {
-            title: 'Microphone permission',
-            message:
-              'KhetiMaster needs microphone access to understand your voice commands.',
-            buttonPositive: 'Allow',
-            buttonNegative: 'Cancel',
-          },
-        );
-
-        return (
-          result === PermissionsAndroid.RESULTS.GRANTED
-        );
+        return result === PermissionsAndroid.RESULTS.GRANTED;
       }
 
-      if (typeof requestPermissions === 'function') {
-        const result = await requestPermissions();
-        return result !== false;
-      }
-
-      return true;
-    } catch (error) {
-      console.warn(
-        '[KhetiMaster Voice] Permission error:',
-        error?.message,
-      );
-
+      return (await requestPermissions()) !== false;
+    } catch {
       return false;
     }
   }, []);
 
-  // ------------------------------------------
-  // SPEAK RESPONSE
-  // ------------------------------------------
-
-  const speakGreeting = useCallback(
-    async response => {
-      setStatus(STATUS.SUCCESS);
-      setMessage(response);
-
-      await stopListening();
-
-      try {
-        await Tts.getInitStatus();
-
-        await Tts.setDefaultLanguage('en-IN');
-        await Tts.setDefaultRate(0.48);
-        await Tts.setDefaultPitch(1.08);
-
-        if (
-          !mountedRef.current ||
-          !visibleRef.current ||
-          closingRef.current
-        ) {
-          return;
-        }
-
-        greetingUtteranceRef.current = await Tts.speak(
-          response,
-        );
-      } catch (error) {
-        console.error(
-          '[KhetiMaster Voice] Text-to-speech error:',
-          error,
-        );
-
-        greetingUtteranceRef.current = null;
-        processingRef.current = false;
-
-        setStatus(STATUS.ERROR);
-
-        setMessage(
-          'I could not speak just now. Tap the microphone to try again.',
-        );
-      }
-    },
-    [stopListening],
-  );
-
-  // ------------------------------------------
-  // PROCESS FINAL TRANSCRIPT
-  // ------------------------------------------
-
-  const handleFinalTranscript = useCallback(
-    async recognizedText => {
-      if (
-        !mountedRef.current ||
-        closingRef.current ||
-        processingRef.current
-      ) {
-        return;
-      }
-
-      const cleanTranscript = String(
-        recognizedText || '',
-      ).trim();
-
-      if (!cleanTranscript) {
-        return;
-      }
-
-      processingRef.current = true;
-
-      setTranscript(cleanTranscript);
-      setStatus(STATUS.PROCESSING);
-      setMessage('Understanding your request…');
-
-      console.log(
-        '[KhetiMaster Voice] Recognized:',
-        cleanTranscript,
-      );
-
-      const command = resolveVoiceCommand(
-        cleanTranscript,
-      );
-
-      console.log(
-        '[KhetiMaster Voice] Resolved command:',
-        command,
-      );
-
-      // Cancel command
-      if (command.type === 'cancel') {
-        setMessage('Closing voice assistant…');
-        setStatus(STATUS.SUCCESS);
-
-        navigationTimerRef.current = setTimeout(() => {
-          if (mountedRef.current) {
-            closeAssistant();
-          }
-        }, 350);
-
-        return;
-      }
-
-      // Navigation command
-      if (command.type === 'navigate') {
-        setStatus(STATUS.SUCCESS);
-
-        setMessage(
-          command.message || 'Opening your destination…',
-        );
-
-        await stopListening();
-
-        navigationTimerRef.current = setTimeout(() => {
-          if (
-            !mountedRef.current ||
-            closingRef.current ||
-            !visibleRef.current
-          ) {
-            return;
-          }
-
-          console.log(
-            '[KhetiMaster Voice] Navigating to:',
-            command.route,
-          );
-
-          closingRef.current = true;
-
-          if (typeof onNavigate === 'function') {
-            onNavigate(command.route);
-          } else {
-            console.warn(
-              '[KhetiMaster Voice] Missing onNavigate callback',
-            );
-          }
-        }, 500);
-
-        return;
-      }
-
-      // Greeting command
-      if (command.type === 'greeting') {
-        await speakGreeting(command.response);
-        return;
-      }
-
-      // Unknown command
-      if (command.type === 'unknown') {
-        setStatus(STATUS.ERROR);
-
-        setMessage(
-          'Sorry, I did not understand that. Try another command.',
-        );
-
-        processingRef.current = false;
-        return;
-      }
-
-      setStatus(STATUS.ERROR);
-      setMessage('Please speak a command.');
-
-      processingRef.current = false;
-    },
-    [
-      closeAssistant,
-      onNavigate,
-      speakGreeting,
-      stopListening,
-    ],
-  );
-
-  useEffect(() => {
-    handleFinalTranscriptRef.current =
-      handleFinalTranscript;
-  }, [handleFinalTranscript]);
-
-  // ------------------------------------------
-  // START LISTENING
-  // ------------------------------------------
+  const fail = useCallback(text => {
+    setStatus(STATUS.ERROR);
+    setMessage(text);
+    buzz(40);
+  }, []);
 
   const startListening = useCallback(async () => {
-    if (
-      !mountedRef.current ||
-      !visibleRef.current ||
-      closingRef.current ||
-      listeningRef.current
-    ) {
+    if (!visibleRef.current || closingRef.current || listeningRef.current) {
+      return;
+    }
+
+    handledRef.current = false;
+    partialRef.current = '';
+    setTranscript('');
+    setMessage('');
+    setStatus(STATUS.STARTING);
+
+    stopSpeaking();
+    later(
+      () =>
+        setStatus(current =>
+          current === STATUS.STARTING ? STATUS.IDLE : current,
+        ),
+      START_TIMEOUT_MS,
+    );
+
+    if (!(await requestPermission())) {
+      fail('Allow microphone access in your phone settings to use voice.');
       return;
     }
 
     try {
-      setPermissionError('');
-
-      setStatus(STATUS.IDLE);
-      setMessage('Getting your voice assistant ready…');
-
-      const granted = await requestSpeechPermission();
-
-      if (!granted) {
-        setStatus(STATUS.ERROR);
-
-        setPermissionError(
-          'Microphone permission is required. Enable it in your phone settings.',
-        );
-
-        setMessage(
-          'Microphone permission was not granted.',
-        );
-
+      if ((await isAvailable()) === false) {
+        fail('Voice recognition is not available on this phone.');
         return;
       }
+    } catch {
+      // let start() report the problem
+    }
 
-      if (
-        !mountedRef.current ||
-        !visibleRef.current ||
-        closingRef.current
-      ) {
-        return;
-      }
+    if (!visibleRef.current || closingRef.current) return;
 
-      if (typeof isAvailable === 'function') {
-        const available = await isAvailable();
-
-        if (available === false) {
-          setStatus(STATUS.ERROR);
-
-          setMessage(
-            'Speech recognition is unavailable on this device.',
-          );
-
-          return;
-        }
-      }
-
-      setTranscript('');
-      setStatus(STATUS.LISTENING);
-
-      setMessage(
-        'Listening… Speak your command now',
-      );
-
+    try {
       listeningRef.current = true;
+      await start({ language: 'en-IN' });
 
-      await start({
-        language: 'en-IN',
-      });
+      if (!visibleRef.current || closingRef.current) {
+        stopListening();
+        return;
+      }
 
-      console.log(
-        '[KhetiMaster Voice] Recognition started',
-      );
+      setStatus(STATUS.LISTENING);
+      buzz(20);
+
+      clearSilenceTimer();
+      silenceTimerRef.current = setTimeout(() => {
+        if (listeningRef.current && !partialRef.current) {
+          stopListening();
+          fail('I didn’t hear anything. Tap the mic and speak again.');
+        }
+      }, SILENCE_TIMEOUT_MS);
     } catch (error) {
       listeningRef.current = false;
-
-      console.error(
-        '[KhetiMaster Voice] Start error:',
-        error,
-      );
-
-      setStatus(STATUS.ERROR);
-
-      setMessage(
-        error?.message ||
-          'Could not start speech recognition. Please try again.',
-      );
+      fail(error?.message || 'Could not start listening. Please try again.');
     }
-  }, [requestSpeechPermission]);
+  }, [clearSilenceTimer, fail, later, requestPermission, stopListening]);
 
-  useEffect(() => {
-    startListeningRef.current = startListening;
-  }, [startListening]);
+  startListeningRef.current = startListening;
 
-  // ------------------------------------------
-  // RETRY LISTENING
-  // ------------------------------------------
+  /* UNDERSTAND WHAT WAS SAID */
 
-  const retryListening = useCallback(async () => {
-    processingRef.current = false;
-    closingRef.current = false;
-    greetingUtteranceRef.current = null;
+  const handleFinal = useCallback(
+    async text => {
+      const spoken = String(text || '').trim();
+      if (!spoken || handledRef.current || closingRef.current) return;
 
-    clearTimers();
+      handledRef.current = true;
+      setTranscript(spoken);
+      setStatus(STATUS.THINKING);
+      setMessage('');
+      await stopListening();
 
-    try {
-      await Tts.stop();
-    } catch (error) {
-      console.warn(
-        '[KhetiMaster Voice] Text-to-speech stop error:',
-        error?.message,
-      );
-    }
+      const command = resolveVoiceCommand(spoken);
 
+      if (command.type === 'cancel') {
+        setStatus(STATUS.DONE);
+        setMessage('Okay, closing.');
+        later(() => closeRef.current?.(), 450);
+        return;
+      }
+
+      if (command.type === 'navigate') {
+        setStatus(STATUS.DONE);
+        setMessage(command.message || 'Opening…');
+        buzz(30);
+
+        later(() => {
+          if (!visibleRef.current || closingRef.current) return;
+          closingRef.current = true;
+          onNavigate?.(command.route, command.params);
+        }, NAVIGATE_DELAY_MS);
+        return;
+      }
+
+      if (command.type === 'greeting') {
+        setStatus(STATUS.DONE);
+        setMessage(command.response);
+
+        try {
+          await Tts.getInitStatus();
+          await Tts.setDefaultLanguage('en-IN');
+          await Tts.setDefaultRate(0.48);
+          if (!visibleRef.current || closingRef.current) return;
+          utteranceRef.current = await Tts.speak(command.response);
+        } catch {
+          // couldn't speak; the answer is on screen, listen again soon
+          later(() => startListeningRef.current?.(), 2500);
+        }
+        return;
+      }
+
+      fail('I didn’t understand. Try “mandi bhav” or “tractor chahiye”.');
+    },
+    [fail, later, onNavigate, stopListening],
+  );
+
+  handleFinalRef.current = handleFinal;
+
+  /* CLOSE */
+
+  const close = useCallback(async () => {
+    closingRef.current = true;
+    clearAllTimers();
+
+    stopSpeaking();
     await stopListening();
 
-    setTranscript('');
-    setPermissionError('');
-    setStatus(STATUS.IDLE);
+    Animated.timing(appear, {
+      toValue: 0,
+      duration: 200,
+      easing: Easing.in(Easing.quad),
+      useNativeDriver: true,
+    }).start(() => onClose?.());
+  }, [appear, clearAllTimers, onClose, stopListening]);
 
-    setMessage(
-      'Tap the microphone and speak naturally',
-    );
+  closeRef.current = close;
 
-    restartTimerRef.current = setTimeout(() => {
-      startListening();
-    }, 250);
-  }, [clearTimers, startListening, stopListening]);
-
-  // ------------------------------------------
-  // SPEECH RECOGNITION EVENT LISTENERS
-  // ------------------------------------------
+  /* NATIVE LISTENERS (once) */
 
   useEffect(() => {
-    mountedRef.current = true;
-
-    // react-native-tts' removeEventListener() calls
-    // NativeEventEmitter.removeListener, which no longer exists in
-    // React Native 0.86. Keep the subscriptions and remove() them instead.
-    const ttsSubscriptions = [];
-
-    const handleTtsFinish = event => {
-      if (
-        String(event?.utteranceId) !==
-          String(greetingUtteranceRef.current) ||
-        !greetingUtteranceRef.current
-      ) {
-        return;
+    const subscriptions = [];
+    const add = factory => {
+      try {
+        const subscription = factory();
+        if (subscription) subscriptions.push(subscription);
+      } catch (error) {
+        console.warn('[KhetiMaster Voice] listener setup:', error?.message);
       }
-
-      greetingUtteranceRef.current = null;
-
-      if (
-        !mountedRef.current ||
-        closingRef.current ||
-        !visibleRef.current
-      ) {
-        return;
-      }
-
-      processingRef.current = false;
-
-      setStatus(STATUS.IDLE);
-
-      setMessage(
-        'I’m listening again. Say another screen name.',
-      );
-
-      restartTimerRef.current = setTimeout(() => {
-        startListeningRef.current?.();
-      }, 350);
     };
 
-    const handleTtsError = event => {
-      if (
-        String(event?.utteranceId) !==
-          String(greetingUtteranceRef.current) ||
-        !greetingUtteranceRef.current
-      ) {
-        return;
-      }
+    add(() =>
+      addSpeechResultListener(result => {
+        if (!visibleRef.current || handledRef.current) return;
 
-      console.error(
-        '[KhetiMaster Voice] Speech playback error:',
-        event,
-      );
+        const text = speechText(result);
+        if (!text) return;
 
-      greetingUtteranceRef.current = null;
-      processingRef.current = false;
+        partialRef.current = text;
+        setTranscript(text);
 
-      setStatus(STATUS.ERROR);
+        const isFinal =
+          result?.isFinal === true ||
+          result?.is_final === true ||
+          result?.final === true;
 
-      setMessage(
-        'I could not speak just now. Tap the microphone to try again.',
-      );
-    };
+        if (isFinal) handleFinalRef.current?.(text);
+      }),
+    );
 
-    try {
-      ttsSubscriptions.push(
-        Tts.addEventListener(
-          'tts-finish',
-          handleTtsFinish,
-        ),
-        Tts.addEventListener(
-          'tts-error',
-          handleTtsError,
-        ),
-      );
+    add(() =>
+      addSpeechEndListener(() => {
+        listeningRef.current = false;
+        level.setValue(0);
+        if (!visibleRef.current || handledRef.current || closingRef.current) {
+          return;
+        }
 
-      resultSubscriptionRef.current =
-        addSpeechResultListener(result => {
-          if (
-            !mountedRef.current ||
-            closingRef.current ||
-            processingRef.current
-          ) {
-            return;
-          }
-
-          console.log(
-            '[KhetiMaster Voice] Raw speech result:',
-            result,
-          );
-
-          const recognizedText =
-            typeof result === 'string'
-              ? result.trim()
-              : String(
-                  result?.transcript ??
-                    result?.text ??
-                    result?.results?.[0]?.transcript ??
-                    result?.results?.[0]?.text ??
-                    '',
-                ).trim();
-
-          if (!recognizedText) {
-            return;
-          }
-
-          setTranscript(recognizedText);
-
-          const isFinal =
-            result?.isFinal === true ||
-            result?.is_final === true ||
-            result?.final === true;
-
-          if (isFinal) {
-            handleFinalTranscriptRef.current?.(
-              recognizedText,
-            );
-          }
-        });
-
-      errorSubscriptionRef.current =
-        addSpeechErrorListener(error => {
-          console.error(
-            '[KhetiMaster Voice] Speech error:',
-            error,
-          );
-
-          listeningRef.current = false;
-
-          if (
-            !mountedRef.current ||
-            closingRef.current ||
-            processingRef.current
-          ) {
-            return;
-          }
-
-          setStatus(STATUS.ERROR);
-
-          setMessage(
-            error?.message ||
-              error?.error ||
-              'Speech recognition encountered an error.',
-          );
-        });
-
-      endSubscriptionRef.current =
-        addSpeechEndListener(() => {
-          console.log(
-            '[KhetiMaster Voice] Speech recognition ended',
-          );
-
-          listeningRef.current = false;
-
-          if (
-            !mountedRef.current ||
-            closingRef.current ||
-            processingRef.current ||
-            !visibleRef.current
-          ) {
-            return;
-          }
-
+        // some phones end without a final result: use the last words
+        if (partialRef.current) {
+          handleFinalRef.current?.(partialRef.current);
+        } else {
           setStatus(current =>
-            current === STATUS.LISTENING
-              ? STATUS.IDLE
-              : current,
-          );
-
-          setMessage(current =>
-            current ===
-            'Listening… Speak your command now'
-              ? 'Tap the microphone to try again'
-              : current,
-          );
-        });
-    } catch (error) {
-      console.error(
-        '[KhetiMaster Voice] Listener setup error:',
-        error,
-      );
-    }
-
-    return () => {
-      mountedRef.current = false;
-      visibleRef.current = false;
-
-      clearTimers();
-      removeSubscriptions();
-
-      ttsSubscriptions.forEach(subscription => {
-        try {
-          subscription?.remove?.();
-        } catch (error) {
-          console.warn(
-            '[KhetiMaster Voice] TTS listener cleanup error:',
-            error?.message,
+            current === STATUS.LISTENING ? STATUS.IDLE : current,
           );
         }
-      });
+      }),
+    );
 
-      stop().catch(() => {});
+    add(() =>
+      addSpeechErrorListener(error => {
+        listeningRef.current = false;
+        level.setValue(0);
+        if (!visibleRef.current || handledRef.current || closingRef.current) {
+          return;
+        }
 
-      Tts.stop().catch(error => {
-        console.warn(
-          '[KhetiMaster Voice] TTS cleanup error:',
-          error?.message,
+        if (partialRef.current) {
+          handleFinalRef.current?.(partialRef.current);
+          return;
+        }
+
+        const code = String(error?.code || '');
+        setStatus(STATUS.ERROR);
+        setMessage(
+          code.includes('NETWORK')
+            ? 'No internet. Voice needs a connection.'
+            : code.includes('PERMISSION')
+            ? 'Allow microphone access in your phone settings.'
+            : 'I didn’t catch that. Tap the mic and speak again.',
         );
-      });
-    };
-  }, [clearTimers, removeSubscriptions]);
+      }),
+    );
 
-  // ------------------------------------------
-  // MODAL OPEN / CLOSE LIFECYCLE
-  // ------------------------------------------
+    add(() =>
+      addAudioMeterUpdateListener(update => {
+        if (!listeningRef.current) return;
+        Animated.timing(level, {
+          toValue: normalizeLevel(update?.level),
+          duration: 100,
+          useNativeDriver: true,
+        }).start();
+      }),
+    );
+
+    // react-native-tts' removeEventListener() calls the removed
+    // NativeEventEmitter.removeListener; keep and remove() subscriptions
+    add(() =>
+      Tts.addEventListener('tts-finish', event => {
+        if (String(event?.utteranceId) !== String(utteranceRef.current)) {
+          return;
+        }
+        utteranceRef.current = null;
+        if (visibleRef.current && !closingRef.current) {
+          later(() => startListeningRef.current?.(), 300);
+        }
+      }),
+    );
+
+    return () => {
+      subscriptions.forEach(subscription => {
+        try {
+          subscription?.remove?.();
+        } catch {
+          // already removed
+        }
+      });
+      stop().catch(() => {});
+      stopSpeaking();
+    };
+  }, [later, level]);
+
+  /* OPEN / CLOSE LIFECYCLE */
 
   useEffect(() => {
     if (!visible) {
+      clearAllTimers();
+      if (listeningRef.current) stopListening();
       closingRef.current = false;
-      processingRef.current = false;
-      listeningRef.current = false;
-
-      clearTimers();
-
-      setStatus(STATUS.IDLE);
+      handledRef.current = false;
+      setStatus(STATUS.STARTING);
       setTranscript('');
-      setPermissionError('');
-
-      setMessage(
-        'Tap the microphone and speak naturally',
-      );
-
-      stopListening();
-
-      return;
+      setMessage('');
+      return undefined;
     }
 
     closingRef.current = false;
-    processingRef.current = false;
-
-    animation.setValue(0);
-
-    Animated.timing(animation, {
+    appear.setValue(0);
+    Animated.timing(appear, {
       toValue: 1,
-      duration: 420,
+      duration: 300,
       easing: Easing.out(Easing.cubic),
       useNativeDriver: true,
     }).start();
 
-    startListening();
+    // let the overlay appear before the mic starts
+    const timer = setTimeout(() => startListeningRef.current?.(), 250);
+    return () => clearTimeout(timer);
+  }, [visible, appear, clearAllTimers, stopListening]);
 
-    return () => {
-      clearTimers();
-      stopListening();
-    };
-  }, [
-    visible,
-    animation,
-    clearTimers,
-    startListening,
-    stopListening,
-  ]);
-
-  // ------------------------------------------
-  // MICROPHONE PULSE AND GLOW ANIMATION
-  // ------------------------------------------
+  /* ORB: always turning, faster while thinking */
 
   useEffect(() => {
-    if (
-      visible &&
-      status === STATUS.LISTENING
-    ) {
-      const pulse = Animated.loop(
-        Animated.sequence([
-          Animated.timing(pulseAnimation, {
-            toValue: 1.13,
-            duration: 850,
-            easing: Easing.inOut(Easing.ease),
-            useNativeDriver: true,
-          }),
+    if (!visible) return undefined;
 
-          Animated.timing(pulseAnimation, {
-            toValue: 1,
-            duration: 850,
-            easing: Easing.inOut(Easing.ease),
-            useNativeDriver: true,
-          }),
-        ]),
-      );
+    spin.setValue(0);
+    const loop = Animated.loop(
+      Animated.timing(spin, {
+        toValue: 1,
+        duration: status === STATUS.THINKING ? 1100 : 4200,
+        easing: Easing.linear,
+        useNativeDriver: true,
+      }),
+    );
+    loop.start();
+    return () => loop.stop();
+  }, [visible, status, spin]);
 
-      const glow = Animated.loop(
-        Animated.sequence([
-          Animated.timing(glowAnimation, {
-            toValue: 1,
-            duration: 1000,
-            useNativeDriver: true,
-          }),
+  /* MIC RING WHILE LISTENING */
 
-          Animated.timing(glowAnimation, {
-            toValue: 0,
-            duration: 1000,
-            useNativeDriver: true,
-          }),
-        ]),
-      );
-
-      pulse.start();
-      glow.start();
-
-      return () => {
-        pulse.stop();
-        glow.stop();
-
-        pulseAnimation.setValue(1);
-        glowAnimation.setValue(0);
-      };
+  useEffect(() => {
+    if (status !== STATUS.LISTENING) {
+      ring.setValue(0);
+      return undefined;
     }
 
-    pulseAnimation.setValue(1);
-    glowAnimation.setValue(0);
-  }, [
-    visible,
-    status,
-    pulseAnimation,
-    glowAnimation,
-  ]);
+    const loop = Animated.loop(
+      Animated.timing(ring, {
+        toValue: 1,
+        duration: 1400,
+        easing: Easing.out(Easing.quad),
+        useNativeDriver: true,
+      }),
+    );
+    loop.start();
+    return () => loop.stop();
+  }, [status, ring]);
 
-  if (!visible) {
-    return null;
-  }
+  /* ANDROID BACK BUTTON CLOSES THE OVERLAY */
 
-  const isListening =
-    status === STATUS.LISTENING;
+  useEffect(() => {
+    if (!visible) return undefined;
 
-  const isProcessing =
-    status === STATUS.PROCESSING;
+    const subscription = BackHandler.addEventListener(
+      'hardwareBackPress',
+      () => {
+        closeRef.current?.();
+        return true;
+      },
+    );
 
-  const isSuccess =
-    status === STATUS.SUCCESS;
+    return () => subscription.remove();
+  }, [visible]);
 
-  const isError =
-    status === STATUS.ERROR;
+  const toggleMic = () => {
+    if (status === STATUS.LISTENING) {
+      // done speaking: use what was heard so far
+      if (partialRef.current) {
+        handleFinal(partialRef.current);
+      } else {
+        stopListening();
+        setStatus(STATUS.IDLE);
+      }
+      return;
+    }
 
-  const micScale = pulseAnimation.interpolate({
-    inputRange: [1, 1.13],
-    outputRange: [1, 1.13],
-  });
+    if (status === STATUS.THINKING || status === STATUS.STARTING) return;
 
-  const glowOpacity = glowAnimation.interpolate({
+    clearAllTimers();
+    stopSpeaking();
+    utteranceRef.current = null;
+    startListening();
+  };
+
+  if (!visible) return null;
+
+  const listening = status === STATUS.LISTENING;
+  const busy = status === STATUS.THINKING || status === STATUS.STARTING;
+  const tone = TONES[status] || TONES.idle;
+
+  const panelShift = appear.interpolate({
     inputRange: [0, 1],
-    outputRange: [0.12, 0.48],
+    outputRange: [140, 0],
   });
-
-  const entranceTranslateY = animation.interpolate({
+  const orbScale = level.interpolate({
     inputRange: [0, 1],
-    outputRange: [90, 0],
+    outputRange: [1, 1.16],
+    extrapolate: 'clamp',
   });
-
-  // ------------------------------------------
-  // KhetiMaster LIGHT VOICE ASSISTANT UI
-  // ------------------------------------------
+  const orbRotate = spin.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '360deg'],
+  });
+  const ringStyle = (from, to) => ({
+    opacity: ring.interpolate({ inputRange: [0, 1], outputRange: [0.5, 0] }),
+    transform: [
+      {
+        scale: ring.interpolate({
+          inputRange: [0, 1],
+          outputRange: [from, to],
+        }),
+      },
+    ],
+  });
 
   return (
-    <Modal
-      visible={visible}
-      transparent
-      animationType="none"
-      statusBarTranslucent
-      onRequestClose={closeAssistant}>
-      <StatusBar
-        translucent
-        backgroundColor="transparent"
-        barStyle="dark-content"
+    <Animated.View
+      style={[styles.overlay, { top: -insets.top, opacity: appear }]}
+    >
+      <StatusBar barStyle="light-content" />
+
+      {/* light blur over the app; tapping outside the panel closes */}
+      <BlurView
+        style={StyleSheet.absoluteFill}
+        blurType="dark"
+        blurAmount={5}
+        reducedTransparencyFallbackColor="rgba(5,12,9,0.7)"
+      />
+      <Pressable
+        style={[StyleSheet.absoluteFill, styles.tint]}
+        onPress={close}
       />
 
-      <View style={styles.container}>
-        {/* Translucent app backdrop */}
-        <TouchableOpacity
-          activeOpacity={1}
-          onPress={closeAssistant}
-          style={styles.backdrop}
-        />
+      <View pointerEvents="none" style={StyleSheet.absoluteFill}>
+        <ScreenGlow colors={EDGE_GLOW} level={level} />
+      </View>
 
-        {/* Animated bottom sheet */}
-        <Animated.View
-          style={[
-            styles.panel,
-            {
-              opacity: animation,
-              transform: [
-                {translateY: entranceTranslateY},
-              ],
-            },
-          ]}>
-          <View
-            pointerEvents="none"
-            style={styles.topGlow}
-          />
+      <Animated.View
+        style={[
+          styles.panelWrap,
+          {
+            marginBottom: Math.max(insets.bottom, 12) + 8,
+            transform: [{ translateY: panelShift }],
+          },
+        ]}
+      >
+        <LinearGradient
+          colors={['#FFFFFF', '#F4FBF7', '#EAF6F0']}
+          style={[styles.panel, { minHeight: PANEL_MIN_HEIGHT }]}
+        >
+          {/* soft colour washes in the corners */}
+          <View pointerEvents="none" style={[styles.wash, styles.washLeft]} />
+          <View pointerEvents="none" style={[styles.wash, styles.washRight]} />
 
-          {/* Header */}
-          <View style={styles.header}>
-            <View style={styles.brand}>
-              <View style={styles.brandIcon}>
-                <Volume2
-                  size={19}
-                  color="#16883E"
-                />
-              </View>
-
-              <View>
-                <Text style={styles.brandTitle}>
-                  KhetiMaster
-                </Text>
-
-                <Text style={styles.brandSubtitle}>
-                  YOUR FARMING ASSISTANT
-                </Text>
-              </View>
+          {/* STATUS */}
+          <View style={styles.statusRow}>
+            <View style={[styles.statusPill, { backgroundColor: tone.soft }]}>
+              <View
+                style={[styles.statusDot, { backgroundColor: tone.main }]}
+              />
+              <Text style={[styles.status, { color: tone.main }]}>
+                {LABELS[status]}
+              </Text>
             </View>
+          </View>
 
+          {/* WORDS */}
+          <View style={styles.words}>
+            {transcript ? (
+              <Text style={styles.transcript} numberOfLines={5}>
+                “{transcript}”
+              </Text>
+            ) : (
+              <>
+                <Text style={styles.prompt}>
+                  {listening ? 'Go ahead, I’m listening' : 'How can I help?'}
+                </Text>
+                <Text style={styles.promptHint}>
+                  Try “pyaz ka bhav”, “tractor chahiye” or “pashu doctor”
+                </Text>
+              </>
+            )}
+
+            {!!message && (
+              <View style={[styles.messageBox, { backgroundColor: tone.soft }]}>
+                <Text style={[styles.message, { color: tone.text }]}>
+                  {message}
+                </Text>
+              </View>
+            )}
+          </View>
+
+          {/* CONTROLS */}
+          <View style={styles.controls}>
             <TouchableOpacity
               accessibilityRole="button"
               accessibilityLabel="Close voice assistant"
-              onPress={closeAssistant}
-              activeOpacity={0.7}
-              style={styles.closeButton}>
-              <X
-                size={20}
-                color="#31523B"
-              />
+              activeOpacity={0.75}
+              style={styles.sideButton}
+              onPress={close}
+            >
+              <X size={22} color="#344054" />
             </TouchableOpacity>
-          </View>
 
-          {/* Listening status */}
-          <View style={styles.statusRow}>
-            <View
-              style={[
-                styles.statusDot,
-                {
-                  backgroundColor: isError
-                    ? '#DC4B4B'
-                    : isSuccess
-                      ? '#16883E'
-                      : '#16883E',
-                },
-              ]}
-            />
-
-            <Text style={styles.statusText}>
-              {isListening
-                ? 'LISTENING'
-                : isProcessing
-                  ? 'UNDERSTANDING'
-                  : isSuccess
-                    ? 'COMMAND RECOGNIZED'
-                    : isError
-                      ? 'TRY AGAIN'
-                      : 'READY TO HELP'}
-            </Text>
-          </View>
-
-          {/* Main assistant content */}
-          <View style={styles.centerContent}>
-            {/* Animated green voice orb */}
-            <View style={styles.orbArea}>
-              <Animated.View
-                pointerEvents="none"
-                style={[
-                  styles.orbGlow,
-                  {
-                    opacity: glowOpacity,
-                    transform: [{scale: micScale}],
-                  },
-                ]}
-              />
-
-              <Animated.View
-                style={[
-                  styles.orb,
-                  {
-                    transform: [{scale: micScale}],
-                  },
-                ]}>
-                <View style={styles.orbInner}>
-                  {isProcessing ? (
-                    <LoaderCircle
-                      size={35}
-                      color="#FFFFFF"
-                    />
-                  ) : isSuccess ? (
-                    <CheckCircle2
-                      size={38}
-                      color="#FFFFFF"
-                    />
-                  ) : isError ? (
-                    <AlertCircle
-                      size={35}
-                      color="#FFFFFF"
-                    />
-                  ) : (
-                    <Mic
-                      size={38}
-                      color="#FFFFFF"
-                      strokeWidth={1.8}
-                    />
-                  )}
-                </View>
-              </Animated.View>
-            </View>
-
-            <Text style={styles.heading}>
-              {isListening
-                ? 'I’m listening'
-                : isProcessing
-                  ? 'One moment…'
-                  : isSuccess
-                    ? 'Got it!'
-                    : isError
-                      ? 'Let’s try again'
-                      : 'How can I help you?'}
-            </Text>
-
-            <Text style={styles.description}>
-              {permissionError ||
-                (isListening
-                  ? 'Speak naturally in Hindi, Hinglish or English'
-                  : message)}
-            </Text>
-
-            {/* Recognized speech */}
-            <View style={styles.transcriptBox}>
-              <Text
-                numberOfLines={3}
-                style={[
-                  styles.transcript,
-                  !transcript &&
-                    styles.placeholderTranscript,
-                ]}>
-                {transcript
-                  ? `“${transcript}”`
-                  : 'Ask anything about your farm…'}
-              </Text>
-            </View>
-
-            {/* Main microphone button */}
-            <TouchableOpacity
-              accessibilityRole="button"
-              accessibilityLabel="Tap to speak again"
-              activeOpacity={0.85}
-              onPress={retryListening}
-              style={[
-                styles.micButton,
-                isError && styles.micButtonError,
-              ]}>
-              {isProcessing ? (
-                <LoaderCircle
-                  size={24}
-                  color="#FFFFFF"
-                />
-              ) : (
-                <Mic
-                  size={25}
-                  color="#FFFFFF"
+            <View style={styles.micArea}>
+              {listening && (
+                <Animated.View
+                  pointerEvents="none"
+                  style={[styles.micRing, ringStyle(1, 1.6)]}
                 />
               )}
-            </TouchableOpacity>
-
-            <Text style={styles.micHint}>
-              {isListening
-                ? 'Listening to your voice'
-                : 'Tap the microphone to speak'}
-            </Text>
-          </View>
-
-          {/* Bottom controls */}
-          <View style={styles.bottomBar}>
-            <TouchableOpacity
-              accessibilityRole="button"
-              accessibilityLabel="Retry voice recognition"
-              activeOpacity={0.75}
-              onPress={retryListening}
-              style={styles.bottomControl}>
-              <Mic
-                size={18}
-                color="#4E6855"
-              />
-            </TouchableOpacity>
-
-            <View style={styles.bottomCenter}>
-              <View style={styles.homeIndicator} />
-
-              <Text style={styles.footerText}>
-                Powered by KhetiMaster
-              </Text>
+              <TouchableOpacity
+                accessibilityRole="button"
+                accessibilityLabel={
+                  listening ? 'Stop and use what I said' : 'Start listening'
+                }
+                activeOpacity={0.85}
+                disabled={busy}
+                onPress={toggleMic}
+              >
+                <LinearGradient
+                  colors={tone.button}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={[styles.mic, busy && styles.micBusy]}
+                >
+                  {listening ? (
+                    <Square size={22} color="#FFFFFF" fill="#FFFFFF" />
+                  ) : (
+                    <Mic size={28} color="#FFFFFF" strokeWidth={2.4} />
+                  )}
+                </LinearGradient>
+              </TouchableOpacity>
             </View>
 
             <TouchableOpacity
               accessibilityRole="button"
-              accessibilityLabel="Close voice assistant"
+              accessibilityLabel="Listen again"
               activeOpacity={0.75}
-              onPress={closeAssistant}
-              style={styles.bottomControl}>
-              <X
-                size={19}
-                color="#4E6855"
-              />
+              disabled={busy || listening}
+              style={[styles.sideButton, (busy || listening) && styles.sideOff]}
+              onPress={toggleMic}
+            >
+              <RotateCcw size={21} color="#344054" />
             </TouchableOpacity>
           </View>
-        </Animated.View>
-      </View>
-    </Modal>
+
+          <Text style={styles.micHint}>
+            {listening
+              ? 'Tap the button when you’re done'
+              : busy
+              ? 'Please wait…'
+              : 'Tap the mic to speak'}
+          </Text>
+        </LinearGradient>
+
+        {/* ORB (sits on the panel's top edge) */}
+        <View style={styles.orbBox}>
+          {listening && (
+            <>
+              <Animated.View
+                pointerEvents="none"
+                style={[styles.orbRing, ringStyle(1, 1.55)]}
+              />
+              <Animated.View
+                pointerEvents="none"
+                style={[styles.orbRing, ringStyle(0.9, 1.3)]}
+              />
+            </>
+          )}
+          <Animated.View
+            style={[styles.orbShadow, { transform: [{ scale: orbScale }] }]}
+          >
+            <Animated.View
+              style={[styles.orbSpin, { transform: [{ rotate: orbRotate }] }]}
+            >
+              <LinearGradient
+                colors={tone.orb}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.orb}
+              />
+            </Animated.View>
+            <View style={styles.logoDisc}>
+              <Image
+                source={KHETIMASTER_LOGO}
+                resizeMode="contain"
+                style={styles.logo}
+                accessibilityLabel="KhetiMaster"
+              />
+            </View>
+          </Animated.View>
+        </View>
+      </Animated.View>
+    </Animated.View>
   );
 }
 
-// ------------------------------------------
-// LIGHT THEME STYLES
-// ------------------------------------------
-
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
+  overlay: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    zIndex: 1000,
+    elevation: 1000,
     justifyContent: 'flex-end',
-    backgroundColor: 'transparent',
   },
+  tint: { backgroundColor: 'rgba(5,12,9,0.18)' },
 
-  // Translucent overlay keeps the underlying screen visible.
-  backdrop: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: 'rgba(29, 50, 35, 0.24)',
+  panelWrap: {
+    marginHorizontal: 12,
+    borderRadius: 34,
+    shadowColor: '#000000',
+    shadowOpacity: 0.28,
+    shadowRadius: 26,
+    shadowOffset: { width: 0, height: 12 },
+    elevation: 18,
   },
-
-  // Off-white bottom sheet.
   panel: {
-    width: '100%',
-    height: '84%',
-    maxHeight: 740,
-    minHeight: 500,
-    backgroundColor: '#FAFBF6',
-    borderTopLeftRadius: 32,
-    borderTopRightRadius: 32,
-    borderWidth: 1,
-    borderBottomWidth: 0,
-    borderColor: 'rgba(22, 136, 62, 0.18)',
-    paddingTop: 22,
-    paddingHorizontal: 24,
-    paddingBottom: 10,
+    borderRadius: 34,
     overflow: 'hidden',
-    justifyContent: 'space-between',
-    shadowColor: '#174D2A',
-    shadowOpacity: 0.16,
-    shadowRadius: 30,
-    shadowOffset: {
-      width: 0,
-      height: -8,
-    },
-    elevation: 25,
+    paddingTop: ORB / 2,
+    paddingHorizontal: 22,
+    paddingBottom: 18,
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.9)',
   },
-
-  // Soft green ambient light.
-  topGlow: {
+  wash: {
     position: 'absolute',
-    top: -115,
-    left: '8%',
-    width: '84%',
-    height: 220,
-    borderRadius: 150,
-    backgroundColor: 'rgba(112, 190, 112, 0.13)',
+    width: 180,
+    height: 180,
+    borderRadius: 90,
+    opacity: 0.35,
   },
+  washLeft: { left: -70, bottom: -60, backgroundColor: '#BAE6FD' },
+  washRight: { right: -60, top: 40, backgroundColor: '#BBF7D0' },
 
-  // Header
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-
-  brand: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-  },
-
-  brandIcon: {
-    width: 43,
-    height: 43,
-    borderRadius: 15,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#E5F3E6',
-    borderWidth: 1,
-    borderColor: '#D0E8D2',
-  },
-
-  brandTitle: {
-    color: '#183D25',
-    fontSize: 16,
-    fontWeight: '800',
-    letterSpacing: 0.2,
-  },
-
-  brandSubtitle: {
-    color: '#7A907D',
-    fontSize: 9,
-    fontWeight: '700',
-    letterSpacing: 1.3,
-    marginTop: 4,
-  },
-
-  closeButton: {
-    width: 42,
-    height: 42,
-    borderRadius: 22,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(232, 241, 230, 0.9)',
-    borderWidth: 1,
-    borderColor: '#DFE9DC',
-  },
-
-  // Status pill
-  statusRow: {
+  orbBox: {
+    position: 'absolute',
+    top: -ORB / 2,
     alignSelf: 'center',
+    width: ORB,
+    height: ORB,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  orbRing: {
+    position: 'absolute',
+    width: ORB,
+    height: ORB,
+    borderRadius: ORB / 2,
+    backgroundColor: '#4ADE80',
+  },
+  orbShadow: {
+    width: ORB,
+    height: ORB,
+    borderRadius: ORB / 2,
+    borderWidth: 3,
+    borderColor: '#FFFFFF',
+    backgroundColor: '#FFFFFF',
+    overflow: 'hidden',
+    shadowColor: '#16A34A',
+    shadowOpacity: 0.45,
+    shadowRadius: 18,
+    shadowOffset: { width: 0, height: 6 },
+    elevation: 10,
+  },
+  orbSpin: { ...StyleSheet.absoluteFillObject },
+  orb: { flex: 1 },
+  // white disc inside the turning green ring
+  logoDisc: {
+    position: 'absolute',
+    top: 5,
+    left: 5,
+    right: 5,
+    bottom: 5,
+    borderRadius: ORB / 2,
+    backgroundColor: '#FFFFFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  logo: { width: ORB * 0.78, height: ORB * 0.4 },
+
+  statusRow: { alignItems: 'center', marginTop: 14 },
+  statusPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    marginTop: 8,
-    paddingHorizontal: 13,
-    paddingVertical: 8,
-    borderRadius: 30,
-    backgroundColor: '#EDF5EA',
-    borderWidth: 1,
-    borderColor: '#DDEBDD',
+    gap: 7,
+    paddingHorizontal: 14,
+    paddingVertical: 7,
+    borderRadius: 20,
   },
+  statusDot: { width: 8, height: 8, borderRadius: 4 },
+  status: { fontSize: 13, fontWeight: '900', letterSpacing: 0.3 },
 
-  statusDot: {
-    width: 7,
-    height: 7,
-    borderRadius: 4,
-  },
-
-  statusText: {
-    fontSize: 10,
-    fontWeight: '800',
-    color: '#49634D',
-    letterSpacing: 1.3,
-  },
-
-  // Main content
-  centerContent: {
+  words: {
     flex: 1,
-    alignItems: 'center',
     justifyContent: 'center',
-    paddingTop: 4,
-    paddingBottom: 8,
-  },
-
-  // Orb
-  orbArea: {
-    width: 155,
-    height: 155,
     alignItems: 'center',
-    justifyContent: 'center',
+    paddingVertical: 20,
   },
-
-  orbGlow: {
-    position: 'absolute',
-    width: 140,
-    height: 140,
-    borderRadius: 75,
-    backgroundColor: '#83C98A',
-    shadowColor: '#16883E',
-    shadowOpacity: 0.5,
-    shadowRadius: 30,
-    elevation: 12,
-  },
-
-  orb: {
-    width: 112,
-    height: 112,
-    borderRadius: 60,
-    padding: 2,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#F5FBF2',
-    borderWidth: 1,
-    borderColor: '#B9DDBB',
-    shadowColor: '#16883E',
-    shadowOpacity: 0.12,
-    shadowRadius: 14,
-    shadowOffset: {
-      width: 0,
-      height: 5,
-    },
-    elevation: 7,
-  },
-
-  orbInner: {
-    flex: 1,
-    width: '100%',
-    borderRadius: 60,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#16883E',
-    borderWidth: 5,
-    borderColor: '#D8EED8',
-  },
-
-  heading: {
-    color: '#183D25',
-    fontSize: 25,
-    fontWeight: '700',
-    letterSpacing: -0.6,
-    textAlign: 'center',
-    marginTop: 18,
-  },
-
-  description: {
-    color: '#6E806F',
-    fontSize: 12,
-    lineHeight: 19,
-    textAlign: 'center',
-    marginTop: 9,
-    paddingHorizontal: 10,
-  },
-
-  // Transcript
-  transcriptBox: {
-    width: '100%',
-    minHeight: 54,
-    maxWidth: 340,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: 22,
-    paddingHorizontal: 16,
-    paddingVertical: 10,
-    borderRadius: 16,
-    backgroundColor: 'rgba(237, 245, 234, 0.88)',
-    borderWidth: 1,
-    borderColor: '#E0EBDD',
-  },
-
   transcript: {
-    color: '#294B31',
-    fontSize: 14,
-    lineHeight: 21,
+    fontSize: 26,
+    lineHeight: 35,
+    fontWeight: '800',
+    color: '#101828',
+    letterSpacing: -0.4,
+    textAlign: 'center',
+  },
+  prompt: {
+    fontSize: 25,
+    lineHeight: 32,
+    fontWeight: '900',
+    color: '#101828',
+    letterSpacing: -0.5,
+    textAlign: 'center',
+  },
+  promptHint: {
+    marginTop: 8,
+    fontSize: 13.5,
+    lineHeight: 20,
+    fontWeight: '600',
+    color: '#667085',
+    textAlign: 'center',
+  },
+  messageBox: {
+    marginTop: 14,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    borderRadius: 14,
+  },
+  message: {
+    fontSize: 13.5,
+    lineHeight: 19,
+    fontWeight: '700',
     textAlign: 'center',
   },
 
-  placeholderTranscript: {
-    color: '#8A9A8B',
-    fontSize: 12,
-  },
-
-  // Main microphone button
-  micButton: {
-    width: 58,
-    height: 58,
-    borderRadius: 30,
-    marginTop: 15,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#16883E',
-    borderWidth: 4,
-    borderColor: '#D9EEDB',
-    shadowColor: '#16883E',
-    shadowOpacity: 0.25,
-    shadowRadius: 16,
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    elevation: 8,
-  },
-
-  micButtonError: {
-    backgroundColor: '#C94343',
-    borderColor: '#F7DEDE',
-  },
-
-  micHint: {
-    color: '#829183',
-    fontSize: 10,
-    marginTop: 10,
-  },
-
-  // Bottom controls
-  bottomBar: {
-    minHeight: 66,
+  controls: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    borderTopWidth: 1,
-    borderTopColor: '#E7EDE3',
-    paddingTop: 10,
+    paddingHorizontal: 6,
   },
-
-  bottomControl: {
-    width: 42,
-    height: 42,
-    borderRadius: 23,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#EFF5EC',
+  sideButton: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    backgroundColor: '#FFFFFF',
     borderWidth: 1,
-    borderColor: '#E0E9DD',
-  },
-
-  bottomCenter: {
+    borderColor: '#E4E7EC',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 8,
   },
-
-  homeIndicator: {
-    width: 42,
-    height: 4,
-    borderRadius: 4,
-    backgroundColor: '#C4D3C1',
+  sideOff: { opacity: 0.4 },
+  micArea: { alignItems: 'center', justifyContent: 'center' },
+  micRing: {
+    position: 'absolute',
+    width: 74,
+    height: 74,
+    borderRadius: 37,
+    backgroundColor: '#EF4444',
   },
-
-  footerText: {
-    color: '#899789',
-    fontSize: 9,
-    letterSpacing: 0.4,
+  mic: {
+    width: 74,
+    height: 74,
+    borderRadius: 37,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  micBusy: { opacity: 0.55 },
+  micHint: {
+    marginTop: 10,
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#667085',
+    textAlign: 'center',
   },
 });

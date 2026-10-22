@@ -32,6 +32,7 @@ import AddFarmCard from '../../components/home/AddFarmCard';
 import VoiceAssistantCard from '../../components/home/VoiceAssistantCard';
 import VoiceAssistantModal from '../../components/voice/VoiceAssistantModal';
 import MoreServicesSection from '../../components/home/MoreServicesSection';
+import {MARKET_ROUTES} from '../../constants/marketRoutes';
 
 import {selectUser} from '../../redux/slices/authSlice';
 
@@ -66,9 +67,9 @@ export default function HomeScreen({navigation}) {
   }, []);
 
   const handleVoiceNavigation = useCallback(
-    routeName => {
+    (routeName, params) => {
       setVoiceAssistantVisible(false);
-      navigation.navigate(routeName);
+      navigation.navigate(routeName, params);
     },
     [navigation],
   );
@@ -163,9 +164,9 @@ export default function HomeScreen({navigation}) {
       onPress: () => navigation.navigate('MandiHome'),
     },
     {
-      title: 'Loans /\nSupport',
-      image: require('../../assets/homescreen/loan.png'),
-      onPress: () => {},
+      title: 'Trade /\nCommodities',
+      image: require('../../assets/homescreen/traders.png'),
+      onPress: () => navigation.navigate(MARKET_ROUTES.HOME),
     },
     {
       title: 'Warehouse',

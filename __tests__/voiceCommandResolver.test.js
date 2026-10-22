@@ -1,4 +1,4 @@
-import {resolveVoiceCommand} from '../src/utils/voiceCommandResolver';
+import { resolveVoiceCommand } from '../src/utils/voiceCommandResolver';
 
 describe('resolveVoiceCommand', () => {
   test.each([
@@ -31,5 +31,28 @@ describe('resolveVoiceCommand', () => {
       type: 'navigate',
       id: 'mandi',
     });
+  });
+
+  test('opens trade and commodities', () => {
+    expect(resolveVoiceCommand('I want to sell my crop')).toMatchObject({
+      type: 'navigate',
+      id: 'trade',
+    });
+    expect(resolveVoiceCommand('commodities')).toMatchObject({ id: 'trade' });
+  });
+
+  test('opens one crop price page for "<crop> ka bhav"', () => {
+    expect(resolveVoiceCommand('pyaz ka bhav batao')).toMatchObject({
+      type: 'navigate',
+      route: 'CommodityDetail',
+      params: { cropId: 'onion' },
+    });
+    expect(resolveVoiceCommand('cotton price today')).toMatchObject({
+      params: { cropId: 'cotton' },
+    });
+  });
+
+  test('plain mandi words still open the mandi home', () => {
+    expect(resolveVoiceCommand('mandi bhav')).toMatchObject({ id: 'mandi' });
   });
 });

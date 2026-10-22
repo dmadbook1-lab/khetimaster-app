@@ -1,5 +1,5 @@
-
-import {MANDI_ROUTES} from '../constants/mandiRoutes';
+import { MANDI_ROUTES } from '../constants/mandiRoutes';
+import { MARKET_ROUTES } from '../constants/marketRoutes';
 
 const COMMANDS = [
   {
@@ -227,6 +227,107 @@ const COMMANDS = [
   },
 ];
 
+COMMANDS.push({
+  id: 'trade',
+  route: MARKET_ROUTES.HOME,
+  message: 'Opening trade and commodities…',
+  phrases: [
+    'trade',
+    'trading',
+    'trader',
+    'traders',
+    'commodity',
+    'commodities',
+    'kheti market',
+    'marketplace',
+    'buy and sell',
+    'sell my crop',
+    'sell crop',
+    'fasal bechni hai',
+    'fasal bechna hai',
+    'maal bechna hai',
+    'vyapari',
+  ],
+});
+
+/*
+ * "<crop> ka bhav" / "<crop> price" opens that crop's mandi prices.
+ * Keys are mandi crop ids (backend data/mandiCrops.js).
+ */
+const CROP_WORDS = {
+  onion: ['onion', 'pyaz', 'pyaaz', 'pyaj', 'kanda'],
+  tomato: ['tomato', 'tamatar'],
+  potato: ['potato', 'aloo', 'alu', 'batata'],
+  wheat: ['wheat', 'gehun', 'gehu', 'gahu'],
+  rice: ['rice', 'chawal'],
+  paddy: ['paddy', 'dhan'],
+  maize: ['maize', 'makka', 'corn'],
+  soybean: ['soybean', 'soyabean', 'soya'],
+  cotton: ['cotton', 'kapas', 'kapus'],
+  gram: ['chana', 'gram', 'harbhara'],
+  arhar: ['arhar', 'tur', 'toor'],
+  moong: ['moong', 'mung'],
+  urad: ['urad'],
+  groundnut: ['groundnut', 'moongphali', 'shengdana', 'peanut'],
+  mustard: ['mustard', 'sarson'],
+  sugarcane: ['sugarcane', 'ganna'],
+  chilli: ['chilli', 'mirchi'],
+  turmeric: ['turmeric', 'haldi', 'halad'],
+  garlic: ['garlic', 'lahsun', 'lasun'],
+  bajra: ['bajra'],
+  jowar: ['jowar', 'jwari'],
+  banana: ['banana', 'kela', 'keli'],
+  grapes: ['grapes', 'angoor', 'draksha'],
+  pomegranate: ['pomegranate', 'anar', 'dalimb'],
+  cauliflower: ['cauliflower', 'gobi'],
+  brinjal: ['brinjal', 'baingan', 'vangi'],
+};
+
+const PRICE_WORDS = [
+  'bhav',
+  'bhaav',
+  'bhao',
+  'rate',
+  'rates',
+  'price',
+  'prices',
+  'daam',
+  'dam',
+  'kimat',
+  'keemat',
+  'mandi',
+];
+
+const CROP_NAMES = {
+  arhar: 'Arhar / Tur',
+  gram: 'Gram (Chana)',
+};
+
+function findCropPrice(normalized) {
+  const words = normalized.split(' ');
+
+  if (!PRICE_WORDS.some(word => words.includes(word))) {
+    return null;
+  }
+
+  for (const [cropId, names] of Object.entries(CROP_WORDS)) {
+    if (names.some(name => words.includes(name))) {
+      const cropName =
+        CROP_NAMES[cropId] || cropId.charAt(0).toUpperCase() + cropId.slice(1);
+
+      return {
+        type: 'navigate',
+        id: `mandi-${cropId}`,
+        route: MANDI_ROUTES.CROP,
+        params: { cropId, cropName },
+        message: `Opening ${cropName} prices…`,
+      };
+    }
+  }
+
+  return null;
+}
+
 const CANCEL_PHRASES = [
   'cancel',
   'close assistant',
@@ -273,15 +374,19 @@ export function resolveVoiceCommand(transcript = '') {
   const normalized = normalizeSpeech(transcript);
 
   if (!normalized) {
-    return {type: 'empty'};
+    return { type: 'empty' };
   }
 
   if (
-    CANCEL_PHRASES.some(raw =>
-      phraseMatches(normalized, normalizeSpeech(raw)),
-    )
+    CANCEL_PHRASES.some(raw => phraseMatches(normalized, normalizeSpeech(raw)))
   ) {
-    return {type: 'cancel'};
+    return { type: 'cancel' };
+  }
+
+  const cropPrice = findCropPrice(normalized);
+
+  if (cropPrice) {
+    return cropPrice;
   }
 
   const matches = COMMANDS.flatMap(command =>
@@ -302,11 +407,11 @@ export function resolveVoiceCommand(transcript = '') {
       return {
         type: 'greeting',
         response:
-          "Hello! How's your day going? I'm KhetiMaster, your farming assistant. Say a screen name like mandi, tractor, labour, or crops, and I'll open it for you.",
+          "Hello! How's your day going? I'm KhetiMaster, your farming assistant. Say a screen name like mandi, tractor, labour or doctor, or ask for a crop price like \"pyaz ka bhav\", and I'll open it for you.",
       };
     }
 
-    return {type: 'unknown', transcript};
+    return { type: 'unknown', transcript };
   }
 
   const command = matches[0].command;
