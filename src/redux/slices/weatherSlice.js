@@ -1,6 +1,8 @@
 import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
 import axios from 'axios';
 
+import {getLocalWeatherApi} from '../../api/weatherApi';
+
 const OBSERVEARTH_API_KEY = '5b97d3f0-a01a-490b-aad1-3bfa848309f2';
 
 const VISUAL_CROSSING_KEY =
@@ -212,7 +214,74 @@ export const fetchAOICurrentWeather = createAsyncThunk(
   },
 );
 
+/**
+ * ---------------------------------------------------------
+ * LOCAL WEATHER (home card + Weather screens)
+ * ---------------------------------------------------------
+ *
+ * {latitude, longitude, force}. Skipped when the same place was loaded
+ * in the last 15 minutes, unless force.
+ */
+const LOCAL_TTL_MS = 15 * 60 * 1000;
+
+const coordsKeyOf = (latitude, longitude) =>
+  `${Number(latitude).toFixed(2)},${Number(longitude).toFixed(2)}`;
+
+export const fetchLocalWeather = createAsyncThunk(
+  'weather/fetchLocalWeather',
+  async ({latitude, longitude}, {rejectWithValue}) => {
+    try {
+      const data = await getLocalWeatherApi({latitude, longitude});
+
+      return {
+        address: data.resolvedAddress || '',
+        timezone: data.timezone || '',
+        current: data.currentConditions || null,
+        days: Array.isArray(data.days) ? data.days : [],
+        alerts: Array.isArray(data.alerts) ? data.alerts : [],
+      };
+    } catch (error) {
+      return rejectWithValue(
+        error?.response?.status === 429
+          ? 'Weather service is busy. Please try again in a minute.'
+          : error?.response
+          ? 'Couldn’t load the weather. Please try again.'
+          : 'No internet connection. Weather needs a connection.',
+      );
+    }
+  },
+  {
+    condition: ({latitude, longitude, force} = {}, {getState}) => {
+      if (
+        !Number.isFinite(Number(latitude)) ||
+        !Number.isFinite(Number(longitude))
+      ) {
+        return false;
+      }
+
+      const local = getState().weather.local;
+      if (local.status === 'loading') return false;
+      if (force) return true;
+
+      return !(
+        local.data &&
+        local.coordsKey === coordsKeyOf(latitude, longitude) &&
+        Date.now() - local.fetchedAt < LOCAL_TTL_MS
+      );
+    },
+  },
+);
+
 const initialState = {
+  // idle | loading | loaded | error
+  local: {
+    data: null,
+    status: 'idle',
+    error: null,
+    fetchedAt: null,
+    coordsKey: null,
+  },
+
   currentWeather: null,
   timelineDays: null,
 
@@ -260,6 +329,27 @@ const weatherSlice = createSlice({
   },
 
   extraReducers: builder => {
+    builder
+      .addCase(fetchLocalWeather.pending, state => {
+        state.local.status = 'loading';
+        state.local.error = null;
+      })
+      .addCase(fetchLocalWeather.fulfilled, (state, action) => {
+        const {latitude, longitude} = action.meta.arg;
+        state.local = {
+          data: action.payload,
+          status: 'loaded',
+          error: null,
+          fetchedAt: Date.now(),
+          coordsKey: coordsKeyOf(latitude, longitude),
+        };
+      })
+      .addCase(fetchLocalWeather.rejected, (state, action) => {
+        // keep showing older weather if there is some
+        state.local.status = state.local.data ? 'loaded' : 'error';
+        state.local.error = action.payload || action.error?.message;
+      });
+
     builder
 
       // =====================================================

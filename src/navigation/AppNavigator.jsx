@@ -44,10 +44,7 @@ import AIDetectionScreen from '../screens/disease-detection/AIDetectionScreen';
 import AIDiagnosisScreen from '../screens/disease-detection/AIDiagnosisScreen';
 import DiseaseInformationScreen from '../screens/disease-detection/DiseaseInformationScreen';
 import WeatherScreen from '../screens/weather/WeatherScreen';
-import SevenDayForecastScreen from '../screens/weather/SevenDayForecastScreen';
-import HourlyForecastScreen from '../screens/weather/HourlyForecastScreen';
-import RainfallDetailsScreen from '../screens/weather/RainfallDetailsScreen';
-import AIWeatherInsightsScreen from '../screens/weather/AIWeatherInsightsScreen';
+import WeatherDayScreen from '../screens/weather/WeatherDayScreen';
 import CommunityScreen from '../screens/community/CommunityScreen';
 import VideosScreen from '../screens/community/VideosScreen';
 import QuestionsScreen from '../screens/community/QuestionsScreen';
@@ -295,21 +292,9 @@ export default function AppNavigator() {
           component={DiseaseInformationScreen}
         />
 
-        {/* Route names: Weather, SevenDayForecast, HourlyForecast, RainfallDetails, AIWeatherInsights */}
+        {/* Route names: Weather, WeatherDay */}
         <Stack.Screen name="Weather" component={WeatherScreen} />
-        <Stack.Screen
-          name="SevenDayForecast"
-          component={SevenDayForecastScreen}
-        />
-        <Stack.Screen name="HourlyForecast" component={HourlyForecastScreen} />
-        <Stack.Screen
-          name="RainfallDetails"
-          component={RainfallDetailsScreen}
-        />
-        <Stack.Screen
-          name="AIWeatherInsights"
-          component={AIWeatherInsightsScreen}
-        />
+        <Stack.Screen name="WeatherDay" component={WeatherDayScreen} />
 
         {/* Route names: Community, Videos, Questions, Experts, Disease, AskWithPhoto, AskQuestion, AskByVoice, AIAnswer */}
         <Stack.Screen name="Community" component={CommunityScreen} />

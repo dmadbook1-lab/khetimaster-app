@@ -124,7 +124,7 @@ const SMART_FARMING_MENU = [
     Icon: Sun,
     iconColor: '#EAB308',
     iconBackground: '#FFFBEA',
-    route: null,
+    route: 'Weather',
   },
   {
     id: 'mandi',

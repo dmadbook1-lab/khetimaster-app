@@ -1,7 +1,8 @@
 
-import React, {useCallback, useMemo, useState} from 'react';
+import React, {useCallback, useEffect, useMemo, useState} from 'react';
 
 import {
+  AppState,
   ScrollView,
   StyleSheet,
   Text,
@@ -58,9 +59,34 @@ const rf = size => {
   );
 };
 
+/*
+ * Greeting for the phone's local time.
+ */
+const greetingFor = (date = new Date()) => {
+  const hour = date.getHours();
+  if (hour >= 5 && hour < 12) return 'Good Morning';
+  if (hour >= 12 && hour < 17) return 'Good Afternoon';
+  // evening runs through the night until 5 AM
+  return 'Good Evening';
+};
+
 export default function HomeScreen({navigation}) {
   const dispatch = useDispatch();
   const [voiceAssistantVisible, setVoiceAssistantVisible] = useState(false);
+  const [greeting, setGreeting] = useState(greetingFor);
+
+  // keep the greeting right while the app stays open or comes back
+  useEffect(() => {
+    const timer = setInterval(() => setGreeting(greetingFor()), 60000);
+    const subscription = AppState.addEventListener('change', state => {
+      if (state === 'active') setGreeting(greetingFor());
+    });
+
+    return () => {
+      clearInterval(timer);
+      subscription.remove();
+    };
+  }, []);
 
   const handleVoiceClose = useCallback(() => {
     setVoiceAssistantVisible(false);
@@ -242,7 +268,7 @@ export default function HomeScreen({navigation}) {
         {/* GREETING */}
 
         <Text style={styles.greeting}>
-          Good Morning, {userName}
+          {greeting}, {userName}
         </Text>
 
         {/* LOCATION */}
