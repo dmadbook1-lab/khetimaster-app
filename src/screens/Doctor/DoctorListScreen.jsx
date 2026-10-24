@@ -13,6 +13,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { Search, Stethoscope, X } from 'lucide-react-native';
 import { useDispatch, useSelector } from 'react-redux';
 
+import { useLocation } from '../../context/LocationContext';
 import CareHero from '../../components/doctor/CareHero';
 import { TopInset } from '../../components/market/MarketHero';
 import {
@@ -64,7 +65,9 @@ export default function DoctorListScreen({ navigation, route }) {
   const meta = useDoctorMeta();
   const initial = route.params || {};
 
-  const user = useSelector(state => state.auth.user);
+  // "near me" uses where the phone is now, not the profile address
+  const { location: liveLocation } = useLocation();
+  const nearDistrict = liveLocation?.district || '';
   const { list, pagination, listLoading, listLoadingMore, listError } =
     useSelector(state => state.doctor);
 
@@ -93,7 +96,7 @@ export default function DoctorListScreen({ navigation, route }) {
       sort,
       language,
       freeOnly: freeOnly ? 'true' : '',
-      district: nearMe ? user?.district : '',
+      district: nearMe ? nearDistrict : '',
       limit: PAGE_SIZE,
     }),
     [
@@ -104,7 +107,7 @@ export default function DoctorListScreen({ navigation, route }) {
       language,
       freeOnly,
       nearMe,
-      user?.district,
+      nearDistrict,
     ],
   );
 
@@ -157,11 +160,11 @@ export default function DoctorListScreen({ navigation, route }) {
       active: freeOnly,
       toggle: () => setFreeOnly(v => !v),
     },
-    ...(user?.district
+    ...(nearDistrict
       ? [
           {
             key: 'near',
-            label: `Near ${user.district}`,
+            label: `Near ${nearDistrict}`,
             active: nearMe,
             toggle: () => setNearMe(v => !v),
           },

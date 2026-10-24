@@ -1,4 +1,4 @@
-import React, {useEffect, useRef, useState} from 'react';
+import React, {useEffect, useMemo, useRef, useState} from 'react';
 import {
   Animated,
   Dimensions,
@@ -14,10 +14,8 @@ import {Mic} from 'lucide-react-native';
 
 const {width} = Dimensions.get('window');
 
-const rf = size => {
-  const scale = width / 390;
-  return Math.max(size - 2, Math.min(size * scale, size + 2));
-};
+// card width the design was made for (390pt phone minus the home padding)
+const BASE_CARD_WIDTH = 347;
 
 const ASSISTANT_IMAGE = require('../../assets/assistant/assistantt.png');
 
@@ -42,6 +40,9 @@ export default function VoiceAssistantCard({onPress}) {
   const pulse = useRef(new Animated.Value(0)).current;
   const exampleOpacity = useRef(new Animated.Value(1)).current;
   const [exampleIndex, setExampleIndex] = useState(0);
+  // first guess matches the home screen padding, onLayout corrects it
+  const [cardWidth, setCardWidth] = useState(width * 0.89);
+  const s = useMemo(() => makeSizes(cardWidth), [cardWidth]);
 
   useEffect(() => {
     const loop = Animated.loop(
@@ -102,7 +103,11 @@ export default function VoiceAssistantCard({onPress}) {
         <ImageBackground
           source={ASSISTANT_IMAGE}
           resizeMode="cover"
-          style={styles.card}
+          style={[styles.card, {height: cardWidth / IMAGE_RATIO}]}
+          onLayout={e => {
+            const w = Math.round(e.nativeEvent.layout.width);
+            if (w && Math.abs(w - cardWidth) > 1) setCardWidth(w);
+          }}
           imageStyle={styles.image}>
           {/* darker on the left so the text reads, clear on the right */}
           <LinearGradient
@@ -118,25 +123,29 @@ export default function VoiceAssistantCard({onPress}) {
             style={StyleSheet.absoluteFill}
           />
 
-          <View style={styles.text}>
-            <Text style={styles.title} numberOfLines={1}>
+          <View style={[styles.text, s.text]}>
+            <Text
+              style={[styles.title, s.title]}
+              numberOfLines={1}
+              adjustsFontSizeToFit>
               Speak to KhetiMaster
             </Text>
-            <Text style={styles.subtitle} numberOfLines={1}>
+            <Text style={[styles.subtitle, s.subtitle]} numberOfLines={1}>
               बोलें और काम तुरंत करें
             </Text>
             <Animated.Text
-              style={[styles.example, {opacity: exampleOpacity}]}
+              style={[styles.example, s.example, {opacity: exampleOpacity}]}
               numberOfLines={1}>
               {EXAMPLES[exampleIndex]}
             </Animated.Text>
 
-            <View style={styles.button}>
-              <View style={styles.micBox}>
+            <View style={[styles.button, s.button]}>
+              <View style={[styles.micBox, s.mic]}>
                 <Animated.View
                   pointerEvents="none"
                   style={[
                     styles.micRing,
+                    s.mic,
                     {
                       opacity: pulse.interpolate({
                         inputRange: [0, 1],
@@ -153,11 +162,11 @@ export default function VoiceAssistantCard({onPress}) {
                     },
                   ]}
                 />
-                <View style={styles.mic}>
-                  <Mic size={13} color="#FFFFFF" strokeWidth={2.6} />
+                <View style={[styles.mic, s.mic]}>
+                  <Mic size={s.iconSize} color="#FFFFFF" strokeWidth={2.6} />
                 </View>
               </View>
-              <Text style={styles.buttonText}>Tap to speak</Text>
+              <Text style={[styles.buttonText, s.buttonText]}>Tap to speak</Text>
             </View>
           </View>
         </ImageBackground>
@@ -165,6 +174,30 @@ export default function VoiceAssistantCard({onPress}) {
     </Animated.View>
   );
 }
+
+// everything inside the card scales with the card itself, so the text
+// always fits the artwork's height and the image is never cropped
+const makeSizes = cardWidth => {
+  const k = Math.max(0.78, Math.min(cardWidth / BASE_CARD_WIDTH, 1.2));
+  const micSize = Math.round(24 * k);
+  return {
+    iconSize: Math.round(13 * k),
+    text: {paddingLeft: 16 * k, paddingVertical: 10 * k},
+    title: {fontSize: 15.5 * k},
+    subtitle: {marginTop: 2 * k, fontSize: 11.5 * k},
+    example: {marginTop: 4 * k, fontSize: 11 * k},
+    button: {
+      marginTop: 8 * k,
+      gap: 7 * k,
+      paddingLeft: 4 * k,
+      paddingRight: 12 * k,
+      paddingVertical: 4 * k,
+      borderRadius: 18 * k,
+    },
+    mic: {width: micSize, height: micSize, borderRadius: micSize / 2},
+    buttonText: {fontSize: 11.5 * k},
+  };
+};
 
 const styles = StyleSheet.create({
   wrap: {
@@ -179,64 +212,43 @@ const styles = StyleSheet.create({
   },
   card: {
     width: '100%',
-    aspectRatio: IMAGE_RATIO,
-    minHeight: 124,
     borderRadius: 22,
     overflow: 'hidden',
     justifyContent: 'center',
   },
   image: {borderRadius: 22},
-  text: {width: '58%', paddingLeft: 16, paddingVertical: 12},
+  text: {width: '60%'},
   title: {
-    fontSize: rf(15.5),
     color: '#FFFFFF',
     fontWeight: '900',
     letterSpacing: -0.2,
   },
   subtitle: {
-    marginTop: 2,
-    fontSize: rf(11.5),
     color: 'rgba(255,255,255,0.88)',
     fontWeight: '600',
   },
   example: {
-    marginTop: 4,
-    fontSize: rf(11),
     color: '#BBF7D0',
     fontWeight: '800',
   },
   button: {
-    marginTop: 9,
     alignSelf: 'flex-start',
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 7,
-    paddingLeft: 4,
-    paddingRight: 12,
-    paddingVertical: 4,
-    borderRadius: 18,
     backgroundColor: '#FFFFFF',
   },
   micBox: {
-    width: 24,
-    height: 24,
     alignItems: 'center',
     justifyContent: 'center',
   },
   micRing: {
     position: 'absolute',
-    width: 24,
-    height: 24,
-    borderRadius: 12,
     backgroundColor: '#22C55E',
   },
   mic: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
     backgroundColor: '#16A34A',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  buttonText: {fontSize: rf(11.5), color: '#14532D', fontWeight: '900'},
+  buttonText: {color: '#14532D', fontWeight: '900'},
 });

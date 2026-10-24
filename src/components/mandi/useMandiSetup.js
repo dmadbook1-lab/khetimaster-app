@@ -9,9 +9,9 @@ import {
 } from '../../redux/slices/mandiSlice';
 
 /*
- * Loads crops and states once, and picks the starting location: the
- * user's profile, else the phone's detected location. The user can
- * change it with the location sheet.
+ * Loads crops and states once, and starts from the phone's current
+ * (GPS) location, not the profile address. The user can change it with
+ * the location sheet.
  *
  * Returns {crops, cropsStatus, cropsError, states, location}.
  */
@@ -19,7 +19,6 @@ export default function useMandiSetup() {
   const dispatch = useDispatch();
   const { location: detected } = useLocation() || {};
 
-  const user = useSelector(state => state.auth.user);
   const { crops, cropsStatus, cropsError, states, location } = useSelector(
     state => state.mandi,
   );
@@ -35,19 +34,16 @@ export default function useMandiSetup() {
   useEffect(() => {
     if (location) return;
 
-    const state = user?.state || detected?.state;
+    const state = detected?.state;
     if (!state) return;
 
     dispatch(
       setMandiLocation({
         state,
-        district:
-          (user?.state
-            ? user?.district
-            : detected?.district || detected?.city) || '',
+        district: detected?.district || detected?.city || '',
       }),
     );
-  }, [dispatch, location, user, detected]);
+  }, [dispatch, location, detected]);
 
   return { crops, cropsStatus, cropsError, states, location };
 }

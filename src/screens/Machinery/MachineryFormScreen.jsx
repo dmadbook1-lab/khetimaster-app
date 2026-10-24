@@ -31,6 +31,7 @@ import {
 } from 'lucide-react-native';
 import { useDispatch, useSelector } from 'react-redux';
 
+import { useLiveRegionPrefill } from '../../context/LocationContext';
 import MarketHero, { TopInset } from '../../components/market/MarketHero';
 import { MarketButton } from '../../components/market/MarketBits';
 import { MARKET_COLORS as C } from '../../components/market/theme';
@@ -123,8 +124,8 @@ const initialForm = (machine, user) => ({
   availableUntil: dayKeyOf(machine?.availableUntil),
   ownerName: machine?.ownerName || user?.fullName || '',
   village: machine?.village ?? user?.village ?? '',
-  district: machine?.district ?? user?.district ?? '',
-  state: machine?.state ?? user?.state ?? '',
+  district: machine?.district ?? '',
+  state: machine?.state ?? '',
   address: machine?.address || '',
   ownerNotes: machine?.ownerNotes || '',
 });
@@ -166,6 +167,7 @@ export default function MachineryFormScreen({ navigation, route }) {
   const meta = useMachineryMeta();
 
   const [form, setForm] = useState(() => initialForm(editing, user));
+  useLiveRegionPrefill(setForm);
   const [assets, setAssets] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [dateField, setDateField] = useState(null);

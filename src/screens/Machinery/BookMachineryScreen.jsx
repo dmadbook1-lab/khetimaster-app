@@ -26,6 +26,7 @@ import {
 } from 'lucide-react-native';
 import { useDispatch, useSelector } from 'react-redux';
 
+import { useLiveRegionPrefill } from '../../context/LocationContext';
 import MarketHero, { TopInset } from '../../components/market/MarketHero';
 import { LoadingState, MarketButton } from '../../components/market/MarketBits';
 import { MARKET_COLORS as C } from '../../components/market/theme';
@@ -155,14 +156,15 @@ function BookingForm({ navigation, machine }) {
     workType: rates[0]?.pricingType === 'custom' ? rates[0].label : '',
     selectedImplement: '',
     village: user?.village || '',
-    district: user?.district || '',
-    state: user?.state || '',
+    district: '',
+    state: '',
     address: '',
     farmSize: '',
     crop: '',
     paymentMethod: 'cod',
     farmerNotes: '',
   }));
+  useLiveRegionPrefill(setForm);
 
   // 'date' | 'start' | 'end' | null
   const [picker, setPicker] = useState(null);

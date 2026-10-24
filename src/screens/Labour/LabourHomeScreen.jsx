@@ -30,6 +30,7 @@ import {
 } from 'lucide-react-native';
 import { useDispatch, useSelector } from 'react-redux';
 
+import { useLocation } from '../../context/LocationContext';
 import MarketHero, {
   GlassButton,
   TopInset,
@@ -71,7 +72,9 @@ export default function LabourHomeScreen({ navigation }) {
   const dispatch = useDispatch();
   const { labourTypes } = useLabourMeta();
 
-  const user = useSelector(state => state.auth.user);
+  // "near me" uses where the phone is now, not the profile address
+  const { location: liveLocation } = useLocation();
+  const nearDistrict = liveLocation?.district || '';
   const {
     labourers,
     pagination,
@@ -108,10 +111,10 @@ export default function LabourHomeScreen({ navigation }) {
       search,
       labourType,
       sort: sort.key,
-      district: nearMe ? user?.district : '',
+      district: nearMe ? nearDistrict : '',
       limit: PAGE_SIZE,
     }),
-    [search, labourType, sort.key, nearMe, user?.district],
+    [search, labourType, sort.key, nearMe, nearDistrict],
   );
 
   const loadFirstPage = useCallback(
@@ -349,7 +352,7 @@ export default function LabourHomeScreen({ navigation }) {
           </TouchableOpacity>
         </View>
 
-        {!!user?.district && (
+        {!!nearDistrict && (
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={() => setNearMe(value => !value)}
@@ -358,7 +361,7 @@ export default function LabourHomeScreen({ navigation }) {
             <Text
               style={[styles.toggleText, nearMe && styles.toggleTextActive]}
             >
-              Only near {user.district}
+              Only near {nearDistrict}
             </Text>
           </TouchableOpacity>
         )}

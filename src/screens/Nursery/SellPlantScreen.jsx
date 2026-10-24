@@ -27,6 +27,7 @@ import {
 } from 'lucide-react-native';
 import { useDispatch, useSelector } from 'react-redux';
 
+import { useLiveRegionPrefill } from '../../context/LocationContext';
 import MarketHero, { TopInset } from '../../components/market/MarketHero';
 import { MarketButton } from '../../components/market/MarketBits';
 import { MARKET_COLORS as C } from '../../components/market/theme';
@@ -75,8 +76,8 @@ const initialForm = (plant, user) => ({
   price: toText(plant?.price),
   quantity: toText(plant?.quantity),
   description: plant?.description || '',
-  district: plant?.location?.district ?? user?.district ?? '',
-  state: plant?.location?.state ?? user?.state ?? '',
+  district: plant?.location?.district ?? '',
+  state: plant?.location?.state ?? '',
   isActive: plant?.isActive !== false,
 });
 
@@ -94,6 +95,7 @@ export default function SellPlantScreen({ navigation, route }) {
   const saving = useSelector(state => state.nursery.saving);
 
   const [form, setForm] = useState(() => initialForm(editing, user));
+  useLiveRegionPrefill(setForm);
   const [assets, setAssets] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [step, setStep] = useState(0);

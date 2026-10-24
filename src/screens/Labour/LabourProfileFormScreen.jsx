@@ -27,6 +27,7 @@ import {
 } from 'lucide-react-native';
 import { useDispatch, useSelector } from 'react-redux';
 
+import { useLiveRegionPrefill } from '../../context/LocationContext';
 import MarketHero, { TopInset } from '../../components/market/MarketHero';
 import {
   EmptyState,
@@ -92,8 +93,8 @@ const initialForm = (profile, user) => ({
   availableUntil: dayKeyOf(profile?.availableUntil),
   village: profile?.village ?? user?.village ?? '',
   taluka: profile?.taluka ?? user?.taluka ?? '',
-  district: profile?.district ?? user?.district ?? '',
-  state: profile?.state ?? user?.state ?? '',
+  district: profile?.district ?? '',
+  state: profile?.state ?? '',
 });
 
 /*
@@ -188,6 +189,7 @@ function ProfileForm({ navigation }) {
   const [form, setForm] = useState(() =>
     initialForm(isCreate ? null : myProfile, user),
   );
+  useLiveRegionPrefill(setForm);
   const [photoAsset, setPhotoAsset] = useState(null);
   const [uploading, setUploading] = useState(false);
   // 'availableFrom' | 'availableUntil' | null

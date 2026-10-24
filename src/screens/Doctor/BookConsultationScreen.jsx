@@ -25,6 +25,7 @@ import {
 } from 'lucide-react-native';
 import { useDispatch, useSelector } from 'react-redux';
 
+import { useLiveRegionPrefill } from '../../context/LocationContext';
 import { CareTopBar } from '../../components/doctor/CareHero';
 import {
   CareBottomBar,
@@ -136,12 +137,13 @@ export default function BookConsultationScreen({ navigation, route }) {
     symptoms: '',
     description: '',
     village: user?.village || '',
-    district: user?.district || '',
-    state: user?.state || '',
+    district: '',
+    state: '',
     address: '',
     paymentMethod: 'cod',
     farmerNotes: '',
   });
+  useLiveRegionPrefill(setForm);
   const [assets, setAssets] = useState([]);
   const [uploading, setUploading] = useState(false);
   const [errorField, setErrorField] = useState(null);

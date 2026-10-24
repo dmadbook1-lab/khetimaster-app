@@ -32,6 +32,7 @@ import {
 } from 'lucide-react-native';
 import { useDispatch, useSelector } from 'react-redux';
 
+import { useLocation } from '../../context/LocationContext';
 import MarketHero, {
   GlassButton,
   TopInset,
@@ -92,7 +93,9 @@ export default function NurseryHomeScreen({ navigation }) {
   const insets = useSafeAreaInsets();
   const meta = useNurseryMeta();
 
-  const user = useSelector(state => state.auth.user);
+  // "near me" uses where the phone is now, not the profile address
+  const { location: liveLocation } = useLocation();
+  const nearDistrict = liveLocation?.district || '';
   const { list, pagination, listLoading, listLoadingMore, listError } =
     useSelector(state => state.nursery);
   const liveCategories = useSelector(state => state.nursery.liveCategories);
@@ -128,10 +131,10 @@ export default function NurseryHomeScreen({ navigation }) {
       search,
       category,
       sort: sort.key,
-      district: nearMe ? user?.district : '',
+      district: nearMe ? nearDistrict : '',
       limit: PAGE_SIZE,
     }),
-    [search, category, sort.key, nearMe, user?.district],
+    [search, category, sort.key, nearMe, nearDistrict],
   );
 
   const loadFirstPage = useCallback(
@@ -364,7 +367,7 @@ export default function NurseryHomeScreen({ navigation }) {
           </TouchableOpacity>
         </View>
 
-        {!!user?.district && (
+        {!!nearDistrict && (
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={() => setNearMe(value => !value)}
@@ -373,7 +376,7 @@ export default function NurseryHomeScreen({ navigation }) {
             <Text
               style={[styles.toggleText, nearMe && styles.toggleTextActive]}
             >
-              Only near {user.district}
+              Only near {nearDistrict}
             </Text>
           </TouchableOpacity>
         )}

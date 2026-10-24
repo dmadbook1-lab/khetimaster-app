@@ -30,6 +30,7 @@ import {
 } from 'lucide-react-native';
 import { useDispatch, useSelector } from 'react-redux';
 
+import { useLiveRegionPrefill } from '../../context/LocationContext';
 import CareHero from '../../components/doctor/CareHero';
 import { TopInset } from '../../components/market/MarketHero';
 import {
@@ -103,8 +104,8 @@ const initialForm = (doctor, user) => ({
   availableFrom: dayKeyOf(doctor?.availableFrom),
   availableUntil: dayKeyOf(doctor?.availableUntil),
   village: doctor?.village ?? user?.village ?? '',
-  district: doctor?.district ?? user?.district ?? '',
-  state: doctor?.state ?? user?.state ?? '',
+  district: doctor?.district ?? '',
+  state: doctor?.state ?? '',
   address: doctor?.address || '',
 });
 
@@ -181,6 +182,7 @@ export default function DoctorProfileFormScreen({ navigation, route }) {
   const saving = useSelector(state => state.doctor.saving);
 
   const [form, setForm] = useState(() => initialForm(editing, user));
+  useLiveRegionPrefill(setForm);
   const [photoAsset, setPhotoAsset] = useState(null);
   const [certificateAsset, setCertificateAsset] = useState(null);
   const [uploading, setUploading] = useState(false);

@@ -22,6 +22,7 @@ import {
 } from 'lucide-react-native';
 import { useDispatch, useSelector } from 'react-redux';
 
+import { useLiveRegionPrefill } from '../../context/LocationContext';
 import MarketHero, { TopInset } from '../../components/market/MarketHero';
 import {
   EmptyState,
@@ -58,8 +59,8 @@ const initialAddress = user => ({
   address: user?.address || '',
   village: user?.village || '',
   taluka: user?.taluka || '',
-  district: user?.district || '',
-  state: user?.state || '',
+  district: '',
+  state: '',
   pincode: user?.pincode || '',
 });
 
@@ -92,6 +93,7 @@ export default function NurseryCheckoutScreen({ navigation }) {
   const placing = useSelector(state => state.nurseryOrder.placing);
 
   const [form, setForm] = useState(() => initialAddress(user));
+  useLiveRegionPrefill(setForm);
   const [errorField, setErrorField] = useState(null);
 
   useFocusEffect(

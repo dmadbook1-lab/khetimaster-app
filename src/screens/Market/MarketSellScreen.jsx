@@ -32,6 +32,7 @@ import {
 } from 'lucide-react-native';
 import { useDispatch, useSelector } from 'react-redux';
 
+import { useLiveRegionPrefill } from '../../context/LocationContext';
 import MarketHero, { TopInset } from '../../components/market/MarketHero';
 import FeedbackModal, {
   useFeedbackModal,
@@ -148,10 +149,11 @@ const initialForm = (listing, user) => {
     expiryDate: null,
     deliveryAvailable: false,
     deliveryNotes: '',
-    // prefilled from the profile; the seller can change it
+    // state/district come from the phone's location, the rest from the
+    // profile; the seller can change any of it
     location: {
-      state: user?.state || '',
-      district: user?.district || '',
+      state: '',
+      district: '',
       taluka: user?.taluka || '',
       village: user?.village || '',
       pincode: '',
@@ -229,6 +231,7 @@ export default function MarketSellScreen({ navigation, route }) {
     useMarketMeta();
 
   const [form, setForm] = useState(() => initialForm(editingListing, user));
+  useLiveRegionPrefill(setForm, 'location');
   const [assets, setAssets] = useState([]);
   const [uploading, setUploading] = useState(false);
   // which date field the picker is open for, or null

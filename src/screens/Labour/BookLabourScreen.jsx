@@ -24,6 +24,7 @@ import {
 } from 'lucide-react-native';
 import { useDispatch, useSelector } from 'react-redux';
 
+import { useLiveRegionPrefill } from '../../context/LocationContext';
 import MarketHero, { TopInset } from '../../components/market/MarketHero';
 import { MarketButton } from '../../components/market/MarketBits';
 import { MARKET_COLORS as C } from '../../components/market/theme';
@@ -103,11 +104,12 @@ export default function BookLabourScreen({ navigation, route }) {
     wage: labourer.expectedWage ? String(labourer.expectedWage) : '',
     wageType: labourer.wageType || 'daily',
     village: user?.village || '',
-    district: user?.district || '',
-    state: user?.state || '',
+    district: '',
+    state: '',
     address: '',
     farmerNotes: '',
   }));
+  useLiveRegionPrefill(setForm);
 
   // 'date' | 'start' | 'end' | null
   const [picker, setPicker] = useState(null);

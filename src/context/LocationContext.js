@@ -234,3 +234,51 @@ export const useLocation = () => {
 
   return context;
 };
+
+// ============================================
+// PREFILL STATE + DISTRICT
+// ============================================
+
+/*
+ * Fills a form's empty state/district with the phone's current
+ * location once it is known. Values already saved or typed are kept.
+ * Pass `nested` when the fields live under a key, e.g. 'location'.
+ */
+export const useLiveRegionPrefill = (
+  setForm,
+  nested,
+) => {
+  const {location} = useLocation();
+
+  const state = location?.state || '';
+
+  const district =
+    location?.district || '';
+
+  useEffect(() => {
+    if (!state && !district) {
+      return;
+    }
+
+    setForm(previous => {
+      const current = nested
+        ? previous[nested] || {}
+        : previous;
+
+      if (current.state && current.district) {
+        return previous;
+      }
+
+      const filled = {
+        ...current,
+        state: current.state || state,
+        district:
+          current.district || district,
+      };
+
+      return nested
+        ? {...previous, [nested]: filled}
+        : {...previous, ...filled};
+    });
+  }, [setForm, nested, state, district]);
+};

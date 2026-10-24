@@ -29,6 +29,7 @@ import {
 } from 'lucide-react-native';
 import { useDispatch, useSelector } from 'react-redux';
 
+import { useLocation } from '../../context/LocationContext';
 import MarketHero, {
   GlassButton,
   TopInset,
@@ -132,7 +133,9 @@ export default function MarketHomeScreen({ navigation }) {
   const dispatch = useDispatch();
   const { categories } = useMarketMeta();
 
-  const user = useSelector(state => state.auth.user);
+  // "near me" uses where the phone is now, not the profile address
+  const { location: liveLocation } = useLocation();
+  const nearDistrict = liveLocation?.district || '';
   const {
     listings,
     pagination,
@@ -175,7 +178,7 @@ export default function MarketHomeScreen({ navigation }) {
       category,
       search,
       sort: sort.key,
-      district: nearMe ? user?.district : '',
+      district: nearMe ? nearDistrict : '',
       deliveryAvailable: deliveryOnly ? 'true' : '',
       isOrganic: organicOnly && kind === 'PRODUCE' ? 'true' : '',
       excludeMine: 'true',
@@ -187,7 +190,7 @@ export default function MarketHomeScreen({ navigation }) {
       search,
       sort.key,
       nearMe,
-      user?.district,
+      nearDistrict,
       deliveryOnly,
       organicOnly,
     ],
@@ -400,9 +403,9 @@ export default function MarketHomeScreen({ navigation }) {
 
         {/* FILTERS */}
         <View style={styles.filterRow}>
-          {!!user?.district && (
+          {!!nearDistrict && (
             <ToggleChip
-              label={`Near ${user.district}`}
+              label={`Near ${nearDistrict}`}
               active={nearMe}
               onPress={() => setNearMe(value => !value)}
             />
