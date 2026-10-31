@@ -23,6 +23,7 @@ import farmFieldReducer from './slices/farmFieldSlice';
 import cropReducer from './slices/cropSlice';
 import satelliteReducer from './slices/satelliteSlice';
 import weatherReducer from './slices/weatherSlice';
+import advisoryReducer from './slices/advisorySlice';
 
 // Marketplace
 import marketReducer from './slices/marketSlice';
@@ -46,6 +47,7 @@ const store = configureStore({
       satellite: satelliteReducer,
           weather: weatherReducer,
               crop: cropReducer,
+    advisory: advisoryReducer,
 
     mandi: mandiReducer,
 

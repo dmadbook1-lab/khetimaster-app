@@ -46,6 +46,28 @@ const API_ENDPOINTS = {
   FARM_FIELD_DELETE: fieldId =>
     `/api/field/${fieldId}`,
 
+  /*
+  |--------------------------------------------------------------------------
+  | SMART FARM ADVISORY
+  |--------------------------------------------------------------------------
+  */
+
+  // Latest advisory (starts generation when missing / stale)
+  ADVISORY_BY_FIELD: fieldId =>
+    `/api/advisory/${fieldId}`,
+
+  // Force a fresh advisory
+  ADVISORY_GENERATE: fieldId =>
+    `/api/advisory/${fieldId}/generate`,
+
+  // Live soil moisture / temperature + 7-day forecast
+  ADVISORY_CONDITIONS: fieldId =>
+    `/api/advisory/${fieldId}/conditions`,
+
+  // Farmer progress on an activity
+  ADVISORY_ACTIVITY_PROGRESS: (advisoryId, activityType) =>
+    `/api/advisory/activity/${advisoryId}/${activityType}`,
+
 
 
 

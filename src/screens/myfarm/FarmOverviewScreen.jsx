@@ -27,7 +27,7 @@ import {
 
 import FarmWeatherCard from '../../components/myfarms/FarmWeatherCard';
 
-import CropHealthCard from '../../components/myfarms/CropHealthCard';
+import FarmAdvisorySection from '../../components/advisory/FarmAdvisorySection';
 
 import FarmOverviewHeader from '../../components/myfarms/FarmOverviewHeader';
 
@@ -49,11 +49,6 @@ import {
   setSelectedSatellite,
   setSelectedSatelliteDate,
 } from '../../redux/slices/satelliteSlice';
-
-import {
-  fetchCropHealth,
-  clearCropHealth,
-} from '../../redux/slices/cropSlice';
 
 import {farmToGeoJSON} from '../../utils/cropMonitoringGeometry';
 
@@ -277,16 +272,17 @@ export default function FarmOverviewScreen({
     state => state.satellite,
   );
 
-  const {
-    cropHealth,
-    loading: cropHealthLoading,
-    error: cropHealthError,
-  } = useSelector(
-    state => state.crop,
-  );
-
   const [legendOpen, setLegendOpen] =
     useState(true);
+
+  // Paused while a finger is on the map so pinch / pan reach it.
+  const [scrollEnabled, setScrollEnabled] =
+    useState(true);
+
+  const handleMapInteraction =
+    useCallback(active => {
+      setScrollEnabled(!active);
+    }, []);
 
   const fallbackAttemptedRef =
     useRef(new Set());
@@ -418,8 +414,6 @@ export default function FarmOverviewScreen({
   useEffect(() => {
     dispatch(resetState());
 
-    dispatch(clearCropHealth());
-
     fallbackAttemptedRef.current.clear();
   }, [
     dispatch,
@@ -530,36 +524,6 @@ export default function FarmOverviewScreen({
     selectedIndex,
     selectedSatellite,
     dispatch,
-  ]);
-
-  /* ============================================================
-     FETCH CROP HEALTH
-  ============================================================ */
-
-  useEffect(() => {
-    if (
-      !geometry ||
-      !selectedDate ||
-      !farm?.sowingDate
-    ) {
-      return;
-    }
-
-    dispatch(
-      fetchCropHealth({
-        geometry,
-        date: selectedDate,
-        sowingDate:
-          farm.sowingDate,
-        provider: 'both',
-        satellite: 's2',
-      }),
-    );
-  }, [
-    dispatch,
-    geometry,
-    selectedDate,
-    farm?.sowingDate,
   ]);
 
   /* ============================================================
@@ -727,6 +691,7 @@ export default function FarmOverviewScreen({
 />
 
       <ScrollView
+        scrollEnabled={scrollEnabled}
         showsVerticalScrollIndicator={
           false
         }
@@ -746,16 +711,6 @@ export default function FarmOverviewScreen({
             selectedSatellite
           }
            cropImage={farm?.cropImage}
-        />
-
-        {/* ======================================================
-            CROP HEALTH — FIRST
-        ====================================================== */}
-
-        <CropHealthCard
-          healthData={cropHealth}
-          loading={cropHealthLoading}
-          error={cropHealthError}
         />
 
         {/* ======================================================
@@ -949,6 +904,9 @@ export default function FarmOverviewScreen({
             selectedIndex={
               selectedIndex
             }
+            onInteractionChange={
+              handleMapInteraction
+            }
           />
 
           <View
@@ -991,6 +949,13 @@ export default function FarmOverviewScreen({
                 Satellite layer
               </Text>
             </View>
+
+            <Text
+              style={
+                styles.mapFooterHint
+              }>
+              Pinch to zoom
+            </Text>
           </View>
         </View>
 
@@ -1142,6 +1107,13 @@ export default function FarmOverviewScreen({
             and provider availability.
           </Text>
         </View>
+
+        {/* ======================================================
+            SMART ADVISORY — crop health, NPK, soil, today's
+            tasks, growth journey
+        ====================================================== */}
+
+        <FarmAdvisorySection farm={farm} />
       </ScrollView>
     </SafeAreaView>
   );
@@ -1198,6 +1170,11 @@ const styles = StyleSheet.create({
     overflow: 'hidden',
     borderWidth: 1,
     borderColor: '#E7ECE9',
+    shadowColor: '#0D3B1E',
+    shadowOpacity: 0.08,
+    shadowRadius: 14,
+    shadowOffset: {width: 0, height: 6},
+    elevation: 3,
   },
 
   mapHeader: {
@@ -1283,6 +1260,13 @@ const styles = StyleSheet.create({
     color: MUTED,
     fontSize: 9,
     fontWeight: '600',
+  },
+
+  mapFooterHint: {
+    marginLeft: 'auto',
+    color: GREEN,
+    fontSize: 9,
+    fontWeight: '800',
   },
 
   errorCard: {

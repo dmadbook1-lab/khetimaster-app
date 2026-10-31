@@ -1,21 +1,22 @@
 import React, {
+  useCallback,
+  useEffect,
   useMemo,
   useRef,
+  useState,
 } from 'react';
 
 import {
-  ActivityIndicator,
   StyleSheet,
-  Text,
   View,
   Dimensions,
 } from 'react-native';
 
 import {WebView} from 'react-native-webview';
 
-const {height} = Dimensions.get('window');
+import SatelliteScanLoader from './SatelliteScanLoader';
 
-const GREEN = '#16883E';
+const {height} = Dimensions.get('window');
 
 const DEFAULT_CLOUD_THRESHOLD = 60;
 
@@ -27,8 +28,12 @@ export default function SatelliteMap({
   selectedSatellite,
   cloudCover,
   selectedIndex,
+  onInteractionChange,
 }) {
   const webViewRef = useRef(null);
+
+  const [mapReady, setMapReady] =
+    useState(false);
 
   const html = useMemo(() => {
     const safeCoordinates =
@@ -61,6 +66,13 @@ export default function SatelliteMap({
             ">
               Farm boundary unavailable
             </div>
+
+            <script>
+              window.ReactNativeWebView &&
+                window.ReactNativeWebView.postMessage(
+                  JSON.stringify({type: 'MAP_READY'})
+                );
+            </script>
           </body>
         </html>
       `;
@@ -157,8 +169,9 @@ export default function SatelliteMap({
     const satelliteJSON =
       JSON.stringify(selectedSatellite);
 
-    const indexJSON =
-      JSON.stringify(selectedIndex);
+    const indexLabel = String(
+      selectedIndex || 'Satellite',
+    ).replace(/[^A-Za-z0-9 ]/g, ' ');
 
     return `
       <!DOCTYPE html>
@@ -168,7 +181,7 @@ export default function SatelliteMap({
 
           <meta
             name="viewport"
-            content="width=device-width, initial-scale=1.0, maximum-scale=1.0"
+            content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
           />
 
           <link
@@ -191,6 +204,8 @@ export default function SatelliteMap({
               height: 100%;
               overflow: hidden;
               background: #F8FAFC;
+              touch-action: none;
+              -webkit-tap-highlight-color: transparent;
             }
 
             .leaflet-control-attribution {
@@ -220,6 +235,88 @@ export default function SatelliteMap({
               font-weight: 700;
 
               color: #172019;
+            }
+
+            .map-tools {
+              position: absolute;
+              right: 12px;
+              bottom: 14px;
+              z-index: 9999;
+
+              display: flex;
+              flex-direction: column;
+
+              background: rgba(255,255,255,0.97);
+
+              border-radius: 12px;
+
+              overflow: hidden;
+
+              box-shadow:
+                0 4px 15px rgba(0,0,0,0.16);
+            }
+
+            .map-tools button {
+              width: 38px;
+              height: 38px;
+
+              border: 0;
+              background: transparent;
+
+              display: flex;
+              align-items: center;
+              justify-content: center;
+
+              color: #0D6B30;
+
+              font-family: Arial, sans-serif;
+              font-size: 20px;
+              font-weight: 700;
+
+              padding: 0;
+            }
+
+            .map-tools button:active {
+              background: #EAF7EF;
+            }
+
+            .map-tools .divider {
+              height: 1px;
+              margin: 0 7px;
+              background: #E7ECE9;
+            }
+
+            .pinch-hint {
+              position: absolute;
+              left: 50%;
+              top: 50%;
+              z-index: 9999;
+
+              transform: translate(-50%, -50%);
+
+              background: rgba(7,67,30,0.82);
+
+              color: #FFFFFF;
+
+              border-radius: 20px;
+
+              padding: 8px 14px;
+
+              font-family: Arial, sans-serif;
+              font-size: 11px;
+              font-weight: 700;
+
+              white-space: nowrap;
+
+              pointer-events: none;
+
+              opacity: 0;
+
+              transition: opacity 0.5s ease;
+            }
+
+            .pinch-hint.show {
+              opacity: 1;
             }
 
             .cloud-warning {
@@ -284,7 +381,25 @@ export default function SatelliteMap({
           <div
             id="mapPill"
             class="map-pill">
-            ${indexJSON}
+            ${indexLabel}
+          </div>
+
+          <div class="map-tools">
+            <button id="zoomIn" aria-label="Zoom in">+</button>
+            <div class="divider"></div>
+            <button id="zoomOut" aria-label="Zoom out">&minus;</button>
+            <div class="divider"></div>
+            <button id="recenter" aria-label="Fit farm">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0D6B30" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
+                <circle cx="12" cy="12" r="7"/>
+              </svg>
+            </button>
+          </div>
+
+          <div id="pinchHint" class="pinch-hint">
+            Pinch to zoom &middot; drag to move
           </div>
 
           <div
@@ -322,16 +437,50 @@ export default function SatelliteMap({
               L.map('map', {
                 zoomControl: false,
                 attributionControl: true,
+                dragging: true,
+                touchZoom: true,
+                doubleClickZoom: true,
+                scrollWheelZoom: false,
+                boxZoom: false,
+                tap: false,
+                zoomSnap: 0.25,
+                bounceAtZoomLimits: false,
+                minZoom: 4,
+                maxZoom: 20,
               });
 
-            L.tileLayer(
+            let readySent = false;
+
+            const sendReady = () => {
+              if (readySent) {
+                return;
+              }
+
+              readySent = true;
+
+              window.ReactNativeWebView &&
+                window.ReactNativeWebView.postMessage(
+                  JSON.stringify({
+                    type: 'MAP_READY',
+                  })
+                );
+            };
+
+            const tiles = L.tileLayer(
               'https://mt1.google.com/vt/lyrs=y&x={x}&y={y}&z={z}',
               {
                 maxZoom: 20,
                 attribution:
                   '&copy; Google',
               }
-            ).addTo(map);
+            );
+
+            tiles.once('load', sendReady);
+
+            tiles.addTo(map);
+
+            // Never leave the loader up if tiles stall.
+            setTimeout(sendReady, 6000);
 
             const polygon =
               L.polygon(
@@ -344,13 +493,33 @@ export default function SatelliteMap({
                 }
               ).addTo(map);
 
-            map.fitBounds(
-              polygon.getBounds(),
-              {
-                padding: [30, 30],
-                maxZoom: 17,
-              }
-            );
+            const fitFarm = animate => {
+              map.fitBounds(
+                polygon.getBounds(),
+                {
+                  padding: [30, 30],
+                  maxZoom: 17,
+                  animate,
+                }
+              );
+            };
+
+            fitFarm(false);
+
+            const tap = (id, handler) => {
+              const el = document.getElementById(id);
+
+              L.DomEvent.disableClickPropagation(el);
+
+              el.addEventListener('click', e => {
+                e.preventDefault();
+                handler();
+              });
+            };
+
+            tap('zoomIn', () => map.zoomIn(1));
+            tap('zoomOut', () => map.zoomOut(1));
+            tap('recenter', () => fitFarm(true));
 
             if (imageData) {
               L.imageOverlay(
@@ -379,12 +548,17 @@ export default function SatelliteMap({
               ).style.display = 'flex';
             }
 
-            window.ReactNativeWebView &&
-              window.ReactNativeWebView.postMessage(
-                JSON.stringify({
-                  type: 'MAP_READY',
-                })
-              );
+            const hint =
+              document.getElementById('pinchHint');
+
+            setTimeout(() => hint.classList.add('show'), 700);
+
+            const hideHint = () =>
+              hint.classList.remove('show');
+
+            setTimeout(hideHint, 3200);
+
+            map.on('zoomstart movestart', hideHint);
 
           </script>
 
@@ -399,8 +573,46 @@ export default function SatelliteMap({
     selectedIndex,
   ]);
 
+  useEffect(() => {
+    setMapReady(false);
+  }, [html]);
+
+  const handleMessage = useCallback(
+    event => {
+      try {
+        const message = JSON.parse(
+          event.nativeEvent.data,
+        );
+
+        if (message?.type === 'MAP_READY') {
+          setMapReady(true);
+        }
+      } catch {
+        // Ignore non-JSON messages.
+      }
+    },
+    [],
+  );
+
+  // Hand gestures to the map while a finger is on it so the parent
+  // ScrollView does not steal pinch / pan.
+  const setInteracting = active => {
+    onInteractionChange &&
+      onInteractionChange(active);
+  };
+
   return (
-    <View style={styles.container}>
+    <View
+      style={styles.container}
+      onTouchStart={() =>
+        setInteracting(true)
+      }
+      onTouchEnd={() =>
+        setInteracting(false)
+      }
+      onTouchCancel={() =>
+        setInteracting(false)
+      }>
       <WebView
         ref={webViewRef}
         source={{html}}
@@ -409,27 +621,22 @@ export default function SatelliteMap({
         domStorageEnabled
         scrollEnabled={false}
         bounces={false}
+        nestedScrollEnabled
+        setBuiltInZoomControls={false}
         automaticallyAdjustContentInsets={false}
+        onMessage={handleMessage}
         style={styles.webView}
       />
 
-      {indexLoading && (
-        <View style={styles.loader}>
-          <View style={styles.loaderCircle}>
-            <ActivityIndicator
-              size="small"
-              color={GREEN}
-            />
-          </View>
-
-          <Text style={styles.loaderText}>
-            Processing satellite imagery
-          </Text>
-
-          <Text style={styles.loaderSubtext}>
-            This may take a few seconds
-          </Text>
-        </View>
+      {(indexLoading || !mapReady) && (
+        <SatelliteScanLoader
+          title={
+            indexLoading
+              ? 'Scanning your field'
+              : 'Loading map'
+          }
+          mapOnly={!indexLoading}
+        />
       )}
     </View>
   );
@@ -445,41 +652,5 @@ const styles = StyleSheet.create({
   webView: {
     flex: 1,
     backgroundColor: 'transparent',
-  },
-
-  loader: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    top: 0,
-    bottom: 0,
-    backgroundColor:
-      'rgba(255,255,255,0.76)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-
-  loaderCircle: {
-    width: 48,
-    height: 48,
-    borderRadius: 15,
-    backgroundColor: '#FFFFFF',
-    alignItems: 'center',
-    justifyContent: 'center',
-    elevation: 4,
-  },
-
-  loaderText: {
-    marginTop: 10,
-    color: '#142018',
-    fontSize: 12,
-    fontWeight: '800',
-  },
-
-  loaderSubtext: {
-    marginTop: 3,
-    color: '#728078',
-    fontSize: 9,
-    fontWeight: '500',
   },
 });
