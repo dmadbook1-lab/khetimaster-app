@@ -1,81 +1,149 @@
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
+import { Animated, View, Text, StyleSheet, Pressable } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+import { Menu, History, Sparkles } from 'lucide-react-native';
 import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Dimensions,
-} from 'react-native';
-import { Menu, Bot, ChevronDown, Trash2 } from 'lucide-react-native';
-const { width } = Dimensions.get('window');
-const GREEN = '#16883E';
-const DARK = '#151D2D';
-const MUTED = '#7F8A9D';
-const BORDER = '#E8EDF1';
-const rf = size => {
-  const scale = width / 390;
-  return Math.max(size - 2, Math.min(size * scale, size + 2));
-};
-const LANGUAGES = [
-  {
-    id: 'en',
-    short: 'EN',
-    label: 'English',
-  },
-  {
-    id: 'hi',
-    short: 'हि',
-    label: 'Hindi',
-  },
-  {
-    id: 'mr',
-    short: 'म',
-    label: 'Marathi',
-  },
+  COLORS,
+  GRADIENT,
+  GUTTER,
+  Glass,
+  PressableScale,
+  rf,
+  useLoop,
+} from './theme';
+import useAppLanguage from '../../translation/useAppLanguage';
+import { getLanguageLabel } from '../../utils/languageUtils';
+
+const BASE_LANGUAGES = [
+  { id: 'en', short: 'EN', label: 'English' },
+  { id: 'hi', short: 'हि', label: 'Hindi' },
+  { id: 'mr', short: 'म', label: 'Marathi' },
 ];
-export default function AIGuruHeader({ navigation, onClearChat }) {
-  const [activeLanguage, setActiveLanguage] = useState('en');
-  const handleMenuPress = () => {
-    navigation.navigate('Sidebar');
-  };
-  const handleLanguagePress = languageId => {
-    setActiveLanguage(languageId);
-  };
+const LANG_ITEM = 30;
+
+// Space the floating header takes; the chat scrolls underneath it
+export const HEADER_HEIGHT = 74;
+
+/*
+ * language / onLanguageChange: the language AI Guru replies in.
+ */
+export default function AIGuruHeader({
+  navigation,
+  language: activeLanguage = 'en',
+  onLanguageChange,
+  onHistoryPress,
+}) {
+  const appLanguage = useAppLanguage();
+  // the app language is always offered, even when it isn't one of the base three
+  const LANGUAGES = useMemo(() => {
+    if (BASE_LANGUAGES.some(language => language.id === appLanguage)) {
+      return BASE_LANGUAGES;
+    }
+    const { label, native } = getLanguageLabel(appLanguage);
+    return [
+      ...BASE_LANGUAGES,
+      { id: appLanguage, short: Array.from(native)[0], label },
+    ];
+  }, [appLanguage]);
+  const activeIndex = Math.max(
+    0,
+    LANGUAGES.findIndex(language => language.id === activeLanguage),
+  );
+  const pill = useRef(new Animated.Value(activeIndex)).current;
+  const pulse = useLoop(1600, { yoyo: false });
+
+  useEffect(() => {
+    Animated.spring(pill, {
+      toValue: activeIndex,
+      useNativeDriver: true,
+      speed: 20,
+      bounciness: 7,
+    }).start();
+  }, [pill, activeIndex]);
+
   return (
-    <View style={styles.header}>
-      <TouchableOpacity
-        activeOpacity={0.8}
-        onPress={handleMenuPress}
-        style={styles.menuButton}
-      >
-        <Menu size={rf(24)} color={DARK} strokeWidth={2.3} />
-      </TouchableOpacity>
+    <View style={styles.wrap}>
+      <Glass style={styles.header}>
+        <PressableScale
+          accessibilityLabel="Open menu"
+          onPress={() => navigation.navigate('Sidebar')}
+          style={styles.iconButton}
+        >
+          <Menu size={rf(20)} color={COLORS.text} strokeWidth={2.2} />
+        </PressableScale>
 
-      <View style={styles.titleArea}>
-        <View style={styles.titleRow}>
-          <View style={styles.aiIconBox}>
-            <Bot size={rf(15)} color="#FFFFFF" strokeWidth={2.4} />
+        <LinearGradient
+          colors={GRADIENT}
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={styles.logo}
+        >
+          <Sparkles size={rf(16)} color="#FFFFFF" strokeWidth={2.4} />
+        </LinearGradient>
+
+        <View style={styles.titleArea}>
+          <Text numberOfLines={1} style={styles.title}>
+            AI Guru
+          </Text>
+          <View style={styles.statusRow}>
+            <View style={styles.statusDotWrap}>
+              <Animated.View
+                style={[
+                  styles.statusPulse,
+                  {
+                    opacity: pulse.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [0.6, 0],
+                    }),
+                    transform: [
+                      {
+                        scale: pulse.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [1, 2.6],
+                        }),
+                      },
+                    ],
+                  },
+                ]}
+              />
+              <View style={styles.statusDot} />
+            </View>
+            <Text style={styles.statusText}>Online</Text>
           </View>
-
-          <Text style={styles.title}>AI Guru</Text>
         </View>
 
-        <Text style={styles.subtitle}>YOUR SMART FARMING ASSISTANT</Text>
-      </View>
-
-      <View style={styles.rightActions}>
         <View style={styles.languageSelector}>
+          <Animated.View
+            style={[
+              styles.languagePill,
+              {
+                transform: [
+                  {
+                    translateX: pill.interpolate({
+                      inputRange: [0, LANGUAGES.length - 1],
+                      outputRange: [0, LANG_ITEM * (LANGUAGES.length - 1)],
+                    }),
+                  },
+                ],
+              },
+            ]}
+          >
+            <LinearGradient
+              colors={GRADIENT}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 1 }}
+              style={StyleSheet.absoluteFill}
+            />
+          </Animated.View>
+
           {LANGUAGES.map(language => {
             const selected = activeLanguage === language.id;
             return (
-              <TouchableOpacity
+              <Pressable
                 key={language.id}
-                activeOpacity={0.8}
-                onPress={() => handleLanguagePress(language.id)}
-                style={[
-                  styles.languageItem,
-                  selected && styles.selectedLanguageItem,
-                ]}
+                accessibilityLabel={language.label}
+                onPress={() => onLanguageChange?.(language.id)}
+                style={styles.languageItem}
               >
                 <Text
                   style={[
@@ -85,119 +153,126 @@ export default function AIGuruHeader({ navigation, onClearChat }) {
                 >
                   {language.short}
                 </Text>
-              </TouchableOpacity>
+              </Pressable>
             );
           })}
         </View>
 
-        <TouchableOpacity
-          activeOpacity={0.8}
-          onPress={onClearChat}
-          style={styles.clearButton}
+        <PressableScale
+          accessibilityLabel="Chat history"
+          onPress={onHistoryPress}
+          style={styles.iconButton}
         >
-          <Trash2 size={rf(17)} color="#EF4444" strokeWidth={2.2} />
-        </TouchableOpacity>
-      </View>
+          <History size={rf(19)} color={COLORS.text} strokeWidth={2.2} />
+        </PressableScale>
+      </Glass>
     </View>
   );
 }
+
 const styles = StyleSheet.create({
+  wrap: {
+    height: HEADER_HEIGHT,
+    paddingHorizontal: GUTTER,
+    paddingTop: 6,
+    paddingBottom: 8,
+    zIndex: 10,
+  },
   header: {
-    minHeight: 65,
-    paddingHorizontal: width * 0.037,
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-  },
-  menuButton: {
-    width: 42,
-    height: 42,
-    borderRadius: 21,
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: BORDER,
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#0F172A',
-    shadowOpacity: 0.05,
-    shadowRadius: 8,
-    shadowOffset: {
-      width: 0,
-      height: 4,
-    },
-    elevation: 2,
-  },
-  titleArea: {
     flex: 1,
-    marginLeft: 13,
-  },
-  titleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  aiIconBox: {
-    width: 23,
-    height: 23,
-    borderRadius: 6,
-    backgroundColor: GREEN,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  title: {
-    marginLeft: 7,
-    fontSize: rf(18),
-    lineHeight: rf(22),
-    fontWeight: '900',
-    color: DARK,
-    letterSpacing: -0.3,
-  },
-  subtitle: {
-    marginTop: 3,
-    fontSize: rf(8),
-    lineHeight: rf(11),
-    fontWeight: '800',
-    color: MUTED,
-    letterSpacing: 1.25,
-  },
-  rightActions: {
+    borderRadius: 30,
+    paddingHorizontal: 8,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 7,
+    shadowColor: '#0F3D22',
+    shadowOpacity: 0.08,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: 6 },
   },
-  languageSelector: {
+  iconButton: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255,255,255,0.7)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  logo: {
+    width: 36,
     height: 36,
     borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  titleArea: {
+    flex: 1,
+  },
+  title: {
+    fontSize: rf(17),
+    lineHeight: rf(21),
+    fontWeight: '800',
+    color: COLORS.text,
+    letterSpacing: -0.3,
+  },
+  statusRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+  },
+  statusDotWrap: {
+    width: 8,
+    height: 8,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  statusPulse: {
+    position: 'absolute',
+    width: 7,
+    height: 7,
+    borderRadius: 4,
+    backgroundColor: '#22C55E',
+  },
+  statusDot: {
+    width: 7,
+    height: 7,
+    borderRadius: 4,
+    backgroundColor: '#22C55E',
+  },
+  statusText: {
+    fontSize: rf(11),
+    fontWeight: '600',
+    color: COLORS.green,
+  },
+  languageSelector: {
+    height: 38,
     padding: 3,
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: BORDER,
+    borderRadius: 19,
+    backgroundColor: 'rgba(255,255,255,0.7)',
     flexDirection: 'row',
     alignItems: 'center',
   },
+  languagePill: {
+    position: 'absolute',
+    left: 3,
+    top: 3,
+    width: LANG_ITEM,
+    height: 32,
+    borderRadius: 16,
+    overflow: 'hidden',
+  },
   languageItem: {
-    minWidth: 27,
-    height: 28,
-    borderRadius: 14,
+    width: LANG_ITEM,
+    height: 32,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  selectedLanguageItem: {
-    backgroundColor: GREEN,
-  },
   languageText: {
-    fontSize: rf(9),
-    fontWeight: '800',
-    color: '#9AA4B2',
+    fontSize: rf(12),
+    fontWeight: '700',
+    color: COLORS.muted,
   },
   selectedLanguageText: {
     color: '#FFFFFF',
-  },
-  clearButton: {
-    width: 35,
-    height: 35,
-    borderRadius: 18,
-    backgroundColor: '#FFF4F4',
-    alignItems: 'center',
-    justifyContent: 'center',
   },
 });

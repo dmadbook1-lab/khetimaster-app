@@ -12,7 +12,9 @@ import {
   useNavigation,
   useRoute,
 } from '@react-navigation/native';
-import { Home, Sprout, Bot, ShoppingCart, User } from 'lucide-react-native';
+import { Home, Sprout, Bot, Clapperboard, User } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
+import { COMMUNITY_ROUTES } from '../constants/communityRoutes';
 const { width } = Dimensions.get('window');
 const GREEN = '#16883E';
 const MUTED = '#94A3B8';
@@ -26,47 +28,52 @@ const tabs = [
   {
     key: 'home',
     route: 'Home',
-    label: 'Home',
+    labelKey: 'tabs.home',
     Icon: Home,
   },
   {
     key: 'farms',
     route: 'MyFarms',
-    label: 'My Farms',
+    labelKey: 'tabs.my_farms',
     Icon: Sprout,
   },
   {
     key: 'ai',
     route: 'AIGuru',
-    label: 'AI Guru',
+    labelKey: 'tabs.ai_guru',
     Icon: Bot,
     center: true,
   },
   {
-    key: 'bazaar',
-    route: 'Bazaar',
-    label: 'Bazaar',
-    Icon: ShoppingCart,
+    // opens straight into the full-screen reels feed
+    key: 'reels',
+    route: COMMUNITY_ROUTES.REELS,
+    labelKey: 'tabs.reels',
+    Icon: Clapperboard,
+    // no ids / startId, so it always plays the main feed
+    params: { ids: undefined, startId: undefined, title: undefined },
   },
   {
     key: 'profile',
     route: 'Profile',
-    label: 'Profile',
+    labelKey: 'tabs.profile',
     Icon: User,
   },
 ];
 export default function BottomTabBar({ navigation: navigationProp, active }) {
+  const { t } = useTranslation();
   const hookNavigation = useNavigation();
   const currentRoute = useRoute();
   const navigation = navigationProp || hookNavigation;
   const activeRoute = active || currentRoute?.name || 'Home';
-  const handleNavigate = routeName => {
+  const handleNavigate = (routeName, params) => {
     if (!navigation || routeName === activeRoute) {
       return;
     }
     navigation.dispatch(
       CommonActions.navigate({
         name: routeName,
+        params,
       }),
     );
   };
@@ -75,14 +82,13 @@ export default function BottomTabBar({ navigation: navigationProp, active }) {
       <View style={styles.bar}>
         {tabs.map(tab => {
           const Icon = tab.Icon;
-          const activeTab =
-            activeRoute === tab.route || activeRoute === tab.label;
+          const activeTab = activeRoute === tab.route;
           if (tab.center) {
             return (
               <TouchableOpacity
                 key={tab.key}
                 activeOpacity={0.86}
-                onPress={() => handleNavigate(tab.route)}
+                onPress={() => handleNavigate(tab.route, tab.params)}
                 style={styles.centerItem}
               >
                 <View
@@ -100,7 +106,7 @@ export default function BottomTabBar({ navigation: navigationProp, active }) {
                     activeTab && styles.activeCenterLabel,
                   ]}
                 >
-                  {tab.label}
+                  {t(tab.labelKey)}
                 </Text>
               </TouchableOpacity>
             );
@@ -109,7 +115,7 @@ export default function BottomTabBar({ navigation: navigationProp, active }) {
             <TouchableOpacity
               key={tab.key}
               activeOpacity={0.84}
-              onPress={() => handleNavigate(tab.route)}
+              onPress={() => handleNavigate(tab.route, tab.params)}
               style={styles.item}
             >
               <View
@@ -129,7 +135,7 @@ export default function BottomTabBar({ navigation: navigationProp, active }) {
                 numberOfLines={1}
                 style={[styles.label, activeTab && styles.activeLabel]}
               >
-                {tab.label}
+                {t(tab.labelKey)}
               </Text>
 
               {activeTab && <View style={styles.activeDot} />}

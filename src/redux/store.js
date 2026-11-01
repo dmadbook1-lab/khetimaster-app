@@ -29,6 +29,12 @@ import advisoryReducer from './slices/advisorySlice';
 import marketReducer from './slices/marketSlice';
 import marketDealReducer from './slices/marketDealSlice';
 
+// AI Guru assistant
+import aiGuruReducer from './slices/aiGuruSlice';
+
+// Community (posts, reels, follows)
+import communityReducer from './slices/communitySlice';
+
 const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -65,6 +71,18 @@ const store = configureStore({
 
     market: marketReducer,
     marketDeal: marketDealReducer,
+
+    // =========================================
+    // AI GURU
+    // =========================================
+
+    aiGuru: aiGuruReducer,
+
+    // =========================================
+    // COMMUNITY
+    // =========================================
+
+    community: communityReducer,
   },
 
   middleware: getDefaultMiddleware =>

@@ -11,6 +11,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Navigation } from 'lucide-react-native';
 import { useDispatch } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { refreshAccessToken, getMe } from '../../redux/slices/authSlice';
 import { getRefreshToken } from '../../utils/tokenStorage';
 const { width, height } = Dimensions.get('window');
@@ -27,6 +28,7 @@ const responsiveFont = size => {
 };
 export default function SplashScreen({ navigation }) {
   const dispatch = useDispatch();
+  const { t } = useTranslation();
   const fade = useRef(new Animated.Value(0)).current;
   const slide = useRef(new Animated.Value(24)).current;
   const progress = useRef(new Animated.Value(0)).current;
@@ -262,7 +264,7 @@ export default function SplashScreen({ navigation }) {
           {}
 
           <Text style={styles.tagline} numberOfLines={1} adjustsFontSizeToFit>
-            Smart Farming Partner
+            {t('splash.tagline')}
           </Text>
 
           {}
@@ -272,7 +274,7 @@ export default function SplashScreen({ navigation }) {
             numberOfLines={1}
             adjustsFontSizeToFit
           >
-            AI POWERED SMART AGRICULTURE
+            {t('splash.powered')}
           </Text>
 
           {}

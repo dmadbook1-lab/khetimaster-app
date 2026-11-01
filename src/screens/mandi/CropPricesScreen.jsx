@@ -13,6 +13,7 @@ import {
   useSafeAreaInsets,
 } from 'react-native-safe-area-context';
 import {
+  Bot,
   CalendarDays,
   ChartColumn,
   GitCompareArrows,
@@ -403,6 +404,24 @@ export default function CropPricesScreen({ navigation, route }) {
               </Text>
             </Section>
 
+            {/* AI GURU */}
+            <TouchableOpacity
+              activeOpacity={0.88}
+              style={styles.aiGuru}
+              onPress={() =>
+                navigation.navigate('AIGuru', {
+                  question: `Should I sell my ${name} now or wait? Where can I get the best price near ${placeName}?`,
+                  source: 'mandi',
+                  newChat: true,
+                })
+              }
+            >
+              <Bot size={18} color={C.white} />
+              <Text style={styles.aiGuruText}>
+                Ask AI Guru: sell now or wait?
+              </Text>
+            </TouchableOpacity>
+
             {/* LIST HEADER */}
             <View style={styles.listHead}>
               <View style={styles.flex}>
@@ -650,6 +669,21 @@ const styles = StyleSheet.create({
     fontWeight: '600',
     color: '#6B4A00',
     lineHeight: 19,
+  },
+  aiGuru: {
+    marginTop: 14,
+    height: 46,
+    borderRadius: 23,
+    backgroundColor: C.green,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 8,
+  },
+  aiGuruText: {
+    fontSize: 13.5,
+    fontWeight: '900',
+    color: C.white,
   },
   weekNote: {
     fontSize: 10.5,

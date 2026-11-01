@@ -8,6 +8,7 @@ import LoginScreen from '../screens/login/LoginScreen';
 import OtpScreen from '../screens/login/OtpScreen';
 import HomeScreen from '../screens/main/HomeScreen';
 import SidebarScreen from '../screens/main/SidebarScreen';
+import ComingSoonScreen from '../screens/main/ComingSoonScreen';
 import ProfileScreen from '../screens/main/ProfileScreen';
 import BazaarScreen from '../screens/main/BazaarScreen';
 import FarmDetailsScreen from '../screens/main/FarmDetailsScreen';
@@ -46,14 +47,14 @@ import DiseaseInformationScreen from '../screens/disease-detection/DiseaseInform
 import WeatherScreen from '../screens/weather/WeatherScreen';
 import WeatherDayScreen from '../screens/weather/WeatherDayScreen';
 import CommunityScreen from '../screens/community/CommunityScreen';
-import VideosScreen from '../screens/community/VideosScreen';
-import QuestionsScreen from '../screens/community/QuestionsScreen';
-import ExpertsScreen from '../screens/community/ExpertsScreen';
-import DiseaseScreen from '../screens/community/DiseaseScreen';
-import AskWithPhotoScreen from '../screens/community/AskWithPhotoScreen';
-import AskQuestionScreen from '../screens/community/AskQuestionScreen';
-import AskByVoiceScreen from '../screens/community/AskByVoiceScreen';
-import AIAnswerScreen from '../screens/community/AIAnswerScreen';
+import ReelsScreen from '../screens/community/ReelsScreen';
+import CreatePostScreen from '../screens/community/CreatePostScreen';
+import CommunityProfileScreen from '../screens/community/CommunityProfileScreen';
+import CommunityPostsScreen from '../screens/community/CommunityPostsScreen';
+import PostViewerScreen from '../screens/community/PostViewerScreen';
+import CommunityFollowsScreen from '../screens/community/CommunityFollowsScreen';
+import CommunitySearchScreen from '../screens/community/CommunitySearchScreen';
+import { COMMUNITY_ROUTES } from '../constants/communityRoutes';
 import MandiHomeScreen from '../screens/mandi/MandiHomeScreen';
 import CropPricesScreen from '../screens/mandi/CropPricesScreen';
 import CompareCropsScreen from '../screens/mandi/CompareCropsScreen';
@@ -176,6 +177,7 @@ export default function AppNavigator() {
 
         <Stack.Screen name="Bazaar" component={BazaarScreen} />
         <Stack.Screen name="Profile" component={ProfileScreen} />
+        <Stack.Screen name="ComingSoon" component={ComingSoonScreen} />
 
         {/* Route name: Sidebar */}
         <Stack.Screen
@@ -296,43 +298,53 @@ export default function AppNavigator() {
         <Stack.Screen name="Weather" component={WeatherScreen} />
         <Stack.Screen name="WeatherDay" component={WeatherDayScreen} />
 
-        {/* Route names: Community, Videos, Questions, Experts, Disease, AskWithPhoto, AskQuestion, AskByVoice, AIAnswer */}
+        {/* Route names: Community */}
         <Stack.Screen name="Community" component={CommunityScreen} />
-        <Stack.Screen name="Videos" component={VideosScreen} />
-        <Stack.Screen name="Questions" component={QuestionsScreen} />
-        <Stack.Screen name="Experts" component={ExpertsScreen} />
-        <Stack.Screen name="Disease" component={DiseaseScreen} />
 
+        {/* Route names: Reels, CommunityCreate, CommunityProfile, CommunityPosts, CommunityPostViewer, CommunityFollows, CommunitySearch */}
         <Stack.Screen
-          name="AskWithPhoto"
-          component={AskWithPhotoScreen}
+          name={COMMUNITY_ROUTES.REELS}
+          component={ReelsScreen}
           options={{
-            headerShown: false,
+            animation: 'fade',
+            contentStyle: {
+              backgroundColor: '#000000',
+            },
           }}
         />
-
         <Stack.Screen
-          name="AskQuestion"
-          component={AskQuestionScreen}
+          name={COMMUNITY_ROUTES.CREATE}
+          component={CreatePostScreen}
           options={{
-            headerShown: false,
+            animation: 'slide_from_bottom',
+            animationDuration: 260,
           }}
         />
-
         <Stack.Screen
-          name="AskByVoice"
-          component={AskByVoiceScreen}
+          name={COMMUNITY_ROUTES.PROFILE}
+          component={CommunityProfileScreen}
+        />
+        <Stack.Screen
+          name={COMMUNITY_ROUTES.POSTS}
+          component={CommunityPostsScreen}
+        />
+        <Stack.Screen
+          name={COMMUNITY_ROUTES.VIEWER}
+          component={PostViewerScreen}
           options={{
-            headerShown: false,
+            animation: 'fade',
+            contentStyle: {
+              backgroundColor: '#000000',
+            },
           }}
         />
-
         <Stack.Screen
-          name="AIAnswer"
-          component={AIAnswerScreen}
-          options={{
-            headerShown: false,
-          }}
+          name={COMMUNITY_ROUTES.FOLLOWS}
+          component={CommunityFollowsScreen}
+        />
+        <Stack.Screen
+          name={COMMUNITY_ROUTES.SEARCH}
+          component={CommunitySearchScreen}
         />
 
         {/* Route names: MandiHome, CommodityDetail (crop prices), MandiCompare */}

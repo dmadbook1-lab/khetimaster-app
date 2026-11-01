@@ -21,6 +21,7 @@ import ActivityPlanCard from './ActivityPlanCard';
 import NutrientBalanceCard from './NutrientBalanceCard';
 import SoilPulseCard from './SoilPulseCard';
 import {COLORS} from './advisoryTheme';
+import useAppLanguage from '../../translation/useAppLanguage';
 
 const POLL_INTERVAL_MS = 6000;
 const MAX_POLLS = 30;
@@ -36,7 +37,10 @@ const MAX_POLLS = 30;
 |
 */
 
-export default function FarmAdvisorySection({farm, language = 'en'}) {
+export default function FarmAdvisorySection({farm, language: languageProp}) {
+  // advisory is generated in the app language unless a caller overrides it
+  const appLanguage = useAppLanguage();
+  const language = languageProp || appLanguage;
   const dispatch = useDispatch();
   const fieldId = farm?._id;
 

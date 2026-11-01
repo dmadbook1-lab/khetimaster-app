@@ -13,11 +13,11 @@ import {
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {useFocusEffect} from '@react-navigation/native';
 import {useDispatch, useSelector} from 'react-redux';
+import {useTranslation} from 'react-i18next';
 
 import {
   MapPin,
   CloudSun,
-  Landmark,
   Users,
 } from 'lucide-react-native';
 
@@ -32,8 +32,8 @@ import BottomTabBar from '../../common/BottomTabBar';
 import AddFarmCard from '../../components/home/AddFarmCard';
 import VoiceAssistantCard from '../../components/home/VoiceAssistantCard';
 import VoiceAssistantModal from '../../components/voice/VoiceAssistantModal';
-import MoreServicesSection from '../../components/home/MoreServicesSection';
 import {MARKET_ROUTES} from '../../constants/marketRoutes';
+import {COMMUNITY_ROUTES} from '../../constants/communityRoutes';
 
 import {selectUser} from '../../redux/slices/authSlice';
 
@@ -64,13 +64,14 @@ const rf = size => {
  */
 const greetingFor = (date = new Date()) => {
   const hour = date.getHours();
-  if (hour >= 5 && hour < 12) return 'Good Morning';
-  if (hour >= 12 && hour < 17) return 'Good Afternoon';
+  if (hour >= 5 && hour < 12) return 'home.good_morning';
+  if (hour >= 12 && hour < 17) return 'home.good_afternoon';
   // evening runs through the night until 5 AM
-  return 'Good Evening';
+  return 'home.good_evening';
 };
 
 export default function HomeScreen({navigation}) {
+  const {t} = useTranslation();
   const dispatch = useDispatch();
   const [voiceAssistantVisible, setVoiceAssistantVisible] = useState(false);
   const [greeting, setGreeting] = useState(greetingFor);
@@ -114,7 +115,7 @@ export default function HomeScreen({navigation}) {
   const userName =
     user?.fullName ||
     user?.name ||
-    'User';
+    t('common.farmer');
 
   // ==================================================
   // LIVE FARM DATA
@@ -162,7 +163,7 @@ export default function HomeScreen({navigation}) {
     ? `${currentLocation.city}, ${currentLocation.state}`
     : currentLocation?.state
     ? currentLocation.state
-    : 'Location unavailable';
+    : t('home.location_unavailable');
 
   // ==================================================
   // QUICK ACTIONS
@@ -170,64 +171,71 @@ export default function HomeScreen({navigation}) {
 
   const quickActions = [
     {
-      title: 'Hire Labour',
+      title: t('home.qa_hire_labour'),
       image: require('../../assets/homescreen/labour.png'),
       onPress: () => navigation.navigate('LabourBooking'),
     },
     {
-      title: ' Hire Tractor /\nMachinery',
+      title: t('home.qa_hire_machinery'),
       image: require('../../assets/homescreen/tractorr.png'),
       onPress: () => navigation.navigate('TractorBooking'),
     },
     {
-      title: 'Agri Products',
+      title: t('home.qa_agri_products'),
       image: require('../../assets/homescreen/Agrii.png'),
       onPress: () => navigation.navigate('AgriProducts'),
     },
     {
-      title: 'Mandi\nPrices',
+      title: t('home.qa_mandi_prices'),
       image: require('../../assets/homescreen/mand.png'),
       onPress: () => navigation.navigate('MandiHome'),
     },
     {
-      title: 'Trade /\nCommodities',
+      title: t('home.qa_trade'),
       image: require('../../assets/homescreen/traders.png'),
       onPress: () => navigation.navigate(MARKET_ROUTES.HOME),
     },
     {
-      title: 'Warehouse',
-      image: require('../../assets/homescreen/warehousee.png'),
-      onPress: () => {},
-    },
-    {
-      title: 'Nursery',
+      title: t('home.qa_nursery'),
       image: require('../../assets/homescreen/nu.png'),
       onPress: () => navigation.navigate('NurseryHome'),
     },
     {
-      title: 'Shipping /\nDelivery',
-      image: require('../../assets/homescreen/Deliveryy.png'),
-      onPress: () => {},
-    },
-    {
-      title: 'Doctor/vet',
+      title: t('home.qa_doctor'),
       image: require('../../assets/homescreen/duuu.png'),
       onPress: () => navigation.navigate('DoctorMain'),
     },
     {
-      title: 'AI Disease\nDetection',
-      image: require('../../assets/homescreen/dis.png'),
-      onPress: () => navigation.navigate('DiseaseDetection'),
+      title: t('home.qa_community'),
+      image: require('../../assets/homescreen/community.png'),
+      onPress: () => navigation.navigate(COMMUNITY_ROUTES.HOME),
     },
     {
-      title: 'Govt.\nSchemes',
-      image: require('../../assets/homescreen/govv.png'),
-      onPress: () => navigation.navigate('GovernmentSchemes'),
-    },
-    {
-      title: 'Knowledge\nCenter',
+      title: t('home.qa_knowledge'),
       image: require('../../assets/homescreen/knowledge.png'),
       onPress: () => navigation.navigate('AgricultureNews'),
+    },
+
+    // Not built yet: each opens the Coming Soon screen for that feature
+    {
+      title: t('home.qa_warehouse'),
+      image: require('../../assets/homescreen/warehousee.png'),
+      onPress: () => navigation.navigate('ComingSoon', { feature: 'warehouse' }),
+    },
+    {
+      title: t('home.qa_delivery'),
+      image: require('../../assets/homescreen/Deliveryy.png'),
+      onPress: () => navigation.navigate('ComingSoon', { feature: 'delivery' }),
+    },
+    {
+      title: t('home.qa_disease'),
+      image: require('../../assets/homescreen/dis.png'),
+      onPress: () => navigation.navigate('ComingSoon', { feature: 'disease' }),
+    },
+    {
+      title: t('home.qa_schemes'),
+      image: require('../../assets/homescreen/govv.png'),
+      onPress: () => navigation.navigate('ComingSoon', { feature: 'schemes' }),
     },
   ];
 
@@ -268,7 +276,7 @@ export default function HomeScreen({navigation}) {
         {/* GREETING */}
 
         <Text style={styles.greeting}>
-          {greeting}, {userName}
+          {t(greeting)}, {userName}
         </Text>
 
         {/* LOCATION */}
@@ -298,10 +306,14 @@ export default function HomeScreen({navigation}) {
           onPress={() => setVoiceAssistantVisible(true)}
         />
 
+        {/* AI ADVISORY */}
+
+       
+
         {/* MY FARMS */}
 
         <SectionHeader
-          title="My Farms"
+          title={t('home.my_farms')}
           onPress={() => navigation.navigate('MyFarms')}
         />
 
@@ -332,48 +344,42 @@ export default function HomeScreen({navigation}) {
 
         {displayedFarms.length === 0 && (
           <Text style={styles.noFarmsText}>
-            Your farms will appear here after you add them.
+            {t('home.no_farms')}
           </Text>
         )}
 
         {/* QUICK ACTIONS */}
 
         <Text style={styles.quickTitle}>
-          Quick Actions
+          {t('home.quick_actions')}
         </Text>
 
         <View style={styles.quickGrid}>
           {quickActions.map(item => (
             <QuickAction
-              key={item.title}
+              key={item.image}
               image={item.image}
               title={item.title}
               onPress={item.onPress}
             />
           ))}
         </View>
-
-        {/* AI ADVISORY */}
-
-        <AIAdvisoryCard />
-
-        {/* MORE SERVICES */}
-
-        <MoreServicesSection navigation={navigation} />
+         <AIAdvisoryCard />
 
         {/* TODAY'S UPDATES */}
 
-        <SectionHeader title="Today's Updates" />
+        <SectionHeader title={t('home.todays_updates')} />
 
         <UpdateCard
           Icon={CloudSun}
-          title="WEATHER ALERT"
-          text="Light to moderate rain expected tomorrow."
+          title={t('home.weather_alert')}
+          text={t('home.weather_alert_text')}
           color="#2563EB"
           bg="#EFF6FF"
           border="#BFDBFE"
         />
 
+        {/*
         <UpdateCard
           Icon={Landmark}
           title="GOVERNMENT SCHEME"
@@ -382,11 +388,12 @@ export default function HomeScreen({navigation}) {
           bg="#FFF7ED"
           border="#FED7AA"
         />
+        */}
 
         <UpdateCard
           Icon={Users}
-          title="COMMUNITY UPDATE"
-          text="Join the discussion on organic farming practices."
+          title={t('home.community_update')}
+          text={t('home.community_update_text')}
           color="#9333EA"
           bg="#FAF5FF"
           border="#E9D5FF"

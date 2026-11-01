@@ -7,6 +7,7 @@ import {
   Dimensions,
 } from 'react-native';
 import { Plus } from 'lucide-react-native';
+import { useTranslation } from 'react-i18next';
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = width * 0.3;
 const CARD_HEIGHT = 205;
@@ -16,15 +17,16 @@ const rf = size => {
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
 export default function AddFarmCard({ onPress }) {
+  const { t } = useTranslation();
   return (
     <TouchableOpacity activeOpacity={0.9} onPress={onPress} style={styles.card}>
       <View style={styles.circle}>
         <Plus size={26} color="#FFFFFF" strokeWidth={2.8} />
       </View>
 
-      <Text style={styles.title}>Add Farm</Text>
+      <Text style={styles.title}>{t('home.add_farm')}</Text>
 
-      <Text style={styles.desc}>Add a new farm{'\n'}to get started</Text>
+      <Text style={styles.desc}>{t('home.add_farm_desc')}</Text>
     </TouchableOpacity>
   );
 }

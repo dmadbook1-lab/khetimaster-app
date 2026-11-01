@@ -1,144 +1,322 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  Image,
-  TouchableOpacity,
-  Dimensions,
-} from 'react-native';
+import { Animated, View, Text, StyleSheet, Image } from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+import Svg, {
+  Circle,
+  Defs,
+  LinearGradient as SvgGradient,
+  Stop,
+} from 'react-native-svg';
 import { Mic } from 'lucide-react-native';
-const { width } = Dimensions.get('window');
-const GREEN = '#16883E';
-const DARK = '#1B1B1B';
-const MUTED = '#768195';
-const rf = size => {
-  const scale = width / 390;
-  return Math.max(size - 2, Math.min(size * scale, size + 2));
-};
-export default function AIReadySection({ onVoicePress }) {
+import {
+  COLORS,
+  GRADIENT,
+  FadeInUp,
+  Glass,
+  PressableScale,
+  rf,
+  useLoop,
+} from './theme';
+
+const ORB = 150;
+const RING = ORB + 36;
+
+function Ripple({ delay, size }) {
+  const wave = useLoop(2800, { yoyo: false, delay });
+  return (
+    <Animated.View
+      pointerEvents="none"
+      style={[
+        styles.ripple,
+        {
+          width: size,
+          height: size,
+          borderRadius: size / 2,
+          opacity: wave.interpolate({
+            inputRange: [0, 0.15, 1],
+            outputRange: [0, 0.5, 0],
+          }),
+          transform: [
+            {
+              scale: wave.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0.9, 1.6],
+              }),
+            },
+          ],
+        },
+      ]}
+    />
+  );
+}
+
+/* Empty state: floating AI orb, greeting and one big speak button. */
+export default function AIReadySection({ name, onVoicePress }) {
+  const float = useLoop(2600);
+  const spin = useLoop(10000, { yoyo: false });
+  const micPulse = useLoop(1800, { yoyo: false });
+
   return (
     <View style={styles.container}>
-      <View style={styles.aiVisualWrapper}>
-        <View style={styles.ringOuter} />
-        <View style={styles.ringMiddle} />
-        <View style={styles.ringInner} />
+      <View style={styles.visual}>
+        <Ripple delay={0} size={ORB} />
+        <Ripple delay={1400} size={ORB} />
 
-        <View style={styles.imageCircle}>
-          <Image
-            source={require('../../assets/images/ai-guru.png')}
-            style={styles.aiImage}
-            resizeMode="contain"
-          />
-        </View>
+        <Animated.View
+          pointerEvents="none"
+          style={[
+            styles.ring,
+            {
+              transform: [
+                {
+                  rotate: spin.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: ['0deg', '360deg'],
+                  }),
+                },
+              ],
+            },
+          ]}
+        >
+          <Svg width={RING} height={RING}>
+            <Defs>
+              <SvgGradient id="aiguruRing" x1="0" y1="0" x2="1" y2="1">
+                <Stop offset="0" stopColor="#22C55E" stopOpacity="1" />
+                <Stop offset="0.55" stopColor="#2DD4BF" stopOpacity="0.1" />
+                <Stop offset="1" stopColor="#22C55E" stopOpacity="0" />
+              </SvgGradient>
+            </Defs>
+            <Circle
+              cx={RING / 2}
+              cy={RING / 2}
+              r={RING / 2 - 2}
+              stroke="url(#aiguruRing)"
+              strokeWidth={3}
+              strokeLinecap="round"
+              fill="none"
+            />
+          </Svg>
+        </Animated.View>
+
+        <Animated.View
+          style={[
+            styles.orbShadow,
+            {
+              transform: [
+                {
+                  translateY: float.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [-6, 6],
+                  }),
+                },
+              ],
+            },
+          ]}
+        >
+          <LinearGradient
+            colors={['#F0FDF4', '#BBF7D0', '#4ADE80']}
+            start={{ x: 0.2, y: 0 }}
+            end={{ x: 0.8, y: 1 }}
+            style={styles.orb}
+          >
+            <Image
+              source={require('../../assets/images/ai-guru.png')}
+              style={styles.orbImage}
+              resizeMode="contain"
+            />
+            <LinearGradient
+              colors={['rgba(255,255,255,0.65)', 'rgba(255,255,255,0)']}
+              start={{ x: 0.5, y: 0 }}
+              end={{ x: 0.5, y: 1 }}
+              style={styles.orbSheen}
+              pointerEvents="none"
+            />
+          </LinearGradient>
+        </Animated.View>
       </View>
 
-      <Text style={styles.title}>AI Guru</Text>
+      <FadeInUp delay={100}>
+        <Text style={styles.greeting}>Namaste{name ? `, ${name}` : ''} 👋</Text>
+      </FadeInUp>
 
-      <Text style={styles.description}>
-        Ask me about crops, weather, diseases,{'\n'}
-        irrigation, fertilizers, mandi prices, and{'\n'}
-        government schemes.
-      </Text>
+      <FadeInUp delay={180}>
+        <Text style={styles.title}>How can I help{'\n'}you today?</Text>
+      </FadeInUp>
 
-      <TouchableOpacity
-        activeOpacity={0.86}
-        onPress={onVoicePress}
-        style={styles.micButton}
-      >
-        <Mic size={rf(28)} color="#FFFFFF" strokeWidth={2.4} />
-      </TouchableOpacity>
+      <FadeInUp delay={260}>
+        <Text style={styles.subtitle}>
+          Ask about crops, weather, diseases,{'\n'}mandi prices or anything on
+          your farm
+        </Text>
+      </FadeInUp>
 
-      <Text style={styles.voiceLabel}>Tap to Speak</Text>
+      <FadeInUp delay={380} style={styles.speakWrap}>
+        <PressableScale
+          accessibilityLabel="Tap and speak"
+          onPress={onVoicePress}
+          scaleTo={0.96}
+        >
+          <Glass tint={0.72} style={styles.speakButton}>
+            <View style={styles.micWrap}>
+              <Animated.View
+                style={[
+                  styles.micPulse,
+                  {
+                    opacity: micPulse.interpolate({
+                      inputRange: [0, 1],
+                      outputRange: [0.45, 0],
+                    }),
+                    transform: [
+                      {
+                        scale: micPulse.interpolate({
+                          inputRange: [0, 1],
+                          outputRange: [1, 1.9],
+                        }),
+                      },
+                    ],
+                  },
+                ]}
+              />
+              <LinearGradient
+                colors={GRADIENT}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.mic}
+              >
+                <Mic size={rf(20)} color="#FFFFFF" strokeWidth={2.5} />
+              </LinearGradient>
+            </View>
+            <View>
+              <Text style={styles.speakTitle}>Tap to speak</Text>
+              <Text style={styles.speakHint}>Hindi · Marathi · English</Text>
+            </View>
+          </Glass>
+        </PressableScale>
+      </FadeInUp>
     </View>
   );
 }
+
 const styles = StyleSheet.create({
   container: {
     alignItems: 'center',
-    paddingTop: 38,
-    paddingBottom: 25,
+    paddingTop: 24,
+    paddingBottom: 24,
+    paddingHorizontal: 24,
   },
-  aiVisualWrapper: {
-    width: 165,
-    height: 165,
+  visual: {
+    width: RING + 40,
+    height: RING + 40,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  ringOuter: {
+  ripple: {
     position: 'absolute',
-    width: 160,
-    height: 160,
-    borderRadius: 80,
-    borderWidth: 1,
-    borderColor: '#CDEFD8',
-  },
-  ringMiddle: {
-    position: 'absolute',
-    width: 130,
-    height: 130,
-    borderRadius: 65,
-    borderWidth: 1,
-    borderColor: '#BEE9CD',
-  },
-  ringInner: {
-    position: 'absolute',
-    width: 103,
-    height: 103,
-    borderRadius: 52,
     borderWidth: 1.5,
-    borderColor: '#80D79E',
+    borderColor: 'rgba(34,197,94,0.55)',
   },
-  imageCircle: {
-    width: 96,
-    height: 96,
-    borderRadius: 48,
-    backgroundColor: '#DDF7E6',
+  ring: {
+    position: 'absolute',
+    width: RING,
+    height: RING,
+  },
+  // Shadow kept off the orb itself: its overflow: hidden would clip it on iOS
+  orbShadow: {
+    borderRadius: ORB / 2,
+    shadowColor: '#16A34A',
+    shadowOpacity: 0.35,
+    shadowRadius: 26,
+    shadowOffset: { width: 0, height: 12 },
+  },
+  orb: {
+    width: ORB,
+    height: ORB,
+    borderRadius: ORB / 2,
+    borderWidth: 4,
+    borderColor: '#FFFFFF',
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
   },
-  aiImage: {
-    width: 94,
-    height: 94,
+  orbImage: {
+    width: ORB - 14,
+    height: ORB - 14,
+  },
+  orbSheen: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: ORB * 0.5,
+  },
+  greeting: {
+    marginTop: 10,
+    textAlign: 'center',
+    fontSize: rf(15),
+    fontWeight: '600',
+    color: COLORS.green,
   },
   title: {
-    marginTop: 18,
-    fontSize: rf(24),
-    lineHeight: rf(29),
-    fontWeight: '900',
-    color: DARK,
-    letterSpacing: -0.45,
-  },
-  description: {
-    marginTop: 9,
-    fontSize: rf(13),
-    lineHeight: rf(21),
-    fontWeight: '500',
-    color: MUTED,
+    marginTop: 6,
     textAlign: 'center',
+    fontSize: rf(30),
+    lineHeight: rf(36),
+    fontWeight: '800',
+    color: COLORS.text,
+    letterSpacing: -0.8,
   },
-  micButton: {
-    width: 65,
-    height: 65,
-    marginTop: 30,
+  subtitle: {
+    marginTop: 10,
+    textAlign: 'center',
+    fontSize: rf(14),
+    lineHeight: rf(21),
+    color: COLORS.muted,
+  },
+  speakWrap: {
+    marginTop: 26,
+  },
+  speakButton: {
+    height: 66,
+    paddingLeft: 10,
+    paddingRight: 26,
     borderRadius: 33,
-    backgroundColor: GREEN,
+    borderColor: COLORS.greenBorder,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 14,
+    shadowColor: '#16A34A',
+    shadowOpacity: 0.16,
+    shadowRadius: 18,
+    shadowOffset: { width: 0, height: 8 },
+  },
+  micWrap: {
+    width: 48,
+    height: 48,
     alignItems: 'center',
     justifyContent: 'center',
-    shadowColor: GREEN,
-    shadowOpacity: 0.28,
-    shadowRadius: 14,
-    shadowOffset: {
-      width: 0,
-      height: 7,
-    },
-    elevation: 7,
   },
-  voiceLabel: {
-    marginTop: 12,
-    fontSize: rf(12),
+  micPulse: {
+    position: 'absolute',
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    backgroundColor: '#22C55E',
+  },
+  mic: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  speakTitle: {
+    fontSize: rf(16),
     fontWeight: '800',
-    color: MUTED,
+    color: COLORS.text,
+  },
+  speakHint: {
+    marginTop: 1,
+    fontSize: rf(12),
+    color: COLORS.muted,
   },
 });

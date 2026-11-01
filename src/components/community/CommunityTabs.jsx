@@ -10,11 +10,15 @@ import { COLORS, rf, PAGE_PADDING } from './theme';
 const TABS = [
   {
     id: 'Community',
-    label: 'All',
+    label: 'For You',
   },
   {
-    id: 'Videos',
-    label: 'Videos',
+    id: 'Following',
+    label: 'Following',
+  },
+  {
+    id: 'Reels',
+    label: 'Reels',
   },
   {
     id: 'Questions',
@@ -38,6 +42,13 @@ export default function CommunityTabs({
     if (routeName === activeRoute) return;
     if (onTabChange) {
       onTabChange(routeName);
+      return;
+    }
+    // feed tabs live inside the Community screen, not as routes
+    if (['Community', 'Following', 'Reels'].includes(routeName)) {
+      navigation?.navigate('Community', {
+        tab: routeName,
+      });
       return;
     }
     if (navigation?.push) {

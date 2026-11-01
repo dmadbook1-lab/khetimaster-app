@@ -8,12 +8,27 @@ import {
   Dimensions,
   StatusBar,
   Image,
-  Alert,
   Platform,
+  RefreshControl,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useSelector } from 'react-redux';
-import { selectUser } from '../../redux/slices/authSlice';
+import { useTranslation } from 'react-i18next';
+import { selectProfileCompleted } from '../../redux/slices/authSlice';
+import useAccountSummary from '../../common/useAccountSummary';
+import { getLanguageLabel } from '../../utils/languageUtils';
+import { COMMUNITY_ROUTES } from '../../constants/communityRoutes';
+import { DOCTOR_ROUTES } from '../../constants/doctorRoutes';
+import { MARKET_ROUTES } from '../../constants/marketRoutes';
+import {
+  APP_VERSION,
+  SUPPORT_EMAIL,
+  SUPPORT_PHONE,
+  callSupport,
+  canRateApp,
+  emailSupport,
+  openStoreListing,
+} from '../../constants/appInfo';
 import {
   ArrowLeft,
   UserRound,
@@ -22,7 +37,7 @@ import {
   Zap,
   SlidersHorizontal,
   ChartNoAxesColumnIncreasing,
-  Cpu,
+  Bot,
   Package,
   Settings,
   UsersRound,
@@ -31,16 +46,21 @@ import {
   IndianRupee,
   Landmark,
   MessagesSquare,
+  Clapperboard,
+  Stethoscope,
+  Handshake,
   LifeBuoy,
+  Mail,
   Phone,
   Star,
   ChevronRight,
+  CircleAlert,
+  Languages,
 } from 'lucide-react-native';
 const { width } = Dimensions.get('window');
 const GREEN = '#16883E';
 const DARK_GREEN = '#127536';
 const DARK = '#172033';
-const MUTED = '#98A1B1';
 const PAGE_BG = '#F6F8FA';
 const BORDER = '#E8EDF1';
 const SCREEN_HORIZONTAL_PADDING = Math.max(16, width * 0.045);
@@ -48,154 +68,236 @@ const rf = size => {
   const scale = width / 390;
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
-const FARM_MENU = [
-  {
-    id: 'my-farms',
-    title: 'My Farms',
-    subtitle: 'Manage your fields',
-    Icon: SlidersHorizontal,
-    iconColor: '#16A34A',
-    iconBackground: '#ECFDF3',
-    route: 'MyFarms',
-  },
-  {
-    id: 'farm-reports',
-    title: 'Farm Reports',
-    subtitle: 'Crop health reports',
-    Icon: ChartNoAxesColumnIncreasing,
-    iconColor: '#2563EB',
-    iconBackground: '#EFF6FF',
-    route: 'FarmOverview',
-  },
-  {
-    id: 'advisory-history',
-    title: 'Advisory History',
-    subtitle: 'Past recommendations',
-    Icon: Cpu,
-    iconColor: '#6366F1',
-    iconBackground: '#EEF2FF',
-    route: null,
-  },
-];
-const ACTIVITY_MENU = [
-  {
-    id: 'orders',
-    title: 'My Orders',
-    Icon: Package,
-    iconColor: '#F59E0B',
-    iconBackground: '#FFF9E8',
-    badge: '1 Active',
-    badgeColor: '#D97706',
-    badgeBackground: '#FFF0C8',
-    route: 'OrderDetails',
-  },
-  {
-    id: 'machinery',
-    title: 'Machinery Bookings',
-    Icon: Settings,
-    iconColor: '#FB4B69',
-    iconBackground: '#FFF0F3',
-    route: 'MachineryMyBookings',
-  },
-  {
-    id: 'labour',
-    title: 'Labour Bookings',
-    Icon: UsersRound,
-    iconColor: '#3B82F6',
-    iconBackground: '#EFF6FF',
-    route: 'MyBookings',
-  },
-  {
-    id: 'drone',
-    title: 'Drone Bookings',
-    Icon: Navigation,
-    iconColor: '#0EA5E9',
-    iconBackground: '#ECF9FF',
-    badge: 'New',
-    badgeColor: '#16A34A',
-    badgeBackground: '#DCFCE7',
-    route: null,
-  },
-];
-const SMART_FARMING_MENU = [
-  {
-    id: 'weather',
-    title: 'Weather',
-    Icon: Sun,
-    iconColor: '#EAB308',
-    iconBackground: '#FFFBEA',
-    route: 'Weather',
-  },
-  {
-    id: 'mandi',
-    title: 'Mandi Prices',
-    Icon: IndianRupee,
-    iconColor: '#16A34A',
-    iconBackground: '#ECFDF3',
-    route: 'MandiHome',
-  },
-  {
-    id: 'schemes',
-    title: 'Government Schemes',
-    Icon: Landmark,
-    iconColor: '#A855F7',
-    iconBackground: '#FAF5FF',
-    route: null,
-  },
-  {
-    id: 'community',
-    title: 'Community',
-    Icon: MessagesSquare,
-    iconColor: '#F97316',
-    iconBackground: '#FFF7ED',
-    route: null,
-  },
-];
-const SUPPORT_MENU = [
-  {
-    id: 'help',
-    title: 'Help Center',
-    Icon: LifeBuoy,
-    iconColor: '#2563EB',
-    iconBackground: '#EFF6FF',
-    route: null,
-  },
-  {
-    id: 'contact',
-    title: 'Contact Us',
-    Icon: Phone,
-    iconColor: '#16A34A',
-    iconBackground: '#ECFDF3',
-    route: null,
-  },
-  {
-    id: 'rate',
-    title: 'Rate App',
-    Icon: Star,
-    iconColor: '#EAB308',
-    iconBackground: '#FFFBEA',
-    route: null,
-  },
-];
+
+// Live count badge, hidden when nothing is open
+const countBadge = (label, count) =>
+  count > 0
+    ? {
+        badge: label,
+        badgeColor: '#D97706',
+        badgeBackground: '#FFF0C8',
+      }
+    : {};
+
 export default function SidebarScreen({ navigation }) {
-  const user = useSelector(selectUser);
-  const userName = user?.fullName || user?.name || 'Farmer';
-  const locationParts = [user?.village, user?.district, user?.state].filter(
-    Boolean,
-  );
+  const { t, i18n } = useTranslation();
+  const profileCompleted = useSelector(selectProfileCompleted);
+  const {
+    user,
+    farms,
+    farmCount,
+    totalAcres,
+    crops,
+    activeOrders,
+    activeMachinery,
+    activeLabour,
+    activeConsultations,
+    activeDeals,
+    aiChats,
+    refresh,
+    refreshing,
+  } = useAccountSummary();
+
+  const userName = user?.fullName || user?.name || t('common.farmer');
   const userLocation =
-    locationParts.length > 0
-      ? locationParts.join(', ')
-      : 'Location not available';
-  const farmCount =
-    user?.farmCount ?? user?.farmsCount ?? user?.farms?.length ?? 0;
-  const totalAcres = user?.totalAcres ?? user?.totalArea ?? user?.acreage ?? 0;
-  const crops = Array.isArray(user?.crops) ? user.crops : [];
-  const cropNames = crops
-    .map(crop => (typeof crop === 'string' ? crop : crop?.name))
-    .filter(Boolean);
-  const displayedCrops =
-    cropNames.length > 0 ? cropNames.slice(0, 2) : ['No crops'];
+    [user?.village, user?.taluka, user?.district, user?.state]
+      .filter(Boolean)
+      .join(', ') || t('sidebar.add_village');
+  const profileImage = user?.profileImage || user?.profilePicture;
+  const displayedCrops = crops.length > 0 ? crops.slice(0, 2) : [t('common.no_crops')];
+
+  const FARM_MENU = [
+    {
+      id: 'my-farms',
+      title: t('menu.my_farms'),
+      subtitle:
+        farmCount > 0
+          ? t(
+              farmCount === 1
+                ? 'sidebar.field_acres_one'
+                : 'sidebar.field_acres_other',
+              { n: farmCount, acres: totalAcres.toFixed(2) },
+            )
+          : t('sidebar.add_first_field'),
+      Icon: SlidersHorizontal,
+      iconColor: '#16A34A',
+      iconBackground: '#ECFDF3',
+      route: 'MyFarms',
+    },
+    {
+      id: 'farm-reports',
+      title: t('menu.farm_reports'),
+      subtitle:
+        farmCount === 1
+          ? t('sidebar.crop_health_for', {
+              name: farms[0]?.fieldName || t('sidebar.your_farm'),
+            })
+          : t('sidebar.crop_health_reports'),
+      Icon: ChartNoAxesColumnIncreasing,
+      iconColor: '#2563EB',
+      iconBackground: '#EFF6FF',
+      // one farm opens its report directly; several go to the farm list
+      onPress: () =>
+        farmCount === 1
+          ? navigation.navigate('FarmOverview', { farm: farms[0] })
+          : navigation.navigate('MyFarms'),
+    },
+    {
+      id: 'advisory-history',
+      title: t('menu.ai_guru_chats'),
+      subtitle:
+        aiChats > 0
+          ? t(
+              aiChats === 1
+                ? 'sidebar.past_chats_one'
+                : 'sidebar.past_chats_other',
+              { n: aiChats },
+            )
+          : t('sidebar.ask_about_crops'),
+      Icon: Bot,
+      iconColor: '#6366F1',
+      iconBackground: '#EEF2FF',
+      route: 'AIGuru',
+    },
+  ];
+
+  const ACTIVITY_MENU = [
+    {
+      id: 'orders',
+      title: t('menu.my_orders'),
+      Icon: Package,
+      iconColor: '#F59E0B',
+      iconBackground: '#FFF9E8',
+      route: 'MyOrders',
+      ...countBadge(t('common.active_count', { n: activeOrders }), activeOrders),
+    },
+    {
+      id: 'machinery',
+      title: t('menu.machinery_bookings'),
+      Icon: Settings,
+      iconColor: '#FB4B69',
+      iconBackground: '#FFF0F3',
+      route: 'MachineryMyBookings',
+      ...countBadge(t('common.active_count', { n: activeMachinery }), activeMachinery),
+    },
+    {
+      id: 'labour',
+      title: t('menu.labour_bookings'),
+      Icon: UsersRound,
+      iconColor: '#3B82F6',
+      iconBackground: '#EFF6FF',
+      route: 'MyBookings',
+      ...countBadge(t('common.active_count', { n: activeLabour }), activeLabour),
+    },
+    {
+      id: 'consultations',
+      title: t('menu.doctor_consultations'),
+      Icon: Stethoscope,
+      iconColor: '#0D9488',
+      iconBackground: '#E6FAF7',
+      route: DOCTOR_ROUTES.MY_CONSULTATIONS,
+      ...countBadge(t('common.active_count', { n: activeConsultations }), activeConsultations),
+    },
+    {
+      id: 'deals',
+      title: t('menu.market_deals'),
+      Icon: Handshake,
+      iconColor: '#7C3AED',
+      iconBackground: '#F3EEFF',
+      route: MARKET_ROUTES.DEALS,
+      ...countBadge(t('common.open_count', { n: activeDeals }), activeDeals),
+    },
+    {
+      id: 'drone',
+      title: t('menu.drone_services'),
+      Icon: Navigation,
+      iconColor: '#0EA5E9',
+      iconBackground: '#ECF9FF',
+      route: 'DroneServices',
+    },
+  ];
+
+  const SMART_FARMING_MENU = [
+    {
+      id: 'weather',
+      title: t('menu.weather'),
+      Icon: Sun,
+      iconColor: '#EAB308',
+      iconBackground: '#FFFBEA',
+      route: 'Weather',
+    },
+    {
+      id: 'mandi',
+      title: t('menu.mandi_prices'),
+      Icon: IndianRupee,
+      iconColor: '#16A34A',
+      iconBackground: '#ECFDF3',
+      route: 'MandiHome',
+    },
+    {
+      id: 'schemes',
+      title: t('menu.government_schemes'),
+      Icon: Landmark,
+      iconColor: '#A855F7',
+      iconBackground: '#FAF5FF',
+      route: 'GovernmentSchemes',
+    },
+    {
+      id: 'community',
+      title: t('menu.community'),
+      Icon: MessagesSquare,
+      iconColor: '#F97316',
+      iconBackground: '#FFF7ED',
+      route: COMMUNITY_ROUTES.HOME,
+    },
+    {
+      id: 'reels',
+      title: t('menu.field_reels'),
+      Icon: Clapperboard,
+      iconColor: '#E11D48',
+      iconBackground: '#FFF1F3',
+      route: COMMUNITY_ROUTES.REELS,
+    },
+  ];
+
+  const SUPPORT_MENU = [
+    {
+      id: 'help',
+      title: t('menu.help_center'),
+      subtitle: t('menu.help_center_sub'),
+      Icon: LifeBuoy,
+      iconColor: '#2563EB',
+      iconBackground: '#EFF6FF',
+      route: 'AIGuru',
+    },
+    SUPPORT_EMAIL && {
+      id: 'email',
+      title: t('menu.email_us'),
+      subtitle: SUPPORT_EMAIL,
+      Icon: Mail,
+      iconColor: '#0EA5E9',
+      iconBackground: '#ECF9FF',
+      onPress: emailSupport,
+    },
+    SUPPORT_PHONE && {
+      id: 'contact',
+      title: t('menu.call_us'),
+      subtitle: SUPPORT_PHONE,
+      Icon: Phone,
+      iconColor: '#16A34A',
+      iconBackground: '#ECFDF3',
+      onPress: callSupport,
+    },
+    canRateApp && {
+      id: 'rate',
+      title: t('menu.rate_app'),
+      Icon: Star,
+      iconColor: '#EAB308',
+      iconBackground: '#FFFBEA',
+      onPress: openStoreListing,
+    },
+  ].filter(Boolean);
+
   const handleBack = () => {
     if (navigation?.canGoBack?.()) {
       navigation.goBack();
@@ -204,14 +306,18 @@ export default function SidebarScreen({ navigation }) {
     navigation.navigate('Home');
   };
   const handleMenuPress = item => {
-    if (item.route) {
-      navigation.navigate(item.route);
+    if (item.onPress) {
+      item.onPress();
       return;
     }
-    Alert.alert(item.title, `${item.title} screen will be connected here.`);
+    navigation.navigate(item.route);
   };
+  const handleChangeLanguage = () =>
+    navigation.navigate('language', { fromSettings: true });
   const handleViewProfile = () => {
-    navigation.navigate('ProfileSetup');
+    navigation.navigate(profileCompleted ? 'Profile' : 'ProfileSetup', {
+      mode: 'edit',
+    });
   };
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
@@ -219,8 +325,15 @@ export default function SidebarScreen({ navigation }) {
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        bounces={false}
         contentContainerStyle={styles.scrollContent}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={refresh}
+            tintColor={GREEN}
+            colors={[GREEN]}
+          />
+        }
       >
         <View style={styles.profileHeader}>
           <View style={styles.profileDecorCircleOne} />
@@ -230,9 +343,9 @@ export default function SidebarScreen({ navigation }) {
             <View style={styles.profileImageWrapper}>
               <Image
                 source={
-                  user?.profileImage
+                  profileImage
                     ? {
-                        uri: user.profileImage,
+                        uri: profileImage,
                       }
                     : require('../../assets/images/farmerr.jpg')
                 }
@@ -249,14 +362,26 @@ export default function SidebarScreen({ navigation }) {
               </Text>
 
               <View style={styles.profileMetaRow}>
-                <BadgeCheck
-                  size={rf(15)}
-                  color="#FFFFFF"
-                  fill="#FFFFFF"
-                  strokeWidth={2.4}
-                />
+                {profileCompleted ? (
+                  <BadgeCheck
+                    size={rf(15)}
+                    color="#FFFFFF"
+                    fill="#FFFFFF"
+                    strokeWidth={2.4}
+                  />
+                ) : (
+                  <CircleAlert
+                    size={rf(15)}
+                    color="#FDE68A"
+                    strokeWidth={2.4}
+                  />
+                )}
 
-                <Text style={styles.profileMetaText}>Verified Farmer</Text>
+                <Text style={styles.profileMetaText}>
+                  {profileCompleted
+                    ? t('sidebar.verified_farmer')
+                    : t('sidebar.complete_your_profile')}
+                </Text>
               </View>
 
               <View style={styles.profileMetaRow}>
@@ -281,33 +406,56 @@ export default function SidebarScreen({ navigation }) {
             </TouchableOpacity>
           </View>
 
-          <TouchableOpacity
-            activeOpacity={0.86}
-            onPress={handleViewProfile}
-            style={styles.viewProfileButton}
-          >
-            <UserRound size={rf(18)} color="#FFFFFF" strokeWidth={2.3} />
+          <View style={styles.headerActions}>
+            <TouchableOpacity
+              activeOpacity={0.86}
+              onPress={handleViewProfile}
+              style={[styles.headerButton, styles.viewProfileButton]}
+            >
+              <UserRound size={rf(18)} color="#FFFFFF" strokeWidth={2.3} />
 
-            <Text style={styles.viewProfileText}>View Profile</Text>
-          </TouchableOpacity>
+              <Text numberOfLines={1} style={styles.viewProfileText}>
+                {profileCompleted
+                  ? t('sidebar.view_profile')
+                  : t('sidebar.complete_profile')}
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              activeOpacity={0.86}
+              onPress={handleChangeLanguage}
+              accessibilityLabel={t('menu.app_language')}
+              style={[styles.headerButton, styles.languageButton]}
+            >
+              <Languages size={rf(18)} color="#FFFFFF" strokeWidth={2.3} />
+
+              <Text numberOfLines={1} style={styles.viewProfileText}>
+                {getLanguageLabel(i18n.language).native}
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
-        <View style={styles.farmingSummaryCard}>
+        <TouchableOpacity
+          activeOpacity={0.88}
+          onPress={() => navigation.navigate('MyFarms')}
+          style={styles.farmingSummaryCard}
+        >
           <View style={styles.summaryIdentity}>
             <View style={styles.summaryIconBox}>
               <Zap size={rf(22)} color={GREEN} strokeWidth={2.5} />
             </View>
 
-            <Text style={styles.summaryTitle}>My Farming</Text>
+            <Text style={styles.summaryTitle}>{t('sidebar.my_farming')}</Text>
           </View>
 
           <View style={styles.summaryDivider} />
 
-          <SummaryStat value={String(farmCount)} label="Farms" />
+          <SummaryStat value={String(farmCount)} label={t('common.farms')} />
 
           <View style={styles.summaryDivider} />
 
-          <SummaryStat value={Number(totalAcres).toFixed(2)} label="Acres" />
+          <SummaryStat value={totalAcres.toFixed(2)} label={t('common.acres')} />
 
           <View style={styles.summaryDivider} />
 
@@ -321,30 +469,35 @@ export default function SidebarScreen({ navigation }) {
                 {crop}
               </Text>
             ))}
+            {crops.length > 2 && (
+              <Text style={styles.cropMore}>
+                {t('common.more_count', { n: crops.length - 2 })}
+              </Text>
+            )}
           </View>
-        </View>
+        </TouchableOpacity>
 
         <View style={styles.pageContent}>
           <MenuSection
-            title="MY FARM"
+            title={t('menu.my_farm')}
             items={FARM_MENU}
             onPress={handleMenuPress}
           />
 
           <MenuSection
-            title="MY ACTIVITY"
+            title={t('menu.my_activity')}
             items={ACTIVITY_MENU}
             onPress={handleMenuPress}
           />
 
           <MenuSection
-            title="SMART FARMING"
+            title={t('menu.smart_farming')}
             items={SMART_FARMING_MENU}
             onPress={handleMenuPress}
           />
 
           <MenuSection
-            title="SUPPORT"
+            title={t('menu.support')}
             items={SUPPORT_MENU}
             onPress={handleMenuPress}
           />
@@ -356,7 +509,9 @@ export default function SidebarScreen({ navigation }) {
               resizeMode="contain"
             />
 
-            <Text style={styles.versionText}>Version 1.0</Text>
+            <Text style={styles.versionText}>
+              {t('common.version', { version: APP_VERSION })}
+            </Text>
           </View>
         </View>
       </ScrollView>
@@ -553,9 +708,13 @@ const styles = StyleSheet.create({
     },
     elevation: 4,
   },
-  viewProfileButton: {
-    height: 47,
+  headerActions: {
     marginTop: 25,
+    flexDirection: 'row',
+    gap: 10,
+  },
+  headerButton: {
+    height: 47,
     borderRadius: 24,
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.34)',
@@ -565,7 +724,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     gap: 9,
   },
+  viewProfileButton: {
+    flex: 1,
+  },
+  languageButton: {
+    maxWidth: '45%',
+    paddingHorizontal: 16,
+  },
   viewProfileText: {
+    flexShrink: 1,
     fontSize: rf(14),
     fontWeight: '900',
     color: '#FFFFFF',
@@ -638,6 +805,12 @@ const styles = StyleSheet.create({
     lineHeight: rf(12),
     fontWeight: '900',
     color: DARK,
+    textTransform: 'capitalize',
+  },
+  cropMore: {
+    fontSize: rf(8),
+    fontWeight: '700',
+    color: GREEN,
   },
   pageContent: {
     paddingHorizontal: SCREEN_HORIZONTAL_PADDING,

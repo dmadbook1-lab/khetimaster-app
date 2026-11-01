@@ -18,6 +18,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
 import { ArrowLeft, ArrowRight, Zap } from 'lucide-react-native';
 import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import {
   verifyOtp,
   sendOtp,
@@ -29,6 +30,7 @@ const { width, height } = Dimensions.get('window');
 const GREEN = '#178C45';
 const DARK = '#141A1F';
 const OtpScreen = ({ navigation, route }) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const email = route?.params?.email || '';
   const isLoading = useSelector(selectIsLoading);
@@ -214,11 +216,12 @@ const OtpScreen = ({ navigation, route }) => {
 
           <View style={styles.content}>
             <Text style={styles.title}>
-              Verify Your <Text style={styles.greenText}>Email</Text>
+              {t('otp.title')}{' '}
+              <Text style={styles.greenText}>{t('otp.title_highlight')}</Text>
             </Text>
 
             <Text style={styles.subtitle}>
-              Enter the 6-digit code sent to{' '}
+              {t('otp.subtitle')}{' '}
               <Text style={styles.emailText}>{email}</Text>
             </Text>
 
@@ -249,7 +252,7 @@ const OtpScreen = ({ navigation, route }) => {
 
             <View style={styles.progressInfo}>
               <Text style={styles.progressText}>
-                {entered} of 6 digits entered
+                {t('otp.progress', { n: entered })}
               </Text>
 
               <Text style={styles.percentText}>
@@ -274,7 +277,7 @@ const OtpScreen = ({ navigation, route }) => {
 
             {timer > 0 ? (
               <Text style={styles.resendText}>
-                Resend OTP in{' '}
+                {t('otp.resend_in')}{' '}
                 <Text style={styles.resendGreen}>
                   00:
                   {String(timer).padStart(2, '0')}
@@ -287,7 +290,7 @@ const OtpScreen = ({ navigation, route }) => {
                 disabled={isLoading}
               >
                 <Text style={[styles.resendText, styles.resendGreen]}>
-                  Resend OTP
+                  {t('otp.resend')}
                 </Text>
               </TouchableOpacity>
             )}
@@ -297,7 +300,7 @@ const OtpScreen = ({ navigation, route }) => {
               onPress={handleChangeEmail}
               disabled={isLoading}
             >
-              <Text style={styles.changeText}>Wrong email? Change</Text>
+              <Text style={styles.changeText}>{t('otp.change_email')}</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -323,11 +326,11 @@ const OtpScreen = ({ navigation, route }) => {
                   <>
                     <ActivityIndicator size="small" color="#FFFFFF" />
 
-                    <Text style={styles.buttonText}>Verifying...</Text>
+                    <Text style={styles.buttonText}>{t('otp.verifying')}</Text>
                   </>
                 ) : (
                   <>
-                    <Text style={styles.buttonText}>Verify & Continue</Text>
+                    <Text style={styles.buttonText}>{t('otp.verify')}</Text>
 
                     <ArrowRight size={22} color="#FFFFFF" strokeWidth={2.4} />
                   </>
@@ -340,7 +343,7 @@ const OtpScreen = ({ navigation, route }) => {
 
               <Zap size={13} color="#FF8A2A" fill="#FF8A2A" />
 
-              <Text style={styles.autoText}>Auto-detecting OTP...</Text>
+              <Text style={styles.autoText}>{t('otp.auto_detect')}</Text>
             </View>
           </View>
         </ScrollView>

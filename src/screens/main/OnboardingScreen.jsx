@@ -11,19 +11,22 @@ import {
 } from 'react-native';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
+import {useTranslation} from 'react-i18next';
+import {hasChosenLanguage} from '../../utils/languageUtils';
 
 const {height} = Dimensions.get('window');
 const GREEN = '#159447';
 const DARK = '#1F2937';
 const GRAY = '#6B7280';
 const featureCards = [
-  {icon: '✦', title: 'Smart Advice', text: 'Quick crop guidance'},
-  {icon: '☁', title: 'Weather Based', text: 'Plan with confidence'},
-  {icon: '🌱', title: 'Crop Care', text: 'Health and growth tips'},
-  {icon: '⏱', title: 'Always Available', text: 'Anytime help'},
+  {icon: '✦', key: 'advice'},
+  {icon: '☁', key: 'weather'},
+  {icon: '🌱', key: 'care'},
+  {icon: '⏱', key: 'always'},
 ];
 
 const OnboardingScreen = ({navigation}) => {
+  const {t} = useTranslation();
   const featureScrollRef = useRef(null);
   const featureIndex = useRef(0);
 
@@ -38,6 +41,15 @@ const OnboardingScreen = ({navigation}) => {
 
     return () => clearInterval(timer);
   }, []);
+
+  // Like CropGen, a language is always picked before the first login
+  const goToLogin = async () => {
+    if (await hasChosenLanguage()) {
+      navigation.replace('Login');
+      return;
+    }
+    navigation.replace('language', {redirectTo: 'Login'});
+  };
 
   return (
     <SafeAreaView style={styles.safeArea}>
@@ -62,26 +74,26 @@ const OnboardingScreen = ({navigation}) => {
               resizeMode="contain"
             />
             <View style={styles.topTag}>
-              <Text style={styles.topTagText}>AI Assistant</Text>
+              <Text style={styles.topTagText}>{t('onboarding.ai_assistant')}</Text>
             </View>
             <View style={styles.floatingBadge}>
               <View style={styles.badgeDot} />
-              <Text style={styles.floatingBadgeText}>24/7 Smart Support</Text>
+              <Text style={styles.floatingBadgeText}>{t('onboarding.smart_support')}</Text>
             </View>
           </View>
         </View>
 
         <View style={styles.bottomCard}>
           <View style={styles.label}>
-            <Text style={styles.labelText}>MODERN FARMING</Text>
+            <Text style={styles.labelText}>{t('onboarding.label')}</Text>
           </View>
           <Text style={styles.title}>
-            Your Personal{ '\n' }
-            <Text style={styles.highlight}>Farm Advisor</Text>
+            {t('onboarding.title_line1')}
+            {'\n'}
+            <Text style={styles.highlight}>{t('onboarding.title_line2')}</Text>
           </Text>
           <Text style={styles.description}>
-            Ask farming questions, get crop recommendations, and receive
-            weather-smart guidance instantly with AI-powered support.
+            {t('onboarding.description')}
           </Text>
           <ScrollView
             ref={featureScrollRef}
@@ -89,24 +101,28 @@ const OnboardingScreen = ({navigation}) => {
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.featureRow}>
             {featureCards.map(card => (
-              <View key={card.title} style={styles.featureCard}>
+              <View key={card.key} style={styles.featureCard}>
                 <Text style={styles.featureIcon}>{card.icon}</Text>
                 <View>
-                  <Text style={styles.featureTitle}>{card.title}</Text>
-                  <Text style={styles.featureText}>{card.text}</Text>
+                  <Text style={styles.featureTitle}>
+                    {t(`onboarding.feature_${card.key}_title`)}
+                  </Text>
+                  <Text style={styles.featureText}>
+                    {t(`onboarding.feature_${card.key}_text`)}
+                  </Text>
                 </View>
               </View>
             ))}
           </ScrollView>
           <TouchableOpacity
             activeOpacity={0.88}
-            onPress={() => navigation.replace('language')}>
+            onPress={() => navigation.replace('language', {redirectTo: 'Login'})}>
             <LinearGradient
               colors={['#118A3B', '#2AD56D']}
               start={{x: 0, y: 0}}
               end={{x: 1, y: 0}}
               style={styles.button}>
-              <Text style={styles.buttonText}>Get Started</Text>
+              <Text style={styles.buttonText}>{t('onboarding.get_started')}</Text>
               <View style={styles.arrowWrap}>
                 <Text style={styles.arrow}>→</Text>
               </View>
@@ -114,10 +130,10 @@ const OnboardingScreen = ({navigation}) => {
           </TouchableOpacity>
           <TouchableOpacity
             activeOpacity={0.7}
-            onPress={() => navigation.replace('Login')}>
+            onPress={goToLogin}>
             <Text style={styles.loginText}>
-              Already have an account?{' '}
-              <Text style={styles.loginGreen}>Login</Text>
+              {t('onboarding.have_account')}{' '}
+              <Text style={styles.loginGreen}>{t('onboarding.login')}</Text>
             </Text>
           </TouchableOpacity>
         </View>

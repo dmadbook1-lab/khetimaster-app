@@ -409,6 +409,16 @@ const authSlice = createSlice({
       state.message = '';
     },
 
+    // e.g. community avatar / bio edited
+    mergeAuthUser: (state, action) => {
+      if (state.user) {
+        state.user = {
+          ...state.user,
+          ...action.payload,
+        };
+      }
+    },
+
     clearAuthState: state => {
       state.user = null;
       state.email = '';
@@ -860,6 +870,7 @@ export const {
   setEmail,
   clearAuthError,
   resetOtpState,
+  mergeAuthUser,
   clearAuthState,
 } = authSlice.actions;
 

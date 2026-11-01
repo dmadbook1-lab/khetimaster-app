@@ -1,110 +1,69 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  StyleSheet,
-  TouchableOpacity,
-  Dimensions,
-} from 'react-native';
-import {
-  Lightbulb,
-  MessageSquareText,
-  ArrowUpRight,
-} from 'lucide-react-native';
-const { width } = Dimensions.get('window');
-const GREEN = '#16883E';
-const DARK = '#202020';
-const MUTED = '#8B95A5';
-const BORDER = '#E9EDF1';
-const rf = size => {
-  const scale = width / 390;
-  return Math.max(size - 2, Math.min(size * scale, size + 2));
-};
+import { Text, StyleSheet, ScrollView } from 'react-native';
+import { COLORS, GUTTER, FadeInUp, PressableScale, rf } from './theme';
+
 const DEFAULT_QUESTIONS = [
   'Will my crop need irrigation?',
   'Any disease risk this week?',
   'What fertilizer should I apply?',
-  'Weather forecast for my farm?',
-  'Current mandi prices?',
 ];
+
+/* One scrolling row of quick follow-up questions. */
 export default function SuggestedQuestions({
   questions = DEFAULT_QUESTIONS,
   onQuestionPress,
 }) {
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Lightbulb size={rf(15)} color={MUTED} strokeWidth={2.2} />
-
-        <Text style={styles.headerText}>SUGGESTED</Text>
-      </View>
-
-      <View style={styles.questions}>
+    <FadeInUp delay={120} style={styles.wrap}>
+      <Text style={styles.title}>Ask next</Text>
+      <ScrollView
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+        contentContainerStyle={styles.row}
+      >
         {questions.map(question => (
-          <TouchableOpacity
+          <PressableScale
             key={question}
-            activeOpacity={0.82}
             onPress={() => onQuestionPress(question)}
-            style={styles.questionButton}
+            style={styles.chip}
           >
-            <MessageSquareText size={rf(15)} color={DARK} strokeWidth={2.1} />
-
-            <Text numberOfLines={1} style={styles.questionText}>
-              {question}
-            </Text>
-
-            <ArrowUpRight size={rf(15)} color={GREEN} strokeWidth={2.2} />
-          </TouchableOpacity>
+            <Text style={styles.chipText}>{question}</Text>
+          </PressableScale>
         ))}
-      </View>
-    </View>
+      </ScrollView>
+    </FadeInUp>
   );
 }
+
 const styles = StyleSheet.create({
-  container: {
-    paddingHorizontal: width * 0.037,
-    paddingTop: 8,
-    paddingBottom: 15,
+  wrap: {
+    marginTop: 4,
+    marginBottom: 8,
   },
-  header: {
-    marginLeft: 5,
-    marginBottom: 11,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  headerText: {
-    fontSize: rf(9),
-    fontWeight: '900',
-    color: MUTED,
-    letterSpacing: 0.8,
-  },
-  questions: {
-    gap: 8,
-  },
-  questionButton: {
-    minHeight: 43,
-    borderRadius: 22,
-    paddingHorizontal: 15,
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: BORDER,
-    flexDirection: 'row',
-    alignItems: 'center',
-    shadowColor: '#0F172A',
-    shadowOpacity: 0.035,
-    shadowRadius: 7,
-    shadowOffset: {
-      width: 0,
-      height: 3,
-    },
-    elevation: 2,
-  },
-  questionText: {
-    flex: 1,
-    marginHorizontal: 10,
+  title: {
+    marginHorizontal: GUTTER,
+    marginBottom: 8,
     fontSize: rf(12),
     fontWeight: '700',
-    color: DARK,
+    color: COLORS.muted,
+  },
+  row: {
+    paddingHorizontal: GUTTER,
+    gap: 8,
+  },
+  chip: {
+    height: 40,
+    paddingHorizontal: 16,
+    borderRadius: 20,
+    backgroundColor: COLORS.card,
+    borderWidth: 1,
+    borderColor: COLORS.greenBorder,
+    justifyContent: 'center',
+  },
+  chipText: {
+    fontSize: rf(13),
+    fontWeight: '600',
+    color: COLORS.greenDark,
   },
 });

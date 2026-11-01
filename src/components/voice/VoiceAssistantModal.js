@@ -8,6 +8,7 @@ import {
   PermissionsAndroid,
   Platform,
   Pressable,
+  ScrollView,
   StatusBar,
   StyleSheet,
   Text,
@@ -18,6 +19,7 @@ import {
 import { BlurView } from '@react-native-community/blur';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   addAudioMeterUpdateListener,
   addSpeechEndListener,
@@ -33,6 +35,10 @@ import { Mic, RotateCcw, Square, X } from 'lucide-react-native';
 
 import ScreenGlow from './ScreenGlow';
 import { resolveVoiceCommand } from '../../utils/voiceCommandResolver';
+import {
+  sendAiGuruMessage,
+  startNewAiGuruChat,
+} from '../../redux/slices/aiGuruSlice';
 
 /*
 |--------------------------------------------------------------------------
@@ -49,8 +55,11 @@ import { resolveVoiceCommand } from '../../utils/voiceCommandResolver';
 |
 | open -> listen (words appear live) -> final words ->
 | resolveVoiceCommand -> open a screen / answer / ask again
+| anything else -> ask AI Guru, show + speak its answer
 |
 | onNavigate(routeName, params)
+| onTranscript(text): dictation mode — hands the words back and closes
+| (used by the AI Guru chat) instead of running commands
 |
 */
 
@@ -173,8 +182,26 @@ const speechText = result =>
           '',
       ).trim();
 
-export default function VoiceAssistantModal({ visible, onClose, onNavigate }) {
+const TTS_LANGUAGES = { en: 'en-IN', hi: 'hi-IN', mr: 'mr-IN' };
+
+// bullets and plan labels read badly aloud
+const toSpeech = text =>
+  String(text || '')
+    .replace(/•/g, '')
+    .replace(/\n+/g, '. ')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+export default function VoiceAssistantModal({
+  visible,
+  onClose,
+  onNavigate,
+  onTranscript,
+}) {
   const insets = useSafeAreaInsets();
+  const dispatch = useDispatch();
+  const aiLanguage = useSelector(state => state.aiGuru?.language || 'en');
+  const aiChatStartedRef = useRef(false);
 
   const [status, setStatus] = useState(STATUS.STARTING);
   const [transcript, setTranscript] = useState('');
@@ -340,6 +367,16 @@ export default function VoiceAssistantModal({ visible, onClose, onNavigate }) {
       setMessage('');
       await stopListening();
 
+      if (onTranscript) {
+        setStatus(STATUS.DONE);
+        later(() => {
+          if (!visibleRef.current || closingRef.current) return;
+          closingRef.current = true;
+          onTranscript(spoken);
+        }, 250);
+        return;
+      }
+
       const command = resolveVoiceCommand(spoken);
 
       if (command.type === 'cancel') {
@@ -379,9 +416,47 @@ export default function VoiceAssistantModal({ visible, onClose, onNavigate }) {
         return;
       }
 
-      fail('I didn’t understand. Try “mandi bhav” or “tractor chahiye”.');
+      // not an app command: ask AI Guru (one chat per time the assistant is open)
+      setMessage('Asking AI Guru…');
+
+      if (!aiChatStartedRef.current) {
+        dispatch(startNewAiGuruChat());
+        aiChatStartedRef.current = true;
+      }
+
+      const result = await dispatch(
+        sendAiGuruMessage({ message: spoken, source: 'voice' }),
+      );
+      if (!visibleRef.current || closingRef.current) return;
+
+      if (sendAiGuruMessage.rejected.match(result)) {
+        fail(result.payload?.message || 'AI Guru is not reachable right now.');
+        return;
+      }
+
+      const answer = result.payload.reply.text;
+      setStatus(STATUS.DONE);
+      setMessage(answer);
+
+      try {
+        await Tts.getInitStatus();
+        await Tts.setDefaultLanguage(TTS_LANGUAGES[aiLanguage] || 'en-IN');
+        await Tts.setDefaultRate(0.48);
+        if (!visibleRef.current || closingRef.current) return;
+        utteranceRef.current = await Tts.speak(toSpeech(answer));
+      } catch {
+        // couldn't speak; the answer is on screen
+      }
     },
-    [fail, later, onNavigate, stopListening],
+    [
+      aiLanguage,
+      dispatch,
+      fail,
+      later,
+      onNavigate,
+      onTranscript,
+      stopListening,
+    ],
   );
 
   handleFinalRef.current = handleFinal;
@@ -527,6 +602,7 @@ export default function VoiceAssistantModal({ visible, onClose, onNavigate }) {
       if (listeningRef.current) stopListening();
       closingRef.current = false;
       handledRef.current = false;
+      aiChatStartedRef.current = false;
       setStatus(STATUS.STARTING);
       setTranscript('');
       setMessage('');
@@ -715,17 +791,22 @@ export default function VoiceAssistantModal({ visible, onClose, onNavigate }) {
                   {listening ? 'Go ahead, I’m listening' : 'How can I help?'}
                 </Text>
                 <Text style={styles.promptHint}>
-                  Try “pyaz ka bhav”, “tractor chahiye” or “pashu doctor”
+                  {onTranscript
+                    ? 'Ask AI Guru anything about your farm'
+                    : 'Try “pyaz ka bhav”, “tractor chahiye” or ask any farming question'}
                 </Text>
               </>
             )}
 
             {!!message && (
-              <View style={[styles.messageBox, { backgroundColor: tone.soft }]}>
+              <ScrollView
+                style={[styles.messageBox, { backgroundColor: tone.soft }]}
+                contentContainerStyle={styles.messageContent}
+              >
                 <Text style={[styles.message, { color: tone.text }]}>
                   {message}
                 </Text>
-              </View>
+              </ScrollView>
             )}
           </View>
 
@@ -964,10 +1045,14 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   messageBox: {
+    flexGrow: 0,
+    maxHeight: 190,
     marginTop: 14,
+    borderRadius: 14,
+  },
+  messageContent: {
     paddingHorizontal: 14,
     paddingVertical: 10,
-    borderRadius: 14,
   },
   message: {
     fontSize: 13.5,

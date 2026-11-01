@@ -36,6 +36,10 @@
 	</dict>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
+	<key>NSCameraUsageDescription</key>
+	<string>KhetiMaster uses the camera so you can photograph your crop and ask AI Guru what is wrong.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>KhetiMaster lets you choose a crop photo to ask AI Guru about.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>KhetiMaster uses your microphone to listen for voice commands.</string>
 	<key>NSSpeechRecognitionUsageDescription</key>

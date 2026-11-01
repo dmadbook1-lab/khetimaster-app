@@ -10,6 +10,7 @@ import {
   Alert,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { pickAiGuruPhoto } from '../../utils/aiGuruPhoto';
 import LinearGradient from 'react-native-linear-gradient';
 import {
   ArrowLeft,
@@ -148,14 +149,37 @@ export default function DiseaseDetectionScreen({ navigation }) {
       return;
     }
   };
+  // The photo goes to AI Guru, which diagnoses it and suggests treatment
+  const detectFromPhoto = async camera => {
+    try {
+      const photo = await pickAiGuruPhoto({ camera });
+      if (!photo) {
+        return;
+      }
+      const cropName =
+        SUPPORTED_CROPS.find(crop => crop.id === selectedCrop)?.name || 'crop';
+      navigation.navigate('AIGuru', {
+        photo,
+        question: `This is a photo of my ${cropName} crop. Which disease or pest is this, how serious is it, and what treatment should I use?`,
+        source: 'disease',
+        newChat: true,
+      });
+    } catch (error) {
+      Alert.alert('Photo', error.message);
+    }
+  };
   const handleTakePhoto = () => {
-    Alert.alert('Take Photo', 'Camera will open here.');
+    detectFromPhoto(true);
   };
   const handleGallery = () => {
-    Alert.alert('Gallery', 'Gallery will open here.');
+    detectFromPhoto(false);
   };
   const handleStartDetection = () => {
-    navigation.navigate('UploadCropPhoto');
+    Alert.alert('Crop photo', 'Take a clear photo of the affected leaf or plant.', [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Gallery', onPress: handleGallery },
+      { text: 'Camera', onPress: handleTakePhoto },
+    ]);
   };
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>

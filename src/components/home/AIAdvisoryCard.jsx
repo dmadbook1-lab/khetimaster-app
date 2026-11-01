@@ -9,11 +9,13 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import LottieView from 'lottie-react-native';
+import { useTranslation } from 'react-i18next';
 
 const { width } = Dimensions.get('window');
 
 export default function AIAdvisoryCard() {
   const navigation = useNavigation();
+  const { t } = useTranslation();
 
   return (
     <TouchableOpacity
@@ -28,16 +30,16 @@ export default function AIAdvisoryCard() {
         {/* Left Column: Text & CTA */}
         <View style={styles.textContainer}>
           <View style={styles.badge}>
-            <Text style={styles.badgeText}>✨ AI Powered</Text>
+            <Text style={styles.badgeText}>{t('home.ai_powered')}</Text>
           </View>
 
-          <Text style={styles.title}>AI Guru</Text>
+          <Text style={styles.title}>{t('home.ai_guru')}</Text>
           <Text style={styles.subtitle} numberOfLines={2}>
-            Ask anything about crops, pests & weather
+            {t('home.ai_subtitle')}
           </Text>
 
           <View style={styles.askButton}>
-            <Text style={styles.askText}>Ask AI Guru</Text>
+            <Text style={styles.askText}>{t('home.ask_ai_guru')}</Text>
             <Text style={styles.arrowIcon}>→</Text>
           </View>
         </View>

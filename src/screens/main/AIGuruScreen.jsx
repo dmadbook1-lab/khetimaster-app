@@ -1,147 +1,310 @@
-import React, { useCallback, useRef, useState } from 'react';
+import React, {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import {
   View,
   Text,
+  Image,
   StyleSheet,
   ScrollView,
-  Dimensions,
   StatusBar,
   KeyboardAvoidingView,
   Platform,
   Alert,
+  ActivityIndicator,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useDispatch, useSelector } from 'react-redux';
+import { X, Trash2 } from 'lucide-react-native';
 import BottomTabBar from '../../common/BottomTabBar';
-import AIGuruHeader from '../../components/aiguru/AIGuruHeader';
+import AIGuruHeader, {
+  HEADER_HEIGHT,
+} from '../../components/aiguru/AIGuruHeader';
 import CurrentFarmCard from '../../components/aiguru/CurrentFarmCard';
 import AIReadySection from '../../components/aiguru/AIReadySection';
-import SuggestedQuestions from '../../components/aiguru/SuggestedQuestions';
 import ChatMessage from '../../components/aiguru/ChatMessage';
 import TypingIndicator from '../../components/aiguru/TypingIndicator';
-import ChatComposer from '../../components/aiguru/ChatComposer';
-const { width } = Dimensions.get('window');
-const DARK = '#171D2C';
-const MUTED = '#7F8A9D';
-const PAGE_BG = '#FFFFFF';
-const rf = size => {
-  const scale = width / 390;
-  return Math.max(size - 2, Math.min(size * scale, size + 2));
-};
-const SUGGESTED_QUESTIONS = [
-  'Will my crop need irrigation?',
-  'Any disease risk this week?',
-  'What fertilizer should I apply?',
-  'Weather forecast for my farm?',
-  'Current mandi prices?',
-];
-const INITIAL_MESSAGES = [
-  {
-    id: 'welcome-ai',
-    sender: 'ai',
-    text: 'Namaste Vishal! I am your AI farming assistant. I am monitoring Patil Farm and can help with your soybean crop, irrigation, disease risk, fertilizer planning, weather and mandi prices.',
-    time: 'Now',
-  },
-];
-export default function AIGuruScreen({ navigation }) {
+import ChatComposer, {
+  COMPOSER_HEIGHT,
+} from '../../components/aiguru/ChatComposer';
+import FarmPickerSheet from '../../components/aiguru/FarmPickerSheet';
+import ChatHistorySheet from '../../components/aiguru/ChatHistorySheet';
+import {
+  AmbientGlow,
+  COLORS,
+  FadeInUp,
+  GUTTER,
+  Glass,
+  PressableScale,
+  rf,
+} from '../../components/aiguru/theme';
+import VoiceAssistantModal from '../../components/voice/VoiceAssistantModal';
+import { selectUser } from '../../redux/slices/authSlice';
+import {
+  loadMyFarms,
+  selectFarmFields,
+} from '../../redux/slices/farmFieldSlice';
+import {
+  selectAiGuru,
+  sendAiGuruMessage,
+  startNewAiGuruChat,
+  setAiGuruFarm,
+  setAiGuruLanguage,
+  fetchAiGuruSessions,
+  openAiGuruSession,
+  deleteAiGuruSession,
+  clearAiGuruHistory,
+  rateAiGuruMessage,
+} from '../../redux/slices/aiGuruSlice';
+import { resolveAiGuruAction } from '../../constants/aiGuruScreens';
+import { pickAiGuruPhoto } from '../../utils/aiGuruPhoto';
+/*
+ * Route params (all optional), used when another screen opens AI Guru:
+ *   fieldId   farm to talk about ('general' for none)
+ *   question  sent right away
+ *   photo     { uri, base64, mimeType } sent right away
+ *   source    where the question came from (farm, disease, mandi, ...)
+ *   newChat   start a fresh conversation
+ */
+export default function AIGuruScreen({ navigation, route }) {
+  const dispatch = useDispatch();
   const scrollRef = useRef(null);
-  const [messages, setMessages] = useState(INITIAL_MESSAGES);
+  const handledParamsRef = useRef(null);
+
+  const user = useSelector(selectUser);
+  const farms = useSelector(selectFarmFields);
+  const {
+    sessionId,
+    messages,
+    activeFieldId,
+    language,
+    sending,
+    loadingSession,
+    sessions,
+    sessionsLoading,
+  } = useSelector(selectAiGuru);
+
   const [inputText, setInputText] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
-  const hasConversation = messages.length > 1;
+  const [pendingPhoto, setPendingPhoto] = useState(null);
+  const [farmPickerVisible, setFarmPickerVisible] = useState(false);
+  const [historyVisible, setHistoryVisible] = useState(false);
+  const [voiceVisible, setVoiceVisible] = useState(false);
+
+  const userId = user?._id || user?.id || user?.userId;
+  const firstName = String(user?.fullName || user?.name || '').split(' ')[0];
+
+  const activeFarm = useMemo(
+    () =>
+      activeFieldId
+        ? farms.find(farm => String(farm?._id) === String(activeFieldId)) ||
+          null
+        : null,
+    [farms, activeFieldId],
+  );
+
+  const hasConversation = messages.length > 0;
+
+  const welcomeText = activeFarm
+    ? `Namaste${
+        firstName ? ` ${firstName}` : ''
+      }! I am AI Guru. I am looking at ${activeFarm.fieldName} (${
+        activeFarm.isBarrenLand ? 'barren land' : activeFarm.cropName
+      }). Ask me about irrigation, disease risk, fertilizer, weather or mandi prices for this farm.`
+    : `Namaste${
+        firstName ? ` ${firstName}` : ''
+      }! I am AI Guru, your farming assistant. Ask me about crops, pests, weather and mandi prices, or what you need on KhetiMaster: labour, tractors, doctors, plants and the marketplace.`;
+
+  // Farms power the farm switcher and farm-aware answers
+  useEffect(() => {
+    if (userId && farms.length === 0) {
+      dispatch(loadMyFarms(userId));
+    }
+  }, [dispatch, userId, farms.length]);
+
+  // A selected farm that was deleted falls back to general mode
+  useEffect(() => {
+    if (activeFieldId && farms.length > 0 && !activeFarm) {
+      dispatch(setAiGuruFarm(null));
+    }
+  }, [dispatch, activeFieldId, activeFarm, farms.length]);
+
+  // Follow the newest message until the user drags up to read; content that
+  // grows later (images loading) then no longer yanks the view down
+  const stickToBottomRef = useRef(true);
   const scrollToBottom = useCallback(() => {
-    requestAnimationFrame(() => {
-      scrollRef.current?.scrollToEnd?.({
-        animated: true,
-      });
-    });
+    scrollRef.current?.scrollToEnd?.({ animated: true });
   }, []);
-  const getCurrentTime = () => {
-    return new Date().toLocaleTimeString('en-IN', {
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: true,
-    });
-  };
-  const getAIResponse = question => {
-    const normalized = question.toLowerCase();
-    if (normalized.includes('irrigation') || normalized.includes('water')) {
-      return 'Based on the current farm conditions, your soybean field has moderate soil moisture. Irrigation is not immediately required today. Check the field again tomorrow morning, especially if rainfall does not occur.';
+
+  useEffect(() => {
+    if (hasConversation) {
+      stickToBottomRef.current = true;
     }
-    if (normalized.includes('disease') || normalized.includes('pest')) {
-      return 'The current disease risk is low to moderate. Inspect the underside of leaves for yellow spots, curling or insects. Avoid spraying unless visible symptoms cross the economic threshold.';
-    }
-    if (normalized.includes('fertilizer') || normalized.includes('nutrient')) {
-      return 'For the current vegetative stage, apply fertilizer only after confirming soil moisture. A balanced micronutrient mix may support growth, but avoid excessive nitrogen because it can produce weak vegetative growth.';
-    }
-    if (normalized.includes('weather') || normalized.includes('rain')) {
-      return 'Patil Farm is expected to remain warm with moderate humidity. There is a possibility of rainfall later in the day, so complete spraying or cultivation work during the morning window.';
-    }
-    if (normalized.includes('mandi') || normalized.includes('price')) {
-      return 'I can compare nearby mandi prices for soybean and cotton. For accurate live prices, connect your mandi-rate service and select your preferred market location.';
-    }
-    return 'I have analyzed your question using the current Patil Farm context. Please share the crop stage, visible symptoms or field condition for a more precise recommendation.';
-  };
+  }, [messages.length, sending, hasConversation]);
+
   const submitMessage = useCallback(
-    question => {
-      const trimmedQuestion = question.trim();
-      if (!trimmedQuestion || isTyping) {
+    ({ text = '', photo = null, source = 'aiguru' } = {}) => {
+      const trimmed = String(text).trim();
+      if ((!trimmed && !photo) || sending) {
         return;
       }
-      const userMessage = {
-        id: `user-${Date.now()}`,
-        sender: 'user',
-        text: trimmedQuestion,
-        time: getCurrentTime(),
-      };
-      setMessages(current => [...current, userMessage]);
+
+      dispatch(
+        sendAiGuruMessage({
+          message: trimmed,
+          image: photo
+            ? { base64: photo.base64, mimeType: photo.mimeType }
+            : undefined,
+          imageUri: photo?.uri,
+          source,
+        }),
+      );
       setInputText('');
-      setIsTyping(true);
-      setTimeout(scrollToBottom, 80);
-      setTimeout(() => {
-        const aiMessage = {
-          id: `ai-${Date.now()}`,
-          sender: 'ai',
-          text: getAIResponse(trimmedQuestion),
-          time: getCurrentTime(),
-        };
-        setMessages(current => [...current, aiMessage]);
-        setIsTyping(false);
-        setTimeout(scrollToBottom, 100);
-      }, 1100);
+      setPendingPhoto(null);
     },
-    [isTyping, scrollToBottom],
+    [dispatch, sending],
   );
+
+  // Questions / photos handed over by other screens
+  useEffect(() => {
+    const params = route?.params;
+    if (!params || handledParamsRef.current === params) {
+      return;
+    }
+    handledParamsRef.current = params;
+
+    const { fieldId, question, photo, source, newChat } = params;
+    if (fieldId === undefined && !question && !photo && !newChat) {
+      return;
+    }
+
+    const nextFieldId =
+      fieldId === undefined
+        ? activeFieldId
+        : fieldId && fieldId !== 'general'
+        ? String(fieldId)
+        : null;
+
+    if (newChat || nextFieldId !== activeFieldId) {
+      dispatch(startNewAiGuruChat());
+    }
+    dispatch(setAiGuruFarm(nextFieldId));
+
+    if (question || photo) {
+      submitMessage({ text: question || '', photo, source });
+    }
+
+    navigation.setParams({
+      fieldId: undefined,
+      question: undefined,
+      photo: undefined,
+      source: undefined,
+      newChat: undefined,
+    });
+  }, [route?.params, activeFieldId, dispatch, navigation, submitMessage]);
+
   const handleSend = () => {
-    submitMessage(inputText);
-  };
-  const handleSuggestedQuestion = question => {
-    submitMessage(question);
+    submitMessage({ text: inputText, photo: pendingPhoto });
   };
   const handleVoicePress = () => {
-    Alert.alert(
-      'Voice Assistant',
-      'Voice recognition can be connected here. You can currently type or select a suggested question.',
-    );
+    setVoiceVisible(true);
+  };
+  const handleVoiceTranscript = text => {
+    setVoiceVisible(false);
+    submitMessage({ text, photo: pendingPhoto, source: 'voice' });
+  };
+
+  const choosePhoto = async camera => {
+    try {
+      const photo = await pickAiGuruPhoto({ camera });
+      if (photo) {
+        setPendingPhoto(photo);
+      }
+    } catch (error) {
+      Alert.alert('Photo', error.message);
+    }
   };
   const handleAttachmentPress = () => {
     Alert.alert(
-      'Upload Farm Image',
-      'Connect your image picker here to upload crop, pest or disease photos.',
+      'Add a crop photo',
+      'AI Guru can look at leaves, pests or disease spots.',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        { text: 'Gallery', onPress: () => choosePhoto(false) },
+        { text: 'Camera', onPress: () => choosePhoto(true) },
+      ],
     );
   };
-  const handleSwitchFarm = () => {
-    Alert.alert('Switch Farm', 'Select the farm you want AI Guru to analyse.', [
+
+  const handleSelectFarm = fieldId => {
+    setFarmPickerVisible(false);
+    if ((fieldId || null) !== (activeFieldId || null)) {
+      dispatch(setAiGuruFarm(fieldId));
+    }
+  };
+  const handleAddFarm = () => {
+    setFarmPickerVisible(false);
+    navigation.navigate('FarmMappingScreen');
+  };
+
+  const handleActionPress = action => {
+    const target = resolveAiGuruAction(action, { farms });
+    if (target) {
+      navigation.navigate(target.route, target.params);
+    }
+  };
+  const handleFeedback = (messageId, rating) => {
+    dispatch(rateAiGuruMessage({ messageId, rating }));
+  };
+
+  const handleOpenHistory = () => {
+    setHistoryVisible(true);
+    dispatch(fetchAiGuruSessions());
+  };
+  const handleOpenSession = id => {
+    setHistoryVisible(false);
+    if (id !== sessionId) {
+      dispatch(openAiGuruSession(id));
+    }
+  };
+  const handleNewChat = () => {
+    setHistoryVisible(false);
+    dispatch(startNewAiGuruChat());
+  };
+  const handleDeleteSession = id => {
+    Alert.alert('Delete chat', 'Remove this conversation from your history?', [
+      { text: 'Cancel', style: 'cancel' },
       {
-        text: 'Cancel',
-        style: 'cancel',
-      },
-      {
-        text: 'My Farms',
-        onPress: () => navigation.navigate('MyFarms'),
+        text: 'Delete',
+        style: 'destructive',
+        onPress: () => dispatch(deleteAiGuruSession(id)),
       },
     ]);
   };
+  const handleClearAll = () => {
+    Alert.alert(
+      'Clear all chats',
+      'Remove all AI Guru chats from your history?',
+      [
+        { text: 'Cancel', style: 'cancel' },
+        {
+          text: 'Clear',
+          style: 'destructive',
+          onPress: () => {
+            setHistoryVisible(false);
+            dispatch(clearAiGuruHistory());
+          },
+        },
+      ],
+    );
+  };
   const handleClearChat = () => {
+    if (!hasConversation) {
+      return;
+    }
     Alert.alert(
       'Clear Conversation',
       'Do you want to remove all messages from this conversation?',
@@ -154,167 +317,307 @@ export default function AIGuruScreen({ navigation }) {
           text: 'Clear',
           style: 'destructive',
           onPress: () => {
-            setMessages(INITIAL_MESSAGES);
+            if (sessionId) {
+              dispatch(deleteAiGuruSession(sessionId));
+            } else {
+              dispatch(startNewAiGuruChat());
+            }
             setInputText('');
-            setIsTyping(false);
+            setPendingPhoto(null);
           },
         },
       ],
     );
   };
+
+  const welcomeMessage = {
+    id: 'welcome-ai',
+    role: 'assistant',
+    text: welcomeText,
+    localOnly: true,
+  };
+
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top']}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
+    <View style={styles.root}>
+      <AmbientGlow />
 
-      <KeyboardAvoidingView
-        style={styles.keyboardView}
-        behavior={Platform.OS === 'ios' ? 'padding' : undefined}
-        keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
-      >
-        <AIGuruHeader navigation={navigation} onClearChat={handleClearChat} />
+      <SafeAreaView style={styles.safeArea} edges={['top']}>
+        <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
 
-        <ScrollView
-          ref={scrollRef}
-          showsVerticalScrollIndicator={false}
-          keyboardShouldPersistTaps="handled"
-          contentContainerStyle={styles.scrollContent}
-          onContentSizeChange={() => {
-            if (hasConversation) {
-              scrollToBottom();
-            }
-          }}
+        <KeyboardAvoidingView
+          style={styles.keyboardView}
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 0 : 0}
         >
-          <CurrentFarmCard onSwitchFarm={handleSwitchFarm} />
-
-          {!hasConversation && (
-            <>
-              <AIReadySection onVoicePress={handleVoicePress} />
-
-              <SuggestedQuestions
-                questions={SUGGESTED_QUESTIONS}
-                onQuestionPress={handleSuggestedQuestion}
-              />
-            </>
-          )}
-
-          {hasConversation && (
-            <View style={styles.chatSection}>
-              <View style={styles.chatHeader}>
-                <View>
-                  <Text style={styles.chatTitle}>Farm Assistant Chat</Text>
-
-                  <Text style={styles.chatSubtitle}>
-                    AI answers use Patil Farm context
-                  </Text>
-                </View>
-
-                <View style={styles.onlineBadge}>
-                  <View style={styles.onlineDot} />
-
-                  <Text style={styles.onlineText}>Online</Text>
-                </View>
-              </View>
-
-              <View style={styles.messagesContainer}>
-                {messages.map(message => (
-                  <ChatMessage key={message.id} message={message} />
-                ))}
-
-                {isTyping && <TypingIndicator />}
-              </View>
-
-              <SuggestedQuestions
-                questions={[
-                  'Should I irrigate tomorrow?',
-                  'Check crop disease risk',
-                  'Suggest fertilizer dose',
-                ]}
-                onQuestionPress={handleSuggestedQuestion}
-              />
-            </View>
-          )}
-        </ScrollView>
-
-        <View style={styles.composerArea}>
-          <ChatComposer
-            value={inputText}
-            onChangeText={setInputText}
-            onSend={handleSend}
-            onVoicePress={handleVoicePress}
-            onAttachmentPress={handleAttachmentPress}
+          <AIGuruHeader
+            navigation={navigation}
+            language={language}
+            onLanguageChange={code => dispatch(setAiGuruLanguage(code))}
+            onHistoryPress={handleOpenHistory}
           />
-        </View>
 
-        <View style={styles.tabBarSpace} />
+          <ScrollView
+            ref={scrollRef}
+            style={styles.scroll}
+            showsVerticalScrollIndicator={false}
+            keyboardShouldPersistTaps="handled"
+            contentContainerStyle={[
+              styles.scrollContent,
+              pendingPhoto && styles.scrollContentWithPhoto,
+            ]}
+            onContentSizeChange={() => {
+              if (hasConversation && stickToBottomRef.current) {
+                scrollToBottom();
+              }
+            }}
+            onScrollBeginDrag={() => {
+              stickToBottomRef.current = false;
+            }}
+            scrollEventThrottle={16}
+          >
+            <CurrentFarmCard
+              farm={activeFarm}
+              onSwitchFarm={() => setFarmPickerVisible(true)}
+            />
 
-        <BottomTabBar navigation={navigation} active="AIGuru" />
-      </KeyboardAvoidingView>
-    </SafeAreaView>
+            {loadingSession && (
+              <View style={styles.loader}>
+                <ActivityIndicator color={COLORS.green} />
+                <Text style={styles.loaderText}>Opening chat…</Text>
+              </View>
+            )}
+
+            {!hasConversation && !loadingSession && (
+              <AIReadySection
+                name={firstName}
+                onVoicePress={handleVoicePress}
+              />
+            )}
+
+            {hasConversation && !loadingSession && (
+              <View style={styles.chatSection}>
+                <FadeInUp style={styles.chatHeader}>
+                  <View style={styles.chatLine} />
+                  <Text style={styles.chatTitle}>Today</Text>
+                  <View style={styles.chatLine} />
+
+                  <PressableScale
+                    onPress={handleClearChat}
+                    style={styles.clearButton}
+                  >
+                    <Trash2
+                      size={rf(14)}
+                      color={COLORS.danger}
+                      strokeWidth={2.3}
+                    />
+                    <Text style={styles.clearText}>Clear</Text>
+                  </PressableScale>
+                </FadeInUp>
+
+                <View style={styles.messagesContainer}>
+                  <ChatMessage message={welcomeMessage} animate={false} />
+
+                  {messages.map((message, index) => (
+                    <ChatMessage
+                      key={message.id}
+                      message={message}
+                      // only fresh messages animate in, not a whole old chat
+                      animate={index >= messages.length - 2}
+                      onActionPress={handleActionPress}
+                      onFeedback={handleFeedback}
+                    />
+                  ))}
+
+                  {sending && <TypingIndicator />}
+                </View>
+              </View>
+            )}
+          </ScrollView>
+
+          <View style={styles.composerArea}>
+            {pendingPhoto && (
+              <FadeInUp style={styles.photoPreviewWrap}>
+                <Glass tint={0.75} style={styles.photoPreview}>
+                  <Image
+                    source={{ uri: pendingPhoto.uri }}
+                    style={styles.photoThumb}
+                  />
+                  <View style={styles.photoInfo}>
+                    <Text style={styles.photoTitle}>Crop photo attached</Text>
+                    <Text style={styles.photoText}>
+                      Add a question or just send
+                    </Text>
+                  </View>
+                  <PressableScale
+                    hitSlop={10}
+                    onPress={() => setPendingPhoto(null)}
+                    style={styles.photoRemove}
+                  >
+                    <X size={rf(15)} color={COLORS.muted} strokeWidth={2.6} />
+                  </PressableScale>
+                </Glass>
+              </FadeInUp>
+            )}
+
+            <ChatComposer
+              value={inputText}
+              onChangeText={setInputText}
+              onSend={handleSend}
+              onVoicePress={handleVoicePress}
+              onAttachmentPress={handleAttachmentPress}
+              hasAttachment={Boolean(pendingPhoto)}
+              disabled={sending}
+            />
+          </View>
+
+          <View style={styles.tabBarSpace} />
+
+          <BottomTabBar navigation={navigation} active="AIGuru" />
+        </KeyboardAvoidingView>
+
+        <FarmPickerSheet
+          visible={farmPickerVisible}
+          farms={farms}
+          activeFieldId={activeFieldId}
+          onSelect={handleSelectFarm}
+          onAddFarm={handleAddFarm}
+          onClose={() => setFarmPickerVisible(false)}
+        />
+
+        <ChatHistorySheet
+          visible={historyVisible}
+          sessions={sessions}
+          loading={sessionsLoading}
+          activeSessionId={sessionId}
+          onOpen={handleOpenSession}
+          onDelete={handleDeleteSession}
+          onNewChat={handleNewChat}
+          onClearAll={handleClearAll}
+          onClose={() => setHistoryVisible(false)}
+        />
+
+        <VoiceAssistantModal
+          visible={voiceVisible}
+          onClose={() => setVoiceVisible(false)}
+          onTranscript={handleVoiceTranscript}
+        />
+      </SafeAreaView>
+    </View>
   );
 }
 const styles = StyleSheet.create({
+  root: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
   safeArea: {
     flex: 1,
-    backgroundColor: PAGE_BG,
   },
   keyboardView: {
     flex: 1,
   },
+  // Header and composer float over the scroll view as glass
+  scroll: {
+    marginTop: -HEADER_HEIGHT,
+  },
   scrollContent: {
-    paddingBottom: 23,
-    backgroundColor: '#FFFFFF',
+    paddingTop: HEADER_HEIGHT,
+    paddingBottom: COMPOSER_HEIGHT + 12,
+  },
+  scrollContentWithPhoto: {
+    paddingBottom: COMPOSER_HEIGHT + 82,
+  },
+  loader: {
+    marginTop: 48,
+    alignItems: 'center',
+    gap: 10,
+  },
+  loaderText: {
+    fontSize: rf(12),
+    fontWeight: '700',
+    color: COLORS.muted,
   },
   chatSection: {
-    paddingTop: 24,
+    paddingTop: 18,
   },
   chatHeader: {
-    marginHorizontal: width * 0.037,
-    marginBottom: 18,
+    marginHorizontal: GUTTER,
+    marginBottom: 16,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
+    gap: 10,
+  },
+  chatLine: {
+    flex: 1,
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: COLORS.border,
   },
   chatTitle: {
-    fontSize: rf(18),
-    lineHeight: rf(22),
-    fontWeight: '900',
-    color: DARK,
-    letterSpacing: -0.25,
+    fontSize: rf(12),
+    fontWeight: '600',
+    color: COLORS.faint,
   },
-  chatSubtitle: {
-    marginTop: 3,
-    fontSize: rf(10),
-    fontWeight: '500',
-    color: MUTED,
-  },
-  onlineBadge: {
-    height: 28,
+  clearButton: {
+    height: 30,
     paddingHorizontal: 10,
-    borderRadius: 14,
-    backgroundColor: '#ECFDF3',
+    borderRadius: 15,
+    backgroundColor: COLORS.dangerLight,
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 6,
+    gap: 5,
   },
-  onlineDot: {
-    width: 7,
-    height: 7,
-    borderRadius: 4,
-    backgroundColor: '#22C55E',
-  },
-  onlineText: {
-    fontSize: rf(9),
-    fontWeight: '900',
-    color: '#16883E',
+  clearText: {
+    fontSize: rf(10.5),
+    fontWeight: '800',
+    color: COLORS.danger,
   },
   messagesContainer: {
-    paddingHorizontal: width * 0.037,
+    paddingHorizontal: GUTTER,
   },
   composerArea: {
-    backgroundColor: '#FFFFFF',
+    marginTop: -COMPOSER_HEIGHT,
+    zIndex: 10,
+  },
+  photoPreviewWrap: {
+    marginHorizontal: GUTTER,
+    marginTop: 8,
+  },
+  photoPreview: {
+    padding: 8,
+    borderRadius: 20,
+    borderColor: COLORS.greenBorder,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+  photoThumb: {
+    width: 46,
+    height: 46,
+    borderRadius: 14,
+  },
+  photoInfo: {
+    flex: 1,
+  },
+  photoTitle: {
+    fontSize: rf(12),
+    fontWeight: '800',
+    color: COLORS.greenDark,
+  },
+  photoText: {
+    marginTop: 1,
+    fontSize: rf(10.5),
+    fontWeight: '600',
+    color: COLORS.muted,
+  },
+  photoRemove: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: COLORS.soft,
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   tabBarSpace: {
     height: 86,
-    backgroundColor: '#FFFFFF',
   },
 });

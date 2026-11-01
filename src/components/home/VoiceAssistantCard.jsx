@@ -10,6 +10,7 @@ import {
   View,
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
+import {useTranslation} from 'react-i18next';
 import {Mic} from 'lucide-react-native';
 
 const {width} = Dimensions.get('window');
@@ -36,6 +37,7 @@ const EXAMPLES = [
  * button and example phrases that change every few seconds.
  */
 export default function VoiceAssistantCard({onPress}) {
+  const {t} = useTranslation();
   const press = useRef(new Animated.Value(1)).current;
   const pulse = useRef(new Animated.Value(0)).current;
   const exampleOpacity = useRef(new Animated.Value(1)).current;
@@ -128,10 +130,10 @@ export default function VoiceAssistantCard({onPress}) {
               style={[styles.title, s.title]}
               numberOfLines={1}
               adjustsFontSizeToFit>
-              Speak to KhetiMaster
+              {t('home.speak_title')}
             </Text>
             <Text style={[styles.subtitle, s.subtitle]} numberOfLines={1}>
-              बोलें और काम तुरंत करें
+              {t('home.speak_subtitle')}
             </Text>
             <Animated.Text
               style={[styles.example, s.example, {opacity: exampleOpacity}]}
@@ -166,7 +168,7 @@ export default function VoiceAssistantCard({onPress}) {
                   <Mic size={s.iconSize} color="#FFFFFF" strokeWidth={2.6} />
                 </View>
               </View>
-              <Text style={[styles.buttonText, s.buttonText]}>Tap to speak</Text>
+              <Text style={[styles.buttonText, s.buttonText]}>{t('home.tap_to_speak')}</Text>
             </View>
           </View>
         </ImageBackground>

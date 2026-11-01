@@ -201,5 +201,64 @@ const API_ENDPOINTS = {
 
   MARKET_DEAL_REVIEW: dealId =>
     `/api/market/deals/${dealId}/review`,
+
+  /*
+  |--------------------------------------------------------------------------
+  | AI GURU
+  |--------------------------------------------------------------------------
+  */
+
+  AI_GURU_CHAT: '/api/ai-guru/chat',
+
+  AI_GURU_USAGE: '/api/ai-guru/usage',
+
+  // GET list, DELETE clears all
+  AI_GURU_SESSIONS: '/api/ai-guru/sessions',
+
+  // GET with messages, PATCH, DELETE
+  AI_GURU_SESSION: sessionId => `/api/ai-guru/sessions/${sessionId}`,
+
+  AI_GURU_FEEDBACK: messageId =>
+    `/api/ai-guru/messages/${messageId}/feedback`,
+  /*
+  |--------------------------------------------------------------------------
+  | COMMUNITY (posts, reels, comments, follows, profiles)
+  |--------------------------------------------------------------------------
+  */
+
+  // type: post | reel, scope: all | following, hashtag, page, limit
+  COMMUNITY_FEED: '/api/community/feed',
+
+  COMMUNITY_REEL_CREATORS: '/api/community/reel-creators',
+
+  COMMUNITY_SEARCH: '/api/community/search',
+
+  COMMUNITY_SAVED: '/api/community/saved',
+
+  COMMUNITY_POSTS: '/api/community/posts',
+
+  // GET, PATCH, DELETE
+  COMMUNITY_POST: postId => `/api/community/posts/${postId}`,
+
+  // action: like | save | view | share (POST adds, DELETE removes like / save)
+  COMMUNITY_POST_ACTION: (postId, action) =>
+    `/api/community/posts/${postId}/${action}`,
+
+  COMMUNITY_POST_COMMENTS: postId =>
+    `/api/community/posts/${postId}/comments`,
+
+  COMMUNITY_COMMENT: commentId => `/api/community/comments/${commentId}`,
+
+  COMMUNITY_MY_PROFILE: '/api/community/profile',
+
+  COMMUNITY_USER: userId => `/api/community/users/${userId}`,
+
+  COMMUNITY_USER_POSTS: userId => `/api/community/users/${userId}/posts`,
+
+  // list: followers | following
+  COMMUNITY_USER_FOLLOWS: (userId, list) =>
+    `/api/community/users/${userId}/${list}`,
+
+  COMMUNITY_FOLLOW: userId => `/api/community/users/${userId}/follow`,
 };
 export default API_ENDPOINTS;

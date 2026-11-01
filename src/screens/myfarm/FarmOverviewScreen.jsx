@@ -10,6 +10,7 @@ import {
   ScrollView,
   StyleSheet,
   Text,
+  TouchableOpacity,
   View,
   Dimensions,
 } from 'react-native';
@@ -19,6 +20,8 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import {useDispatch, useSelector} from 'react-redux';
 
 import {
+  Bot,
+  ChevronRight,
   RefreshCw,
   Satellite,
   Sprout,
@@ -1114,6 +1117,38 @@ export default function FarmOverviewScreen({
         ====================================================== */}
 
         <FarmAdvisorySection farm={farm} />
+
+        {/* ======================================================
+            AI GURU — chat about this farm with its advisory,
+            weather and crop stage as context
+        ====================================================== */}
+
+        {!!farm?._id && (
+          <TouchableOpacity
+            activeOpacity={0.88}
+            style={styles.aiGuruCard}
+            onPress={() =>
+              navigation.navigate('AIGuru', {
+                fieldId: String(farm._id),
+              })
+            }>
+            <View style={styles.aiGuruIcon}>
+              <Bot size={20} color="#FFFFFF" strokeWidth={2.3} />
+            </View>
+
+            <View style={styles.aiGuruText}>
+              <Text style={styles.aiGuruTitle}>
+                Ask AI Guru about this farm
+              </Text>
+              <Text style={styles.aiGuruSubtitle}>
+                Irrigation, disease risk, fertilizer and prices for{' '}
+                {farm.fieldName || 'your farm'}
+              </Text>
+            </View>
+
+            <ChevronRight size={20} color="#16883E" strokeWidth={2.4} />
+          </TouchableOpacity>
+        )}
       </ScrollView>
     </SafeAreaView>
   );
@@ -1123,6 +1158,44 @@ const styles = StyleSheet.create({
   safeArea: {
     flex: 1,
     backgroundColor: BACKGROUND,
+  },
+
+  aiGuruCard: {
+    marginTop: 24,
+    padding: 16,
+    borderRadius: 22,
+    backgroundColor: '#F1F8F3',
+    borderWidth: 1,
+    borderColor: '#DCEFE2',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 12,
+  },
+
+  aiGuruIcon: {
+    width: 42,
+    height: 42,
+    borderRadius: 21,
+    backgroundColor: '#16883E',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  aiGuruText: {
+    flex: 1,
+  },
+
+  aiGuruTitle: {
+    fontSize: 15,
+    fontWeight: '900',
+    color: '#171D2C',
+  },
+
+  aiGuruSubtitle: {
+    marginTop: 3,
+    fontSize: 11.5,
+    fontWeight: '600',
+    color: '#5F6B7D',
   },
 
   scrollContent: {

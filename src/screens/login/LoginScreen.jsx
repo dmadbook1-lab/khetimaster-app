@@ -26,6 +26,7 @@ import {
   Mail,
 } from 'lucide-react-native';
 import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import {
   sendOtp,
   selectIsLoading,
@@ -34,6 +35,7 @@ import {
 const { width, height } = Dimensions.get('window');
 const GREEN = '#159447';
 const LoginScreen = ({ navigation }) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const isLoading = useSelector(selectIsLoading);
   const authError = useSelector(selectAuthError);
@@ -86,8 +88,11 @@ const LoginScreen = ({ navigation }) => {
           <View style={styles.header}>
             <TouchableOpacity
               activeOpacity={0.75}
-              onPress={() => navigation.navigate('language')}
+              onPress={() =>
+                navigation.replace('language', { redirectTo: 'Login' })
+              }
               style={styles.backBtn}
+              accessibilityLabel={t('login.change_language')}
             >
               <ArrowLeft size={23} color="#087235" strokeWidth={2.5} />
             </TouchableOpacity>
@@ -119,19 +124,20 @@ const LoginScreen = ({ navigation }) => {
 
           <View style={styles.content}>
             <Text style={styles.title}>
-              Welcome to{'\n'}
+              {t('login.welcome')}
+              {'\n'}
               <Text style={styles.greenText}>KhetiMaster 👋</Text>
             </Text>
 
             <Text style={styles.subtitle}>
-              Enter your email address to continue
+              {t('login.subtitle')}
             </Text>
 
             {}
             {}
             {}
 
-            <Text style={styles.label}>Email Address</Text>
+            <Text style={styles.label}>{t('login.email_label')}</Text>
 
             {}
             {}
@@ -184,7 +190,7 @@ const LoginScreen = ({ navigation }) => {
 
             {email.length > 0 && !isValidEmail(email) && (
               <Text style={styles.validationText}>
-                Please enter a valid email address
+                {t('login.invalid_email')}
               </Text>
             )}
 
@@ -198,7 +204,7 @@ const LoginScreen = ({ navigation }) => {
               <Info size={14} color="#738096" />
 
               <Text style={styles.infoText}>
-                We'll send you a verification code
+                {t('login.info')}
               </Text>
             </View>
 
@@ -229,11 +235,11 @@ const LoginScreen = ({ navigation }) => {
                   <>
                     <ActivityIndicator size="small" color="#FFFFFF" />
 
-                    <Text style={styles.buttonText}>Sending OTP...</Text>
+                    <Text style={styles.buttonText}>{t('login.sending')}</Text>
                   </>
                 ) : (
                   <>
-                    <Text style={styles.buttonText}>Get OTP</Text>
+                    <Text style={styles.buttonText}>{t('login.get_otp')}</Text>
 
                     <ArrowRight size={22} color="#FFFFFF" strokeWidth={2.4} />
                   </>
@@ -248,7 +254,7 @@ const LoginScreen = ({ navigation }) => {
             <View style={styles.orRow}>
               <View style={styles.orLine} />
 
-              <Text style={styles.orText}>OR</Text>
+              <Text style={styles.orText}>{t('login.or')}</Text>
 
               <View style={styles.orLine} />
             </View>
@@ -262,21 +268,21 @@ const LoginScreen = ({ navigation }) => {
                 icon={<ShieldCheck size={23} color={GREEN} />}
                 bg="#EFFFF5"
                 border="#CFF6DD"
-                title="Secure Login"
+                title={t('login.secure_login')}
               />
 
               <Feature
                 icon={<Zap size={23} color="#FF8A2A" />}
                 bg="#FFF6EB"
                 border="#FFE1BD"
-                title="Quick Verification"
+                title={t('login.quick_verification')}
               />
 
               <Feature
                 icon={<Users size={23} color="#4387FF" />}
                 bg="#EEF6FF"
                 border="#D6E8FF"
-                title="Trusted by Farmers"
+                title={t('login.trusted')}
               />
             </View>
 
@@ -285,9 +291,11 @@ const LoginScreen = ({ navigation }) => {
             {}
 
             <Text style={styles.termsText}>
-              By continuing, you agree to our{'\n'}
-              <Text style={styles.termsGreen}>Terms of Service</Text> and{' '}
-              <Text style={styles.termsGreen}>Privacy Policy</Text>
+              {t('login.terms_prefix')}
+              {'\n'}
+              <Text style={styles.termsGreen}>{t('login.terms')}</Text>{' '}
+              {t('login.and')}{' '}
+              <Text style={styles.termsGreen}>{t('login.privacy')}</Text>
             </Text>
           </View>
         </ScrollView>
