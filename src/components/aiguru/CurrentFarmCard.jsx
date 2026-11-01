@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React from 'react';
 import { Text, StyleSheet } from 'react-native';
 import { Sprout, MapPin, ChevronDown } from 'lucide-react-native';
@@ -8,12 +9,13 @@ import { COLORS, Glass, PressableScale, rf, width } from './theme';
  * farm: the selected farm, or null for general farming.
  */
 export default function CurrentFarmCard({ farm, onSwitchFarm }) {
-  const cropName = farm?.isBarrenLand ? 'Barren land' : farm?.cropName;
+  const { t } = useTranslation();
+  const cropName = farm?.isBarrenLand ? t('common.barren_land') : farm?.cropName;
   const Icon = farm ? MapPin : Sprout;
 
   return (
     <PressableScale
-      accessibilityLabel="Change farm"
+      accessibilityLabel={t('aiGuru.change_farm')}
       onPress={onSwitchFarm}
       scaleTo={0.96}
       style={styles.touch}
@@ -27,7 +29,7 @@ export default function CurrentFarmCard({ farm, onSwitchFarm }) {
               {cropName ? ` · ${cropName}` : ''}
             </>
           ) : (
-            <Text style={styles.strong}>General farming</Text>
+            <Text style={styles.strong}>{t('aiGuru.general_farming')}</Text>
           )}
         </Text>
         <ChevronDown size={rf(15)} color={COLORS.muted} strokeWidth={2.4} />

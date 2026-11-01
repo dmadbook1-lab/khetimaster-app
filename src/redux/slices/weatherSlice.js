@@ -1,3 +1,4 @@
+import i18n from '../../translation/i18n';
 import {createSlice, createAsyncThunk} from '@reduxjs/toolkit';
 import axios from 'axios';
 
@@ -243,10 +244,10 @@ export const fetchLocalWeather = createAsyncThunk(
     } catch (error) {
       return rejectWithValue(
         error?.response?.status === 429
-          ? 'Weather service is busy. Please try again in a minute.'
+          ? i18n.t('weather.err_busy')
           : error?.response
-          ? 'Couldn’t load the weather. Please try again.'
-          : 'No internet connection. Weather needs a connection.',
+          ? i18n.t('weather.err_load')
+          : i18n.t('weather.err_offline'),
       );
     }
   },

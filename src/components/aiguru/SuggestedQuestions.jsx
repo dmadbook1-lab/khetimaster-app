@@ -1,21 +1,24 @@
+import { useTranslation } from 'react-i18next';
 import React from 'react';
 import { Text, StyleSheet, ScrollView } from 'react-native';
 import { COLORS, GUTTER, FadeInUp, PressableScale, rf } from './theme';
 
-const DEFAULT_QUESTIONS = [
-  'Will my crop need irrigation?',
-  'Any disease risk this week?',
-  'What fertilizer should I apply?',
+const DEFAULT_QUESTION_KEYS = [
+  'aiGuru.q_irrigation',
+  'aiGuru.q_disease_risk',
+  'aiGuru.q_fertilizer',
 ];
 
 /* One scrolling row of quick follow-up questions. */
 export default function SuggestedQuestions({
-  questions = DEFAULT_QUESTIONS,
+  questions,
   onQuestionPress,
 }) {
+  const { t } = useTranslation();
+  questions = questions || DEFAULT_QUESTION_KEYS.map(key => t(key));
   return (
     <FadeInUp delay={120} style={styles.wrap}>
-      <Text style={styles.title}>Ask next</Text>
+      <Text style={styles.title}>{t('aiGuru.ask_next')}</Text>
       <ScrollView
         horizontal
         showsHorizontalScrollIndicator={false}

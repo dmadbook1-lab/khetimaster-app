@@ -1,3 +1,4 @@
+import i18n from '../translation/i18n';
 import { MANDI_ROUTES } from '../constants/mandiRoutes';
 import { MARKET_ROUTES } from '../constants/marketRoutes';
 
@@ -5,7 +6,7 @@ const COMMANDS = [
   {
     id: 'labour',
     route: 'LabourBooking',
-    message: 'Opening labour hiring…',
+    message: 'voice.open_labour',
     phrases: [
       'labour',
       'labor',
@@ -32,7 +33,7 @@ const COMMANDS = [
   {
     id: 'mandi',
     route: MANDI_ROUTES.HOME,
-    message: 'Opening mandi prices…',
+    message: 'voice.open_mandi',
     phrases: [
       'mandi',
       'rates',
@@ -66,7 +67,7 @@ const COMMANDS = [
   {
     id: 'tractor',
     route: 'TractorBooking',
-    message: 'Opening tractor and machinery…',
+    message: 'voice.open_machinery',
     phrases: [
       'tractor',
       'machinery',
@@ -90,7 +91,7 @@ const COMMANDS = [
   {
     id: 'doctor',
     route: 'DoctorMain',
-    message: 'Opening veterinary services…',
+    message: 'voice.open_vet',
     phrases: [
       'doctor',
       'vet',
@@ -108,7 +109,7 @@ const COMMANDS = [
   {
     id: 'farms',
     route: 'MyFarms',
-    message: 'Opening your farms…',
+    message: 'voice.open_farms',
     phrases: [
       'farm',
       'farms',
@@ -127,7 +128,7 @@ const COMMANDS = [
   {
     id: 'crop-monitoring',
     route: 'DiseaseDetection',
-    message: 'Opening crop services…',
+    message: 'voice.open_crop_services',
     phrases: [
       'crop',
       'crops',
@@ -147,7 +148,7 @@ const COMMANDS = [
   {
     id: 'nursery',
     route: 'NurseryHome',
-    message: 'Opening nursery…',
+    message: 'voice.open_nursery',
     phrases: [
       'nursery',
       'plants',
@@ -166,7 +167,7 @@ const COMMANDS = [
   {
     id: 'profile',
     route: 'Profile',
-    message: 'Opening your profile…',
+    message: 'voice.open_profile',
     phrases: [
       'profile',
       'meri profile kholo',
@@ -179,7 +180,7 @@ const COMMANDS = [
   {
     id: 'agri-products',
     route: 'AgriProducts',
-    message: 'Opening agriculture products…',
+    message: 'voice.open_agri_products',
     phrases: [
       'products',
       'product',
@@ -195,7 +196,7 @@ const COMMANDS = [
   {
     id: 'government-schemes',
     route: 'GovernmentSchemes',
-    message: 'Opening government schemes…',
+    message: 'voice.open_schemes',
     phrases: [
       'schemes',
       'scheme',
@@ -212,7 +213,7 @@ const COMMANDS = [
   {
     id: 'knowledge-center',
     route: 'AgricultureNews',
-    message: 'Opening the knowledge center…',
+    message: 'voice.open_knowledge',
     phrases: [
       'news',
       'articles',
@@ -230,7 +231,7 @@ const COMMANDS = [
 COMMANDS.push({
   id: 'trade',
   route: MARKET_ROUTES.HOME,
-  message: 'Opening trade and commodities…',
+  message: 'voice.open_trade',
   phrases: [
     'trade',
     'trading',
@@ -320,7 +321,9 @@ function findCropPrice(normalized) {
         id: `mandi-${cropId}`,
         route: MANDI_ROUTES.CROP,
         params: { cropId, cropName },
-        message: `Opening ${cropName} prices…`,
+        message: i18n.t('voice.open_crop_prices', {
+          crop: i18n.exists(`crops.${cropId}`) ? i18n.t(`crops.${cropId}`) : cropName,
+        }),
       };
     }
   }
@@ -406,8 +409,7 @@ export function resolveVoiceCommand(transcript = '') {
     ) {
       return {
         type: 'greeting',
-        response:
-          "Hello! How's your day going? I'm KhetiMaster, your farming assistant. Say a screen name like mandi, tractor, labour or doctor, or ask for a crop price like \"pyaz ka bhav\", and I'll open it for you.",
+        response: i18n.t('voice.greeting'),
       };
     }
 
@@ -420,7 +422,7 @@ export function resolveVoiceCommand(transcript = '') {
     type: 'navigate',
     id: command.id,
     route: command.route,
-    message: command.message,
+    message: i18n.t(command.message),
   };
 }
 

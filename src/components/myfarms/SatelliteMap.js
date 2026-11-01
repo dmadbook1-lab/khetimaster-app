@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+import i18n from '../../translation/i18n';
 import React, {
   useCallback,
   useEffect,
@@ -30,6 +32,7 @@ export default function SatelliteMap({
   selectedIndex,
   onInteractionChange,
 }) {
+  const { t } = useTranslation();
   const webViewRef = useRef(null);
 
   const [mapReady, setMapReady] =
@@ -54,6 +57,7 @@ export default function SatelliteMap({
       return `
         <!DOCTYPE html>
         <html>
+          <head><meta charset="utf-8" /></head>
           <body style="margin:0;background:#F8FAFC;">
             <div style="
               height:100vh;
@@ -64,7 +68,7 @@ export default function SatelliteMap({
               color:#6B7280;
               font-size:13px;
             ">
-              Farm boundary unavailable
+              ${i18n.t('farmWeather.boundary_unavailable')}
             </div>
 
             <script>
@@ -170,7 +174,7 @@ export default function SatelliteMap({
       JSON.stringify(selectedSatellite);
 
     const indexLabel = String(
-      selectedIndex || 'Satellite',
+      selectedIndex || i18n.t('farms.satellite'),
     ).replace(/[^A-Za-z0-9 ]/g, ' ');
 
     return `
@@ -179,6 +183,7 @@ export default function SatelliteMap({
       <html>
         <head>
 
+          <meta charset="utf-8" />
           <meta
             name="viewport"
             content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
@@ -385,11 +390,11 @@ export default function SatelliteMap({
           </div>
 
           <div class="map-tools">
-            <button id="zoomIn" aria-label="Zoom in">+</button>
+            <button id="zoomIn" aria-label="${i18n.t('farms.zoom_in')}">+</button>
             <div class="divider"></div>
-            <button id="zoomOut" aria-label="Zoom out">&minus;</button>
+            <button id="zoomOut" aria-label="${i18n.t('farms.zoom_out')}">&minus;</button>
             <div class="divider"></div>
-            <button id="recenter" aria-label="Fit farm">
+            <button id="recenter" aria-label="${i18n.t('farms.fit_farm')}">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#0D6B30" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="12" cy="12" r="3"/>
                 <path d="M12 2v3M12 19v3M2 12h3M19 12h3"/>
@@ -399,21 +404,21 @@ export default function SatelliteMap({
           </div>
 
           <div id="pinchHint" class="pinch-hint">
-            Pinch to zoom &middot; drag to move
+            ${i18n.t('farms.pinch_hint')}
           </div>
 
           <div
             id="cloudWarning"
             class="cloud-warning"
             style="display:none;">
-            High cloud cover may affect image quality
+            ${i18n.t('farms.cloud_warning')}
           </div>
 
           <div
             id="empty"
             class="empty"
             style="display:none;">
-            No satellite image available
+            ${i18n.t('farms.no_image')}
           </div>
 
           <script>
@@ -632,8 +637,8 @@ export default function SatelliteMap({
         <SatelliteScanLoader
           title={
             indexLoading
-              ? 'Scanning your field'
-              : 'Loading map'
+              ? t('farms.scanning_field')
+              : t('farms.loading_map')
           }
           mapOnly={!indexLoading}
         />

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React from 'react';
 import { Pressable, ScrollView, StyleSheet, Text, View } from 'react-native';
 import { Check, MapPin, Plus, Sprout } from 'lucide-react-native';
@@ -18,6 +19,7 @@ export default function FarmPickerSheet({
   onAddFarm,
   onClose,
 }) {
+  const { t } = useTranslation();
   const renderRow = ({ id, title, subtitle, Icon }) => {
     const selected = (activeFieldId || null) === id;
 
@@ -58,26 +60,30 @@ export default function FarmPickerSheet({
   return (
     <BottomSheet
       visible={visible}
-      title="Ask AI Guru about"
-      subtitle="Pick a farm to get advice for that field"
+      title={t('aiGuru.ask_about')}
+      subtitle={t('aiGuru.pick_farm')}
       maxHeight="75%"
       onClose={onClose}
     >
       <ScrollView style={styles.list} showsVerticalScrollIndicator={false}>
         {renderRow({
           id: null,
-          title: 'General farming',
-          subtitle: 'Any crop, weather, prices or app help',
+          title: t('aiGuru.general_farming'),
+          subtitle: t('aiGuru.general_farming_sub'),
           Icon: Sprout,
         })}
 
         {farms.map(farm =>
           renderRow({
             id: String(farm._id),
-            title: farm.fieldName || 'My farm',
+            title: farm.fieldName || t('common.my_farm'),
             subtitle: `${
-              farm.isBarrenLand ? 'Barren land' : farm.cropName || 'Crop'
-            } • ${Number(farm.acre || 0).toFixed(2)} acre`,
+              farm.isBarrenLand
+                ? t('common.barren_land')
+                : farm.cropName || t('common.crop')
+            } • ${t('common.acre_count', {
+              n: Number(farm.acre || 0).toFixed(2),
+            })}`,
             Icon: MapPin,
           }),
         )}
@@ -91,7 +97,7 @@ export default function FarmPickerSheet({
         ]}
       >
         <Plus size={18} color={COLORS.green} strokeWidth={2.6} />
-        <Text style={styles.addText}>Add a new farm</Text>
+        <Text style={styles.addText}>{t('aiGuru.add_new_farm')}</Text>
       </Pressable>
     </BottomSheet>
   );

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React from 'react';
 import {
   ActivityIndicator,
@@ -43,18 +44,19 @@ export default function ChatHistorySheet({
   onClearAll,
   onClose,
 }) {
+  const { t } = useTranslation();
   return (
-    <BottomSheet visible={visible} title="Your chats" onClose={onClose}>
+    <BottomSheet visible={visible} title={t('aiGuru.your_chats')} onClose={onClose}>
       <PressableScale onPress={onNewChat} scaleTo={0.97} style={styles.newChat}>
         <Plus size={20} color="#FFFFFF" strokeWidth={2.6} />
-        <Text style={styles.newChatText}>New chat</Text>
+        <Text style={styles.newChatText}>{t('aiGuru.new_chat')}</Text>
       </PressableScale>
 
       {loading && sessions.length === 0 ? (
         <ActivityIndicator color={COLORS.green} style={styles.loader} />
       ) : sessions.length === 0 ? (
         <Text style={styles.empty}>
-          No chats yet. Ask AI Guru your first question.
+          {t('aiGuru.no_chats')}
         </Text>
       ) : (
         <ScrollView style={styles.list} showsVerticalScrollIndicator={false}>
@@ -93,7 +95,7 @@ export default function ChatHistorySheet({
                   </Text>
                   <Pressable
                     hitSlop={10}
-                    accessibilityLabel="Delete chat"
+                    accessibilityLabel={t('aiGuru.delete_chat')}
                     onPress={() => onDelete(session.id)}
                   >
                     <Trash2 size={16} color={COLORS.faint} strokeWidth={2.2} />
@@ -107,7 +109,7 @@ export default function ChatHistorySheet({
 
       {sessions.length > 0 && (
         <Pressable onPress={onClearAll} style={styles.clearAll}>
-          <Text style={styles.clearAllText}>Clear all chats</Text>
+          <Text style={styles.clearAllText}>{t('aiGuru.clear_all')}</Text>
         </Pressable>
       )}
     </BottomSheet>

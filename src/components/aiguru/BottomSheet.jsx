@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React, { useEffect, useRef } from 'react';
 import {
   Animated,
@@ -20,6 +21,7 @@ export default function BottomSheet({
   onClose,
   children,
 }) {
+  const { t } = useTranslation();
   const progress = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -87,7 +89,7 @@ export default function BottomSheet({
             </View>
             <Pressable
               hitSlop={10}
-              accessibilityLabel="Close"
+              accessibilityLabel={t('common.close')}
               onPress={close}
               style={styles.close}
             >

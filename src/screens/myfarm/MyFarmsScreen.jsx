@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React, {
   useCallback,
   useEffect,
@@ -61,6 +62,7 @@ const rf = size => {
 export default function MyFarmsScreen({
   navigation,
 }) {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
 
   /*
@@ -331,14 +333,13 @@ export default function MyFarmsScreen({
           <Text
             style={styles.stateTitle}
           >
-            Login required
+            {t('farms.login_required')}
           </Text>
 
           <Text
             style={styles.stateText}
           >
-            Please log in to view your
-            farms.
+            {t('farms.login_required_text')}
           </Text>
         </View>
 
@@ -402,16 +403,16 @@ export default function MyFarmsScreen({
               style={styles.sectionTitle}
             >
               {activeFilter === 'All'
-                ? 'All Farms'
-                : `${activeFilter} Farms`}
+                ? t('farms.all_farms')
+                : t(`farms.filter_${activeFilter.toLowerCase()}_farms`)}
             </Text>
 
             <Text
               style={styles.sectionSubtitle}
             >
               {searchQuery
-                ? `${filteredFarms.length} matching farms`
-                : `${farms.length} registered farms`}
+                ? t('farms.matching_count', { n: filteredFarms.length })
+                : t('farms.registered_count', { n: farms.length })}
             </Text>
           </View>
 
@@ -475,7 +476,7 @@ export default function MyFarmsScreen({
               <Text
                 style={styles.retryText}
               >
-                Try Again
+                {t('common.try_again')}
               </Text>
             </TouchableOpacity>
           </View>
@@ -498,16 +499,16 @@ export default function MyFarmsScreen({
               style={styles.emptyTitle}
             >
               {farms.length === 0
-                ? 'No farms added yet'
-                : 'No matching farms'}
+                ? t('farms.none_yet')
+                : t('farms.no_matching')}
             </Text>
 
             <Text
               style={styles.emptyText}
             >
               {farms.length === 0
-                ? 'Add your first farm by drawing its boundary on the map.'
-                : 'Try another farm name, crop, or filter.'}
+                ? t('farms.none_yet_text')
+                : t('farms.no_matching_text')}
             </Text>
 
             {farms.length === 0 && (
@@ -525,7 +526,7 @@ export default function MyFarmsScreen({
                 <Text
                   style={styles.retryText}
                 >
-                  Add Your Farm
+                  {t('farms.add_your_farm')}
                 </Text>
               </TouchableOpacity>
             )}

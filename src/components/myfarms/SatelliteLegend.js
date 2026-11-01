@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React, {
   useEffect,
   useMemo,
@@ -32,6 +33,7 @@ export default function SatelliteLegend({
   setOpen,
   loading = false,
 }) {
+  const { t } = useTranslation();
   const fadeAnim = useRef(
     new Animated.Value(0),
   ).current;
@@ -201,8 +203,8 @@ export default function SatelliteLegend({
 
           <Text style={styles.legendButtonText}>
             {open
-              ? 'Hide details'
-              : 'Details'}
+              ? t('farms.hide_details')
+              : t('farms.details')}
           </Text>
 
           <ChevronDown
@@ -253,8 +255,7 @@ export default function SatelliteLegend({
         </View>
       ) : (
         <Text style={styles.emptyText}>
-          Legend will appear when index
-          data is available.
+          {t('farms.legend_empty')}
         </Text>
       )}
 
@@ -356,7 +357,7 @@ export default function SatelliteLegend({
           <View style={styles.coverageRow}>
             <Text
               style={styles.coverageLabel}>
-              Analysed coverage
+              {t('farms.analysed_coverage')}
             </Text>
 
             <Text

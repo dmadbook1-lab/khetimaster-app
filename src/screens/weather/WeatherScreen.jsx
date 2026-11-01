@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React, { useState } from 'react';
 import {
   ActivityIndicator,
@@ -51,6 +52,8 @@ import {
   clockLabel,
   dateLabel,
   dayLabel,
+  dayShortLabel,
+  descriptionLabel,
   fieldWorkAdvice,
   formatTemp,
   irrigationAdvice,
@@ -63,6 +66,7 @@ import {
 import { timeAgo } from '../../utils/marketFormat';
 
 function Header({ onBack, onRefresh, refreshing }) {
+  const { t } = useTranslation();
   return (
     <View style={styles.header}>
       <TouchableOpacity
@@ -71,7 +75,7 @@ function Header({ onBack, onRefresh, refreshing }) {
         style={styles.backRow}
       >
         <ChevronLeft size={24} color={W.greenDark} strokeWidth={2.8} />
-        <Text style={styles.headerTitle}>Weather</Text>
+        <Text style={styles.headerTitle}>{t('weather.title')}</Text>
       </TouchableOpacity>
       {!!onRefresh && (
         <TouchableOpacity
@@ -91,6 +95,7 @@ function Header({ onBack, onRefresh, refreshing }) {
 }
 
 export default function WeatherScreen({ navigation }) {
+  const { t } = useTranslation();
   const {
     data,
     status,
@@ -147,16 +152,18 @@ export default function WeatherScreen({ navigation }) {
               )}
             </View>
             <Text style={styles.centerTitle}>
-              {locationMissing ? 'Turn on location' : 'Weather not available'}
+              {locationMissing
+                ? t('weather.turn_on_location')
+                : t('weather.not_available')}
             </Text>
             <Text style={styles.centerText}>
               {locationMissing
-                ? 'Allow location so we can show the weather at your farm.'
+                ? t('weather.allow_location')
                 : error}
             </Text>
             <TouchableOpacity style={styles.retry} onPress={refresh}>
               <RefreshCw size={16} color={W.white} />
-              <Text style={styles.retryText}>Try again</Text>
+              <Text style={styles.retryText}>{t('common.try_again')}</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -207,11 +214,15 @@ export default function WeatherScreen({ navigation }) {
         <FadeIn>
           <WeatherLiveCard data={data} place={place} style={styles.liveCard} />
           <Text style={styles.updated}>
-            Updated {fetchedAt ? timeAgo(fetchedAt) || 'just now' : 'now'}
-            {error ? ' · couldn’t refresh, showing saved weather' : ''}
+            {t('weather.updated', {
+              when: fetchedAt
+                ? timeAgo(fetchedAt) || t('common.just_now')
+                : t('common.now'),
+            })}
+            {error ? ` · ${t('weather.showing_saved')}` : ''}
           </Text>
-          {!!today?.description && (
-            <Text style={styles.description}>{today.description}</Text>
+          {!!descriptionLabel(today) && (
+            <Text style={styles.description}>{descriptionLabel(today)}</Text>
           )}
         </FadeIn>
 
@@ -234,26 +245,26 @@ export default function WeatherScreen({ navigation }) {
             {/* FARM ADVICE */}
             <FadeIn delay={80}>
               <SectionHeader
-                title="Farm advice for today"
-                subtitle="Tap a card to see what to do"
+                title={t('weather.farm_advice_today')}
+                subtitle={t('weather.tap_card')}
               />
               <AdviceBoard
                 items={[
                   {
                     key: 'spray',
-                    label: 'Spraying',
+                    label: t('weather.spraying'),
                     icon: SprayCan,
                     advice: sprayAdvice(today),
                   },
                   {
                     key: 'water',
-                    label: 'Watering',
+                    label: t('weather.watering'),
                     icon: Droplets,
                     advice: irrigationAdvice(days),
                   },
                   {
                     key: 'field',
-                    label: 'Field work',
+                    label: t('weather.field_work'),
                     icon: Tractor,
                     advice: fieldWorkAdvice(days),
                   },
@@ -264,26 +275,26 @@ export default function WeatherScreen({ navigation }) {
             {/* 7 DAYS */}
             <FadeIn delay={140}>
               <SectionHeader
-                title="7-day forecast"
-                subtitle="Tap a day for details"
+                title={t('weather.forecast_7')}
+                subtitle={t('weather.tap_day')}
               />
               <DaySquares days={week} todayKey={todayKey} onPress={openDay} />
             </FadeIn>
 
             {/* NEXT 24 HOURS */}
             <FadeIn delay={200}>
-              <SectionHeader title="Next 24 hours" />
+              <SectionHeader title={t('weather.next_24')} />
               <HourSquares hours={hours} />
             </FadeIn>
 
             {/* RAIN */}
             <FadeIn delay={320}>
               <SectionHeader
-                title="Rain this week"
+                title={t('weather.rain_week')}
                 subtitle={
                   weekRain >= 1
-                    ? `About ${Math.round(weekRain)} mm expected in 7 days`
-                    : 'No real rain expected in the next 7 days'
+                    ? t('weather.rain_week_mm', { mm: Math.round(weekRain) })
+                    : t('weather.rain_week_none')
                 }
               />
               <View style={styles.card}>
@@ -298,7 +309,9 @@ export default function WeatherScreen({ navigation }) {
                         onPress={() => openDay(day)}
                       >
                         <Text style={styles.rainMm}>
-                          {mm >= 0.5 ? `${Math.round(mm)}mm` : ''}
+                          {mm >= 0.5
+                            ? t('units.mm_value', { n: Math.round(mm) })
+                            : ''}
                         </Text>
                         <View style={styles.rainTrack}>
                           <LinearGradient
@@ -315,21 +328,23 @@ export default function WeatherScreen({ navigation }) {
                           {round(day.precipprob) ?? 0}%
                         </Text>
                         <Text style={styles.rainDay}>
-                          {dayLabel(day.datetime, todayKey).slice(0, 3)}
+                          {dayShortLabel(day.datetime, todayKey)}
                         </Text>
                       </TouchableOpacity>
                     );
                   })}
                 </View>
                 <Text style={styles.cardNote}>
-                  Bars show rain in mm · % is the chance of rain
+                  {t('weather.bars_note')}
                 </Text>
               </View>
             </FadeIn>
 
             {/* 15 DAYS */}
             <FadeIn delay={380}>
-              <SectionHeader title={`Next ${forecast.length} days`} />
+              <SectionHeader
+                title={t('weather.next_days', { n: forecast.length })}
+              />
               <View style={styles.card}>
                 {forecast.map((day, index) => (
                   <TouchableOpacity
@@ -388,54 +403,56 @@ export default function WeatherScreen({ navigation }) {
                 <DetailTile
                   icon={Thermometer}
                   color="#F97316"
-                  label="Feels like"
+                  label={t('weather.feels_like')}
                   value={formatTemp(current.feelslike)}
                   note={
                     Math.abs((current.feelslike || 0) - (current.temp || 0)) >=
                     2
                       ? current.feelslike > current.temp
-                        ? 'Feels hotter (humid)'
-                        : 'Feels cooler (wind)'
-                      : 'Same as actual'
+                        ? t('weather.feels_hotter')
+                        : t('weather.feels_cooler')
+                      : t('weather.feels_same')
                   }
                 />
                 <DetailTile
                   icon={Navigation}
                   color="#0EA5E9"
-                  label="Wind"
-                  value={`${round(current.windspeed)} km/h`}
-                  note={`From ${windDirection(current.winddir) || '—'}${
+                  label={t('weather.wind')}
+                  value={t('units.kmh_value', { n: round(current.windspeed) })}
+                  note={`${t('weather.from_dir', {
+                    dir: windDirection(current.winddir) || '—',
+                  })}${
                     current.windgust
-                      ? ` · gusts ${round(current.windgust)}`
+                      ? ` · ${t('weather.gusts', { n: round(current.windgust) })}`
                       : ''
                   }`}
                 />
                 <DetailTile
                   icon={Sun}
                   color="#EAB308"
-                  label="UV index"
+                  label={t('weather.uv_index')}
                   value={String(round(current.uvindex) ?? 0)}
                   note={uvLevel(current.uvindex)}
                 />
                 <DetailTile
                   icon={Droplets}
                   color="#2563EB"
-                  label="Dew point"
+                  label={t('weather.dew_point')}
                   value={formatTemp(current.dew)}
-                  note={`Humidity ${round(current.humidity)}%`}
+                  note={t('weather.humidity_pct', { n: round(current.humidity) })}
                 />
                 <DetailTile
                   icon={Gauge}
                   color="#7C3AED"
-                  label="Pressure"
+                  label={t('weather.pressure')}
                   value={`${round(current.pressure)} hPa`}
-                  note={`Clouds ${round(current.cloudcover) ?? 0}%`}
+                  note={t('weather.clouds_pct', { n: round(current.cloudcover) ?? 0 })}
                 />
                 <DetailTile
                   icon={Eye}
                   color="#0F766E"
-                  label="Visibility"
-                  value={`${round(current.visibility) ?? '--'} km`}
+                  label={t('weather.visibility')}
+                  value={t('units.km_value', { n: round(current.visibility) ?? '--' })}
                 />
               </View>
 
@@ -448,7 +465,7 @@ export default function WeatherScreen({ navigation }) {
                 <View style={styles.sunItem}>
                   <Sunrise size={24} color="#F59E0B" />
                   <View>
-                    <Text style={styles.sunLabel}>Sunrise</Text>
+                    <Text style={styles.sunLabel}>{t('weather.sunrise')}</Text>
                     <Text style={styles.sunValue}>
                       {clockLabel(current.sunrise || today?.sunrise)}
                     </Text>
@@ -458,7 +475,7 @@ export default function WeatherScreen({ navigation }) {
                 <View style={styles.sunItem}>
                   <Sunset size={24} color="#EA580C" />
                   <View>
-                    <Text style={styles.sunLabel}>Sunset</Text>
+                    <Text style={styles.sunLabel}>{t('weather.sunset')}</Text>
                     <Text style={styles.sunValue}>
                       {clockLabel(current.sunset || today?.sunset)}
                     </Text>

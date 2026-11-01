@@ -1,3 +1,4 @@
+import i18n from '../../translation/i18n';
 import React, { useCallback, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -85,7 +86,7 @@ export default function FeedbackModal({
   variant = 'info',
   title,
   message,
-  primaryLabel = 'OK',
+  primaryLabel = i18n.t('common.ok'),
   secondaryLabel,
   destructive = false,
   loading = false,
@@ -201,7 +202,7 @@ export function useFeedbackModal() {
         message:
           typeof message === 'string'
             ? message
-            : message?.message || 'Please try again.',
+            : message?.message || i18n.t('common.please_try_again'),
         ...options,
       }),
     [show],
@@ -219,8 +220,8 @@ export function useFeedbackModal() {
    */
   const confirm = useCallback(
     ({
-      confirmLabel = 'Confirm',
-      cancelLabel = 'Cancel',
+      confirmLabel = i18n.t('common.confirm'),
+      cancelLabel = i18n.t('common.cancel'),
       onConfirm,
       ...options
     }) =>

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React, { useState } from 'react';
 import {
   View,
@@ -63,30 +64,31 @@ const crops = [
 const irrigationOptions = [
   {
     key: 'drip',
-    title: 'Drip Irrigation',
-    sub: 'Water-efficient',
+    title: 'irrigation.drip',
+    sub: 'irrigation.drip_sub',
     Icon: Droplets,
   },
   {
     key: 'sprinkler',
-    title: 'Sprinkler',
-    sub: 'Overhead spray',
+    title: 'irrigation.sprinkler',
+    sub: 'irrigation.sprinkler_sub',
     Icon: CloudRain,
   },
   {
     key: 'flood',
-    title: 'Flood Irrigation',
-    sub: 'Surface flow',
+    title: 'irrigation.flood',
+    sub: 'irrigation.flood_sub',
     Icon: Waves,
   },
   {
     key: 'rainfed',
-    title: 'Rainfed',
-    sub: 'Natural rainfall',
+    title: 'irrigation.rainfed',
+    sub: 'irrigation.rainfed_sub',
     Icon: Sun,
   },
 ];
 export default function FarmDetailsScreen({ navigation }) {
+  const { t } = useTranslation();
   const [unit, setUnit] = useState('Acres');
   const [selectedCrop, setSelectedCrop] = useState('Wheat');
   const [irrigation, setIrrigation] = useState('drip');
@@ -118,8 +120,10 @@ export default function FarmDetailsScreen({ navigation }) {
         </View>
 
         <View style={styles.progressTop}>
-          <Text style={styles.progressLabel}>Farm Details</Text>
-          <Text style={styles.progressStep}>Step 2 of 2</Text>
+          <Text style={styles.progressLabel}>{t('farmForm.farm_details')}</Text>
+          <Text style={styles.progressStep}>
+            {t('common.step_of', { step: 2, total: 2 })}
+          </Text>
         </View>
 
         <View style={styles.progressTrack}>
@@ -128,29 +132,30 @@ export default function FarmDetailsScreen({ navigation }) {
 
         <View style={styles.titleWrap}>
           <Text style={styles.title}>
-            Tell Us About{'\n'}
-            <Text style={styles.greenText}>Your Farm 🌾</Text>
+            {t('farmForm.tell_us_line1')}
+            {'\n'}
+            <Text style={styles.greenText}>{t('farmForm.tell_us_line2')}</Text>
           </Text>
         </View>
 
         <Text style={styles.subtitle}>
-          Add basic farm details to start monitoring your crops.
+          {t('farmForm.tell_us_sub')}
         </Text>
 
-        <Text style={styles.label}>Farm Name</Text>
+        <Text style={styles.label}>{t('farmForm.farm_name')}</Text>
         <View style={styles.inputBox}>
           <Tractor size={20} color={GREEN} />
           <TextInput
-            placeholder="e.g. Patil Farm"
+            placeholder={t('farmForm.farm_name_placeholder')}
             placeholderTextColor="#7B8495"
             style={styles.input}
           />
         </View>
 
-        <Text style={styles.label}>Crop Type</Text>
+        <Text style={styles.label}>{t('farmForm.crop_type')}</Text>
         <TouchableOpacity style={styles.inputBox} activeOpacity={0.85}>
           <Wheat size={20} color={GREEN} />
-          <Text style={styles.placeholder}>Select crop type</Text>
+          <Text style={styles.placeholder}>{t('farmForm.select_crop_type')}</Text>
           <ChevronDown size={20} color="#9CA3AF" />
         </TouchableOpacity>
 
@@ -167,19 +172,19 @@ export default function FarmDetailsScreen({ navigation }) {
                 <Text
                   style={[styles.chipText, active && styles.activeChipText]}
                 >
-                  {name}
+                  {t(`crops.${name.toLowerCase()}`)}
                 </Text>
               </TouchableOpacity>
             );
           })}
         </View>
 
-        <Text style={styles.label}>Farm Area</Text>
+        <Text style={styles.label}>{t('farmForm.farm_area')}</Text>
         <View style={styles.areaRow}>
           <View style={styles.areaInput}>
             <Ruler size={18} color="#9CA3AF" />
             <TextInput
-              placeholder="Enter area"
+              placeholder={t('farmForm.enter_area')}
               placeholderTextColor="#7B8495"
               style={styles.areaTextInput}
               keyboardType="numeric"
@@ -199,14 +204,14 @@ export default function FarmDetailsScreen({ navigation }) {
                     unit === item && styles.unitTextActive,
                   ]}
                 >
-                  {item}
+                  {t(`units.${item.toLowerCase()}`)}
                 </Text>
               </TouchableOpacity>
             ))}
           </View>
         </View>
 
-        <Text style={styles.label}>Irrigation Type</Text>
+        <Text style={styles.label}>{t('farmForm.irrigation_type')}</Text>
         <View style={styles.irrigationGrid}>
           {irrigationOptions.map(({ key, title, sub, Icon }) => {
             const active = irrigation === key;
@@ -235,8 +240,8 @@ export default function FarmDetailsScreen({ navigation }) {
                   <Icon size={24} color={active ? GREEN : '#6B7280'} />
                 </View>
 
-                <Text style={styles.irrigationTitle}>{title}</Text>
-                <Text style={styles.irrigationSub}>{sub}</Text>
+                <Text style={styles.irrigationTitle}>{t(title)}</Text>
+                <Text style={styles.irrigationSub}>{t(sub)}</Text>
               </TouchableOpacity>
             );
           })}
@@ -245,7 +250,7 @@ export default function FarmDetailsScreen({ navigation }) {
         <View style={styles.noteBox}>
           <MapPin size={18} color="#DC2626" />
           <Text style={styles.noteText}>
-            Next, we’ll mark your farm boundary on the map.
+            {t('farmForm.next_boundary')}
           </Text>
         </View>
       </ScrollView>
@@ -267,7 +272,7 @@ export default function FarmDetailsScreen({ navigation }) {
             }}
             style={styles.button}
           >
-            <Text style={styles.buttonText}>Continue to Mapping</Text>
+            <Text style={styles.buttonText}>{t('farmForm.continue_mapping')}</Text>
             <ArrowRight size={24} color="#FFFFFF" />
           </LinearGradient>
         </TouchableOpacity>

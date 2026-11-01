@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React from 'react';
 
 import {
@@ -31,6 +32,7 @@ export default function FarmSearchBar({
   value = '',
   onChangeText,
 }) {
+  const { t } = useTranslation();
   return (
     <View
       style={styles.searchRow}
@@ -49,7 +51,7 @@ export default function FarmSearchBar({
           onChangeText={
             onChangeText
           }
-          placeholder="Search farm by name or crop"
+          placeholder={t('farms.search_ph')}
           placeholderTextColor="#667085"
           style={styles.searchInput}
           returnKeyType="search"

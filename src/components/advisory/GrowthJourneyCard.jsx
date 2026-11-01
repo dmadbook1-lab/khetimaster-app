@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React, {useEffect, useRef} from 'react';
 
 import {Animated, Easing, StyleSheet, Text, View} from 'react-native';
@@ -81,6 +82,7 @@ function StageNode({step, state}) {
 */
 
 export default function GrowthJourneyCard({growth, isBarren}) {
+  const { t } = useTranslation();
   const fill = useRef(new Animated.Value(0)).current;
 
   const bbch = Number(growth?.bbchStage) || 0;
@@ -117,12 +119,12 @@ export default function GrowthJourneyCard({growth, isBarren}) {
         </View>
 
         <View style={styles.headerText}>
-          <Text style={styles.title}>Growth Journey</Text>
+          <Text style={styles.title}>{t('advisory.growth_journey')}</Text>
 
           <Text style={styles.subtitle}>
             {isBarren
-              ? 'Pre-sowing preparation'
-              : `BBCH ${bbch} · ${Math.round(overall)}% of season complete`}
+              ? t('advisory.pre_sowing_prep')
+              : t('advisory.season_complete', {bbch, pct: Math.round(overall)})}
           </Text>
         </View>
       </View>
@@ -170,7 +172,7 @@ export default function GrowthJourneyCard({growth, isBarren}) {
       <View style={styles.stageBox}>
         <View style={styles.stageTop}>
           <View style={styles.stageTextWrap}>
-            <Text style={styles.stageEyebrow}>CURRENT STAGE</Text>
+            <Text style={styles.stageEyebrow}>{t('advisory.current_stage')}</Text>
 
             <Text style={styles.stageName}>{growth.stageName || '—'}</Text>
 
@@ -189,7 +191,7 @@ export default function GrowthJourneyCard({growth, isBarren}) {
             </View>
 
             <Text style={styles.stageProgressText}>
-              {Math.round(stageProgress)}% through stage
+              {t('advisory.through_stage', {pct: Math.round(stageProgress)})}
             </Text>
           </View>
         ) : null}

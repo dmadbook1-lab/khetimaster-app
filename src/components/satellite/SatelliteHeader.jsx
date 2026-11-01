@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+import { monthName } from '../../utils/dateFormat';
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import {
@@ -7,6 +9,7 @@ import {
   Layers,
 } from 'lucide-react-native';
 export default function SatelliteHeader({ title, onBack }) {
+  const { t } = useTranslation();
   return (
     <View style={styles.header}>
       <TouchableOpacity
@@ -24,13 +27,13 @@ export default function SatelliteHeader({ title, onBack }) {
 
         <View style={styles.subtitleRow}>
           <Layers size={13} color="#64748B" strokeWidth={2.4} />
-          <Text style={styles.subtitle}>Satellite Intelligence</Text>
+          <Text style={styles.subtitle}>{t('satellite.satellite_intelligence')}</Text>
         </View>
       </View>
 
       <TouchableOpacity activeOpacity={0.85} style={styles.datePill}>
         <CalendarDays size={15} color="#334155" strokeWidth={2.3} />
-        <Text style={styles.dateText}>15 Jun 2026</Text>
+        <Text style={styles.dateText}>15 {monthName(5)} 2026</Text>
         <ChevronDown size={14} color="#94A3B8" strokeWidth={2.4} />
       </TouchableOpacity>
     </View>

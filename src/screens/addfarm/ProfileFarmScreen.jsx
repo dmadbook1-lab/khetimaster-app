@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React, { useEffect, useRef } from 'react';
 import {
   View,
@@ -16,6 +17,7 @@ import { Cloud, Wheat, Bot, ArrowRight } from 'lucide-react-native';
 const { width, height } = Dimensions.get('window');
 const GREEN = '#159447';
 const ProfileFarmScreen = ({ navigation }) => {
+  const { t } = useTranslation();
   const fade = useRef(new Animated.Value(0)).current;
   const slide = useRef(new Animated.Value(26)).current;
   const scale = useRef(new Animated.Value(0.98)).current;
@@ -94,30 +96,29 @@ const ProfileFarmScreen = ({ navigation }) => {
             },
           ]}
         >
-          <Text style={styles.title}>Add Your First Farm</Text>
+          <Text style={styles.title}>{t('profileFarm.title')}</Text>
 
           <Text style={styles.subtitle}>
-            Register your farm to receive personalized weather updates, crop
-            monitoring, AI recommendations, and satellite-based insights.
+            {t('profileFarm.subtitle')}
           </Text>
 
           <View style={styles.cardsRow}>
             <FeatureCard
               icon={<Cloud size={24} color={GREEN} strokeWidth={2.3} />}
               bg="#D9FAE5"
-              title={'Weather\nUpdates'}
+              title={t('profileFarm.weather_updates')}
             />
 
             <FeatureCard
               icon={<Wheat size={24} color={GREEN} strokeWidth={2.3} />}
               bg="#DDFBE8"
-              title={'Crop\nMonitoring'}
+              title={t('profileFarm.crop_monitoring')}
             />
 
             <FeatureCard
               icon={<Bot size={24} color="#B95B18" strokeWidth={2.3} />}
               bg="#FFF0E5"
-              title={'AI\nGuidance'}
+              title={t('profileFarm.ai_guidance')}
             />
           </View>
 
@@ -143,7 +144,7 @@ const ProfileFarmScreen = ({ navigation }) => {
                 }}
                 style={styles.button}
               >
-                <Text style={styles.buttonText}>Add My Farm</Text>
+                <Text style={styles.buttonText}>{t('profileFarm.add_my_farm')}</Text>
                 <ArrowRight size={25} color="#FFFFFF" strokeWidth={2.6} />
               </LinearGradient>
             </TouchableOpacity>
@@ -153,7 +154,7 @@ const ProfileFarmScreen = ({ navigation }) => {
             activeOpacity={0.75}
             onPress={() => navigation.replace('Home')}
           >
-            <Text style={styles.laterText}>I’ll Do It Later</Text>
+            <Text style={styles.laterText}>{t('profileFarm.later')}</Text>
           </TouchableOpacity>
         </Animated.View>
       </ScrollView>

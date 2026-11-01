@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React, {useEffect, useRef, useState} from 'react';
 
 import {Animated, Easing, StyleSheet, Text, View} from 'react-native';
@@ -10,17 +11,18 @@ import {COLORS} from './advisoryTheme';
 
 /** Mirrors the backend pipeline order. */
 const STEPS = [
-  'Reading weather at your field',
-  'Scanning satellite imagery',
-  'Working out the growth stage',
-  'Balancing soil nutrients (NPK)',
-  'Checking crop health',
-  'Writing your field plan',
+  'advisory.gen_step_1',
+  'advisory.gen_step_2',
+  'advisory.gen_step_3',
+  'advisory.gen_step_4',
+  'advisory.gen_step_5',
+  'advisory.gen_step_6',
 ];
 
 const STEP_MS = 3500;
 
 export default function AdvisoryGeneratingCard() {
+  const { t } = useTranslation();
   const [step, setStep] = useState(0);
   const spin = useRef(new Animated.Value(0)).current;
 
@@ -67,10 +69,10 @@ export default function AdvisoryGeneratingCard() {
         </Animated.View>
       </View>
 
-      <Text style={styles.title}>Preparing your field advisory</Text>
+      <Text style={styles.title}>{t('advisory.preparing')}</Text>
 
       <Text style={styles.subtitle}>
-        This takes under a minute the first time.
+        {t('advisory.preparing_sub')}
       </Text>
 
       <View style={styles.steps}>
@@ -94,7 +96,7 @@ export default function AdvisoryGeneratingCard() {
                   styles.stepText,
                   (done || active) && styles.stepTextActive,
                 ]}>
-                {label}
+                {t(label)}
               </Text>
             </View>
           );

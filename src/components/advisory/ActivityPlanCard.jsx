@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React, {useMemo, useState} from 'react';
 
 import {
@@ -76,6 +77,7 @@ function ProgressStepper({value, color, saving, onChange}) {
 */
 
 function ActivityRow({activity, expanded, onToggle, saving, onProgress, isLast}) {
+  const {t} = useTranslation();
   const ui = ACTIVITY_UI[activity.type] || {
     ...FALLBACK_ACTIVITY_UI,
     tag: activity.type,
@@ -175,7 +177,7 @@ function ActivityRow({activity, expanded, onToggle, saving, onProgress, isLast})
             </View>
           ))}
 
-          <Text style={styles.trackLabel}>Track this task</Text>
+          <Text style={styles.trackLabel}>{t('advisory.track_task')}</Text>
 
           <ProgressStepper
             value={activity.progress}
@@ -200,6 +202,7 @@ export default function ActivityPlanCard({
   progressSaving = {},
   onProgress,
 }) {
+  const { t } = useTranslation();
   const [expandedType, setExpandedType] = useState(null);
 
   const completed = activities.filter(a => a.progress === 'completed').length;
@@ -224,10 +227,10 @@ export default function ActivityPlanCard({
         </View>
 
         <View style={styles.headerText}>
-          <Text style={styles.title}>Today's Field Plan</Text>
+          <Text style={styles.title}>{t('advisory.field_plan')}</Text>
 
           <Text style={styles.subtitle}>
-            {completed}/{activities.length} tasks done · tap a task for details
+            {t('advisory.tasks_done', {done: completed, total: activities.length})}
           </Text>
         </View>
 

@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+import i18n from '../../translation/i18n';
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import {
   Animated,
@@ -78,13 +80,14 @@ const EDGE_GLOW = ['#86EFAC', '#4ADE80', '#BBF7D0', '#86EFAC'];
 
 const KHETIMASTER_LOGO = require('../../assets/images/logoo.png');
 
+// status pill text: voice.status_<state>
 const LABELS = {
-  starting: 'Getting ready…',
-  listening: 'Listening…',
-  thinking: 'Understanding…',
-  done: 'Got it',
-  error: 'Didn’t get that',
-  idle: 'Tap the mic to speak',
+  starting: 'voice.status_starting',
+  listening: 'voice.status_listening',
+  thinking: 'voice.status_thinking',
+  done: 'voice.status_done',
+  error: 'voice.status_error',
+  idle: 'voice.status_idle',
 };
 
 // colours of the orb, status pill, message and mic per state
@@ -198,6 +201,7 @@ export default function VoiceAssistantModal({
   onNavigate,
   onTranscript,
 }) {
+  const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const dispatch = useDispatch();
   const aiLanguage = useSelector(state => state.aiGuru?.language || 'en');
@@ -270,10 +274,10 @@ export default function VoiceAssistantModal({
         if (await PermissionsAndroid.check(permission)) return true;
 
         const result = await PermissionsAndroid.request(permission, {
-          title: 'Microphone permission',
-          message: 'KhetiMaster needs the microphone to understand your voice.',
-          buttonPositive: 'Allow',
-          buttonNegative: 'Not now',
+          title: i18n.t('voice.mic_permission'),
+          message: i18n.t('voice.mic_permission_text'),
+          buttonPositive: i18n.t('common.allow'),
+          buttonNegative: i18n.t('common.not_now'),
         });
 
         return result === PermissionsAndroid.RESULTS.GRANTED;
@@ -312,13 +316,13 @@ export default function VoiceAssistantModal({
     );
 
     if (!(await requestPermission())) {
-      fail('Allow microphone access in your phone settings to use voice.');
+      fail(i18n.t('voice.allow_mic_settings'));
       return;
     }
 
     try {
       if ((await isAvailable()) === false) {
-        fail('Voice recognition is not available on this phone.');
+        fail(i18n.t('voice.not_available'));
         return;
       }
     } catch {
@@ -343,12 +347,12 @@ export default function VoiceAssistantModal({
       silenceTimerRef.current = setTimeout(() => {
         if (listeningRef.current && !partialRef.current) {
           stopListening();
-          fail('I didn’t hear anything. Tap the mic and speak again.');
+          fail(i18n.t('voice.heard_nothing'));
         }
       }, SILENCE_TIMEOUT_MS);
     } catch (error) {
       listeningRef.current = false;
-      fail(error?.message || 'Could not start listening. Please try again.');
+      fail(error?.message || i18n.t('voice.could_not_start'));
     }
   }, [clearSilenceTimer, fail, later, requestPermission, stopListening]);
 
@@ -381,14 +385,14 @@ export default function VoiceAssistantModal({
 
       if (command.type === 'cancel') {
         setStatus(STATUS.DONE);
-        setMessage('Okay, closing.');
+        setMessage(i18n.t('voice.closing'));
         later(() => closeRef.current?.(), 450);
         return;
       }
 
       if (command.type === 'navigate') {
         setStatus(STATUS.DONE);
-        setMessage(command.message || 'Opening…');
+        setMessage(command.message || i18n.t('voice.opening'));
         buzz(30);
 
         later(() => {
@@ -405,7 +409,9 @@ export default function VoiceAssistantModal({
 
         try {
           await Tts.getInitStatus();
-          await Tts.setDefaultLanguage('en-IN');
+          await Tts.setDefaultLanguage(
+            TTS_LANGUAGES[String(i18n.language).split('-')[0]] || 'en-IN',
+          );
           await Tts.setDefaultRate(0.48);
           if (!visibleRef.current || closingRef.current) return;
           utteranceRef.current = await Tts.speak(command.response);
@@ -417,7 +423,7 @@ export default function VoiceAssistantModal({
       }
 
       // not an app command: ask AI Guru (one chat per time the assistant is open)
-      setMessage('Asking AI Guru…');
+      setMessage(i18n.t('voice.asking_ai'));
 
       if (!aiChatStartedRef.current) {
         dispatch(startNewAiGuruChat());
@@ -430,7 +436,7 @@ export default function VoiceAssistantModal({
       if (!visibleRef.current || closingRef.current) return;
 
       if (sendAiGuruMessage.rejected.match(result)) {
-        fail(result.payload?.message || 'AI Guru is not reachable right now.');
+        fail(result.payload?.message || i18n.t('voice.ai_unreachable'));
         return;
       }
 
@@ -548,10 +554,10 @@ export default function VoiceAssistantModal({
         setStatus(STATUS.ERROR);
         setMessage(
           code.includes('NETWORK')
-            ? 'No internet. Voice needs a connection.'
+            ? i18n.t('voice.no_internet')
             : code.includes('PERMISSION')
-            ? 'Allow microphone access in your phone settings.'
-            : 'I didn’t catch that. Tap the mic and speak again.',
+            ? i18n.t('voice.allow_mic')
+            : i18n.t('voice.didnt_catch'),
         );
       }),
     );
@@ -774,7 +780,7 @@ export default function VoiceAssistantModal({
                 style={[styles.statusDot, { backgroundColor: tone.main }]}
               />
               <Text style={[styles.status, { color: tone.main }]}>
-                {LABELS[status]}
+                {t(LABELS[status])}
               </Text>
             </View>
           </View>
@@ -788,12 +794,12 @@ export default function VoiceAssistantModal({
             ) : (
               <>
                 <Text style={styles.prompt}>
-                  {listening ? 'Go ahead, I’m listening' : 'How can I help?'}
+                  {listening ? t('voice.go_ahead') : t('voice.how_can_help')}
                 </Text>
                 <Text style={styles.promptHint}>
                   {onTranscript
-                    ? 'Ask AI Guru anything about your farm'
-                    : 'Try “pyaz ka bhav”, “tractor chahiye” or ask any farming question'}
+                    ? t('voice.ask_ai_anything')
+                    : t('voice.try_examples')}
                 </Text>
               </>
             )}
@@ -814,7 +820,7 @@ export default function VoiceAssistantModal({
           <View style={styles.controls}>
             <TouchableOpacity
               accessibilityRole="button"
-              accessibilityLabel="Close voice assistant"
+              accessibilityLabel={t('voice.close')}
               activeOpacity={0.75}
               style={styles.sideButton}
               onPress={close}
@@ -832,7 +838,7 @@ export default function VoiceAssistantModal({
               <TouchableOpacity
                 accessibilityRole="button"
                 accessibilityLabel={
-                  listening ? 'Stop and use what I said' : 'Start listening'
+                  listening ? t('voice.stop_use') : t('voice.start_listening')
                 }
                 activeOpacity={0.85}
                 disabled={busy}
@@ -855,7 +861,7 @@ export default function VoiceAssistantModal({
 
             <TouchableOpacity
               accessibilityRole="button"
-              accessibilityLabel="Listen again"
+              accessibilityLabel={t('voice.listen_again')}
               activeOpacity={0.75}
               disabled={busy || listening}
               style={[styles.sideButton, (busy || listening) && styles.sideOff]}
@@ -867,10 +873,10 @@ export default function VoiceAssistantModal({
 
           <Text style={styles.micHint}>
             {listening
-              ? 'Tap the button when you’re done'
+              ? t('voice.tap_when_done')
               : busy
-              ? 'Please wait…'
-              : 'Tap the mic to speak'}
+              ? t('common.please_wait')
+              : t('voice.status_idle')}
           </Text>
         </LinearGradient>
 

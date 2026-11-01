@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React from 'react';
 import {
   View,
@@ -15,6 +16,7 @@ const rf = size => {
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
 export default function AddFarmGridCard({ onPress }) {
+  const { t } = useTranslation();
   return (
     <TouchableOpacity
       activeOpacity={0.88}
@@ -25,8 +27,8 @@ export default function AddFarmGridCard({ onPress }) {
         <Plus size={25} color={GREEN} strokeWidth={2.7} />
       </View>
 
-      <Text style={styles.title}>Add Farm</Text>
-      <Text style={styles.desc}>Register a new farm</Text>
+      <Text style={styles.title}>{t('farms.add_farm')}</Text>
+      <Text style={styles.desc}>{t('farms.add_farm_sub')}</Text>
     </TouchableOpacity>
   );
 }

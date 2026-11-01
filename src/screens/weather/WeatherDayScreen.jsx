@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React from 'react';
 import {
   ScrollView,
@@ -35,8 +36,10 @@ import {
 } from '../../components/weather/WeatherParts';
 import {
   clockLabel,
+  conditionsLabel,
   dateLabel,
   dayLabel,
+  descriptionLabel,
   fieldWorkAdvice,
   formatTemp,
   hourLabel,
@@ -51,6 +54,7 @@ import {
  * One day of the forecast: summary card, farm advice and every hour.
  */
 export default function WeatherDayScreen({ navigation, route }) {
+  const { t } = useTranslation();
   const { date } = route.params || {};
   const { data, place } = useLocalWeather();
   const ready = useAfterTransition(navigation);
@@ -71,7 +75,7 @@ export default function WeatherDayScreen({ navigation, route }) {
         <Text style={styles.headerTitle}>
           {day
             ? `${dayLabel(day.datetime, todayKey)}, ${dateLabel(day.datetime)}`
-            : 'Weather'}
+            : t('weather.title')}
         </Text>
       </TouchableOpacity>
     </View>
@@ -84,7 +88,7 @@ export default function WeatherDayScreen({ navigation, route }) {
         {header}
         <View style={styles.missing}>
           <Text style={styles.missingText}>
-            This day is no longer in the forecast.
+            {t('weather.day_gone')}
           </Text>
         </View>
       </SafeAreaView>
@@ -113,28 +117,30 @@ export default function WeatherDayScreen({ navigation, route }) {
               day.datetime,
             )}`}
             temp={formatTemp(day.tempmax)}
-            condition={day.conditions}
+            condition={conditionsLabel(day.conditions)}
             icon={day.icon}
-            meta={`Low ${formatTemp(day.tempmin)}  ·  Sunrise ${clockLabel(
-              day.sunrise,
-            )}  ·  Sunset ${clockLabel(day.sunset)}`}
-            description={day.description}
+            meta={`${t('weather.low', { temp: formatTemp(day.tempmin) })}  ·  ${t(
+              'weather.sunrise',
+            )} ${clockLabel(day.sunrise)}  ·  ${t('weather.sunset')} ${clockLabel(
+              day.sunset,
+            )}`}
+            description={descriptionLabel(day)}
             stats={[
               {
                 icon: CloudRain,
-                label: 'Rain',
+                label: t('weather.rain'),
                 value: `${round(day.precipprob) ?? 0}%`,
                 color: '#0891B2',
               },
               {
                 icon: Wind,
-                label: windDirection(day.winddir) || 'Wind',
-                value: `${round(day.windspeed)} km/h`,
+                label: windDirection(day.winddir) || t('weather.wind'),
+                value: t('units.kmh_value', { n: round(day.windspeed) }),
                 color: '#0EA5E9',
               },
               {
                 icon: Droplets,
-                label: 'Humidity',
+                label: t('weather.humidity'),
                 value: `${round(day.humidity)}%`,
                 color: '#2563EB',
               },
@@ -151,7 +157,7 @@ export default function WeatherDayScreen({ navigation, route }) {
         {ready && (
           <>
             <FadeIn delay={120}>
-              <SectionHeader title="Farm advice" />
+              <SectionHeader title={t('weather.farm_advice')} />
               <AdviceCard icon={SprayCan} advice={sprayAdvice(day)} />
               <AdviceCard
                 icon={Droplets}
@@ -164,39 +170,43 @@ export default function WeatherDayScreen({ navigation, route }) {
             </FadeIn>
 
             <FadeIn delay={200}>
-              <SectionHeader title="Rain and wind" />
+              <SectionHeader title={t('weather.rain_and_wind')} />
               <View style={styles.tiles}>
                 <DetailTile
                   icon={CloudRain}
                   color="#0284C7"
-                  label="Rain"
+                  label={t('weather.rain')}
                   value={
                     (Number(day.precip) || 0) >= 0.5
-                      ? `${Math.round(day.precip)} mm`
-                      : 'None'
+                      ? t('units.mm_value', { n: Math.round(day.precip) })
+                      : t('common.none')
                   }
-                  note={`${round(day.precipprob) ?? 0}% chance`}
+                  note={t('weather.chance_pct', { n: round(day.precipprob) ?? 0 })}
                 />
                 <DetailTile
                   icon={Wind}
                   color="#0EA5E9"
-                  label="Wind"
-                  value={`${round(day.windspeed)} km/h`}
-                  note={`From ${windDirection(day.winddir) || '—'}${
-                    day.windgust ? ` · gusts ${round(day.windgust)}` : ''
+                  label={t('weather.wind')}
+                  value={t('units.kmh_value', { n: round(day.windspeed) })}
+                  note={`${t('weather.from_dir', {
+                    dir: windDirection(day.winddir) || '—',
+                  })}${
+                    day.windgust
+                      ? ` · ${t('weather.gusts', { n: round(day.windgust) })}`
+                      : ''
                   }`}
                 />
                 <DetailTile
                   icon={Sun}
                   color="#EAB308"
-                  label="UV index"
+                  label={t('weather.uv_index')}
                   value={String(round(day.uvindex) ?? 0)}
                   note={uvLevel(day.uvindex)}
                 />
                 <DetailTile
                   icon={Droplets}
                   color="#2563EB"
-                  label="Humidity"
+                  label={t('weather.humidity')}
                   value={`${round(day.humidity)}%`}
                 />
               </View>
@@ -210,7 +220,7 @@ export default function WeatherDayScreen({ navigation, route }) {
                 <View style={styles.sunItem}>
                   <Sunrise size={24} color="#F59E0B" />
                   <View>
-                    <Text style={styles.sunLabel}>Sunrise</Text>
+                    <Text style={styles.sunLabel}>{t('weather.sunrise')}</Text>
                     <Text style={styles.sunValue}>
                       {clockLabel(day.sunrise)}
                     </Text>
@@ -220,7 +230,7 @@ export default function WeatherDayScreen({ navigation, route }) {
                 <View style={styles.sunItem}>
                   <Sunset size={24} color="#EA580C" />
                   <View>
-                    <Text style={styles.sunLabel}>Sunset</Text>
+                    <Text style={styles.sunLabel}>{t('weather.sunset')}</Text>
                     <Text style={styles.sunValue}>
                       {clockLabel(day.sunset)}
                     </Text>
@@ -230,7 +240,7 @@ export default function WeatherDayScreen({ navigation, route }) {
             </FadeIn>
 
             <FadeIn delay={280}>
-              <SectionHeader title="Hour by hour" />
+              <SectionHeader title={t('weather.hour_by_hour')} />
               <View style={styles.card}>
                 {hours.map((hour, hourIndex) => (
                   <View

@@ -1,7 +1,9 @@
+import { useTranslation } from 'react-i18next';
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Plus, Minus } from 'lucide-react-native';
 export default function SatelliteMapCard({ farm }) {
+  const { t } = useTranslation();
   return (
     <View style={styles.card}>
       <View style={styles.glowOne} />
@@ -11,7 +13,7 @@ export default function SatelliteMapCard({ farm }) {
 
       <View style={styles.liveBadge}>
         <View style={styles.liveDot} />
-        <Text style={styles.liveText}>LIVE • NDVI</Text>
+        <Text style={styles.liveText}>{t('satellite.live')} • NDVI</Text>
       </View>
 
       <View style={styles.compass}>
@@ -20,7 +22,7 @@ export default function SatelliteMapCard({ farm }) {
 
       <View style={styles.boundary}>
         <View style={styles.farmLabel}>
-          <Text style={styles.farmLabelText}>{farm.title || 'Patil Farm'}</Text>
+          <Text style={styles.farmLabelText}>{farm.title || t('common.my_farm')}</Text>
         </View>
       </View>
 

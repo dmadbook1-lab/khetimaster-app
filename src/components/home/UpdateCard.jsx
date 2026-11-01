@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React from 'react';
 import {
   View,
@@ -13,6 +14,7 @@ const rf = size => {
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
 export default function UpdateCard({ Icon, title, text, color, bg, border }) {
+  const { t } = useTranslation();
   return (
     <TouchableOpacity
       activeOpacity={0.9}
@@ -48,7 +50,7 @@ export default function UpdateCard({ Icon, title, text, color, bg, border }) {
             },
           ]}
         >
-          View Details →
+          {t('common.view_details')} →
         </Text>
       </View>
     </TouchableOpacity>

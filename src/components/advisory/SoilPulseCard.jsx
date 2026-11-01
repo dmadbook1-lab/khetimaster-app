@@ -1,3 +1,5 @@
+import i18n from '../../translation/i18n';
+import { useTranslation } from 'react-i18next';
 import React from 'react';
 
 import {ActivityIndicator, StyleSheet, Text, View} from 'react-native';
@@ -22,19 +24,19 @@ const toMoisturePercent = value => {
 };
 
 const moistureBand = pct => {
-  if (pct === null) return {label: '—', color: COLORS.muted, hint: 'No reading yet'};
-  if (pct < 15) return {label: 'Dry', color: '#D97706', hint: 'Plan irrigation soon'};
-  if (pct <= 35) return {label: 'Optimal', color: '#0891B2', hint: 'Good for root uptake'};
+  if (pct === null) return {label: '—', color: COLORS.muted, hint: i18n.t('advisory.no_reading')};
+  if (pct < 15) return {label: i18n.t('advisory.soil_dry'), color: '#D97706', hint: i18n.t('advisory.soil_dry_hint')};
+  if (pct <= 35) return {label: i18n.t('advisory.soil_optimal'), color: '#0891B2', hint: i18n.t('advisory.soil_optimal_hint')};
 
-  return {label: 'Wet', color: '#2563EB', hint: 'Hold irrigation'};
+  return {label: i18n.t('advisory.soil_wet'), color: '#2563EB', hint: i18n.t('advisory.soil_wet_hint')};
 };
 
 const temperatureBand = temp => {
-  if (temp === null) return {label: '—', color: COLORS.muted, hint: 'No reading yet'};
-  if (temp < 12) return {label: 'Cool', color: '#2563EB', hint: 'Slow root activity'};
-  if (temp <= 30) return {label: 'Ideal', color: COLORS.green, hint: 'Healthy root zone'};
+  if (temp === null) return {label: '—', color: COLORS.muted, hint: i18n.t('advisory.no_reading')};
+  if (temp < 12) return {label: i18n.t('advisory.soil_cool'), color: '#2563EB', hint: i18n.t('advisory.soil_cool_hint')};
+  if (temp <= 30) return {label: i18n.t('advisory.soil_ideal'), color: COLORS.green, hint: i18n.t('advisory.soil_ideal_hint')};
 
-  return {label: 'Hot', color: '#E5484D', hint: 'Mulch to cool soil'};
+  return {label: i18n.t('advisory.soil_hot'), color: '#E5484D', hint: i18n.t('advisory.soil_hot_hint')};
 };
 
 /*
@@ -97,6 +99,7 @@ function MeterTile({icon: Icon, label, value, unit, percent, band, deeper}) {
 */
 
 export default function SoilPulseCard({conditions, loading}) {
+  const { t } = useTranslation();
   const current = conditions?.current;
 
   const moisture = toMoisturePercent(current?.soil_moisture_surface);
@@ -116,10 +119,10 @@ export default function SoilPulseCard({conditions, loading}) {
         </View>
 
         <View style={styles.headerText}>
-          <Text style={styles.title}>Soil Pulse</Text>
+          <Text style={styles.title}>{t('advisory.soil_pulse')}</Text>
 
           <Text style={styles.subtitle}>
-            Live soil moisture & temperature at your field
+            {t('advisory.soil_pulse_sub')}
           </Text>
         </View>
 
@@ -129,7 +132,7 @@ export default function SoilPulseCard({conditions, loading}) {
           <View style={styles.liveChip}>
             <View style={styles.liveDot} />
 
-            <Text style={styles.liveText}>LIVE</Text>
+            <Text style={styles.liveText}>{t('satellite.live')}</Text>
           </View>
         )}
       </View>
@@ -137,28 +140,28 @@ export default function SoilPulseCard({conditions, loading}) {
       <View style={styles.tiles}>
         <MeterTile
           icon={Droplets}
-          label="Soil moisture"
+          label={t('advisory.soil_moisture')}
           value={moisture}
           unit="%"
           percent={moisture !== null ? (moisture / 50) * 100 : 0}
           band={moistureBand(moisture)}
           deeper={
             moistureDeep !== null
-              ? {label: 'Root zone', value: `${moistureDeep.toFixed(0)}%`}
+              ? {label: t('advisory.root_zone'), value: `${moistureDeep.toFixed(0)}%`}
               : null
           }
         />
 
         <MeterTile
           icon={Thermometer}
-          label="Soil temperature"
+          label={t('advisory.soil_temperature')}
           value={temperature}
           unit="°C"
           percent={temperature !== null ? (temperature / 45) * 100 : 0}
           band={temperatureBand(temperature)}
           deeper={
             temperatureDeep !== null
-              ? {label: '6 cm deep', value: `${temperatureDeep.toFixed(0)}°C`}
+              ? {label: t('advisory.cm_deep', {n: 6}), value: `${temperatureDeep.toFixed(0)}°C`}
               : null
           }
         />

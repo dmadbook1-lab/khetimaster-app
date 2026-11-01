@@ -19,6 +19,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { X, Trash2 } from 'lucide-react-native';
 import BottomTabBar from '../../common/BottomTabBar';
 import AIGuruHeader, {
@@ -71,6 +72,7 @@ import { pickAiGuruPhoto } from '../../utils/aiGuruPhoto';
  *   newChat   start a fresh conversation
  */
 export default function AIGuruScreen({ navigation, route }) {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const scrollRef = useRef(null);
   const handledParamsRef = useRef(null);
@@ -108,15 +110,17 @@ export default function AIGuruScreen({ navigation, route }) {
 
   const hasConversation = messages.length > 0;
 
+  const greeting = firstName
+    ? t('aiGuru.namaste_name', { name: firstName })
+    : t('aiGuru.namaste');
   const welcomeText = activeFarm
-    ? `Namaste${
-        firstName ? ` ${firstName}` : ''
-      }! I am AI Guru. I am looking at ${activeFarm.fieldName} (${
-        activeFarm.isBarrenLand ? 'barren land' : activeFarm.cropName
-      }). Ask me about irrigation, disease risk, fertilizer, weather or mandi prices for this farm.`
-    : `Namaste${
-        firstName ? ` ${firstName}` : ''
-      }! I am AI Guru, your farming assistant. Ask me about crops, pests, weather and mandi prices, or what you need on KhetiMaster: labour, tractors, doctors, plants and the marketplace.`;
+    ? `${greeting} ${t('aiGuru.welcome_farm', {
+        farm: activeFarm.fieldName,
+        crop: activeFarm.isBarrenLand
+          ? t('aiGuru.barren_land')
+          : activeFarm.cropName,
+      })}`
+    : `${greeting} ${t('aiGuru.welcome_general')}`;
 
   // Farms power the farm switcher and farm-aware answers
   useEffect(() => {
@@ -224,17 +228,17 @@ export default function AIGuruScreen({ navigation, route }) {
         setPendingPhoto(photo);
       }
     } catch (error) {
-      Alert.alert('Photo', error.message);
+      Alert.alert(t('aiGuru.photo'), error.message);
     }
   };
   const handleAttachmentPress = () => {
     Alert.alert(
-      'Add a crop photo',
-      'AI Guru can look at leaves, pests or disease spots.',
+      t('aiGuru.add_photo_title'),
+      t('aiGuru.add_photo_text'),
       [
-        { text: 'Cancel', style: 'cancel' },
-        { text: 'Gallery', onPress: () => choosePhoto(false) },
-        { text: 'Camera', onPress: () => choosePhoto(true) },
+        { text: t('common.cancel'), style: 'cancel' },
+        { text: t('common.gallery'), onPress: () => choosePhoto(false) },
+        { text: t('common.camera'), onPress: () => choosePhoto(true) },
       ],
     );
   };
@@ -275,10 +279,10 @@ export default function AIGuruScreen({ navigation, route }) {
     dispatch(startNewAiGuruChat());
   };
   const handleDeleteSession = id => {
-    Alert.alert('Delete chat', 'Remove this conversation from your history?', [
-      { text: 'Cancel', style: 'cancel' },
+    Alert.alert(t('aiGuru.delete_chat'), t('aiGuru.delete_chat_text'), [
+      { text: t('common.cancel'), style: 'cancel' },
       {
-        text: 'Delete',
+        text: t('common.delete'),
         style: 'destructive',
         onPress: () => dispatch(deleteAiGuruSession(id)),
       },
@@ -286,12 +290,12 @@ export default function AIGuruScreen({ navigation, route }) {
   };
   const handleClearAll = () => {
     Alert.alert(
-      'Clear all chats',
-      'Remove all AI Guru chats from your history?',
+      t('aiGuru.clear_all'),
+      t('aiGuru.clear_all_text'),
       [
-        { text: 'Cancel', style: 'cancel' },
+        { text: t('common.cancel'), style: 'cancel' },
         {
-          text: 'Clear',
+          text: t('common.clear'),
           style: 'destructive',
           onPress: () => {
             setHistoryVisible(false);
@@ -306,15 +310,15 @@ export default function AIGuruScreen({ navigation, route }) {
       return;
     }
     Alert.alert(
-      'Clear Conversation',
-      'Do you want to remove all messages from this conversation?',
+      t('aiGuru.clear_conversation'),
+      t('aiGuru.clear_conversation_text'),
       [
         {
-          text: 'Cancel',
+          text: t('common.cancel'),
           style: 'cancel',
         },
         {
-          text: 'Clear',
+          text: t('common.clear'),
           style: 'destructive',
           onPress: () => {
             if (sessionId) {
@@ -383,7 +387,7 @@ export default function AIGuruScreen({ navigation, route }) {
             {loadingSession && (
               <View style={styles.loader}>
                 <ActivityIndicator color={COLORS.green} />
-                <Text style={styles.loaderText}>Opening chat…</Text>
+                <Text style={styles.loaderText}>{t('aiGuru.opening_chat')}</Text>
               </View>
             )}
 
@@ -398,7 +402,7 @@ export default function AIGuruScreen({ navigation, route }) {
               <View style={styles.chatSection}>
                 <FadeInUp style={styles.chatHeader}>
                   <View style={styles.chatLine} />
-                  <Text style={styles.chatTitle}>Today</Text>
+                  <Text style={styles.chatTitle}>{t('common.today')}</Text>
                   <View style={styles.chatLine} />
 
                   <PressableScale
@@ -410,7 +414,7 @@ export default function AIGuruScreen({ navigation, route }) {
                       color={COLORS.danger}
                       strokeWidth={2.3}
                     />
-                    <Text style={styles.clearText}>Clear</Text>
+                    <Text style={styles.clearText}>{t('common.clear')}</Text>
                   </PressableScale>
                 </FadeInUp>
 
@@ -443,9 +447,9 @@ export default function AIGuruScreen({ navigation, route }) {
                     style={styles.photoThumb}
                   />
                   <View style={styles.photoInfo}>
-                    <Text style={styles.photoTitle}>Crop photo attached</Text>
+                    <Text style={styles.photoTitle}>{t('aiGuru.photo_attached')}</Text>
                     <Text style={styles.photoText}>
-                      Add a question or just send
+                      {t('aiGuru.photo_attached_hint')}
                     </Text>
                   </View>
                   <PressableScale

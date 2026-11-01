@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React, { useEffect, useRef } from 'react';
 import {
   Animated,
@@ -34,55 +35,12 @@ const rf = size => {
  * What each upcoming feature will do, plus a question AI Guru can already
  * help with in the meantime.
  */
+// text lives under comingSoon.<feature> (title, description, point1-3, question)
 const FEATURES = {
-  warehouse: {
-    title: 'Warehouse & Storage',
-    image: require('../../assets/homescreen/warehousee.png'),
-    description:
-      'Store your harvest safely and sell when prices are right, without travelling to find space.',
-    points: [
-      'Find warehouses and cold storage near your village',
-      'Book storage space and see the price upfront',
-      'Track the stock you have stored, anytime',
-    ],
-    question: 'How should I store my harvest to get a better price later?',
-  },
-  delivery: {
-    title: 'Shipping & Delivery',
-    image: require('../../assets/homescreen/Deliveryy.png'),
-    description:
-      'Move your produce to mandis and buyers with trusted transport, booked from your phone.',
-    points: [
-      'Book a truck or tempo for your produce',
-      'Compare transport rates before you book',
-      'Track your delivery until it reaches the buyer',
-    ],
-    question: 'How can I transport my produce to the mandi at low cost?',
-  },
-  disease: {
-    title: 'AI Disease Detection',
-    image: require('../../assets/homescreen/dis.png'),
-    description:
-      'Take a photo of a sick leaf and get the disease name and treatment in seconds.',
-    points: [
-      'Scan crop leaves with your camera',
-      'Get the disease name with treatment steps',
-      'Find the right medicine and where to buy it',
-    ],
-    question: 'My crop leaves have spots. How do I find out which disease it is?',
-  },
-  schemes: {
-    title: 'Government Schemes',
-    image: require('../../assets/homescreen/govv.png'),
-    description:
-      'Discover the schemes and subsidies you qualify for and apply without the paperwork hassle.',
-    points: [
-      'See schemes that match your farm and state',
-      'Check your eligibility in a few taps',
-      'Track the status of your applications',
-    ],
-    question: 'Which government schemes can I apply for as a farmer?',
-  },
+  warehouse: { image: require('../../assets/homescreen/warehousee.png') },
+  delivery: { image: require('../../assets/homescreen/Deliveryy.png') },
+  disease: { image: require('../../assets/homescreen/dis.png') },
+  schemes: { image: require('../../assets/homescreen/govv.png') },
 };
 
 function useLoop(duration, delay = 0) {
@@ -173,7 +131,17 @@ function Ripple({ delay }) {
  * params: feature (warehouse | delivery | disease | schemes)
  */
 export default function ComingSoonScreen({ navigation, route }) {
-  const feature = FEATURES[route?.params?.feature] || FEATURES.warehouse;
+  const { t } = useTranslation();
+  const featureId = FEATURES[route?.params?.feature]
+    ? route.params.feature
+    : 'warehouse';
+  const feature = {
+    ...FEATURES[featureId],
+    title: t(`comingSoon.${featureId}.title`),
+    description: t(`comingSoon.${featureId}.description`),
+    points: [1, 2, 3].map(n => t(`comingSoon.${featureId}.point${n}`)),
+    question: t(`comingSoon.${featureId}.question`),
+  };
   const float = useLoop(2200);
 
   const askAiGuru = () =>
@@ -192,7 +160,7 @@ export default function ComingSoonScreen({ navigation, route }) {
           hitSlop={8}
           onPress={() => navigation.goBack()}
           style={styles.backButton}
-          accessibilityLabel="Back"
+          accessibilityLabel={t('common.back')}
         >
           <ArrowLeft size={rf(22)} color={DARK} strokeWidth={2.3} />
         </Pressable>
@@ -240,7 +208,7 @@ export default function ComingSoonScreen({ navigation, route }) {
 
             <View style={styles.soonPill}>
               <Sparkles size={rf(13)} color="#FDE68A" strokeWidth={2.4} />
-              <Text style={styles.soonText}>COMING SOON</Text>
+              <Text style={styles.soonText}>{t('comingSoon.badge')}</Text>
             </View>
           </LinearGradient>
         </FadeIn>
@@ -251,7 +219,7 @@ export default function ComingSoonScreen({ navigation, route }) {
         </FadeIn>
 
         <FadeIn delay={200}>
-          <Text style={styles.sectionTitle}>What you'll be able to do</Text>
+          <Text style={styles.sectionTitle}>{t('comingSoon.what_you_can_do')}</Text>
         </FadeIn>
 
         {feature.points.map((point, index) => (
@@ -265,8 +233,7 @@ export default function ComingSoonScreen({ navigation, route }) {
 
         <FadeIn delay={560} style={styles.noteBox}>
           <Text style={styles.noteText}>
-            We're building this for you right now. Until then, AI Guru can
-            answer your questions about it.
+            {t('comingSoon.note')}
           </Text>
         </FadeIn>
       </ScrollView>
@@ -277,14 +244,14 @@ export default function ComingSoonScreen({ navigation, route }) {
           style={({ pressed }) => [styles.primary, pressed && styles.pressed]}
         >
           <Bot size={rf(19)} color="#FFFFFF" strokeWidth={2.3} />
-          <Text style={styles.primaryText}>Ask AI Guru now</Text>
+          <Text style={styles.primaryText}>{t('comingSoon.ask_now')}</Text>
         </Pressable>
         <Pressable
           onPress={() => navigation.navigate('Home')}
           style={({ pressed }) => [styles.secondary, pressed && styles.pressed]}
         >
           <House size={rf(18)} color={GREEN} strokeWidth={2.3} />
-          <Text style={styles.secondaryText}>Back to Home</Text>
+          <Text style={styles.secondaryText}>{t('common.back_to_home')}</Text>
         </Pressable>
       </View>
     </SafeAreaView>

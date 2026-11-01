@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React, {useEffect, useRef} from 'react';
 
 import {
@@ -37,6 +38,7 @@ const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 */
 
 function HealthRing({percentage, color}) {
+  const {t} = useTranslation();
   const progress = useRef(new Animated.Value(0)).current;
   const hasValue = Number.isFinite(Number(percentage));
 
@@ -93,7 +95,7 @@ function HealthRing({percentage, color}) {
           {hasValue ? <Text style={styles.ringPercent}>%</Text> : null}
         </Text>
 
-        <Text style={styles.ringLabel}>CROP HEALTH</Text>
+        <Text style={styles.ringLabel}>{t('advisory.crop_health_caps')}</Text>
       </View>
     </View>
   );
@@ -133,13 +135,14 @@ export default function AdvisoryPulseCard({
   generating,
   onRefresh,
 }) {
+  const { t } = useTranslation();
   const cropHealth = advisory?.cropHealth;
   const growth = advisory?.plantGrowthActivity;
   const isBarren = Boolean(farm?.isBarrenLand);
 
   const band = isBarren
     ? {
-        label: 'Pre-sowing',
+        label: t('advisory.pre_sowing'),
         color: '#8BE5A9',
         textColor: '#FFFFFF',
         soft: 'rgba(255,255,255,0.14)',
@@ -175,7 +178,7 @@ export default function AdvisoryPulseCard({
         <View style={styles.headerLeft}>
           <Sparkles size={13} color={COLORS.mint} strokeWidth={2.4} />
 
-          <Text style={styles.eyebrow}>SMART FIELD PULSE</Text>
+          <Text style={styles.eyebrow}>{t('advisory.smart_pulse')}</Text>
         </View>
 
         <TouchableOpacity
@@ -191,7 +194,7 @@ export default function AdvisoryPulseCard({
           )}
 
           <Text style={styles.refreshText}>
-            {generating ? 'Updating' : 'Refresh'}
+            {generating ? t('advisory.updating') : t('common.refresh')}
           </Text>
         </TouchableOpacity>
       </View>
@@ -220,7 +223,7 @@ export default function AdvisoryPulseCard({
           </View>
 
           <Text style={styles.stageTitle} numberOfLines={2}>
-            {growth?.stageName || (isBarren ? 'Field preparation' : 'Analysing crop')}
+            {growth?.stageName || (isBarren ? t('advisory.field_prep') : t('advisory.analysing_crop'))}
           </Text>
 
           {cropHealth?.recommendation ? (
@@ -238,15 +241,15 @@ export default function AdvisoryPulseCard({
       <View style={styles.stats}>
         <PulseStat
           icon={CalendarDays}
-          label="Crop age"
-          value={cropAgeDays != null ? `${cropAgeDays} days` : '—'}
+          label={t('advisory.signal_calendar')}
+          value={cropAgeDays != null ? t('advisory.days_value', {n: cropAgeDays}) : '—'}
         />
 
         <View style={styles.statDivider} />
 
         <PulseStat
           icon={Sprout}
-          label="BBCH stage"
+          label={t('advisory.bbch_stage')}
           value={growth?.bbchStage != null ? `${growth.bbchStage}` : '—'}
         />
 
@@ -254,7 +257,7 @@ export default function AdvisoryPulseCard({
 
         <PulseStat
           icon={Wheat}
-          label="Std. yield"
+          label={t('advisory.std_yield')}
           value={
             standardYield != null
               ? `${Number(standardYield).toFixed(1)} ${yieldUnit}`
@@ -265,8 +268,11 @@ export default function AdvisoryPulseCard({
 
       {advisory?.createdAt ? (
         <Text style={styles.updated}>
-          Updated {formatRelativeTime(advisory.createdAt)}
-          {advisory.activitiesSource === 'llm' ? ' · AI agronomist' : ' · Agronomy engine'}
+          {t('advisory.updated', {when: formatRelativeTime(advisory.createdAt)})}
+          {' · '}
+          {advisory.activitiesSource === 'llm'
+            ? t('advisory.ai_agronomist')
+            : t('advisory.agronomy_engine')}
         </Text>
       ) : null}
     </LinearGradient>

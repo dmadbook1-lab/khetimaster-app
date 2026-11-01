@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -12,11 +13,12 @@ import HistoricalViewCard from '../../components/satellite/HistoricalViewCard';
 import SatelliteQuickActions from '../../components/satellite/SatelliteQuickActions';
 const { width } = Dimensions.get('window');
 export default function SatelliteViewScreen({ navigation, route }) {
+  const { t } = useTranslation();
   const [activeIndex, setActiveIndex] = useState('NDVI');
   const farm = route?.params?.farm || {
-    title: 'Patil Farm',
-    crop: 'Soybean',
-    area: '2.34 Acres',
+    title: t('common.my_farm'),
+    crop: t('crops.soybean'),
+    area: t('units.acres_value', { n: '2.34' }),
   };
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>

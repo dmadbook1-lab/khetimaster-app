@@ -1,3 +1,4 @@
+import i18n from '../../translation/i18n';
 import {
   CloudLightning,
   Droplets,
@@ -43,29 +44,29 @@ export const getHealthBand = score => {
   if (!Number.isFinite(value)) {
     return {
       key: 'unknown',
-      label: 'Awaiting data',
+      label: i18n.t('advisory.health_awaiting'),
       color: '#9AA5A0',
       soft: '#F1F4F2',
     };
   }
 
   if (value >= 85) {
-    return {key: 'excellent', label: 'Excellent', color: '#0FA958', soft: '#E3F9EC'};
+    return {key: 'excellent', label: i18n.t('advisory.health_excellent'), color: '#0FA958', soft: '#E3F9EC'};
   }
 
   if (value >= 70) {
-    return {key: 'good', label: 'Good', color: '#4CB944', soft: '#EAF7E6'};
+    return {key: 'good', label: i18n.t('advisory.health_good'), color: '#4CB944', soft: '#EAF7E6'};
   }
 
   if (value >= 50) {
-    return {key: 'moderate', label: 'Moderate', color: '#E3A21A', soft: '#FFF6E0'};
+    return {key: 'moderate', label: i18n.t('advisory.health_moderate'), color: '#E3A21A', soft: '#FFF6E0'};
   }
 
   if (value >= 30) {
-    return {key: 'poor', label: 'Poor', color: '#EA6A2F', soft: '#FFEDE4'};
+    return {key: 'poor', label: i18n.t('advisory.health_poor'), color: '#EA6A2F', soft: '#FFEDE4'};
   }
 
-  return {key: 'critical', label: 'Critical', color: '#D93636', soft: '#FFE9E9'};
+  return {key: 'critical', label: i18n.t('advisory.health_critical'), color: '#D93636', soft: '#FFE9E9'};
 };
 
 /*
@@ -79,11 +80,46 @@ export const getHealthBand = score => {
 */
 
 export const GROWTH_STEPS = [
-  {key: 'sowing', label: 'Sowing', emoji: '🌱', fromBbch: 0},
-  {key: 'growth', label: 'Growth', emoji: '🌿', fromBbch: 10},
-  {key: 'flower', label: 'Flower', emoji: '🌼', fromBbch: 40},
-  {key: 'fruit', label: 'Fruit', emoji: '🌾', fromBbch: 70},
-  {key: 'harvest', label: 'Harvest', emoji: '🧺', fromBbch: 90},
+  {
+    key: 'sowing',
+    get label() {
+      return i18n.t('advisory.step_sowing');
+    },
+    emoji: '🌱',
+    fromBbch: 0,
+  },
+  {
+    key: 'growth',
+    get label() {
+      return i18n.t('advisory.step_growth');
+    },
+    emoji: '🌿',
+    fromBbch: 10,
+  },
+  {
+    key: 'flower',
+    get label() {
+      return i18n.t('advisory.step_flower');
+    },
+    emoji: '🌼',
+    fromBbch: 40,
+  },
+  {
+    key: 'fruit',
+    get label() {
+      return i18n.t('advisory.step_fruit');
+    },
+    emoji: '🌾',
+    fromBbch: 70,
+  },
+  {
+    key: 'harvest',
+    get label() {
+      return i18n.t('advisory.step_harvest');
+    },
+    emoji: '🧺',
+    fromBbch: 90,
+  },
 ];
 
 export const getGrowthStepIndex = bbch => {
@@ -98,9 +134,15 @@ export const getGrowthStepIndex = bbch => {
 };
 
 export const SIGNAL_LABELS = {
-  gdd: 'Heat units',
-  calendar: 'Crop age',
-  ndvi: 'Satellite NDVI',
+  get gdd() {
+    return i18n.t('advisory.signal_gdd');
+  },
+  get calendar() {
+    return i18n.t('advisory.signal_calendar');
+  },
+  get ndvi() {
+    return i18n.t('advisory.signal_ndvi');
+  },
 };
 
 /*
@@ -110,26 +152,92 @@ export const SIGNAL_LABELS = {
 */
 
 export const ACTIVITY_UI = {
-  SPRAY: {icon: SprayCan, color: '#2563EB', soft: '#EAF1FF', tag: 'Spray'},
-  FERTIGATION: {icon: FlaskConical, color: '#16883E', soft: '#E8F7EE', tag: 'Fertigation'},
-  IRRIGATION: {icon: Droplets, color: '#0891B2', soft: '#E3F6FA', tag: 'Irrigation'},
-  WEATHER: {icon: CloudLightning, color: '#E5484D', soft: '#FFEDED', tag: 'Weather'},
-  CROP_RISK: {icon: ShieldAlert, color: '#D97706', soft: '#FFF4E0', tag: 'Risk'},
-  MONITORING: {icon: ScanSearch, color: '#7C3AED', soft: '#F1EBFF', tag: 'Scout'},
-  CARBON_TRACKING: {icon: Leaf, color: '#059669', soft: '#E2F7EF', tag: 'Carbon'},
+  SPRAY: {
+    icon: SprayCan,
+    color: '#2563EB',
+    soft: '#EAF1FF',
+    get tag() {
+      return i18n.t('advisory.tag_spray');
+    },
+  },
+  FERTIGATION: {
+    icon: FlaskConical,
+    color: '#16883E',
+    soft: '#E8F7EE',
+    get tag() {
+      return i18n.t('advisory.tag_fertigation');
+    },
+  },
+  IRRIGATION: {
+    icon: Droplets,
+    color: '#0891B2',
+    soft: '#E3F6FA',
+    get tag() {
+      return i18n.t('advisory.tag_irrigation');
+    },
+  },
+  WEATHER: {
+    icon: CloudLightning,
+    color: '#E5484D',
+    soft: '#FFEDED',
+    get tag() {
+      return i18n.t('advisory.tag_weather');
+    },
+  },
+  CROP_RISK: {
+    icon: ShieldAlert,
+    color: '#D97706',
+    soft: '#FFF4E0',
+    get tag() {
+      return i18n.t('advisory.tag_crop_risk');
+    },
+  },
+  MONITORING: {
+    icon: ScanSearch,
+    color: '#7C3AED',
+    soft: '#F1EBFF',
+    get tag() {
+      return i18n.t('advisory.tag_monitoring');
+    },
+  },
+  CARBON_TRACKING: {
+    icon: Leaf,
+    color: '#059669',
+    soft: '#E2F7EF',
+    get tag() {
+      return i18n.t('advisory.tag_carbon_tracking');
+    },
+  },
 };
 
 export const FALLBACK_ACTIVITY_UI = {
   icon: Leaf,
   color: '#64748B',
   soft: '#F1F5F9',
-  tag: 'Task',
+  get tag() {
+    return i18n.t('advisory.tag_task');
+  },
 };
 
 export const PROGRESS_STEPS = [
-  {key: 'started', label: 'Start'},
-  {key: 'in_progress', label: 'Doing'},
-  {key: 'completed', label: 'Done'},
+  {
+    key: 'started',
+    get label() {
+      return i18n.t('advisory.progress_started');
+    },
+  },
+  {
+    key: 'in_progress',
+    get label() {
+      return i18n.t('advisory.progress_in_progress');
+    },
+  },
+  {
+    key: 'completed',
+    get label() {
+      return i18n.t('advisory.progress_completed');
+    },
+  },
 ];
 
 const formatProduct = product => {
@@ -144,13 +252,13 @@ const formatProduct = product => {
   if (product.name) parts.push(product.name);
 
   if (product.quantityKgPerAcre != null) {
-    parts.push(`${product.quantityKgPerAcre} kg/acre`);
+    parts.push(i18n.t('units.kg_per_acre_value', {n: product.quantityKgPerAcre}));
   } else if (product.quantityKgPerHa != null) {
-    parts.push(`${product.quantityKgPerHa} kg/ha`);
+    parts.push(i18n.t('units.kg_per_ha_value', {n: product.quantityKgPerHa}));
   } else if (product.dose) {
     parts.push(product.dose);
   } else if (product.totalKgFarm != null) {
-    parts.push(`${product.totalKgFarm} kg`);
+    parts.push(i18n.t('units.kg_value', {n: product.totalKgFarm}));
   }
 
   return parts.join(' · ');
@@ -198,7 +306,9 @@ export const splitActivityDetails = (details = {}) => {
     .filter(([key]) => key !== 'products' && !/Key$/.test(key))
     .map(([key, value]) => ({
       key,
-      label: humanizeKey(key),
+      label: i18n.exists(`advisory.detail_${key}`)
+        ? i18n.t(`advisory.detail_${key}`)
+        : humanizeKey(key),
       values: toLabels(value),
     }))
     .filter(row => row.values.length);
@@ -249,7 +359,9 @@ export const FERTILIZERS = [
     key: 'ureaKg',
     deficitKey: 'deficitN',
     name: 'Urea',
-    grade: 'Nitrogen · 46% N',
+    get grade() {
+      return i18n.t('advisory.grade_urea');
+    },
     nutrient: 'N',
     color: '#E8A80C',
   },
@@ -257,7 +369,9 @@ export const FERTILIZERS = [
     key: 'dapKg',
     deficitKey: 'deficitP',
     name: 'DAP',
-    grade: 'Phosphorus · 46% P₂O₅, 18% N',
+    get grade() {
+      return i18n.t('advisory.grade_dap');
+    },
     nutrient: 'P₂O₅',
     color: '#DC4A3D',
   },
@@ -265,7 +379,9 @@ export const FERTILIZERS = [
     key: 'mopKg',
     deficitKey: 'deficitK',
     name: 'MOP',
-    grade: 'Potassium · 60% K₂O',
+    get grade() {
+      return i18n.t('advisory.grade_mop');
+    },
     nutrient: 'K₂O',
     color: '#2F9E44',
   },
@@ -297,14 +413,14 @@ export const formatRelativeTime = iso => {
 
   const minutes = Math.round(diffMs / 60000);
 
-  if (minutes < 1) return 'just now';
-  if (minutes < 60) return `${minutes} min ago`;
+  if (minutes < 1) return i18n.t('common.just_now');
+  if (minutes < 60) return i18n.t('time.minutes_ago', {n: minutes});
 
   const hours = Math.round(minutes / 60);
 
-  if (hours < 24) return `${hours} h ago`;
+  if (hours < 24) return i18n.t('time.hours_ago', {n: hours});
 
   const days = Math.round(hours / 24);
 
-  return `${days} day${days === 1 ? '' : 's'} ago`;
+  return i18n.t(days === 1 ? 'time.day_ago' : 'time.days_ago', {n: days});
 };

@@ -1,3 +1,5 @@
+import { useTranslation } from 'react-i18next';
+import {formatDate as formatDisplayDate} from '../../utils/dateFormat';
 import React, {
   useCallback,
   useEffect,
@@ -111,11 +113,7 @@ const formatDate = date => {
     return date;
   }
 
-  return new Intl.DateTimeFormat('en-US', {
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-  }).format(parsed);
+  return formatDisplayDate(parsed, {pad: true, year: true});
 };
 
 const getCloudCover = item => {
@@ -257,6 +255,7 @@ export default function FarmOverviewScreen({
   navigation,
   route,
 }) {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
 
   const farm = route?.params?.farm;
@@ -310,23 +309,23 @@ export default function FarmOverviewScreen({
     farm?.fieldName ||
     farm?.title ||
     farm?.name ||
-    'My Farm';
+    t('common.my_farm');
 
   const cropName =
     farm?.cropName ||
     farm?.crop ||
-    'Crop';
+    t('common.crop');
 
   const variety =
     farm?.variety ||
-    'Local Variety';
+    t('farms.local_variety');
 
   const farmArea =
     farm?.acre != null
-      ? `${Number(farm.acre).toFixed(2)} acres`
+      ? t('units.acres_value', {n: Number(farm.acre).toFixed(2)})
       : farm?.area
       ? farm.area
-      : 'Farm boundary';
+      : t('farms.farm_boundary');
 
   /* ============================================================
      SATELLITE DATES
@@ -668,13 +667,11 @@ export default function FarmOverviewScreen({
           </View>
 
           <Text style={styles.emptyTitle}>
-            Farm data unavailable
+            {t('farms.data_unavailable')}
           </Text>
 
           <Text style={styles.emptyText}>
-            The selected farm does not
-            contain enough information
-            to display monitoring data.
+            {t('farms.data_unavailable_text')}
           </Text>
         </View>
       </SafeAreaView>
@@ -745,7 +742,7 @@ export default function FarmOverviewScreen({
                 style={
                   styles.sectionEyebrow
                 }>
-                SATELLITE INTELLIGENCE
+                {t('farms.satellite_intelligence')}
               </Text>
             </View>
 
@@ -753,16 +750,14 @@ export default function FarmOverviewScreen({
               style={
                 styles.sectionTitle
               }>
-              Crop Monitoring
+              {t('farms.crop_monitoring')}
             </Text>
 
             <Text
               style={
                 styles.sectionSubtitle
               }>
-              Analyse crop conditions
-              using satellite imagery
-              and vegetation indices.
+              {t('farms.crop_monitoring_sub')}
             </Text>
           </View>
         </View>
@@ -847,9 +842,9 @@ export default function FarmOverviewScreen({
               <View>
                 <Text
                   style={styles.mapTitle}>
-                  {selectedIndex ||
-                    'Satellite'}{' '}
-                  Map
+                  {t('farms.index_map', {
+                    index: selectedIndex || t('farms.satellite'),
+                  })}
                 </Text>
 
                 <Text
@@ -860,7 +855,7 @@ export default function FarmOverviewScreen({
                     ? formatDate(
                         selectedDate,
                       )
-                    : 'No date selected'}
+                    : t('farms.no_date_selected')}
                 </Text>
               </View>
             </View>
@@ -930,7 +925,7 @@ export default function FarmOverviewScreen({
                 style={
                   styles.mapFooterText
                 }>
-                Farm boundary
+                {t('farms.farm_boundary')}
               </Text>
             </View>
 
@@ -949,7 +944,7 @@ export default function FarmOverviewScreen({
                 style={
                   styles.mapFooterText
                 }>
-                Satellite layer
+                {t('farms.satellite_layer')}
               </Text>
             </View>
 
@@ -957,7 +952,7 @@ export default function FarmOverviewScreen({
               style={
                 styles.mapFooterHint
               }>
-              Pinch to zoom
+              {t('farms.pinch_to_zoom')}
             </Text>
           </View>
         </View>
@@ -1003,8 +998,7 @@ export default function FarmOverviewScreen({
                   style={
                     styles.errorTitle
                   }>
-                  Satellite data
-                  unavailable
+                  {t('farms.satellite_unavailable')}
                 </Text>
 
                 <Text
@@ -1012,7 +1006,7 @@ export default function FarmOverviewScreen({
                     styles.errorText
                   }>
                   {indexError.message ||
-                    'Unable to load satellite imagery.'}
+                    t('farms.err_satellite')}
                 </Text>
 
                 <Text
@@ -1040,7 +1034,7 @@ export default function FarmOverviewScreen({
                     size={14}
                     color={GREEN}
                   />{' '}
-                  Try Again
+                  {t('common.try_again')}
                 </Text>
               </View>
             </View>
@@ -1075,19 +1069,14 @@ export default function FarmOverviewScreen({
                 style={
                   styles.noDataTitle
                 }>
-                No satellite data
-                available
+                {t('farms.no_satellite_data')}
               </Text>
 
               <Text
                 style={
                   styles.noDataText
                 }>
-                No usable imagery was
-                found for this
-                observation date and
-                index. Try another
-                available date.
+                {t('farms.no_satellite_data_text')}
               </Text>
             </View>
           )}
@@ -1105,9 +1094,7 @@ export default function FarmOverviewScreen({
             style={
               styles.bottomInfoText
             }>
-            Satellite imagery may vary
-            depending on cloud cover
-            and provider availability.
+            {t('farms.imagery_note')}
           </Text>
         </View>
 
@@ -1138,11 +1125,12 @@ export default function FarmOverviewScreen({
 
             <View style={styles.aiGuruText}>
               <Text style={styles.aiGuruTitle}>
-                Ask AI Guru about this farm
+                {t('farms.ask_ai_farm')}
               </Text>
               <Text style={styles.aiGuruSubtitle}>
-                Irrigation, disease risk, fertilizer and prices for{' '}
-                {farm.fieldName || 'your farm'}
+                {t('farms.ask_ai_farm_sub', {
+                  name: farm.fieldName || t('farms.your_farm'),
+                })}
               </Text>
             </View>
 

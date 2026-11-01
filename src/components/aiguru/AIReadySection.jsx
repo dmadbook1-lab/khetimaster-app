@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React from 'react';
 import { Animated, View, Text, StyleSheet, Image } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
@@ -52,6 +53,7 @@ function Ripple({ delay, size }) {
 
 /* Empty state: floating AI orb, greeting and one big speak button. */
 export default function AIReadySection({ name, onVoicePress }) {
+  const { t } = useTranslation();
   const float = useLoop(2600);
   const spin = useLoop(10000, { yoyo: false });
   const micPulse = useLoop(1800, { yoyo: false });
@@ -140,19 +142,18 @@ export default function AIReadySection({ name, onVoicePress }) {
       </FadeInUp>
 
       <FadeInUp delay={180}>
-        <Text style={styles.title}>How can I help{'\n'}you today?</Text>
+        <Text style={styles.title}>{t('aiGuru.ready_title')}</Text>
       </FadeInUp>
 
       <FadeInUp delay={260}>
         <Text style={styles.subtitle}>
-          Ask about crops, weather, diseases,{'\n'}mandi prices or anything on
-          your farm
+          {t('aiGuru.ready_subtitle')}
         </Text>
       </FadeInUp>
 
       <FadeInUp delay={380} style={styles.speakWrap}>
         <PressableScale
-          accessibilityLabel="Tap and speak"
+          accessibilityLabel={t('aiGuru.tap_and_speak')}
           onPress={onVoicePress}
           scaleTo={0.96}
         >
@@ -187,8 +188,8 @@ export default function AIReadySection({ name, onVoicePress }) {
               </LinearGradient>
             </View>
             <View>
-              <Text style={styles.speakTitle}>Tap to speak</Text>
-              <Text style={styles.speakHint}>Hindi · Marathi · English</Text>
+              <Text style={styles.speakTitle}>{t('aiGuru.tap_to_speak')}</Text>
+              <Text style={styles.speakHint}>{t('aiGuru.speak_languages')}</Text>
             </View>
           </Glass>
         </PressableScale>

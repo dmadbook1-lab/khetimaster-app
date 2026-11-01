@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { BookOpen, Box, Zap, TrendingUp } from 'lucide-react-native';
@@ -6,39 +7,40 @@ const CARD_WIDTH = (width - width * 0.074 - 16) / 2;
 const insights = [
   {
     Icon: BookOpen,
-    label: 'Vegetation',
-    value: 'High',
+    label: 'satellite.vegetation',
+    value: 'satellite.high',
     color: '#16A34A',
     bg: '#ECFDF5',
   },
   {
     Icon: Box,
-    label: 'Moisture',
-    value: 'Good',
+    label: 'satellite.moisture',
+    value: 'satellite.good',
     color: '#2563EB',
     bg: '#EFF6FF',
   },
   {
     Icon: Zap,
-    label: 'Crop Stress',
-    value: 'Low',
+    label: 'satellite.crop_stress',
+    value: 'satellite.low',
     color: '#F59E0B',
     bg: '#FFFBEB',
   },
   {
     Icon: TrendingUp,
-    label: 'Growth',
-    value: 'Normal',
+    label: 'satellite.growth',
+    value: 'satellite.normal',
     color: '#A855F7',
     bg: '#FAF5FF',
   },
 ];
 export default function FarmInsightsGrid() {
+  const { t } = useTranslation();
   return (
     <View style={styles.wrapper}>
       <View style={styles.sectionRow}>
-        <Text style={styles.sectionTitle}>Farm Insights</Text>
-        <Text style={styles.viewAll}>View All</Text>
+        <Text style={styles.sectionTitle}>{t('satellite.farm_insights')}</Text>
+        <Text style={styles.viewAll}>{t('common.view_all')}</Text>
       </View>
 
       <View style={styles.grid}>
@@ -57,8 +59,8 @@ export default function FarmInsightsGrid() {
                 <Icon size={21} color={item.color} strokeWidth={2.4} />
               </View>
 
-              <Text style={styles.label}>{item.label}</Text>
-              <Text style={styles.value}>{item.value}</Text>
+              <Text style={styles.label}>{t(item.label)}</Text>
+              <Text style={styles.value}>{t(item.value)}</Text>
             </View>
           );
         })}

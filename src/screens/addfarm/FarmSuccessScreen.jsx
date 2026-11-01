@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React from 'react';
 
 import {
@@ -75,6 +76,7 @@ const rf = size => {
 export default function FarmSuccessScreen() {
   const navigation =
     useNavigation();
+  const { t } = useTranslation();
 
   const route =
     useRoute();
@@ -103,11 +105,11 @@ export default function FarmSuccessScreen() {
   const farmName =
     farmField?.fieldName ||
     farmField?.farmName ||
-    'My Farm';
+    t('common.my_farm');
 
   const cropName =
     farmField?.cropName ||
-    'Crop not specified';
+    t('common.crop_not_specified');
 
   const variety =
     farmField?.variety ||
@@ -256,7 +258,7 @@ export default function FarmSuccessScreen() {
               styles.successPillText
             }
           >
-            Farm Saved Successfully
+            {t('farmSuccess.saved')}
           </Text>
         </View>
 
@@ -267,7 +269,7 @@ export default function FarmSuccessScreen() {
         <Text
           style={styles.title}
         >
-          Your Farm Is Ready!
+          {t('farmSuccess.ready')}
         </Text>
 
         <Text
@@ -275,8 +277,7 @@ export default function FarmSuccessScreen() {
             styles.subtitle
           }
         >
-          Your field boundary and crop details
-          have been successfully saved to
+          {t('farmSuccess.ready_sub')}
           KhetiMaster.
         </Text>
 
@@ -318,7 +319,7 @@ export default function FarmSuccessScreen() {
                   styles.smallLabel
                 }
               >
-                FARM NAME
+                {t('farmSuccess.farm_name_caps')}
               </Text>
 
               <Text
@@ -366,7 +367,7 @@ export default function FarmSuccessScreen() {
                   color={GREEN}
                 />
               }
-              label="Crop"
+              label={t('common.crop')}
               value={
                 cropName
               }
@@ -379,10 +380,10 @@ export default function FarmSuccessScreen() {
                   color={GREEN}
                 />
               }
-              label="Area"
-              value={`${acreValue.toFixed(
-                2,
-              )} Acres`}
+              label={t('farms.area')}
+              value={t('units.acres_value', {
+                n: acreValue.toFixed(2),
+              })}
             />
           </View>
 
@@ -447,7 +448,7 @@ export default function FarmSuccessScreen() {
                     styles.infoLabel
                   }
                 >
-                  Farming type
+                  {t('farmSuccess.farming_type')}
                 </Text>
 
                 <Text
@@ -455,7 +456,9 @@ export default function FarmSuccessScreen() {
                     styles.infoValue
                   }
                 >
-                  {farmingType}
+                  {t(`farms.type_${farmingType.toLowerCase()}`, {
+                    defaultValue: farmingType,
+                  })}
                 </Text>
               </View>
             </View>
@@ -550,25 +553,24 @@ export default function FarmSuccessScreen() {
             }
           >
             <MiniMeasurement
-              label="Hectares"
-              value={`${hectareValue.toFixed(
-                2,
-              )} ha`}
+              label={t('farmForm.hectares')}
+              value={t('units.ha_value', {
+                n: hectareValue.toFixed(2),
+              })}
             />
 
             <MiniMeasurement
-              label="Boundary"
-              value={`${boundaryCount} points`}
+              label={t('mapFarm.boundary_unit')}
+              value={t('farmSuccess.points_value', {
+                n: boundaryCount,
+              })}
             />
 
             <MiniMeasurement
-              label="Perimeter"
-              value={`${Math.round(
-                Number(
-                  perimeterMeters ||
-                    0,
-                ),
-              )} m`}
+              label={t('farmForm.perimeter')}
+              value={t('units.m_value', {
+                n: Math.round(Number(perimeterMeters || 0)),
+              })}
             />
           </View>
 
@@ -603,7 +605,7 @@ export default function FarmSuccessScreen() {
                     styles.monitorText
                   }
                 >
-                  Farm Field Saved
+                  {t('farmSuccess.field_saved')}
                 </Text>
 
                 <Text
@@ -611,8 +613,7 @@ export default function FarmSuccessScreen() {
                     styles.monitorSubtext
                   }
                 >
-                  Your field data is now available
-                  in KhetiMaster.
+                  {t('farmSuccess.field_saved_sub')}
                 </Text>
               </View>
             </View>
@@ -676,22 +677,22 @@ export default function FarmSuccessScreen() {
         <NextCard
           type="green"
           Icon={CircleDot}
-          title="Your Farm Is Saved"
-          text="Your field boundary, crop and farming details are now stored in KhetiMaster."
+          title={t('farmSuccess.next_saved')}
+          text={t('farmSuccess.next_saved_text')}
         />
 
         <NextCard
           type="blue"
           Icon={CloudSun}
-          title="Weather Information"
-          text="You can use your farm location to access relevant weather information and alerts."
+          title={t('farmSuccess.next_weather')}
+          text={t('farmSuccess.next_weather_text')}
         />
 
         <NextCard
           type="orange"
           Icon={Sparkles}
-          title="Farm Insights"
-          text="KhetiMaster can use your saved crop and field information for future farm features."
+          title={t('farmSuccess.next_insights')}
+          text={t('farmSuccess.next_insights_text')}
         />
 
         {/* ============================================================ */}
@@ -731,7 +732,7 @@ export default function FarmSuccessScreen() {
                 styles.dashboardText
               }
             >
-              Go To Dashboard
+              {t('farmSuccess.go_dashboard')}
             </Text>
           </LinearGradient>
         </TouchableOpacity>
@@ -759,7 +760,7 @@ export default function FarmSuccessScreen() {
               styles.addFarmText
             }
           >
-            Add Another Farm
+            {t('farmSuccess.add_another')}
           </Text>
         </TouchableOpacity>
 
@@ -768,8 +769,7 @@ export default function FarmSuccessScreen() {
             styles.footerText
           }
         >
-          You can manage your farm fields from
-          KhetiMaster whenever you need.
+          {t('farmSuccess.manage_note')}
         </Text>
       </ScrollView>
     </SafeAreaView>

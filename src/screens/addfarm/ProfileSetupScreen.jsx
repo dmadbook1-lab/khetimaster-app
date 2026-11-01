@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React, {
   useEffect,
   useRef,
@@ -61,6 +62,7 @@ const ProfileSetupScreen = ({
   navigation,
   route,
 }) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
 
   const scrollRef = useRef(null);
@@ -283,8 +285,8 @@ const ProfileSetupScreen = ({
 
       if (!phoneValue) {
         Alert.alert(
-          'Required',
-          'Please enter your phone number.',
+          t('profileSetup.required'),
+          t('profileSetup.err_phone'),
         );
 
         return;
@@ -301,8 +303,8 @@ const ProfileSetupScreen = ({
         phoneDigits.length > 15
       ) {
         Alert.alert(
-          'Invalid Phone Number',
-          'Please enter a valid phone number.',
+          t('profileSetup.invalid_phone'),
+          t('profileSetup.err_phone_valid'),
         );
 
         return;
@@ -310,8 +312,8 @@ const ProfileSetupScreen = ({
 
       if (!fullName) {
         Alert.alert(
-          'Required',
-          'Please enter your full name.',
+          t('profileSetup.required'),
+          t('profileSetup.err_name'),
         );
 
         return;
@@ -319,8 +321,8 @@ const ProfileSetupScreen = ({
 
       if (!state) {
         Alert.alert(
-          'Required',
-          'Please enter your state.',
+          t('profileSetup.required'),
+          t('profileSetup.err_state'),
         );
 
         return;
@@ -328,8 +330,8 @@ const ProfileSetupScreen = ({
 
       if (!districtValue) {
         Alert.alert(
-          'Required',
-          'Please enter your district.',
+          t('profileSetup.required'),
+          t('profileSetup.err_district'),
         );
 
         return;
@@ -341,8 +343,8 @@ const ProfileSetupScreen = ({
 
       if (!talukaValue) {
         Alert.alert(
-          'Required',
-          'Please enter your taluka.',
+          t('profileSetup.required'),
+          t('profileSetup.err_taluka'),
         );
 
         return;
@@ -354,8 +356,8 @@ const ProfileSetupScreen = ({
 
       if (!villageValue) {
         Alert.alert(
-          'Required',
-          'Please enter your village.',
+          t('profileSetup.required'),
+          t('profileSetup.err_village'),
         );
 
         return;
@@ -367,8 +369,8 @@ const ProfileSetupScreen = ({
 
       if (!isEditMode && !email) {
         Alert.alert(
-          'Session Error',
-          'Email information is missing. Please login again.',
+          t('profileSetup.session_error'),
+          t('profileSetup.session_error_text'),
         );
 
         return;
@@ -405,11 +407,11 @@ const ProfileSetupScreen = ({
 
           if (result?.success) {
             Alert.alert(
-              'Profile Updated',
-              'Your profile has been updated successfully.',
+              t('profileSetup.updated'),
+              t('profileSetup.updated_text'),
               [
                 {
-                  text: 'OK',
+                  text: t('common.ok'),
                   onPress: () =>
                     navigation.goBack(),
                 },
@@ -420,9 +422,9 @@ const ProfileSetupScreen = ({
           }
 
           Alert.alert(
-            'Profile',
+            t('profileSetup.profile'),
             result?.message ||
-              'Unable to update your profile.',
+              t('profileSetup.err_update'),
           );
 
           return;
@@ -473,9 +475,9 @@ const ProfileSetupScreen = ({
         }
 
         Alert.alert(
-          'Profile Setup',
+          t('profileSetup.setup'),
           result?.message ||
-            'Unable to complete your profile.',
+            t('profileSetup.err_complete'),
         );
       } catch (error) {
         console.log(
@@ -485,13 +487,13 @@ const ProfileSetupScreen = ({
 
         Alert.alert(
           isEditMode
-            ? 'Profile Update Failed'
-            : 'Profile Setup Failed',
+            ? t('profileSetup.update_failed')
+            : t('profileSetup.setup_failed'),
 
           typeof error === 'string'
             ? error
             : error?.message ||
-                'Unable to save your profile.',
+                t('profileSetup.err_save'),
         );
       }
     };
@@ -596,14 +598,14 @@ const ProfileSetupScreen = ({
 
             <Text style={styles.title}>
               {isEditMode
-                ? 'Edit Your Profile'
-                : 'Let’s Get to Know You'}
+                ? t('profileSetup.edit_title')
+                : t('profileSetup.create_title')}
             </Text>
 
             <Text style={styles.subtitle}>
               {isEditMode
-                ? 'Keep your personal and location details up to date.'
-                : 'Help us personalize weather updates, mandi prices, and farming recommendations.'}
+                ? t('profileSetup.edit_sub')
+                : t('profileSetup.create_sub')}
             </Text>
 
             {/* ==================================================
@@ -611,7 +613,7 @@ const ProfileSetupScreen = ({
             ================================================== */}
 
             <FieldLabel
-              title="Email Address"
+              title={t('profileSetup.email')}
             />
 
             <View
@@ -635,7 +637,7 @@ const ProfileSetupScreen = ({
                 style={
                   styles.emailInput
                 }
-                placeholder="Email address"
+                placeholder={t('profileSetup.email_ph')}
                 placeholderTextColor="#A3ADBD"
                 autoCapitalize="none"
                 keyboardType="email-address"
@@ -661,7 +663,7 @@ const ProfileSetupScreen = ({
             ================================================== */}
 
             <FieldLabel
-              title="Phone Number"
+              title={t('profileSetup.phone')}
             />
 
             <View
@@ -686,7 +688,7 @@ const ProfileSetupScreen = ({
                     cleaned,
                   );
                 }}
-                placeholder="Enter your phone number"
+                placeholder={t('profileSetup.phone_ph')}
                 placeholderTextColor="#A3ADBD"
                 style={styles.input}
                 editable={!isLoading}
@@ -704,7 +706,7 @@ const ProfileSetupScreen = ({
             ================================================== */}
 
             <FieldLabel
-              title="Full Name"
+              title={t('profileSetup.full_name')}
             />
 
             <View
@@ -719,7 +721,7 @@ const ProfileSetupScreen = ({
               <TextInput
                 value={name}
                 onChangeText={setName}
-                placeholder="Enter your full name"
+                placeholder={t('profileSetup.full_name_ph')}
                 placeholderTextColor="#A3ADBD"
                 style={styles.input}
                 editable={!isLoading}
@@ -735,7 +737,7 @@ const ProfileSetupScreen = ({
                 STATE
             ================================================== */}
 
-            <FieldLabel title="State" />
+            <FieldLabel title={t('profileSetup.state')} />
 
             <View style={styles.inputBox}>
               <Map
@@ -749,8 +751,8 @@ const ProfileSetupScreen = ({
                 onChangeText={setStateName}
                 placeholder={
                   locationLoading
-                    ? 'Detecting state...'
-                    : 'Enter your state'
+                    ? t('profileSetup.detecting_state')
+                    : t('profileSetup.state_ph')
                 }
                 placeholderTextColor="#A3ADBD"
                 style={styles.input}
@@ -775,7 +777,7 @@ const ProfileSetupScreen = ({
             ================================================== */}
 
             <FieldLabel
-              title="District"
+              title={t('profileSetup.district')}
             />
 
             <View style={styles.inputBox}>
@@ -790,8 +792,8 @@ const ProfileSetupScreen = ({
                 onChangeText={setDistrict}
                 placeholder={
                   locationLoading
-                    ? 'Detecting district...'
-                    : 'Enter your district'
+                    ? t('profileSetup.detecting_district')
+                    : t('profileSetup.district_ph')
                 }
                 placeholderTextColor="#A3ADBD"
                 style={styles.input}
@@ -816,7 +818,7 @@ const ProfileSetupScreen = ({
                 MANUAL ONLY
             ================================================== */}
 
-            <FieldLabel title="Taluka" />
+            <FieldLabel title={t('profileSetup.taluka')} />
 
             <View
               style={styles.inputBox}
@@ -830,7 +832,7 @@ const ProfileSetupScreen = ({
               <TextInput
                 value={taluka}
                 onChangeText={setTaluka}
-                placeholder="Enter your taluka"
+                placeholder={t('profileSetup.taluka_ph')}
                 placeholderTextColor="#A3ADBD"
                 style={styles.input}
                 editable={!isLoading}
@@ -848,7 +850,7 @@ const ProfileSetupScreen = ({
             ================================================== */}
 
             <FieldLabel
-              title="Village"
+              title={t('profileSetup.village')}
             />
 
             <View
@@ -863,7 +865,7 @@ const ProfileSetupScreen = ({
               <TextInput
                 value={village}
                 onChangeText={setVillage}
-                placeholder="Enter your village"
+                placeholder={t('profileSetup.village_ph')}
                 placeholderTextColor="#A3ADBD"
                 style={styles.input}
                 editable={!isLoading}
@@ -902,7 +904,7 @@ const ProfileSetupScreen = ({
                 <Text
                   style={styles.stepText}
                 >
-                  Step 1 of 2
+                  {t('common.step_of', { step: 1, total: 2 })}
                 </Text>
               </View>
             )}
@@ -951,8 +953,8 @@ const ProfileSetupScreen = ({
                       }
                     >
                       {isEditMode
-                        ? 'Updating Profile...'
-                        : 'Saving Profile...'}
+                        ? t('profileSetup.updating')
+                        : t('profileSetup.saving')}
                     </Text>
                   </>
                 ) : (
@@ -963,8 +965,8 @@ const ProfileSetupScreen = ({
                       }
                     >
                       {isEditMode
-                        ? 'Save Changes'
-                        : 'Continue'}
+                        ? t('common.save_changes')
+                        : t('common.continue')}
                     </Text>
 
                     <ArrowRight

@@ -1,3 +1,4 @@
+import i18n from '../../translation/i18n';
 import { useCallback, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -45,7 +46,7 @@ export default function useLocalWeather() {
     location?.city ||
     location?.district ||
     String(local.data?.address || '').split(',')[0] ||
-    'Your location';
+    i18n.t('weather.your_location');
 
   return {
     data: local.data,

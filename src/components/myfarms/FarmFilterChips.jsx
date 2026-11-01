@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React from 'react';
 import {
   ScrollView,
@@ -13,6 +14,7 @@ const rf = size => {
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
 export default function FarmFilterChips({ filters, activeFilter, onChange }) {
+  const { t } = useTranslation();
   return (
     <ScrollView
       horizontal
@@ -29,7 +31,7 @@ export default function FarmFilterChips({ filters, activeFilter, onChange }) {
             style={[styles.chip, active && styles.activeChip]}
           >
             <Text style={[styles.text, active && styles.activeText]}>
-              {item}
+              {t(`farms.filter_${item.toLowerCase()}`)}
             </Text>
           </TouchableOpacity>
         );

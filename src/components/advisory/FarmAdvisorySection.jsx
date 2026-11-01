@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React, {useCallback, useEffect, useRef} from 'react';
 
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
@@ -38,6 +39,7 @@ const MAX_POLLS = 30;
 */
 
 export default function FarmAdvisorySection({farm, language: languageProp}) {
+  const { t } = useTranslation();
   // advisory is generated in the app language unless a caller overrides it
   const appLanguage = useAppLanguage();
   const language = languageProp || appLanguage;
@@ -130,16 +132,15 @@ export default function FarmAdvisorySection({farm, language: languageProp}) {
         <View style={styles.eyebrowRow}>
           <Sparkles size={14} color={COLORS.green} strokeWidth={2.5} />
 
-          <Text style={styles.eyebrow}>SMART ADVISORY</Text>
+          <Text style={styles.eyebrow}>{t('advisory.smart_advisory')}</Text>
         </View>
 
         <Text style={styles.sectionTitle}>
-          {isBarren ? 'Pre-sowing Guidance' : 'Crop Intelligence'}
+          {isBarren ? t('advisory.pre_sowing_guidance') : t('advisory.crop_intelligence')}
         </Text>
 
         <Text style={styles.sectionSubtitle}>
-          Growth stage, nutrients, soil and today's tasks — built from weather,
-          satellite and agronomy data for this field.
+          {t('advisory.section_sub')}
         </Text>
       </View>
 
@@ -156,14 +157,14 @@ export default function FarmAdvisorySection({farm, language: languageProp}) {
           <AlertCircle size={20} color="#B42318" />
 
           <View style={styles.errorBody}>
-            <Text style={styles.errorTitle}>Advisory unavailable</Text>
+            <Text style={styles.errorTitle}>{t('advisory.unavailable')}</Text>
 
             <Text style={styles.errorText}>{error}</Text>
 
             <TouchableOpacity onPress={handleRefresh} style={styles.retry}>
               <RefreshCw size={13} color={COLORS.green} strokeWidth={2.5} />
 
-              <Text style={styles.retryText}>Try again</Text>
+              <Text style={styles.retryText}>{t('common.try_again')}</Text>
             </TouchableOpacity>
           </View>
         </View>

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React from 'react';
 
 import {
@@ -41,6 +42,7 @@ export default function SatelliteControls({
   onDateChange,
   onRefresh,
 }) {
+  const { t } = useTranslation();
   const satelliteOptions = [
     {
       label: 'Sentinel-2',
@@ -66,11 +68,11 @@ export default function SatelliteControls({
 
           <View>
             <Text style={styles.controlsTitle}>
-              Image Analysis
+              {t('farms.image_analysis')}
             </Text>
 
             <Text style={styles.controlsSubtitle}>
-              Choose imagery and index
+              {t('farms.choose_imagery')}
             </Text>
           </View>
         </View>
@@ -98,7 +100,7 @@ export default function SatelliteControls({
 
       <View style={styles.controlBlock}>
         <Text style={styles.controlLabel}>
-          Satellite source
+          {t('farms.satellite_source')}
         </Text>
 
         <Dropdown
@@ -131,7 +133,7 @@ export default function SatelliteControls({
 
       <View style={styles.controlBlock}>
         <Text style={styles.controlLabel}>
-          Analysis index
+          {t('farms.analysis_index')}
         </Text>
 
         <Dropdown
@@ -139,7 +141,11 @@ export default function SatelliteControls({
           containerStyle={styles.dropdownContainer}
           placeholderStyle={styles.placeholderStyle}
           selectedTextStyle={styles.selectedTextStyle}
-          data={indexOptions}
+          data={indexOptions.map(option =>
+            option.value === 'TRUE_COLOR'
+              ? {...option, label: t('farms.true_color')}
+              : option,
+          )}
           labelField="label"
           valueField="value"
           value={selectedIndex}
@@ -165,7 +171,7 @@ export default function SatelliteControls({
       <View style={styles.controlBlock}>
         <View style={styles.dateLabelRow}>
           <Text style={styles.controlLabel}>
-            Observation date
+            {t('farms.observation_date')}
           </Text>
 
           {cloudCover !== null &&
@@ -198,8 +204,8 @@ export default function SatelliteControls({
           value={selectedDate}
           placeholder={
             datesLoading
-              ? 'Finding satellite dates...'
-              : 'Select observation date'
+              ? t('farms.finding_dates')
+              : t('farms.select_date')
           }
           onChange={item =>
             onDateChange(item.value)
@@ -232,7 +238,7 @@ export default function SatelliteControls({
                       style={
                         styles.cloudDropdownText
                       }>
-                      Cloud cover:{' '}
+                      {t('farms.cloud_cover')}{' '}
                       {Number(
                         item.cloud_cover,
                       ).toFixed(0)}

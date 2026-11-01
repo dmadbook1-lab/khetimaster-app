@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React from 'react';
 import {
   View,
@@ -33,6 +34,7 @@ const rf = size => {
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
 export default function WalkAroundScreen({ navigation }) {
+  const { t } = useTranslation();
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
@@ -52,7 +54,7 @@ export default function WalkAroundScreen({ navigation }) {
 
           <View style={styles.stepPill}>
             <View style={styles.stepDot} />
-            <Text style={styles.stepText}>STEP 2 OF 3</Text>
+            <Text style={styles.stepText}>{t('common.step_of', { step: 2, total: 3 })}</Text>
           </View>
 
           <TouchableOpacity activeOpacity={0.8} style={styles.circleBtn}>
@@ -67,12 +69,10 @@ export default function WalkAroundScreen({ navigation }) {
         />
 
         <View style={styles.content}>
-          <Text style={styles.title}>Walk Around Your Farm</Text>
+          <Text style={styles.title}>{t('walk.title')}</Text>
 
           <Text style={styles.subtitle}>
-            Walk along the edge of your farm and{'\n'}
-            KhetiMaster will automatically trace the{'\n'}
-            boundary using GPS.
+            {t('walk.subtitle')}
           </Text>
 
           <View style={styles.gpsCard}>
@@ -85,9 +85,9 @@ export default function WalkAroundScreen({ navigation }) {
             </View>
 
             <View style={styles.gpsTextWrap}>
-              <Text style={styles.gpsTitle}>GPS Signal Strong</Text>
+              <Text style={styles.gpsTitle}>{t('walk.gps_strong')}</Text>
               <Text style={styles.gpsSub}>
-                Accuracy ±1.2 meters · Ready to map
+                {t('walk.gps_accuracy')}
               </Text>
             </View>
 
@@ -130,21 +130,21 @@ export default function WalkAroundScreen({ navigation }) {
           <View style={styles.tipsCard}>
             <View style={styles.tipsHeader}>
               <MapPin size={rf(15)} color="#F97316" strokeWidth={2.4} />
-              <Text style={styles.tipsTitle}>Tips for Best Results</Text>
+              <Text style={styles.tipsTitle}>{t('walk.tips_title')}</Text>
             </View>
 
             <View style={[styles.tipItem, styles.tipGreen]}>
               <View style={[styles.tipIconBox, styles.tipIconGreen]}>
                 <Map size={rf(22)} color="#10B981" strokeWidth={2.4} />
               </View>
-              <Text style={styles.tipText}>Stay near the field boundary</Text>
+              <Text style={styles.tipText}>{t('walk.tip_near')}</Text>
             </View>
 
             <View style={[styles.tipItem, styles.tipBlue]}>
               <View style={[styles.tipIconBox, styles.tipIconBlue]}>
                 <Droplets size={rf(22)} color="#2563EB" strokeWidth={2.4} />
               </View>
-              <Text style={styles.tipText}>Keep GPS enabled throughout</Text>
+              <Text style={styles.tipText}>{t('walk.tip_gps')}</Text>
             </View>
 
             <View style={[styles.tipItem, styles.tipOrange]}>
@@ -152,7 +152,7 @@ export default function WalkAroundScreen({ navigation }) {
                 <Battery size={rf(22)} color="#F97316" strokeWidth={2.4} />
               </View>
               <Text style={styles.tipText}>
-                Ensure sufficient battery charge
+                {t('walk.tip_battery')}
               </Text>
             </View>
           </View>
@@ -177,18 +177,18 @@ export default function WalkAroundScreen({ navigation }) {
             style={styles.startButton}
           >
             <MapPin size={rf(21)} color="#FFFFFF" strokeWidth={2.5} />
-            <Text style={styles.startText}>Start GPS Mapping</Text>
+            <Text style={styles.startText}>{t('walk.start_gps')}</Text>
           </LinearGradient>
         </TouchableOpacity>
 
         <View style={styles.manualRow}>
           <Map size={rf(18)} color="#94A3B8" strokeWidth={2.2} />
-          <Text style={styles.manualText}>Or use manual boundary instead</Text>
+          <Text style={styles.manualText}>{t('walk.or_manual')}</Text>
           <TouchableOpacity
             activeOpacity={0.75}
             onPress={() => navigation.navigate('Mapscreen')}
           >
-            <Text style={styles.tapText}>Tap here</Text>
+            <Text style={styles.tapText}>{t('walk.tap_here')}</Text>
           </TouchableOpacity>
         </View>
       </View>

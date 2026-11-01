@@ -1,3 +1,7 @@
+import i18n from '../../translation/i18n';
+import { formatDate } from '../../utils/dateFormat';
+import { conditionsLabel } from '../../utils/weatherFormat';
+import { useTranslation } from 'react-i18next';
 import React, {
   useCallback,
   useEffect,
@@ -86,7 +90,7 @@ const getWeatherIcon = weather => {
 
 const getWeatherDescription = weather => {
   if (!weather) {
-    return 'Sunny';
+    return i18n.t('weather.sunny');
   }
 
   const value = String(weather);
@@ -95,17 +99,17 @@ const getWeatherDescription = weather => {
     value.toLowerCase().includes('rain') ||
     value.toLowerCase().includes('drizzle')
   ) {
-    return 'Rainy';
+    return i18n.t('weather.rainy');
   }
 
   if (
     value.toLowerCase().includes('cloud') ||
     value.toLowerCase().includes('overcast')
   ) {
-    return 'Cloudy';
+    return i18n.t('weather.cloudy');
   }
 
-  return value;
+  return conditionsLabel(value);
 };
 
 const getForecastArray = forecastData => {
@@ -199,7 +203,9 @@ const formatDay = dateString => {
   try {
     const date = new Date(dateString);
 
-    return date.toLocaleDateString('en-IN', {
+    return formatDate(date, {
+      day: false,
+      month: false,
       weekday: 'short',
     });
   } catch {
@@ -214,6 +220,7 @@ const formatDay = dateString => {
 export default function FarmWeatherCard({
   farmData,
 }) {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
 
   const {
@@ -251,7 +258,7 @@ export default function FarmWeatherCard({
     async ({forceCreate = false} = {}) => {
       if (!geometry) {
         setLocalError(
-          'Farm boundary is not available',
+          i18n.t('farmWeather.no_boundary'),
         );
 
         return;
@@ -304,7 +311,7 @@ export default function FarmWeatherCard({
           typeof err === 'string'
             ? err
             : err?.message ||
-                'Unable to load farm weather',
+                i18n.t('farmWeather.err_load'),
         );
       }
     },
@@ -367,7 +374,7 @@ export default function FarmWeatherCard({
             </Text>
 
             <Text style={styles.weatherDesc}>
-              Farm boundary unavailable
+              {t('farmWeather.boundary_unavailable')}
             </Text>
           </View>
         </View>
@@ -427,7 +434,7 @@ export default function FarmWeatherCard({
               <Text
                 style={styles.weatherDesc}
                 numberOfLines={1}>
-                Weather unavailable
+                {t('weather.not_available')}
               </Text>
             </View>
           </View>
@@ -508,12 +515,12 @@ export default function FarmWeatherCard({
 
   const windText =
     currentWind != null
-      ? `${Number(currentWind).toFixed(1)} km/h`
+      ? t('units.kmh_value', { n: Number(currentWind).toFixed(1) })
       : '--';
 
   const rainText =
     currentRain != null
-      ? `${Number(currentRain).toFixed(1)} mm`
+      ? t('units.mm_value', { n: Number(currentRain).toFixed(1) })
       : '--';
 
   const precipitationText =
@@ -607,7 +614,7 @@ export default function FarmWeatherCard({
             Icon={Droplets}
             color="#2563EB"
             value={humidityText}
-            label="Humidity"
+            label={t('weather.humidity')}
           />
 
           {/* ==================================================
@@ -618,7 +625,7 @@ export default function FarmWeatherCard({
             Icon={Wind}
             color="#0EA5E9"
             value={windText}
-            label="Wind"
+            label={t('weather.wind')}
           />
 
           {/* ==================================================
@@ -629,7 +636,7 @@ export default function FarmWeatherCard({
             Icon={CloudRain}
             color="#38BDF8"
             value={rainText}
-            label="Rain"
+            label={t('weather.rain')}
           />
 
           {/* ==================================================
@@ -640,7 +647,7 @@ export default function FarmWeatherCard({
             Icon={Droplets}
             color="#6366F1"
             value={precipitationText}
-            label="Precip."
+            label={t('farmWeather.precip')}
           />
         </ImageBackground>
       </View>
@@ -654,16 +661,13 @@ export default function FarmWeatherCard({
           <View style={styles.forecastHeader}>
             <View>
               <Text style={styles.forecastTitle}>
-                Farm Forecast
+                {t('farmWeather.forecast')}
               </Text>
 
               <Text style={styles.forecastSubtitle}>
-                Next{' '}
-                {Math.min(
-                  forecast.length,
-                  5,
-                )}{' '}
-                days
+                {t('farmWeather.next_days', {
+                  n: Math.min(forecast.length, 5),
+                })}
               </Text>
             </View>
 
@@ -734,7 +738,7 @@ export default function FarmWeatherCard({
                       <Text
                         style={styles.dayText}>
                         {index === 0
-                          ? 'Today'
+                          ? t('common.today')
                           : formatDay(
                               day?.date,
                             )}
@@ -784,10 +788,9 @@ export default function FarmWeatherCard({
                           style={
                             styles.rainText
                           }>
-                          {Number(
-                            rain,
-                          ).toFixed(1)}{' '}
-                          mm rain
+                          {t('farmWeather.mm_rain', {
+                            n: Number(rain).toFixed(1),
+                          })}
                         </Text>
                       )}
                     </View>

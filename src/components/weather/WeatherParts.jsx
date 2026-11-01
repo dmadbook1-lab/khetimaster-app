@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   Animated,
@@ -36,9 +37,9 @@ export const W_SHADOW = {
 };
 
 const TONES = {
-  good: { color: '#15803D', bg: '#DCFCE7', label: 'Good' },
-  caution: { color: '#B45309', bg: '#FEF3C7', label: 'Careful' },
-  avoid: { color: '#B91C1C', bg: '#FEE2E2', label: 'Avoid' },
+  good: { color: '#15803D', bg: '#DCFCE7', label: 'weather.tone_good' },
+  caution: { color: '#B45309', bg: '#FEF3C7', label: 'weather.tone_careful' },
+  avoid: { color: '#B91C1C', bg: '#FEE2E2', label: 'weather.tone_avoid' },
 };
 
 /*
@@ -191,6 +192,7 @@ export function SectionHeader({ title, subtitle, right }) {
 }
 
 export function AdviceCard({ icon: Icon, advice }) {
+  const { t } = useTranslation();
   const tone = TONES[advice.tone] || TONES.good;
 
   return (
@@ -210,7 +212,7 @@ export function AdviceCard({ icon: Icon, advice }) {
               { color: tone.color, backgroundColor: tone.bg },
             ]}
           >
-            {tone.label}
+            {t(tone.label)}
           </Text>
         </View>
         <Text style={styles.adviceText}>{advice.text}</Text>

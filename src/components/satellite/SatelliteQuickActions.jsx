@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React from 'react';
 import {
   View,
@@ -11,23 +12,24 @@ const { width } = Dimensions.get('window');
 const CARD_WIDTH = (width - width * 0.074 - 24) / 3;
 const actions = [
   {
-    title: 'View Advisory',
+    title: 'satellite.view_advisory',
     Icon: BookOpen,
     active: true,
   },
   {
-    title: 'Download Report',
+    title: 'satellite.download_report',
     Icon: Download,
   },
   {
-    title: 'Share Farm',
+    title: 'satellite.share_farm',
     Icon: Share2,
   },
 ];
 export default function SatelliteQuickActions() {
+  const { t } = useTranslation();
   return (
     <View style={styles.wrapper}>
-      <Text style={styles.sectionTitle}>Quick Actions</Text>
+      <Text style={styles.sectionTitle}>{t('satellite.quick_actions')}</Text>
 
       <View style={styles.row}>
         {actions.map((item, index) => {
@@ -45,7 +47,7 @@ export default function SatelliteQuickActions() {
               />
 
               <Text style={[styles.text, item.active && styles.activeText]}>
-                {item.title}
+                {t(item.title)}
               </Text>
             </TouchableOpacity>
           );

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React from 'react';
 import {
   View,
@@ -39,6 +40,7 @@ const rf = size => {
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
 export default function ReviewFarmBoundaryScreen({ navigation }) {
+  const { t } = useTranslation();
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
@@ -58,7 +60,7 @@ export default function ReviewFarmBoundaryScreen({ navigation }) {
 
           <View style={styles.headerCenter}>
             <Text style={styles.brandText}>KHETIMASTER</Text>
-            <Text style={styles.title}>Review Farm Boundary</Text>
+            <Text style={styles.title}>{t('walk.review_title')}</Text>
           </View>
 
           <TouchableOpacity activeOpacity={0.8} style={styles.circleBtn}>
@@ -123,7 +125,7 @@ export default function ReviewFarmBoundaryScreen({ navigation }) {
 
             <View style={styles.accuracyPill}>
               <View style={styles.orangeDot} />
-              <Text style={styles.accuracyText}>GPS Accuracy — Excellent</Text>
+              <Text style={styles.accuracyText}>{t('walk.gps_excellent')}</Text>
             </View>
           </ImageBackground>
         </View>
@@ -135,25 +137,25 @@ export default function ReviewFarmBoundaryScreen({ navigation }) {
             </View>
 
             <View style={styles.farmNameWrap}>
-              <Text style={styles.label}>Farm Name</Text>
-              <Text style={styles.farmName}>Patil Farm</Text>
+              <Text style={styles.label}>{t('farmForm.farm_name')}</Text>
+              <Text style={styles.farmName}>{t('common.my_farm')}</Text>
             </View>
 
             <View style={styles.activePill}>
-              <Text style={styles.activeText}>Active</Text>
+              <Text style={styles.activeText}>{t('common.active')}</Text>
             </View>
           </View>
 
           <View style={styles.divider} />
 
           <View style={styles.infoGrid}>
-            <InfoItem Icon={Database} label="Crop" value="Soybean" />
-            <InfoItem Icon={Expand} label="Area" value="2.34 Acres" />
-            <InfoItem Icon={MapPin} label="Boundary Points" value="42 Points" />
+            <InfoItem Icon={Database} label={t('common.crop')} value={t('crops.soybean')} />
+            <InfoItem Icon={Expand} label={t('farms.area')} value={t('units.acres_value', { n: '2.34' })} />
+            <InfoItem Icon={MapPin} label={t('walk.boundary_points')} value={t('farmSuccess.points_value', { n: 42 })} />
             <InfoItem
               Icon={Navigation}
-              label="Method"
-              value={'GPS Walk\nTrace'}
+              label={t('walk.method')}
+              value={t('walk.gps_trace')}
             />
           </View>
         </View>
@@ -165,20 +167,18 @@ export default function ReviewFarmBoundaryScreen({ navigation }) {
 
           <View style={styles.accuracyContent}>
             <View style={styles.accuracyTitleRow}>
-              <Text style={styles.accuracyTitle}>Excellent Accuracy</Text>
+              <Text style={styles.accuracyTitle}>{t('walk.excellent_accuracy')}</Text>
               <View style={styles.greenTinyDot} />
             </View>
             <Text style={styles.accuracyDesc}>
-              Your farm boundary was captured{'\n'}
-              successfully and is ready for satellite{'\n'}
-              monitoring.
+              {t('walk.captured_desc')}
             </Text>
           </View>
         </View>
 
         <View style={styles.actionRow}>
-          <ActionCard Icon={Pencil} title="Edit Boundary" />
-          <ActionCard Icon={RotateCcw} title="Remap Farm" />
+          <ActionCard Icon={Pencil} title={t('walk.edit_boundary')} />
+          <ActionCard Icon={RotateCcw} title={t('walk.remap')} />
         </View>
 
         <TouchableOpacity
@@ -187,7 +187,7 @@ export default function ReviewFarmBoundaryScreen({ navigation }) {
           onPress={() => navigation.navigate('SmartFarmScreen')}
         >
           <CheckCircle2 size={rf(22)} color="#FFFFFF" strokeWidth={2.5} />
-          <Text style={styles.confirmText}>Confirm Farm</Text>
+          <Text style={styles.confirmText}>{t('walk.confirm_farm')}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -195,7 +195,7 @@ export default function ReviewFarmBoundaryScreen({ navigation }) {
           style={styles.backTracking}
           onPress={() => navigation.goBack()}
         >
-          <Text style={styles.backTrackingText}>← Back to Tracking</Text>
+          <Text style={styles.backTrackingText}>{t('walk.back_tracking')}</Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>

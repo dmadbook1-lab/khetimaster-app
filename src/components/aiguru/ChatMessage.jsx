@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React from 'react';
 import {
   Animated,
@@ -49,14 +50,15 @@ export default function ChatMessage({
   onFeedback,
   animate = true,
 }) {
+  const { t } = useTranslation();
   const isUser = message.role === 'user';
   const actions = message.actions || [];
   const canRate =
     !isUser && !message.isError && !message.localOnly && Boolean(onFeedback);
   const time = message.pending
-    ? 'Sending…'
+    ? t('aiGuru.sending')
     : message.failed
-    ? 'Not sent'
+    ? t('aiGuru.not_sent')
     : message.time || formatTime(message.createdAt);
   const entrance = useEntrance(0, 10, animate);
 
@@ -77,7 +79,7 @@ export default function ChatMessage({
           >
             <Sparkles size={rf(12)} color="#FFFFFF" strokeWidth={2.4} />
           </LinearGradient>
-          <Text style={styles.aiLabel}>AI Guru</Text>
+          <Text style={styles.aiLabel}>{t('aiGuru.name')}</Text>
         </View>
       )}
 
@@ -160,10 +162,10 @@ export default function ChatMessage({
 
         {canRate && (
           <View style={styles.feedbackRow}>
-            <Text style={styles.helpful}>Helpful?</Text>
+            <Text style={styles.helpful}>{t('aiGuru.helpful_q')}</Text>
             <Pressable
               hitSlop={8}
-              accessibilityLabel="Helpful"
+              accessibilityLabel={t('aiGuru.helpful')}
               onPress={() => rate('up')}
               style={[
                 styles.feedbackButton,
@@ -178,7 +180,7 @@ export default function ChatMessage({
             </Pressable>
             <Pressable
               hitSlop={8}
-              accessibilityLabel="Not helpful"
+              accessibilityLabel={t('aiGuru.not_helpful')}
               onPress={() => rate('down')}
               style={[
                 styles.feedbackButton,

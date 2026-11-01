@@ -1,7 +1,9 @@
+import { useTranslation } from 'react-i18next';
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { ArrowLeftRight, TrendingUp } from 'lucide-react-native';
 export default function ChangeDetectionCard() {
+  const { t } = useTranslation();
   return (
     <View style={styles.card}>
       <View style={styles.left}>
@@ -10,14 +12,14 @@ export default function ChangeDetectionCard() {
         </View>
 
         <View>
-          <Text style={styles.label}>CHANGE DETECTION</Text>
-          <Text style={styles.title}>Compared to Last{'\n'}Week</Text>
+          <Text style={styles.label}>{t('satellite.change_detection')}</Text>
+          <Text style={styles.title}>{t('satellite.compared_last_week')}</Text>
         </View>
       </View>
 
       <View style={styles.badge}>
         <TrendingUp size={15} color="#16883E" strokeWidth={2.4} />
-        <Text style={styles.badgeText}>+8%{'\n'}Improvement</Text>
+        <Text style={styles.badgeText}>{t('satellite.improvement', { n: '+8%' })}</Text>
       </View>
     </View>
   );

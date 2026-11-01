@@ -1,3 +1,4 @@
+import i18n from '../../translation/i18n';
 import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 
 import {
@@ -56,7 +57,7 @@ export const fetchFarmAdvisory = createAsyncThunk(
       return {fieldId, ...data};
     } catch (error) {
       return rejectWithValue(
-        getErrorMessage(error, 'Unable to load farm advisory'),
+        getErrorMessage(error, i18n.t('advisory.err_load')),
       );
     }
   },
@@ -76,7 +77,7 @@ export const regenerateFarmAdvisory = createAsyncThunk(
       return await regenerateFarmAdvisoryApi(fieldId, language);
     } catch (error) {
       return rejectWithValue(
-        getErrorMessage(error, 'Unable to refresh advisory'),
+        getErrorMessage(error, i18n.t('advisory.err_refresh')),
       );
     }
   },
@@ -98,7 +99,7 @@ export const fetchFieldConditions = createAsyncThunk(
       return data?.data ?? null;
     } catch (error) {
       return rejectWithValue(
-        getErrorMessage(error, 'Unable to load soil conditions'),
+        getErrorMessage(error, i18n.t('advisory.err_soil')),
       );
     }
   },
@@ -124,7 +125,7 @@ export const updateActivityProgress = createAsyncThunk(
       return data?.advisory ?? null;
     } catch (error) {
       return rejectWithValue(
-        getErrorMessage(error, 'Unable to update activity'),
+        getErrorMessage(error, i18n.t('advisory.err_activity')),
       );
     }
   },
@@ -170,7 +171,7 @@ const advisorySlice = createSlice({
       .addCase(fetchFarmAdvisory.rejected, (state, action) => {
         state.loading = false;
         state.generating = false;
-        state.error = action.payload || 'Unable to load farm advisory';
+        state.error = action.payload || i18n.t('advisory.err_load');
       })
 
       /* ---------------- REGENERATE ---------------- */
@@ -182,7 +183,7 @@ const advisorySlice = createSlice({
 
       .addCase(regenerateFarmAdvisory.rejected, (state, action) => {
         state.generating = false;
-        state.error = action.payload || 'Unable to refresh advisory';
+        state.error = action.payload || i18n.t('advisory.err_refresh');
       })
 
       /* ---------------- CONDITIONS ---------------- */

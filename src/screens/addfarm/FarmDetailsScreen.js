@@ -1,3 +1,6 @@
+import i18n from '../../translation/i18n';
+import {formatDate, weekdayName} from '../../utils/dateFormat';
+import { useTranslation } from 'react-i18next';
 import React, {
   useEffect,
   useMemo,
@@ -182,24 +185,11 @@ const formatDisplayDate = value => {
     return '';
   }
 
-  return date.toLocaleDateString(
-    'en-IN',
-    {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-    },
-  );
+  return formatDate(date, {pad: true, year: true});
 };
 
 const formatMonthYear = date => {
-  return date.toLocaleDateString(
-    'en-IN',
-    {
-      month: 'long',
-      year: 'numeric',
-    },
-  );
+  return formatDate(date, {day: false, month: 'long', year: true});
 };
 
 const getDaysInMonth = (
@@ -231,6 +221,7 @@ const getFirstDayOfMonth = (
 */
 
 export default function FarmDetailsScreen() {
+  const { t } = useTranslation();
   const navigation =
     useNavigation();
 
@@ -539,7 +530,7 @@ export default function FarmDetailsScreen() {
       setCropError(
         error?.response?.data?.message ||
           error?.message ||
-          'Unable to load crops.',
+          i18n.t('farmForm.err_load_crops'),
       );
 
       setCrops([]);
@@ -687,7 +678,7 @@ export default function FarmDetailsScreen() {
         setCropError(
           error?.response?.data?.message ||
             error?.message ||
-            'Unable to load crops.',
+            i18n.t('farmForm.err_load_crops'),
         );
 
         setCrops([]);
@@ -846,7 +837,7 @@ export default function FarmDetailsScreen() {
     location?.city ||
     location?.district ||
     location?.state ||
-    'Current location';
+    t('farmForm.current_location');
 
   /*
   |--------------------------------------------------------------------------
@@ -1098,8 +1089,8 @@ export default function FarmDetailsScreen() {
     () => {
       if (!userId) {
         Alert.alert(
-          'Login required',
-          'We could not find your user account. Please log in again.',
+          t('farms.login_required'),
+          t('farmForm.err_no_user'),
         );
 
         return false;
@@ -1112,8 +1103,8 @@ export default function FarmDetailsScreen() {
         farmBoundary.length < 3
       ) {
         Alert.alert(
-          'Boundary required',
-          'Please go back and mark at least three points on your farm.',
+          t('farmForm.boundary_required'),
+          t('farmForm.boundary_required_text'),
         );
 
         return false;
@@ -1123,8 +1114,8 @@ export default function FarmDetailsScreen() {
         !farmName.trim()
       ) {
         Alert.alert(
-          'Farm name required',
-          'Please enter a name for your farm.',
+          t('farmForm.name_required'),
+          t('farmForm.name_required_text'),
         );
 
         return false;
@@ -1135,8 +1126,8 @@ export default function FarmDetailsScreen() {
         !isBarrenLand
       ) {
         Alert.alert(
-          'Crop required',
-          'Please select a crop.',
+          t('farmForm.crop_required'),
+          t('farmForm.crop_required_text'),
         );
 
         return false;
@@ -1160,8 +1151,8 @@ export default function FarmDetailsScreen() {
 
         if (!image) {
           Alert.alert(
-            'Crop image missing',
-            'The selected crop does not contain a crop image. Please select the crop again.',
+            t('farmForm.crop_image_missing'),
+            t('farmForm.crop_image_missing_text'),
           );
 
           return false;
@@ -1173,8 +1164,8 @@ export default function FarmDetailsScreen() {
         !isBarrenLand
       ) {
         Alert.alert(
-          'Variety required',
-          'Please enter the crop variety.',
+          t('farmForm.variety_required'),
+          t('farms.err_variety'),
         );
 
         return false;
@@ -1183,11 +1174,11 @@ export default function FarmDetailsScreen() {
       if (!sowingDate) {
         Alert.alert(
           isBarrenLand
-            ? 'Expected sowing date required'
-            : 'Sowing date required',
+            ? t('farmForm.expected_date_required')
+            : t('farmForm.sowing_date_required'),
           isBarrenLand
-            ? 'Please select the expected sowing date.'
-            : 'Please select the sowing date.',
+            ? t('farmForm.expected_date_required_text')
+            : t('farmForm.sowing_date_required_text'),
         );
 
         return false;
@@ -1200,8 +1191,8 @@ export default function FarmDetailsScreen() {
 
       if (!selectedDate) {
         Alert.alert(
-          'Invalid date',
-          'Please select a valid date.',
+          t('farmForm.invalid_date'),
+          t('farmForm.invalid_date_text'),
         );
 
         return false;
@@ -1218,8 +1209,8 @@ export default function FarmDetailsScreen() {
           todayDate
       ) {
         Alert.alert(
-          'Invalid sowing date',
-          'For an existing crop, the sowing date cannot be in the future.',
+          t('farmForm.invalid_sowing'),
+          t('farmForm.invalid_sowing_text'),
         );
 
         return false;
@@ -1231,8 +1222,8 @@ export default function FarmDetailsScreen() {
           todayDate
       ) {
         Alert.alert(
-          'Invalid expected date',
-          'For barren land, the expected sowing date cannot be in the past.',
+          t('farmForm.invalid_expected'),
+          t('farmForm.invalid_expected_text'),
         );
 
         return false;
@@ -1252,8 +1243,8 @@ export default function FarmDetailsScreen() {
         numericAcre <= 0
       ) {
         Alert.alert(
-          'Invalid area',
-          'Please enter a valid farm area in acres.',
+          t('farmForm.invalid_area'),
+          t('farmForm.invalid_area_text'),
         );
 
         return false;
@@ -1261,8 +1252,8 @@ export default function FarmDetailsScreen() {
 
       if (!irrigation) {
         Alert.alert(
-          'Irrigation required',
-          'Please select the type of irrigation.',
+          t('farmForm.irrigation_required'),
+          t('farmForm.irrigation_required_text'),
         );
 
         return false;
@@ -1270,8 +1261,8 @@ export default function FarmDetailsScreen() {
 
       if (!farmingType) {
         Alert.alert(
-          'Farming type required',
-          'Please select your farming type.',
+          t('farmForm.farming_type_required'),
+          t('farmForm.farming_type_required_text'),
         );
 
         return false;
@@ -1384,8 +1375,8 @@ export default function FarmDetailsScreen() {
         latlng.length < 3
       ) {
         Alert.alert(
-          'Invalid boundary',
-          'The farm boundary contains invalid coordinates. Please mark the field again.',
+          t('farmForm.invalid_boundary'),
+          t('farmForm.invalid_boundary_text'),
         );
 
         return;
@@ -1419,8 +1410,8 @@ export default function FarmDetailsScreen() {
         !finalCropImage
       ) {
         Alert.alert(
-          'Crop image missing',
-          'The selected crop does not have a valid CropGen image. Please select the crop again.',
+          t('farmForm.crop_image_missing'),
+          t('farmForm.crop_image_invalid_text'),
         );
 
         return;
@@ -1681,10 +1672,10 @@ export default function FarmDetailsScreen() {
             ? error
             : error?.message ||
               reduxError ||
-              'Something went wrong while saving your farm.';
+              t('farmForm.err_save');
 
         Alert.alert(
-          'Could not save farm',
+          t('farmForm.could_not_save'),
           errorMessage,
         );
       }
@@ -1745,7 +1736,7 @@ export default function FarmDetailsScreen() {
                 styles.headerTitle
               }
             >
-              Farm details
+              {t('farmForm.farm_details')}
             </Text>
 
             <Text
@@ -1753,7 +1744,7 @@ export default function FarmDetailsScreen() {
                 styles.headerSubtitle
               }
             >
-              Tell us about this field
+              {t('farmForm.tell_us_field')}
             </Text>
           </View>
 
@@ -1821,7 +1812,7 @@ export default function FarmDetailsScreen() {
                     styles.boundaryTitle
                   }
                 >
-                  Field boundary captured
+                  {t('farmForm.boundary_captured')}
                 </Text>
 
                 <View
@@ -1876,8 +1867,8 @@ export default function FarmDetailsScreen() {
                     color={GREEN}
                   />
                 }
-                label="Area"
-                value={`${formattedArea} acres`}
+                label={t('farms.area')}
+                value={t('units.acres_value', {n: formattedArea})}
               />
 
               <Measurement
@@ -1887,8 +1878,8 @@ export default function FarmDetailsScreen() {
                     color={GREEN}
                   />
                 }
-                label="Hectares"
-                value={`${formattedHectares} ha`}
+                label={t('farmForm.hectares')}
+                value={t('units.ha_value', {n: formattedHectares})}
               />
 
               <Measurement
@@ -1898,8 +1889,8 @@ export default function FarmDetailsScreen() {
                     color={GREEN}
                   />
                 }
-                label="Perimeter"
-                value={`${formattedPerimeter} m`}
+                label={t('farmForm.perimeter')}
+                value={t('units.m_value', {n: formattedPerimeter})}
               />
             </View>
           </View>
@@ -1915,13 +1906,13 @@ export default function FarmDetailsScreen() {
                 color={GREEN}
               />
             }
-            title="Basic information"
-            subtitle="Give your farm and crop a name"
+            title={t('farmForm.basic_info')}
+            subtitle={t('farmForm.basic_info_sub')}
           />
 
           <InputField
-            label="Farm name"
-            placeholder="e.g. Patil Farm"
+            label={t('farmForm.farm_name')}
+            placeholder={t('farmForm.farm_name_placeholder')}
             value={farmName}
             onChangeText={
               setFarmName
@@ -1948,7 +1939,7 @@ export default function FarmDetailsScreen() {
                 styles.inputLabel
               }
             >
-              Crop name
+              {t('farmForm.crop_name')}
             </Text>
 
             <TouchableOpacity
@@ -2007,7 +1998,7 @@ export default function FarmDetailsScreen() {
                   ]}
                 >
                   {cropName ||
-                    'Select a crop'}
+                    t('farmForm.select_crop')}
                 </Text>
 
                 {selectedCrop && (
@@ -2016,7 +2007,7 @@ export default function FarmDetailsScreen() {
                       styles.cropSelectorHint
                     }
                   >
-                    CropGen crop catalogue
+                    {t('farmForm.cropgen_catalogue')}
                   </Text>
                 )}
               </View>
@@ -2088,8 +2079,8 @@ export default function FarmDetailsScreen() {
           </View>
 
           <InputField
-            label="Variety"
-            placeholder="e.g. JS 335"
+            label={t('farmForm.variety')}
+            placeholder={t('farmForm.variety_ph')}
             value={variety}
             onChangeText={
               setVariety
@@ -2117,8 +2108,8 @@ export default function FarmDetailsScreen() {
               }
             >
               {isBarrenLand
-                ? 'Expected sowing date'
-                : 'Sowing date'}
+                ? t('farmForm.expected_sowing_date')
+                : t('farmForm.sowing_date')}
             </Text>
 
             <TouchableOpacity
@@ -2158,8 +2149,8 @@ export default function FarmDetailsScreen() {
                         sowingDate,
                       )
                     : isBarrenLand
-                    ? 'Select expected date'
-                    : 'Select sowing date'}
+                    ? t('farmForm.select_expected_date')
+                    : t('farmForm.select_sowing_date')}
                 </Text>
 
                 {sowingDate && (
@@ -2197,8 +2188,8 @@ export default function FarmDetailsScreen() {
                 color={GREEN}
               />
             }
-            title="Farm area"
-            subtitle="You can adjust the calculated area"
+            title={t('farmForm.farm_area')}
+            subtitle={t('farmForm.adjust_area')}
           />
 
           <View
@@ -2227,7 +2218,7 @@ export default function FarmDetailsScreen() {
                   styles.areaInputLabel
                 }
               >
-                Total cultivated area
+                {t('farmForm.total_area')}
               </Text>
 
               <TextInput
@@ -2266,8 +2257,8 @@ export default function FarmDetailsScreen() {
                 color={GREEN}
               />
             }
-            title="Irrigation"
-            subtitle="How is this field watered?"
+            title={t('farmForm.irrigation')}
+            subtitle={t('farmForm.irrigation_sub')}
           />
 
           <TouchableOpacity
@@ -2307,8 +2298,9 @@ export default function FarmDetailsScreen() {
                     styles.placeholder,
                 ]}
               >
-                {irrigation ||
-                  'Select irrigation type'}
+                {(irrigation &&
+                  t(`farmForm.irr_${irrigation.toLowerCase()}`)) ||
+                  t('farmForm.select_irrigation')}
               </Text>
             </View>
 
@@ -2373,7 +2365,7 @@ export default function FarmDetailsScreen() {
                         ]}
                       >
                         {
-                          option
+                          t(`farmForm.irr_${option.toLowerCase()}`)
                         }
                       </Text>
 
@@ -2406,8 +2398,8 @@ export default function FarmDetailsScreen() {
                 color={GREEN}
               />
             }
-            title="Type of farming"
-            subtitle="Choose the farming method"
+            title={t('farmForm.farming_type')}
+            subtitle={t('farmForm.farming_type_sub')}
           />
 
           <View
@@ -2464,7 +2456,7 @@ export default function FarmDetailsScreen() {
                       ]}
                     >
                       {
-                        option
+                        t(`farms.type_${option.toLowerCase()}`)
                       }
                     </Text>
                   </TouchableOpacity>
@@ -2503,7 +2495,7 @@ export default function FarmDetailsScreen() {
                   styles.barrenTitle
                 }
               >
-                Is this barren land?
+                {t('farmForm.is_barren')}
               </Text>
 
               <Text
@@ -2511,8 +2503,7 @@ export default function FarmDetailsScreen() {
                   styles.barrenSubtitle
                 }
               >
-                Mark this if there is
-                currently no standing crop.
+                {t('farmForm.is_barren_sub')}
               </Text>
             </View>
 
@@ -2608,7 +2599,7 @@ export default function FarmDetailsScreen() {
                     styles.locationCardTitle
                   }
                 >
-                  Field location
+                  {t('farmForm.field_location')}
                 </Text>
 
                 <Text
@@ -2623,7 +2614,7 @@ export default function FarmDetailsScreen() {
                   ]
                     .filter(Boolean)
                     .join(', ') ||
-                    'GPS location captured'}
+                    t('farmForm.gps_captured')}
                 </Text>
               </View>
             </View>
@@ -2675,7 +2666,7 @@ export default function FarmDetailsScreen() {
                     styles.saveButtonText
                   }
                 >
-                  Save farm
+                  {t('farmForm.save_farm')}
                 </Text>
               </>
             )}
@@ -2686,9 +2677,7 @@ export default function FarmDetailsScreen() {
               styles.bottomNote
             }
           >
-            Your farm boundary and details
-            will be securely saved to your
-            KhetiMaster account.
+            {t('farmForm.save_note')}
           </Text>
         </ScrollView>
       </KeyboardAvoidingView>
@@ -2754,7 +2743,7 @@ export default function FarmDetailsScreen() {
                     styles.cropEyebrow
                   }
                 >
-                  CROP CATALOGUE
+                  {t('farmForm.crop_catalogue')}
                 </Text>
 
                 <Text
@@ -2762,7 +2751,7 @@ export default function FarmDetailsScreen() {
                     styles.cropTitle
                   }
                 >
-                  Select your crop
+                  {t('farmForm.select_your_crop')}
                 </Text>
 
                 <Text
@@ -2770,8 +2759,7 @@ export default function FarmDetailsScreen() {
                     styles.cropSubtitle
                   }
                 >
-                  Choose from the CropGen crop
-                  catalogue.
+                  {t('farmForm.choose_from_catalogue')}
                 </Text>
               </View>
 
@@ -2811,7 +2799,7 @@ export default function FarmDetailsScreen() {
                 onChangeText={
                   setCropSearch
                 }
-                placeholder="Search crops..."
+                placeholder={t('farmForm.search_crops')}
                 placeholderTextColor="#A7B1AB"
                 style={
                   styles.cropSearchInput
@@ -2877,7 +2865,7 @@ export default function FarmDetailsScreen() {
                     styles.cropEmptyTitle
                   }
                 >
-                  Unable to load crops
+                  {t('farmForm.unable_load_crops')}
                 </Text>
 
                 <Text
@@ -2925,7 +2913,7 @@ export default function FarmDetailsScreen() {
                     styles.cropEmptyTitle
                   }
                 >
-                  No crops found
+                  {t('farmForm.no_crops_found')}
                 </Text>
 
                 <Text
@@ -2933,7 +2921,7 @@ export default function FarmDetailsScreen() {
                     styles.cropEmptyText
                   }
                 >
-                  Try another crop name.
+                  {t('farmForm.try_another_crop')}
                 </Text>
               </View>
             ) : (
@@ -3023,8 +3011,7 @@ export default function FarmDetailsScreen() {
                               styles.cropOptionSubtext
                             }
                           >
-                            CropGen crop
-                            catalogue
+                            {t('farmForm.cropgen_crop')}
                           </Text>
                         </View>
 
@@ -3111,8 +3098,8 @@ export default function FarmDetailsScreen() {
                   }
                 >
                   {isBarrenLand
-                    ? 'EXPECTED SOWING'
-                    : 'SOWING DATE'}
+                    ? t('farmForm.expected_sowing_caps')
+                    : t('farmForm.sowing_date_caps')}
                 </Text>
 
                 <Text
@@ -3120,7 +3107,7 @@ export default function FarmDetailsScreen() {
                     styles.dateTitle
                   }
                 >
-                  Select a date
+                  {t('farmForm.select_a_date')}
                 </Text>
               </View>
 
@@ -3168,7 +3155,7 @@ export default function FarmDetailsScreen() {
                     styles.selectedDateLabel
                   }
                 >
-                  SELECTED DATE
+                  {t('farmForm.selected_date')}
                 </Text>
 
                 <Text
@@ -3180,7 +3167,7 @@ export default function FarmDetailsScreen() {
                     ? formatDisplayDate(
                         sowingDate,
                       )
-                    : 'No date selected'}
+                    : t('farms.no_date_selected')}
                 </Text>
               </View>
             </View>
@@ -3253,13 +3240,13 @@ export default function FarmDetailsScreen() {
               }
             >
               {[
-                'Sun',
-                'Mon',
-                'Tue',
-                'Wed',
-                'Thu',
-                'Fri',
-                'Sat',
+                weekdayName(0),
+                weekdayName(1),
+                weekdayName(2),
+                weekdayName(3),
+                weekdayName(4),
+                weekdayName(5),
+                weekdayName(6),
               ].map(day => (
                 <Text
                   key={day}
@@ -3419,8 +3406,8 @@ export default function FarmDetailsScreen() {
               }
             >
               {isBarrenLand
-                ? 'Expected sowing date can be today or a future date.'
-                : 'Sowing date can be today or an earlier date.'}
+                ? t('farmForm.expected_rule')
+                : t('farmForm.sowing_rule')}
             </Text>
           </View>
         </View>

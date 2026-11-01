@@ -7,21 +7,8 @@
 |
 */
 
-const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-const MONTHS = [
-  'Jan',
-  'Feb',
-  'Mar',
-  'Apr',
-  'May',
-  'Jun',
-  'Jul',
-  'Aug',
-  'Sep',
-  'Oct',
-  'Nov',
-  'Dec',
-];
+import i18n from '../translation/i18n';
+import { formatClock, monthName, weekdayName } from './dateFormat';
 
 const COMPASS = [
   'N',
@@ -53,7 +40,8 @@ export const formatTemp = value => {
 export const windDirection = degrees => {
   const value = Number(degrees);
   if (!Number.isFinite(value)) return '';
-  return COMPASS[Math.round((((value % 360) + 360) % 360) / 22.5) % 16];
+  const code = COMPASS[Math.round((((value % 360) + 360) % 360) / 22.5) % 16];
+  return i18n.t(`weather.dir_${code}`);
 };
 
 /*
@@ -62,8 +50,7 @@ export const windDirection = degrees => {
 export const hourLabel = time => {
   const hour = Number(String(time || '').split(':')[0]);
   if (!Number.isFinite(hour)) return '';
-  const suffix = hour >= 12 ? 'PM' : 'AM';
-  return `${hour % 12 === 0 ? 12 : hour % 12} ${suffix}`;
+  return formatClock(hour);
 };
 
 /*
@@ -74,11 +61,7 @@ export const clockLabel = time => {
     .split(':')
     .map(Number);
   if (!Number.isFinite(hours)) return '--';
-  const suffix = hours >= 12 ? 'PM' : 'AM';
-  return `${hours % 12 === 0 ? 12 : hours % 12}:${String(minutes || 0).padStart(
-    2,
-    '0',
-  )} ${suffix}`;
+  return formatClock(hours, minutes || 0);
 };
 
 const parseDay = key => {
@@ -92,26 +75,26 @@ const parseDay = key => {
  * 'Today', 'Tomorrow' or 'Fri'.
  */
 export const dayLabel = (dayKey, todayKey) => {
-  if (dayKey === todayKey) return 'Today';
+  if (dayKey === todayKey) return i18n.t('common.today');
   const tomorrow = new Date(parseDay(todayKey).getTime() + 86400000)
     .toISOString()
     .slice(0, 10);
-  if (dayKey === tomorrow) return 'Tomorrow';
-  return WEEKDAYS[parseDay(dayKey).getUTCDay()];
+  if (dayKey === tomorrow) return i18n.t('common.tomorrow');
+  return weekdayName(parseDay(dayKey).getUTCDay());
 };
 
 export const dateLabel = dayKey => {
   const date = parseDay(dayKey);
-  return `${date.getUTCDate()} ${MONTHS[date.getUTCMonth()]}`;
+  return `${date.getUTCDate()} ${monthName(date.getUTCMonth())}`;
 };
 
 export const uvLevel = uv => {
   const value = Number(uv) || 0;
-  if (value >= 11) return 'Extreme';
-  if (value >= 8) return 'Very high';
-  if (value >= 6) return 'High';
-  if (value >= 3) return 'Moderate';
-  return 'Low';
+  if (value >= 11) return i18n.t('weather.uv_extreme');
+  if (value >= 8) return i18n.t('weather.uv_very_high');
+  if (value >= 6) return i18n.t('weather.uv_high');
+  if (value >= 3) return i18n.t('weather.uv_moderate');
+  return i18n.t('weather.uv_low');
 };
 
 /*
@@ -140,28 +123,28 @@ export const sprayAdvice = day => {
   if (wind > 20 || rain >= 50 || temp > 35) {
     return {
       tone: 'avoid',
-      title: 'Don’t spray today',
+      title: i18n.t('weather.spray_avoid'),
       text:
         rain >= 50
-          ? 'Rain is likely and will wash the spray off.'
+          ? i18n.t('weather.spray_avoid_rain')
           : wind > 20
-          ? 'Strong wind will carry the spray away.'
-          : 'Too hot: spray evaporates and can burn leaves.',
+          ? i18n.t('weather.spray_avoid_wind')
+          : i18n.t('weather.spray_avoid_heat'),
     };
   }
 
   if (wind > 15 || rain >= 30 || temp > 32) {
     return {
       tone: 'caution',
-      title: 'Spray early morning only',
-      text: 'Wind or heat picks up later in the day.',
+      title: i18n.t('weather.spray_caution'),
+      text: i18n.t('weather.spray_caution_text'),
     };
   }
 
   return {
     tone: 'good',
-    title: 'Good day to spray',
-    text: 'Low wind and little chance of rain.',
+    title: i18n.t('weather.spray_good'),
+    text: i18n.t('weather.spray_good_text'),
   };
 };
 
@@ -177,23 +160,23 @@ export const irrigationAdvice = days => {
   if (rainSoon >= 5 || chance >= 60) {
     return {
       tone: 'good',
-      title: 'Skip watering',
-      text: `About ${Math.round(rainSoon)} mm of rain expected in 2 days.`,
+      title: i18n.t('weather.skip_watering'),
+      text: i18n.t('weather.skip_watering_text', { mm: Math.round(rainSoon) }),
     };
   }
 
   if ((Number(today?.tempmax) || 0) >= 35) {
     return {
       tone: 'caution',
-      title: 'Water early or late',
-      text: 'Hot day: water before 9 AM or after 5 PM to save water.',
+      title: i18n.t('weather.water_early'),
+      text: i18n.t('weather.water_early_text'),
     };
   }
 
   return {
     tone: 'good',
-    title: 'Water as usual',
-    text: 'No rain expected in the next 2 days.',
+    title: i18n.t('weather.water_usual'),
+    text: i18n.t('weather.water_usual_text'),
   };
 };
 
@@ -205,16 +188,16 @@ export const fieldWorkAdvice = days => {
   if (max >= 38) {
     return {
       tone: 'avoid',
-      title: 'Heat alert',
-      text: 'Avoid field work 12–4 PM. Give animals shade and water.',
+      title: i18n.t('weather.heat_alert'),
+      text: i18n.t('weather.heat_alert_text'),
     };
   }
 
   if (Number.isFinite(min) && today?.tempmin !== null && min <= 4) {
     return {
       tone: 'avoid',
-      title: 'Frost risk tonight',
-      text: 'Cover nursery plants and water fields lightly in the evening.',
+      title: i18n.t('weather.frost_risk'),
+      text: i18n.t('weather.frost_risk_text'),
     };
   }
 
@@ -226,14 +209,49 @@ export const fieldWorkAdvice = days => {
   if (dry) {
     return {
       tone: 'good',
-      title: 'Good for harvest & drying',
-      text: 'Dry weather for the next 2 days.',
+      title: i18n.t('weather.good_harvest'),
+      text: i18n.t('weather.good_harvest_text'),
     };
   }
 
   return {
     tone: 'caution',
-    title: 'Keep harvest covered',
-    text: 'Damp or rainy weather ahead. Store produce under cover.',
+    title: i18n.t('weather.keep_covered'),
+    text: i18n.t('weather.keep_covered_text'),
   };
 };
+
+/*
+ * Short day name for tight spots: 'Today' or the weekday ('Fri').
+ */
+export const dayShortLabel = (dayKey, todayKey) =>
+  dayKey === todayKey
+    ? i18n.t('common.today')
+    : weekdayName(parseDay(dayKey).getUTCDay());
+
+/*
+ * Visual Crossing condition text ("Rain, Partially cloudy") in the app
+ * language. It has no Hindi/Marathi, so each known part is looked up under
+ * weather.cond_*; unknown parts stay as they are.
+ */
+export const conditionsLabel = conditions =>
+  String(conditions || '')
+    .split(',')
+    .map(part => part.trim())
+    .filter(Boolean)
+    .map(part => {
+      const key = `weather.cond_${part.toLowerCase().replace(/[^a-z]+/g, '_')}`;
+      return i18n.exists(key) ? i18n.t(key) : part;
+    })
+    .join(', ');
+
+/*
+ * The day's summary sentence comes back in English only, so languages
+ * with translated conditions (hi, mr) show those instead.
+ */
+const CONDITION_LANGUAGES = ['hi', 'mr'];
+
+export const descriptionLabel = day =>
+  CONDITION_LANGUAGES.includes(String(i18n.language).split('-')[0])
+    ? conditionsLabel(day?.conditions)
+    : day?.description || '';

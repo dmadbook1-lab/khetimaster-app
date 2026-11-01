@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React from 'react';
 import {
   View,
@@ -23,6 +24,7 @@ const rf = size => {
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
 export default function FarmSmartSuccessScreen({ navigation }) {
+  const { t } = useTranslation();
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
@@ -44,15 +46,13 @@ export default function FarmSmartSuccessScreen({ navigation }) {
 
           <View style={styles.badge}>
             <Text style={styles.badgeEmoji}>🎉</Text>
-            <Text style={styles.badgeText}>Setup Complete</Text>
+            <Text style={styles.badgeText}>{t('farmSuccess.setup_complete')}</Text>
           </View>
 
-          <Text style={styles.title}>Your Farm Is Now{'\n'}Smart</Text>
+          <Text style={styles.title}>{t('farmSuccess.now_smart')}</Text>
 
           <Text style={styles.subtitle}>
-            KhetiMaster is now connected to your farm and ready to provide
-            satellite monitoring, weather alerts, and AI-powered
-            recommendations.
+            {t('farmSuccess.smart_sub')}
           </Text>
 
           <View style={styles.monitoringCard}>
@@ -61,14 +61,14 @@ export default function FarmSmartSuccessScreen({ navigation }) {
                 <Zap size={rf(24)} color="#FFFFFF" strokeWidth={2.5} />
               </View>
 
-              <Text style={styles.monitoringTitle}>Monitoring Activated</Text>
+              <Text style={styles.monitoringTitle}>{t('farmSuccess.monitoring_on')}</Text>
             </View>
 
             <View style={styles.featuresGrid}>
-              <FeaturePill label="Satellite Monitoring" />
-              <FeaturePill label="Weather Tracking" />
-              <FeaturePill label="AI Advisory" />
-              <FeaturePill label="Crop Intelligence" />
+              <FeaturePill label={t('farmSuccess.pill_satellite')} />
+              <FeaturePill label={t('farmSuccess.pill_weather')} />
+              <FeaturePill label={t('farmSuccess.pill_ai')} />
+              <FeaturePill label={t('advisory.crop_intelligence')} />
             </View>
           </View>
 
@@ -78,8 +78,10 @@ export default function FarmSmartSuccessScreen({ navigation }) {
             </View>
 
             <View style={styles.farmTextWrap}>
-              <Text style={styles.farmName}>Patil Farm</Text>
-              <Text style={styles.farmMeta}>Soybean · 2.34 Acres</Text>
+              <Text style={styles.farmName}>{t('common.my_farm')}</Text>
+              <Text style={styles.farmMeta}>
+                {t('crops.soybean')} · {t('units.acres_value', { n: '2.34' })}
+              </Text>
             </View>
 
             <View style={styles.checkCircle}>
@@ -93,7 +95,7 @@ export default function FarmSmartSuccessScreen({ navigation }) {
             onPress={() => navigation.navigate('Home')}
           >
             <Grid2X2 size={rf(20)} color="#FFFFFF" strokeWidth={2.5} />
-            <Text style={styles.enterText}>Enter KhetiMaster</Text>
+            <Text style={styles.enterText}>{t('farmSuccess.enter_app')}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -102,7 +104,7 @@ export default function FarmSmartSuccessScreen({ navigation }) {
             onPress={() => navigation.navigate('FarmMappingScreen')}
           >
             <Plus size={rf(23)} color={DARK} strokeWidth={2.4} />
-            <Text style={styles.addText}>Add Another Farm</Text>
+            <Text style={styles.addText}>{t('farmSuccess.add_another')}</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

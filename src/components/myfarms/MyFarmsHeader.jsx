@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React from 'react';
 import {
   View,
@@ -16,12 +17,13 @@ const rf = size => {
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
 export default function MyFarmsHeader() {
+  const { t } = useTranslation();
   return (
     <View style={styles.header}>
       <View style={styles.textBox}>
-        <Text style={styles.title}>My Farms</Text>
+        <Text style={styles.title}>{t('farms.my_farms')}</Text>
         <Text style={styles.subtitle}>
-          Manage and monitor all your farms in one place
+          {t('farms.header_sub')}
         </Text>
       </View>
 

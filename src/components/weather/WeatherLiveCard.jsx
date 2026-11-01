@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React, { useEffect, useRef } from 'react';
 import {
   Animated,
@@ -22,7 +23,9 @@ import {
 import WeatherArt, { artKindFor } from './WeatherArt';
 import AnimatedWeatherArt from './AnimatedWeatherArt';
 import { weatherVisual } from './weatherVisuals';
+import { formatDate } from '../../utils/dateFormat';
 import {
+  conditionsLabel,
   formatTemp,
   hourLabel,
   round,
@@ -39,21 +42,6 @@ const rf = size => {
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
 
-const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-const MONTHS = [
-  'Jan',
-  'Feb',
-  'Mar',
-  'Apr',
-  'May',
-  'Jun',
-  'Jul',
-  'Aug',
-  'Sep',
-  'Oct',
-  'Nov',
-  'Dec',
-];
 
 const TIP_TONE = {
   good: { bg: 'rgba(74,222,128,0.22)', border: 'rgba(134,239,172,0.55)' },
@@ -61,12 +49,7 @@ const TIP_TONE = {
   avoid: { bg: 'rgba(248,113,113,0.24)', border: 'rgba(252,165,165,0.55)' },
 };
 
-const todayText = () => {
-  const now = new Date();
-  return `${WEEKDAYS[now.getDay()]}, ${now.getDate()} ${
-    MONTHS[now.getMonth()]
-  }`;
-};
+const todayText = () => formatDate(new Date(), { weekday: 'short' });
 
 /*
  * A soft white cloud shape drifting slowly across the sky.
@@ -124,6 +107,7 @@ function DriftingCloud({ top, scale, duration, delay }) {
  * onPress optional; without it the card isn't tappable
  */
 export default function WeatherLiveCard({ data, place, onPress, style }) {
+  const { t } = useTranslation();
   const current = data?.current;
   const days = data?.days || [];
   const today = days[0];
@@ -142,20 +126,20 @@ export default function WeatherLiveCard({ data, place, onPress, style }) {
     {
       Icon: Droplets,
       value: `${round(current.humidity) ?? '--'}%`,
-      label: 'Humidity',
+      label: t('weather.humidity'),
     },
     {
       Icon: Wind,
       value: `${round(current.windspeed) ?? '--'}`,
-      unit: 'km/h',
-      label: windDirection(current.winddir) || 'Wind',
+      unit: t('units.kmh'),
+      label: windDirection(current.winddir) || t('weather.wind'),
     },
     {
       Icon: CloudRain,
       value: `${round(today?.precipprob) ?? 0}%`,
-      label: 'Rain',
+      label: t('weather.rain'),
     },
-    { Icon: Sun, value: String(round(current.uvindex) ?? 0), label: 'UV' },
+    { Icon: Sun, value: String(round(current.uvindex) ?? 0), label: t('weather.uv') },
   ];
 
   return (
@@ -165,7 +149,7 @@ export default function WeatherLiveCard({ data, place, onPress, style }) {
       onPress={onPress}
       style={[styles.wrap, style]}
       accessibilityRole={onPress ? 'button' : undefined}
-      accessibilityLabel="Weather now"
+      accessibilityLabel={t('weather.weather_now')}
     >
       <LinearGradient
         colors={visual.sky}
@@ -220,11 +204,14 @@ export default function WeatherLiveCard({ data, place, onPress, style }) {
               <Text style={styles.tempUnit}>°C</Text>
             </View>
             <Text style={styles.condition} numberOfLines={1}>
-              {current.conditions}
+              {conditionsLabel(current.conditions)}
             </Text>
             <Text style={styles.subline} numberOfLines={1}>
-              Feels {formatTemp(current.feelslike)} · H{' '}
-              {formatTemp(today?.tempmax)} · L {formatTemp(today?.tempmin)}
+              {t('weather.feels', { temp: formatTemp(current.feelslike) })} ·{' '}
+              {t('weather.high_low', {
+                high: formatTemp(today?.tempmax),
+                low: formatTemp(today?.tempmin),
+              })}
             </Text>
           </View>
           <View style={styles.artBox}>

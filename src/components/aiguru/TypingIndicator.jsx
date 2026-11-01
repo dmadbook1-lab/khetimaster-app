@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React, { useEffect, useRef } from 'react';
 import { View, Text, StyleSheet, Animated, Easing } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
@@ -5,6 +6,7 @@ import { Sparkles } from 'lucide-react-native';
 import { COLORS, GRADIENT, rf, useEntrance } from './theme';
 
 export default function TypingIndicator() {
+  const { t } = useTranslation();
   const dots = useRef([0, 1, 2].map(() => new Animated.Value(0))).current;
   const entrance = useEntrance(0, 8);
 
@@ -45,7 +47,7 @@ export default function TypingIndicator() {
         >
           <Sparkles size={rf(12)} color="#FFFFFF" strokeWidth={2.4} />
         </LinearGradient>
-        <Text style={styles.label}>AI Guru is typing…</Text>
+        <Text style={styles.label}>{t('aiGuru.typing')}</Text>
       </View>
 
       <View style={styles.bubble}>

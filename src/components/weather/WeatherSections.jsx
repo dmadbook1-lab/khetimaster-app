@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React, { useState } from 'react';
 import {
   Dimensions,
@@ -13,7 +14,7 @@ import { Droplets } from 'lucide-react-native';
 import WeatherArt, { artKindFor } from './WeatherArt';
 import { W, W_SHADOW } from './WeatherParts';
 import {
-  dayLabel,
+  dayShortLabel,
   formatTemp,
   hourLabel,
   round,
@@ -31,14 +32,14 @@ const DAY_SIZE = Math.floor((width - GUTTER * 2 - GAP * 3) / 3.4);
 const HOUR_SIZE = Math.floor((width - GUTTER * 2 - GAP * 4) / 4.4);
 
 const TONES = {
-  good: { color: '#15803D', bg: '#DCFCE7', soft: '#F0FDF4', label: 'Good' },
+  good: { color: '#15803D', bg: '#DCFCE7', soft: '#F0FDF4', label: 'weather.tone_good' },
   caution: {
     color: '#B45309',
     bg: '#FEF3C7',
     soft: '#FFFBEB',
-    label: 'Careful',
+    label: 'weather.tone_careful',
   },
-  avoid: { color: '#B91C1C', bg: '#FEE2E2', soft: '#FEF2F2', label: 'Avoid' },
+  avoid: { color: '#B91C1C', bg: '#FEE2E2', soft: '#FEF2F2', label: 'weather.tone_avoid' },
 };
 
 /*
@@ -52,6 +53,7 @@ const TONES = {
 */
 
 export function AdviceBoard({ items }) {
+  const { t } = useTranslation();
   const [selectedKey, setSelectedKey] = useState(items[0]?.key);
   const selected = items.find(item => item.key === selectedKey) || items[0];
   const selectedTone = TONES[selected?.advice.tone] || TONES.good;
@@ -85,7 +87,7 @@ export function AdviceBoard({ items }) {
                   style={[styles.adviceDot, { backgroundColor: tone.color }]}
                 />
                 <Text style={[styles.adviceTagText, { color: tone.color }]}>
-                  {tone.label}
+                  {t(tone.label)}
                 </Text>
               </View>
             </TouchableOpacity>
@@ -112,6 +114,7 @@ export function AdviceBoard({ items }) {
 */
 
 export function DaySquares({ days, todayKey, onPress }) {
+  const { t } = useTranslation();
   return (
     <ScrollView
       horizontal
@@ -127,7 +130,7 @@ export function DaySquares({ days, todayKey, onPress }) {
                 style={[styles.dayName, today && styles.white]}
                 numberOfLines={1}
               >
-                {today ? 'Today' : dayLabel(day.datetime, todayKey).slice(0, 3)}
+                {today ? t('common.today') : dayShortLabel(day.datetime, todayKey)}
               </Text>
               {(Number(day.precipprob) || 0) >= 10 && (
                 <View style={[styles.rainPill, today && styles.rainPillLight]}>
@@ -189,6 +192,7 @@ export function DaySquares({ days, todayKey, onPress }) {
 */
 
 export function HourSquares({ hours }) {
+  const { t } = useTranslation();
   return (
     <ScrollView
       horizontal
@@ -208,7 +212,7 @@ export function HourSquares({ hours }) {
               style={[styles.hourTime, now && styles.white]}
               numberOfLines={1}
             >
-              {now ? 'Now' : hourLabel(hour.datetime)}
+              {now ? t('common.now') : hourLabel(hour.datetime)}
             </Text>
             <WeatherArt
               kind={artKindFor(hour.icon, hour.conditions)}

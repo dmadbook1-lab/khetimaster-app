@@ -1,37 +1,41 @@
+import { useTranslation } from 'react-i18next';
+import { monthName } from '../../utils/dateFormat';
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-const points = [
+// built per render so month names follow the current language
+const getPoints = () => [
   {
-    date: '25 May',
-    week: 'Week 1',
+    date: `25 ${monthName(4)}`,
+    week: 'satellite.week_1',
   },
   {
-    date: '1 Jun',
-    week: 'Week 2',
+    date: `1 ${monthName(5)}`,
+    week: 'satellite.week_2',
   },
   {
-    date: '8 Jun',
-    week: 'Week 3',
+    date: `8 ${monthName(5)}`,
+    week: 'satellite.week_3',
   },
   {
-    date: '15 Jun',
-    week: 'Today',
+    date: `15 ${monthName(5)}`,
+    week: 'common.today',
     active: true,
   },
 ];
 export default function HistoricalViewCard() {
+  const { t } = useTranslation();
   return (
     <View style={styles.card}>
       <View style={styles.header}>
-        <Text style={styles.title}>Historical View</Text>
-        <Text style={styles.month}>Jun 2026</Text>
+        <Text style={styles.title}>{t('satellite.historical_view')}</Text>
+        <Text style={styles.month}>{monthName(5)} 2026</Text>
       </View>
 
       <View style={styles.timelineWrap}>
         <View style={styles.line} />
 
         <View style={styles.pointsRow}>
-          {points.map((item, index) => (
+          {getPoints().map((item, index) => (
             <View key={index} style={styles.pointItem}>
               <View style={[styles.point, item.active && styles.activePoint]}>
                 {item.active && <View style={styles.innerDot} />}
@@ -41,7 +45,7 @@ export default function HistoricalViewCard() {
                 {item.date}
               </Text>
               <Text style={[styles.week, item.active && styles.activeText]}>
-                {item.week}
+                {t(item.week)}
               </Text>
             </View>
           ))}

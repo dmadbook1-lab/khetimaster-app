@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React, { useEffect, useMemo, useRef } from 'react';
 import { Animated, View, Text, StyleSheet, Pressable } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
@@ -33,6 +34,7 @@ export default function AIGuruHeader({
   onLanguageChange,
   onHistoryPress,
 }) {
+  const { t } = useTranslation();
   const appLanguage = useAppLanguage();
   // the app language is always offered, even when it isn't one of the base three
   const LANGUAGES = useMemo(() => {
@@ -65,7 +67,7 @@ export default function AIGuruHeader({
     <View style={styles.wrap}>
       <Glass style={styles.header}>
         <PressableScale
-          accessibilityLabel="Open menu"
+          accessibilityLabel={t('aiGuru.open_menu')}
           onPress={() => navigation.navigate('Sidebar')}
           style={styles.iconButton}
         >
@@ -83,7 +85,7 @@ export default function AIGuruHeader({
 
         <View style={styles.titleArea}>
           <Text numberOfLines={1} style={styles.title}>
-            AI Guru
+            {t('aiGuru.name')}
           </Text>
           <View style={styles.statusRow}>
             <View style={styles.statusDotWrap}>
@@ -108,7 +110,7 @@ export default function AIGuruHeader({
               />
               <View style={styles.statusDot} />
             </View>
-            <Text style={styles.statusText}>Online</Text>
+            <Text style={styles.statusText}>{t('aiGuru.online')}</Text>
           </View>
         </View>
 
@@ -159,7 +161,7 @@ export default function AIGuruHeader({
         </View>
 
         <PressableScale
-          accessibilityLabel="Chat history"
+          accessibilityLabel={t('aiGuru.chat_history')}
           onPress={onHistoryPress}
           style={styles.iconButton}
         >

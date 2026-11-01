@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React, {
   useCallback,
   useEffect,
@@ -69,6 +70,7 @@ const MIN_POINTS = 3;
 export default function MapYourFarmScreen({
   navigation,
 }) {
+  const { t } = useTranslation();
   const webRef = useRef(null);
 
   const drawerAnim = useRef(
@@ -691,7 +693,7 @@ export default function MapYourFarmScreen({
               styles.headerTitle
             }
           >
-            Map Your Farm
+            {t('mapFarm.title')}
           </Text>
 
           <Text
@@ -699,7 +701,7 @@ export default function MapYourFarmScreen({
               styles.headerSubtitle
             }
           >
-            Mark the boundary of your field
+            {t('mapFarm.subtitle')}
           </Text>
         </View>
 
@@ -831,7 +833,7 @@ export default function MapYourFarmScreen({
                     styles.locationErrorTitle
                   }
                 >
-                  Location unavailable
+                  {t('mapFarm.location_unavailable')}
                 </Text>
 
                 <Text
@@ -839,7 +841,7 @@ export default function MapYourFarmScreen({
                     styles.locationErrorText
                   }
                 >
-                  Tap to try again
+                  {t('common.tap_to_retry')}
                 </Text>
               </View>
 
@@ -884,7 +886,7 @@ export default function MapYourFarmScreen({
                   styles.tipTitle
                 }
               >
-                Mark your field boundary
+                {t('mapFarm.mark_boundary')}
               </Text>
 
               <Text
@@ -892,8 +894,7 @@ export default function MapYourFarmScreen({
                   styles.tipText
                 }
               >
-                Tap each corner of your farm
-                on the map.
+                {t('mapFarm.tap_corners')}
               </Text>
             </View>
 
@@ -986,7 +987,7 @@ export default function MapYourFarmScreen({
               {location.city ||
                 location.district ||
                 location.state ||
-                'Current location'}
+                t('farmForm.current_location')}
             </Text>
           </View>
         )}
@@ -1018,7 +1019,7 @@ export default function MapYourFarmScreen({
                   styles.liveLabel
                 }
               >
-                FIELD AREA
+                {t('mapFarm.field_area')}
               </Text>
 
               <Text
@@ -1110,17 +1111,13 @@ export default function MapYourFarmScreen({
                 }
               >
                 {canContinue
-                  ? 'Review Boundary'
-                  : `Mark ${
-                      MIN_POINTS -
-                      points.length
-                    } more point${
-                      MIN_POINTS -
-                        points.length ===
-                      1
-                        ? ''
-                        : 's'
-                    }`}
+                  ? t('mapFarm.review_boundary')
+                  : t(
+                      MIN_POINTS - points.length === 1
+                        ? 'mapFarm.mark_more_one'
+                        : 'mapFarm.mark_more',
+                      {n: MIN_POINTS - points.length},
+                    )}
               </Text>
             </LinearGradient>
           </TouchableOpacity>
@@ -1197,7 +1194,7 @@ export default function MapYourFarmScreen({
                     styles.sheetEyebrow
                   }
                 >
-                  FIELD BOUNDARY
+                  {t('mapFarm.field_boundary')}
                 </Text>
 
                 <Text
@@ -1205,7 +1202,7 @@ export default function MapYourFarmScreen({
                     styles.sheetTitle
                   }
                 >
-                  Looks good
+                  {t('mapFarm.looks_good')}
                 </Text>
               </View>
 
@@ -1231,31 +1228,31 @@ export default function MapYourFarmScreen({
             >
               <StatCard
                 icon="area"
-                label="AREA"
+                label={t('mapFarm.area_caps')}
                 value={
                   acres.toFixed(2)
                 }
-                unit="Acres"
+                unit={t('units.acres')}
               />
 
               <StatCard
                 icon="points"
-                label="POINTS"
+                label={t('mapFarm.points_caps')}
                 value={String(
                   points.length,
                 )}
-                unit="Boundary"
+                unit={t('mapFarm.boundary_unit')}
               />
 
               <StatCard
                 icon="distance"
-                label="PERIMETER"
+                label={t('mapFarm.perimeter_caps')}
                 value={String(
                   Math.round(
                     perimeter,
                   ),
                 )}
-                unit="Meters"
+                unit={t('mapFarm.meters')}
               />
             </View>
 
@@ -1290,7 +1287,7 @@ export default function MapYourFarmScreen({
                     styles.statusTitle
                   }
                 >
-                  Boundary completed
+                  {t('mapFarm.boundary_completed')}
                 </Text>
 
                 <Text
@@ -1298,8 +1295,7 @@ export default function MapYourFarmScreen({
                     styles.statusSubtitle
                   }
                 >
-                  You can still edit the last
-                  point before continuing.
+                  {t('mapFarm.can_edit_last')}
                 </Text>
               </View>
             </View>
@@ -1329,7 +1325,7 @@ export default function MapYourFarmScreen({
                   styles.editText
                 }
               >
-                Undo last point
+                {t('mapFarm.undo_last')}
               </Text>
             </TouchableOpacity>
 
@@ -1363,7 +1359,7 @@ export default function MapYourFarmScreen({
                     styles.nextButtonText
                   }
                 >
-                  Continue to farm details
+                  {t('mapFarm.continue_details')}
                 </Text>
 
                 <Check

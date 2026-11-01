@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React from 'react';
 import {
   Dimensions,
@@ -25,7 +26,9 @@ import useLocalWeather from '../weather/useLocalWeather';
 import AnimatedWeatherArt from '../weather/AnimatedWeatherArt';
 import {artKindFor} from '../weather/WeatherArt';
 import {Skeleton} from '../weather/WeatherParts';
+import { formatDate } from '../../utils/dateFormat';
 import {
+  conditionsLabel,
   formatTemp,
   round,
   sprayAdvice,
@@ -44,21 +47,6 @@ const TEXT = '#334155';
 const MUTED = '#64748B';
 const GREEN = '#15803D';
 
-const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-const MONTHS = [
-  'Jan',
-  'Feb',
-  'Mar',
-  'Apr',
-  'May',
-  'Jun',
-  'Jul',
-  'Aug',
-  'Sep',
-  'Oct',
-  'Nov',
-  'Dec',
-];
 
 const TIP_TONE = {
   good: {color: '#15803D', bg: '#DCFCE7'},
@@ -66,12 +54,7 @@ const TIP_TONE = {
   avoid: {color: '#B91C1C', bg: '#FEE2E2'},
 };
 
-const todayText = () => {
-  const now = new Date();
-  return `${WEEKDAYS[now.getDay()]}, ${now.getDate()} ${
-    MONTHS[now.getMonth()]
-  }`;
-};
+const todayText = () => formatDate(new Date(), {weekday: 'short'});
 
 /*
  * Today's weather on the landscape card: animated illustration,
@@ -79,6 +62,7 @@ const todayText = () => {
  * hills. Tapping opens the Weather screen.
  */
 export default function WeatherCard() {
+  const { t } = useTranslation();
   const navigation = useNavigation();
   const {data, status, error, place, locationLoading, locationMissing, refresh} =
     useLocalWeather();
@@ -128,12 +112,14 @@ export default function WeatherCard() {
         </View>
         <View style={styles.flex}>
           <Text style={styles.messageTitle}>
-            {locationMissing ? 'Turn on location' : 'Weather not available'}
+            {locationMissing
+              ? t('weather.turn_on_location')
+              : t('weather.not_available')}
           </Text>
           <Text style={styles.messageText} numberOfLines={2}>
             {locationMissing
-              ? 'Tap to see the weather for your farm'
-              : error || 'Tap to try again'}
+              ? t('weather.tap_to_see')
+              : error || t('common.tap_to_retry')}
           </Text>
         </View>
       </TouchableOpacity>
@@ -150,25 +136,25 @@ export default function WeatherCard() {
       Icon: Droplets,
       color: '#2563EB',
       value: `${round(current.humidity) ?? '--'}%`,
-      label: 'Humidity',
+      label: t('weather.humidity'),
     },
     {
       Icon: Wind,
       color: '#0EA5E9',
-      value: `${round(current.windspeed) ?? '--'} km/h`,
-      label: windDirection(current.winddir) || 'Wind',
+      value: t('units.kmh_value', {n: round(current.windspeed) ?? '--'}),
+      label: windDirection(current.winddir) || t('weather.wind'),
     },
     {
       Icon: CloudRain,
       color: '#0891B2',
       value: `${round(today?.precipprob) ?? 0}%`,
-      label: 'Rain',
+      label: t('weather.rain'),
     },
     {
       Icon: Sun,
       color: '#F59E0B',
       value: String(round(current.uvindex) ?? 0),
-      label: 'UV',
+      label: t('weather.uv'),
     },
   ];
 
@@ -178,7 +164,7 @@ export default function WeatherCard() {
       onPress={() => navigation.navigate('Weather')}
       style={styles.wrap}
       accessibilityRole="button"
-      accessibilityLabel="Open weather">
+      accessibilityLabel={t('weather.open_weather')}>
       <ImageBackground
         source={require('../../assets/weather/hero.png')}
         style={styles.card}
@@ -227,11 +213,13 @@ export default function WeatherCard() {
               <Text style={styles.tempUnit}>°C</Text>
               <View style={styles.tempSide}>
                 <Text style={styles.condition} numberOfLines={1}>
-                  {current.conditions}
+                  {conditionsLabel(current.conditions)}
                 </Text>
                 <Text style={styles.highLow} numberOfLines={1}>
-                  H {formatTemp(today?.tempmax)} · L{' '}
-                  {formatTemp(today?.tempmin)}
+                  {t('weather.high_low', {
+                    high: formatTemp(today?.tempmax),
+                    low: formatTemp(today?.tempmin),
+                  })}
                 </Text>
               </View>
             </View>

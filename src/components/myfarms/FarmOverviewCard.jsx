@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React, {useMemo} from 'react';
 
 import {
@@ -29,6 +30,7 @@ const rf = size => {
 export default function FarmOverviewCard({
   farms = [],
 }) {
+  const { t } = useTranslation();
   const stats = useMemo(() => {
     const totalFarms =
       farms.length;
@@ -83,7 +85,7 @@ export default function FarmOverviewCard({
 
       <View style={styles.topRow}>
         <Text style={styles.title}>
-          Farm Overview
+          {t('farms.overview')}
         </Text>
 
         <View
@@ -92,7 +94,7 @@ export default function FarmOverviewCard({
           <Text
             style={styles.seasonText}
           >
-            My Farms
+            {t('farms.my_farms')}
           </Text>
         </View>
       </View>

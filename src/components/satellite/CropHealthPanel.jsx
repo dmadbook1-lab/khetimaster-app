@@ -1,7 +1,9 @@
+import { useTranslation } from 'react-i18next';
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Check } from 'lucide-react-native';
 export default function CropHealthPanel() {
+  const { t } = useTranslation();
   return (
     <View style={styles.card}>
       <View style={styles.circle}>
@@ -11,14 +13,14 @@ export default function CropHealthPanel() {
       <View style={styles.textBox}>
         <View style={styles.labelRow}>
           <Check size={15} color="#FFFFFF" strokeWidth={2.5} />
-          <Text style={styles.label}>CROP HEALTH</Text>
+          <Text style={styles.label}>{t('satellite.crop_health')}</Text>
         </View>
 
-        <Text style={styles.title}>Excellent{'\n'}Vegetation</Text>
+        <Text style={styles.title}>{t('satellite.excellent_vegetation')}</Text>
 
         <View style={styles.updatedRow}>
           <View style={styles.dot} />
-          <Text style={styles.updated}>Last Updated: 2 Days Ago</Text>
+          <Text style={styles.updated}>{t('satellite.last_updated_days', { n: 2 })}</Text>
         </View>
       </View>
     </View>

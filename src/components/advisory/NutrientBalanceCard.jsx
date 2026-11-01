@@ -1,3 +1,5 @@
+import i18n from '../../translation/i18n';
+import { useTranslation } from 'react-i18next';
 import React, {useEffect, useMemo, useRef} from 'react';
 
 import {Animated, Easing, StyleSheet, Text, View} from 'react-native';
@@ -14,9 +16,15 @@ import {
 } from './advisoryTheme';
 
 const NUTRIENTS = [
-  {symbol: 'N', label: 'Nitrogen', field: 'nitrogenKgPerHa', color: '#E8A80C', soft: '#FFF6DF'},
-  {symbol: 'P', label: 'Phosphorus', field: 'phosphorousKgPerHa', color: '#DC4A3D', soft: '#FDECEA'},
-  {symbol: 'K', label: 'Potassium', field: 'potassiumKgPerHa', color: '#2F9E44', soft: '#E8F6EB'},
+  {symbol: 'N', get label() {
+      return i18n.t('advisory.nitrogen');
+    }, field: 'nitrogenKgPerHa', color: '#E8A80C', soft: '#FFF6DF'},
+  {symbol: 'P', get label() {
+      return i18n.t('advisory.phosphorus');
+    }, field: 'phosphorousKgPerHa', color: '#DC4A3D', soft: '#FDECEA'},
+  {symbol: 'K', get label() {
+      return i18n.t('advisory.potassium');
+    }, field: 'potassiumKgPerHa', color: '#2F9E44', soft: '#E8F6EB'},
 ];
 
 const ACRES_PER_HECTARE = 2.47105;
@@ -38,6 +46,7 @@ const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 */
 
 function NutrientRing({nutrient, current, required, applyMessage}) {
+  const {t} = useTranslation();
   const progress = useRef(new Animated.Value(0)).current;
 
   const deficit = Math.max(0, required - current);
@@ -113,8 +122,8 @@ function NutrientRing({nutrient, current, required, applyMessage}) {
           ]}
           numberOfLines={2}>
           {satisfied
-            ? 'On target'
-            : applyMessage || `Short ${deficit.toFixed(0)} kg/ha`}
+            ? t('advisory.on_target')
+            : applyMessage || t('advisory.short_kg_ha', {n: deficit.toFixed(0)})}
         </Text>
       </View>
     </View>
@@ -128,6 +137,7 @@ function NutrientRing({nutrient, current, required, applyMessage}) {
 */
 
 function FertilizerRow({fert, kgPerHa, gap, acres, isLast}) {
+  const {t} = useTranslation();
   const kgPerAcre = kgPerHa / ACRES_PER_HECTARE;
   const total = acres ? kgPerAcre * acres : null;
 
@@ -145,18 +155,18 @@ function FertilizerRow({fert, kgPerHa, gap, acres, isLast}) {
         </Text>
 
         <Text style={[styles.fertGap, {color: fert.color}]}>
-          Fills {Math.round(gap)} kg/ha {fert.nutrient} gap
+          {t('advisory.fills_gap', {n: Math.round(gap), nutrient: fert.nutrient})}
         </Text>
       </View>
 
       <View style={styles.fertDose}>
         <Text style={[styles.fertKg, {color: fert.color}]}>
           {kgPerAcre.toFixed(1)}
-          <Text style={styles.fertUnit}> kg/acre</Text>
+          <Text style={styles.fertUnit}> {t('units.kg_per_acre')}</Text>
         </Text>
 
         {total != null ? (
-          <Text style={styles.fertTotal}>{total.toFixed(1)} kg for farm</Text>
+          <Text style={styles.fertTotal}>{t('advisory.kg_for_farm', {n: total.toFixed(1)})}</Text>
         ) : null}
       </View>
     </View>
@@ -170,6 +180,7 @@ function FertilizerRow({fert, kgPerHa, gap, acres, isLast}) {
 */
 
 export default function NutrientBalanceCard({npkManagement, farmAcre}) {
+  const { t } = useTranslation();
   const display = npkManagement?.display;
   const view = display?.view || 'chart';
 
@@ -221,18 +232,18 @@ export default function NutrientBalanceCard({npkManagement, farmAcre}) {
         </View>
 
         <View style={styles.headerText}>
-          <Text style={styles.title}>Soil Nutrients</Text>
+          <Text style={styles.title}>{t('advisory.soil_nutrients')}</Text>
 
           <Text style={styles.subtitle} numberOfLines={1}>
             {display?.growthStageLabel
-              ? `NPK target for ${display.growthStageLabel}`
-              : 'NPK based on BBCH growth stage'}
+              ? t('advisory.npk_target_for', {stage: display.growthStageLabel})
+              : t('advisory.npk_bbch')}
           </Text>
         </View>
 
         {fromSatellite ? (
           <View style={styles.sourceChip}>
-            <Text style={styles.sourceText}>🛰️ Satellite</Text>
+            <Text style={styles.sourceText}>🛰️ {t('farms.satellite')}</Text>
           </View>
         ) : null}
       </View>
@@ -272,8 +283,10 @@ export default function NutrientBalanceCard({npkManagement, farmAcre}) {
         <>
           <View style={styles.summary}>
             <Text style={styles.summaryText}>
-              <Text style={styles.summaryStrong}>{onTargetCount} of 3</Text>{' '}
-              nutrients on target for this stage
+              <Text style={styles.summaryStrong}>
+                {t('advisory.n_of_3', {n: onTargetCount})}
+              </Text>{' '}
+              {t('advisory.nutrients_on_target')}
             </Text>
 
             <View style={styles.summaryDots}>
@@ -306,7 +319,7 @@ export default function NutrientBalanceCard({npkManagement, farmAcre}) {
           ================================================ */}
 
           <View style={styles.fertHeader}>
-            <Text style={styles.sectionTitle}>Fertilizer to apply</Text>
+            <Text style={styles.sectionTitle}>{t('advisory.fertilizer_to_apply')}</Text>
 
             {acres ? (
               <Text style={styles.fertHeaderMeta}>
@@ -333,7 +346,7 @@ export default function NutrientBalanceCard({npkManagement, farmAcre}) {
               <CheckCircle2 size={16} color={COLORS.green} strokeWidth={2.4} />
 
               <Text style={styles.allGoodText}>
-                Nutrients are on target — no top-up fertilizer needed now.
+                {t('advisory.all_on_target')}
               </Text>
             </View>
           )}

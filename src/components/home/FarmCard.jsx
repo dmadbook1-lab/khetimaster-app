@@ -1,4 +1,5 @@
 
+import { useTranslation } from 'react-i18next';
 import React from 'react';
 
 import {
@@ -42,6 +43,8 @@ export default function FarmCard({
   navigation,
   onPress,
 }) {
+  const { t } = useTranslation();
+
   if (!farm) {
     return null;
   }
@@ -51,11 +54,11 @@ export default function FarmCard({
   const farmName =
     farm?.fieldName ||
     farm?.farmName ||
-    'My Farm';
+    t('common.my_farm');
 
   const cropName = farm?.isBarrenLand
-    ? 'Barren Land'
-    : farm?.cropName || 'Crop not specified';
+    ? t('common.barren_land')
+    : farm?.cropName || t('common.crop_not_specified');
 
   const variety = farm?.variety || '';
 
@@ -169,7 +172,7 @@ export default function FarmCard({
               numberOfLines={1}
               style={styles.metaText}>
               {acre > 0
-                ? `${acre.toFixed(2)} ac`
+                ? t('units.ac_value', {n: acre.toFixed(2)})
                 : '—'}
             </Text>
           </View>
@@ -208,7 +211,7 @@ export default function FarmCard({
                   ? styles.attentionText
                   : styles.healthyText,
               ]}>
-              {isBarren ? 'Barren' : 'Active'}
+              {isBarren ? t('common.barren') : t('common.active')}
             </Text>
           </View>
 

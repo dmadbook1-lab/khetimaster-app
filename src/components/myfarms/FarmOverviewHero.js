@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React from 'react';
 
 import {
@@ -23,6 +24,7 @@ export default function FarmOverviewHero({
   selectedSatellite,
   cropImage,
 }) {
+  const { t } = useTranslation();
   const hasCropImage =
     typeof cropImage === 'string' &&
     cropImage.trim().length > 0;
@@ -82,7 +84,7 @@ export default function FarmOverviewHero({
           <Text
             style={styles.heroTitle}
             numberOfLines={1}>
-            {farmName || 'My Farm'}
+            {farmName || t('common.my_farm')}
           </Text>
 
           <View style={styles.cropNameRow}>
@@ -95,14 +97,14 @@ export default function FarmOverviewHero({
             <Text
               style={styles.heroCropName}
               numberOfLines={1}>
-              {cropName || 'Crop'}
+              {cropName || t('common.crop')}
             </Text>
           </View>
 
           <Text
             style={styles.heroVariety}
             numberOfLines={1}>
-            {variety || 'Variety not specified'}
+            {variety || t('farms.variety_not_specified')}
           </Text>
         </View>
 
@@ -114,7 +116,7 @@ export default function FarmOverviewHero({
           <View style={styles.statusDot} />
 
           <Text style={styles.statusText}>
-            ACTIVE
+            {t('farms.active_caps')}
           </Text>
         </View>
       </View>
@@ -133,8 +135,8 @@ export default function FarmOverviewHero({
               strokeWidth={2}
             />
           }
-          label="Crop"
-          value={cropName || 'Crop'}
+          label={t('common.crop')}
+          value={cropName || t('common.crop')}
         />
 
         <HeroDivider />
@@ -147,7 +149,7 @@ export default function FarmOverviewHero({
               strokeWidth={2}
             />
           }
-          label="Area"
+          label={t('farms.area')}
           value={farmArea || '—'}
         />
 
@@ -161,7 +163,7 @@ export default function FarmOverviewHero({
               strokeWidth={2}
             />
           }
-          label="Satellite"
+          label={t('farms.satellite')}
           value={
             selectedSatellite === 's1'
               ? 'Sentinel-1'

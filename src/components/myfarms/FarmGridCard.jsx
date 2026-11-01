@@ -1,4 +1,5 @@
 
+import { useTranslation } from 'react-i18next';
 import React, {useEffect, useState} from 'react';
 
 import {
@@ -85,6 +86,7 @@ export default function FarmGridCard({
   farmIndex = 0,
   navigation,
 }) {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
 
   const updating = useSelector(selectFarmFieldUpdating);
@@ -100,11 +102,11 @@ export default function FarmGridCard({
   const farmId = getFarmId(farm);
 
   const farmName =
-    farm?.fieldName || farm?.farmName || 'My Farm';
+    farm?.fieldName || farm?.farmName || t('common.my_farm');
 
   const cropName = farm?.isBarrenLand
-    ? 'Barren Land'
-    : farm?.cropName || 'Crop not specified';
+    ? t('common.barren_land')
+    : farm?.cropName || t('common.crop_not_specified');
 
   const variety = farm?.variety || '';
   const acre = Number(farm?.acre || 0);
@@ -157,44 +159,44 @@ export default function FarmGridCard({
 
   const handleSaveChanges = async () => {
     if (!farmId) {
-      setFormError('Farm ID is missing. Please reload your farms.');
+      setFormError(t('farms.err_missing_id'));
       return;
     }
 
     if (!editForm.fieldName.trim()) {
-      setFormError('Please enter a farm name.');
+      setFormError(t('farms.err_name'));
       return;
     }
 
     if (!editForm.isBarrenLand && !editForm.cropName.trim()) {
-      setFormError('Please enter a crop name.');
+      setFormError(t('farms.err_crop'));
       return;
     }
 
     const area = Number(editForm.acre);
 
     if (!editForm.acre.trim() || !Number.isFinite(area) || area <= 0) {
-      setFormError('Farm area must be greater than zero.');
+      setFormError(t('farms.err_area'));
       return;
     }
 
     if (!editForm.variety.trim()) {
-      setFormError('Please enter the crop variety.');
+      setFormError(t('farms.err_variety'));
       return;
     }
 
     if (!editForm.sowingDate.trim()) {
-      setFormError('Please enter the sowing date.');
+      setFormError(t('farms.err_sowing'));
       return;
     }
 
     if (!editForm.typeOfIrrigation.trim()) {
-      setFormError('Please enter the irrigation type.');
+      setFormError(t('farms.err_irrigation'));
       return;
     }
 
     if (!FARMING_TYPES.includes(editForm.typeOfFarming)) {
-      setFormError('Please select a valid farming type.');
+      setFormError(t('farms.err_farming_type'));
       return;
     }
 
@@ -228,21 +230,21 @@ export default function FarmGridCard({
       setEditVisible(false);
 
       Alert.alert(
-        'Farm updated',
-        'Your farm details have been updated successfully.',
+        t('farms.updated'),
+        t('farms.updated_text'),
       );
     } catch (error) {
       setFormError(
         typeof error === 'string'
           ? error
-          : error?.message || 'Unable to update the farm. Please try again.',
+          : error?.message || t('farms.err_update'),
       );
     }
   };
 
   const handleDeleteFarm = async () => {
     if (!farmId) {
-      setFormError('Farm ID is missing. Please reload your farms.');
+      setFormError(t('farms.err_missing_id'));
       return;
     }
 
@@ -254,14 +256,14 @@ export default function FarmGridCard({
       setDeleteVisible(false);
 
       Alert.alert(
-        'Farm deleted',
-        `${farmName} has been deleted successfully.`,
+        t('farms.deleted'),
+        t('farms.deleted_text', { name: farmName }),
       );
     } catch (error) {
       setFormError(
         typeof error === 'string'
           ? error
-          : error?.message || 'Unable to delete the farm. Please try again.',
+          : error?.message || t('farms.err_delete'),
       );
     }
   };
@@ -341,7 +343,7 @@ export default function FarmGridCard({
                 />
 
                 <Text numberOfLines={1} style={styles.metaText}>
-                  {acre > 0 ? `${acre.toFixed(1)} ac` : '—'}
+                  {acre > 0 ? t('units.ac_value', { n: acre.toFixed(1) }) : '—'}
                 </Text>
               </View>
             </View>
@@ -375,12 +377,12 @@ export default function FarmGridCard({
                       ? styles.attentionText
                       : styles.healthyText,
                   ]}>
-                  {isBarren ? 'Barren' : 'Active'}
+                  {isBarren ? t('common.barren') : t('common.active')}
                 </Text>
               </View>
 
               <View style={styles.detailsRow}>
-                <Text style={styles.detailsText}>View</Text>
+                <Text style={styles.detailsText}>{t('common.view')}</Text>
                 <ChevronRight
                   size={13}
                   color={GREEN}
@@ -432,7 +434,7 @@ export default function FarmGridCard({
               </View>
 
               <View style={styles.sheetHeadingText}>
-                <Text style={styles.sheetTitle}>Manage farm</Text>
+                <Text style={styles.sheetTitle}>{t('farms.manage')}</Text>
                 <Text numberOfLines={1} style={styles.sheetSubtitle}>
                   {farmName}
                 </Text>
@@ -454,9 +456,9 @@ export default function FarmGridCard({
               </View>
 
               <View style={styles.actionCopy}>
-                <Text style={styles.actionTitle}>Edit farm details</Text>
+                <Text style={styles.actionTitle}>{t('farms.edit_details')}</Text>
                 <Text style={styles.actionSubtitle}>
-                  Update crop, acreage and other information
+                  {t('farms.edit_details_sub')}
                 </Text>
               </View>
 
@@ -478,9 +480,9 @@ export default function FarmGridCard({
               </View>
 
               <View style={styles.actionCopy}>
-                <Text style={styles.deleteActionTitle}>Delete farm</Text>
+                <Text style={styles.deleteActionTitle}>{t('farms.delete')}</Text>
                 <Text style={styles.actionSubtitle}>
-                  Permanently remove this farm
+                  {t('farms.delete_sub')}
                 </Text>
               </View>
 
@@ -491,7 +493,7 @@ export default function FarmGridCard({
               activeOpacity={0.8}
               onPress={() => setMenuVisible(false)}
               style={styles.cancelButton}>
-              <Text style={styles.cancelButtonText}>Cancel</Text>
+              <Text style={styles.cancelButtonText}>{t('common.cancel')}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -515,9 +517,9 @@ export default function FarmGridCard({
               </View>
 
               <View style={styles.editHeaderCopy}>
-                <Text style={styles.editTitle}>Edit farm</Text>
+                <Text style={styles.editTitle}>{t('farms.edit')}</Text>
                 <Text style={styles.editSubtitle}>
-                  Update your farm information
+                  {t('farms.edit_sub')}
                 </Text>
               </View>
 
@@ -533,44 +535,44 @@ export default function FarmGridCard({
               keyboardShouldPersistTaps="handled"
               showsVerticalScrollIndicator={false}
               contentContainerStyle={styles.editScrollContent}>
-              <Text style={styles.fieldLabel}>Farm name *</Text>
+              <Text style={styles.fieldLabel}>{t('farms.farm_name_req')}</Text>
               <TextInput
                 value={editForm.fieldName}
                 onChangeText={value =>
                   updateFormField('fieldName', value)
                 }
-                placeholder="e.g. Shinde Farm"
+                placeholder={t('farms.farm_name_ph')}
                 placeholderTextColor="#9CA3AF"
                 style={styles.input}
                 maxLength={80}
               />
 
-              <Text style={styles.fieldLabel}>Crop name *</Text>
+              <Text style={styles.fieldLabel}>{t('farms.crop_name_req')}</Text>
               <TextInput
                 value={editForm.cropName}
                 onChangeText={value =>
                   updateFormField('cropName', value)
                 }
-                placeholder="e.g. Cotton"
+                placeholder={t('farms.crop_name_ph')}
                 placeholderTextColor="#9CA3AF"
                 style={styles.input}
                 editable={!editForm.isBarrenLand}
                 maxLength={80}
               />
 
-              <Text style={styles.fieldLabel}>Crop variety *</Text>
+              <Text style={styles.fieldLabel}>{t('farms.variety_req')}</Text>
               <TextInput
                 value={editForm.variety}
                 onChangeText={value =>
                   updateFormField('variety', value)
                 }
-                placeholder="e.g. Bt Cotton"
+                placeholder={t('farms.variety_ph')}
                 placeholderTextColor="#9CA3AF"
                 style={styles.input}
                 maxLength={100}
               />
 
-              <Text style={styles.fieldLabel}>Farm area (acres) *</Text>
+              <Text style={styles.fieldLabel}>{t('farms.area_req')}</Text>
               <TextInput
                 value={editForm.acre}
                 onChangeText={value =>
@@ -582,7 +584,7 @@ export default function FarmGridCard({
                 style={styles.input}
               />
 
-              <Text style={styles.fieldLabel}>Sowing date *</Text>
+              <Text style={styles.fieldLabel}>{t('farms.sowing_req')}</Text>
               <View style={styles.inputWithIcon}>
                 <CalendarDays size={17} color={MUTED} />
                 <TextInput
@@ -600,7 +602,7 @@ export default function FarmGridCard({
                 Enter the date as YYYY-MM-DD.
               </Text>
 
-              <Text style={styles.fieldLabel}>Irrigation type *</Text>
+              <Text style={styles.fieldLabel}>{t('farms.irrigation_req')}</Text>
               <View style={styles.inputWithIcon}>
                 <Droplets size={17} color={MUTED} />
                 <TextInput
@@ -608,14 +610,14 @@ export default function FarmGridCard({
                   onChangeText={value =>
                     updateFormField('typeOfIrrigation', value)
                   }
-                  placeholder="e.g. Drip, Sprinkler, Rainfed"
+                  placeholder={t('farms.irrigation_ph')}
                   placeholderTextColor="#9CA3AF"
                   style={styles.iconInput}
                   maxLength={80}
                 />
               </View>
 
-              <Text style={styles.fieldLabel}>Farming method *</Text>
+              <Text style={styles.fieldLabel}>{t('farms.method_req')}</Text>
               <View style={styles.typeOptions}>
                 {FARMING_TYPES.map(type => {
                   const selected = editForm.typeOfFarming === type;
@@ -640,7 +642,7 @@ export default function FarmGridCard({
                           styles.typeOptionText,
                           selected && styles.typeOptionTextSelected,
                         ]}>
-                        {type}
+                        {t(`farms.type_${type.toLowerCase()}`)}
                       </Text>
                     </TouchableOpacity>
                   );
@@ -650,10 +652,10 @@ export default function FarmGridCard({
               <View style={styles.barrenToggleRow}>
                 <View style={styles.barrenToggleCopy}>
                   <Text style={styles.barrenToggleTitle}>
-                    Barren land
+                    {t('common.barren_land')}
                   </Text>
                   <Text style={styles.barrenToggleSubtitle}>
-                    There is currently no standing crop
+                    {t('farms.no_standing_crop')}
                   </Text>
                 </View>
 
@@ -684,7 +686,7 @@ export default function FarmGridCard({
                   disabled={updating}
                   onPress={closeEditModal}
                   style={styles.secondaryButton}>
-                  <Text style={styles.secondaryButtonText}>Cancel</Text>
+                  <Text style={styles.secondaryButtonText}>{t('common.cancel')}</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -701,7 +703,7 @@ export default function FarmGridCard({
                     <>
                       <Check size={17} color="#FFFFFF" />
                       <Text style={styles.primaryButtonText}>
-                        Save changes
+                        {t('common.save_changes')}
                       </Text>
                     </>
                   )}
@@ -726,12 +728,13 @@ export default function FarmGridCard({
               <Trash2 size={25} color="#DC2626" />
             </View>
 
-            <Text style={styles.confirmTitle}>Delete this farm?</Text>
+            <Text style={styles.confirmTitle}>{t('farms.delete_confirm')}</Text>
 
             <Text style={styles.confirmDescription}>
-              Are you sure you want to delete{' '}
-              <Text style={styles.confirmFarmName}>{farmName}</Text>?
-              This action cannot be undone.
+              {t('farms.delete_confirm_before')}{' '}
+              <Text style={styles.confirmFarmName}>{farmName}</Text>
+              {t('farms.delete_confirm_after')}{' '}
+              {t('common.cannot_undo')}
             </Text>
 
             {formError ? (
@@ -747,7 +750,7 @@ export default function FarmGridCard({
                 disabled={deleting}
                 onPress={closeDeleteModal}
                 style={styles.secondaryButton}>
-                <Text style={styles.secondaryButtonText}>Keep farm</Text>
+                <Text style={styles.secondaryButtonText}>{t('farms.keep')}</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -763,7 +766,7 @@ export default function FarmGridCard({
                 ) : (
                   <>
                     <Trash2 size={16} color="#FFFFFF" />
-                    <Text style={styles.primaryButtonText}>Delete</Text>
+                    <Text style={styles.primaryButtonText}>{t('common.delete')}</Text>
                   </>
                 )}
               </TouchableOpacity>

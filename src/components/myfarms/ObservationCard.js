@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React from 'react';
 
 import {
@@ -18,6 +19,7 @@ export default function ObservationCard({
   selectedIndex,
   formatDate,
 }) {
+  const { t } = useTranslation();
   return (
     <View style={styles.card}>
       <View style={styles.left}>
@@ -31,13 +33,13 @@ export default function ObservationCard({
 
         <View>
           <Text style={styles.label}>
-            CURRENT OBSERVATION
+            {t('farms.current_observation')}
           </Text>
 
           <Text style={styles.date}>
             {selectedDate
               ? formatDate(selectedDate)
-              : 'Waiting for satellite date'}
+              : t('farms.waiting_satellite_date')}
           </Text>
         </View>
       </View>

@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React, { useState } from 'react';
 import {
   View,
@@ -33,6 +34,7 @@ const rf = size => {
   return Math.max(size - 3, Math.min(size * scale, size + 2));
 };
 export default function FarmMappingScreen({ navigation }) {
+  const { t } = useTranslation();
   const [selected, setSelected] = useState('draw');
   const handleContinue = () => {
     if (selected === 'walk') {
@@ -70,8 +72,8 @@ export default function FarmMappingScreen({ navigation }) {
         </View>
 
         <View style={styles.progressTop}>
-          <Text style={styles.progressLabel}>Mapping Method</Text>
-          <Text style={styles.progressStep}>Step 3 of 3</Text>
+          <Text style={styles.progressLabel}>{t('mapping.method')}</Text>
+          <Text style={styles.progressStep}>{t('common.step_of', { step: 3, total: 3 })}</Text>
         </View>
 
         <View style={styles.progressTrack}>
@@ -90,7 +92,7 @@ export default function FarmMappingScreen({ navigation }) {
                   item === 'Mapping' && styles.stepActive,
                 ]}
               >
-                {item}
+                {t(`mapping.step_${item.replace(' ', '_').toLowerCase()}`)}
               </Text>
             </View>
           ))}
@@ -98,13 +100,13 @@ export default function FarmMappingScreen({ navigation }) {
 
         <View style={styles.titleWrap}>
           <Text style={styles.title}>
-            How Would You Like to{'\n'}Map{' '}
-            <Text style={styles.greenText}>Your Farm?</Text>
+            {t('mapping.title_line1')}{' '}
+            <Text style={styles.greenText}>{t('mapping.title_line2')}</Text>
           </Text>
         </View>
 
         <Text style={styles.subtitle}>
-          Choose the method that works best for you.
+          {t('mapping.subtitle')}
         </Text>
 
         <TouchableOpacity
@@ -132,32 +134,31 @@ export default function FarmMappingScreen({ navigation }) {
 
             <View style={styles.tapPill}>
               <Navigation size={14} color={DARK} />
-              <Text style={styles.tapText}>Tap to draw</Text>
+              <Text style={styles.tapText}>{t('mapping.tap_to_draw')}</Text>
             </View>
           </View>
 
           <View style={styles.methodTitleRow}>
-            <Text style={styles.methodTitle}>Draw on Map</Text>
+            <Text style={styles.methodTitle}>{t('mapping.draw')}</Text>
 
             <View style={styles.recommended}>
-              <Text style={styles.recommendedText}>Recommended</Text>
+              <Text style={styles.recommendedText}>{t('mapping.recommended')}</Text>
             </View>
           </View>
 
           <Text style={styles.methodDesc}>
-            Mark your farm boundary directly on the map. Best when you're not at
-            the farm.
+            {t('mapping.draw_desc')}
           </Text>
 
           <View style={styles.featureRow}>
             <View style={styles.featureItem}>
               <Crosshair size={15} color="#6B7280" />
-              <Text style={styles.featureText}>Works from anywhere</Text>
+              <Text style={styles.featureText}>{t('mapping.anywhere')}</Text>
             </View>
 
             <View style={styles.featureItem}>
               <Clock size={15} color="#6B7280" />
-              <Text style={styles.featureText}>~2 mins</Text>
+              <Text style={styles.featureText}>{t('mapping.two_mins')}</Text>
             </View>
           </View>
         </TouchableOpacity>
@@ -186,31 +187,31 @@ export default function FarmMappingScreen({ navigation }) {
 
             <View style={styles.gpsPill}>
               <Navigation size={14} color={DARK} />
-              <Text style={styles.tapText}>GPS tracking</Text>
+              <Text style={styles.tapText}>{t('mapping.gps_tracking')}</Text>
             </View>
           </View>
 
           <View style={styles.methodTitleRow}>
-            <Text style={styles.methodTitle}>Walk Around Farm</Text>
+            <Text style={styles.methodTitle}>{t('mapping.walk')}</Text>
 
             <View style={styles.accurate}>
-              <Text style={styles.accurateText}>Most Accurate</Text>
+              <Text style={styles.accurateText}>{t('mapping.most_accurate')}</Text>
             </View>
           </View>
 
           <Text style={styles.methodDesc}>
-            Walk around the farm boundary and let GPS map it automatically.
+            {t('mapping.walk_desc')}
           </Text>
 
           <View style={styles.featureRow}>
             <View style={styles.featureItem}>
               <MapPin size={15} color="#6B7280" />
-              <Text style={styles.featureText}>Must be at farm</Text>
+              <Text style={styles.featureText}>{t('mapping.must_be_at_farm')}</Text>
             </View>
 
             <View style={styles.featureItem}>
               <Crosshair size={15} color="#6B7280" />
-              <Text style={styles.featureText}>Highest precision</Text>
+              <Text style={styles.featureText}>{t('mapping.highest_precision')}</Text>
             </View>
           </View>
         </TouchableOpacity>
@@ -218,8 +219,7 @@ export default function FarmMappingScreen({ navigation }) {
         <View style={styles.infoBox}>
           <ShieldCheck size={34} color="#2563EB" />
           <Text style={styles.infoText}>
-            Once mapped, KhetiMaster will monitor your farm using satellite
-            intelligence.
+            {t('mapping.info')}
           </Text>
         </View>
       </ScrollView>
@@ -238,7 +238,7 @@ export default function FarmMappingScreen({ navigation }) {
             }}
             style={styles.button}
           >
-            <Text style={styles.buttonText}>Continue</Text>
+            <Text style={styles.buttonText}>{t('common.continue')}</Text>
             <ArrowRight size={27} color="#FFFFFF" />
           </LinearGradient>
         </TouchableOpacity>

@@ -154,7 +154,7 @@ export default function HomeScreen({navigation}) {
   } = useLocation();
 
   const locationText = locationLoading
-    ? 'Detecting location...'
+    ? t('home.detecting_location')
     : currentLocation?.district &&
       currentLocation?.state
     ? `${currentLocation.district}, ${currentLocation.state}`

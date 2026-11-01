@@ -23,13 +23,8 @@ const ASSISTANT_IMAGE = require('../../assets/assistant/assistantt.png');
 // the artwork is 2103 x 748; the card keeps that shape so nothing is cut
 const IMAGE_RATIO = 2103 / 748;
 
-const EXAMPLES = [
-  '“Pyaz ka bhav batao”',
-  '“Mujhe labour chahiye”',
-  '“Tractor chahiye”',
-  '“Pashu doctor”',
-  '“Sell my crop”',
-];
+// example phrases: voice.example_1 … voice.example_5
+const EXAMPLES = [1, 2, 3, 4, 5].map(n => `voice.example_${n}`);
 
 /*
  * Home screen entry to the voice assistant: the assistant artwork with
@@ -97,7 +92,7 @@ export default function VoiceAssistantCard({onPress}) {
     <Animated.View style={[styles.wrap, {transform: [{scale: press}]}]}>
       <TouchableOpacity
         accessibilityRole="button"
-        accessibilityLabel="Speak to KhetiMaster"
+        accessibilityLabel={t('voice.speak_to_app')}
         activeOpacity={1}
         onPressIn={() => pressTo(0.97)}
         onPressOut={() => pressTo(1)}
@@ -138,7 +133,7 @@ export default function VoiceAssistantCard({onPress}) {
             <Animated.Text
               style={[styles.example, s.example, {opacity: exampleOpacity}]}
               numberOfLines={1}>
-              {EXAMPLES[exampleIndex]}
+              {t(EXAMPLES[exampleIndex])}
             </Animated.Text>
 
             <View style={[styles.button, s.button]}>

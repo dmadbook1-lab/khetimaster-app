@@ -1,7 +1,9 @@
+import { useTranslation } from 'react-i18next';
 import React from 'react';
 import { ScrollView, Text, TouchableOpacity, StyleSheet } from 'react-native';
 const tabs = ['True Color', 'NDVI', 'NDRE', 'Moisture'];
 export default function SatelliteIndexTabs({ activeIndex, onChange }) {
+  const { t } = useTranslation();
   return (
     <ScrollView
       horizontal
@@ -18,7 +20,11 @@ export default function SatelliteIndexTabs({ activeIndex, onChange }) {
             style={[styles.tab, active && styles.activeTab]}
           >
             <Text style={[styles.text, active && styles.activeText]}>
-              {tab}
+              {tab === 'True Color'
+                ? t('satellite.true_color')
+                : tab === 'Moisture'
+                ? t('satellite.moisture')
+                : tab}
             </Text>
           </TouchableOpacity>
         );

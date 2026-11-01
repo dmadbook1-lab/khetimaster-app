@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React from 'react';
 import {
   View,
@@ -33,6 +34,7 @@ const farmPoints = [
   [0.28, 0.38],
 ];
 const ProgressRing = () => {
+  const { t } = useTranslation();
   const size = isSmall ? 90 : 104;
   const stroke = 6;
   const radius = (size - stroke) / 2;
@@ -68,12 +70,13 @@ const ProgressRing = () => {
 
       <View style={styles.ringTextBox}>
         <Text style={styles.ringPercent}>45%</Text>
-        <Text style={styles.ringDone}>DONE</Text>
+        <Text style={styles.ringDone}>{t('walk.done_caps')}</Text>
       </View>
     </View>
   );
 };
 const StaticFarmMap = () => {
+  const { t } = useTranslation();
   const svgHeight = mapHeight;
   const polygonPoints = farmPoints
     .map(([x, y]) => `${width * x},${svgHeight * y}`)
@@ -99,7 +102,7 @@ const StaticFarmMap = () => {
         <View style={styles.gpsBar}>
           <View style={styles.gpsLeft}>
             <View style={styles.greenDot} />
-            <Text style={styles.gpsActive}>GPS ACTIVE</Text>
+            <Text style={styles.gpsActive}>{t('walk.gps_active')}</Text>
           </View>
 
           <View style={styles.accuracyPill}>
@@ -107,7 +110,7 @@ const StaticFarmMap = () => {
             <Text style={styles.accuracyText}>±2.1m</Text>
           </View>
 
-          <Text style={styles.satText}>✣ Sat. OK</Text>
+          <Text style={styles.satText}>{t('walk.sat_ok')}</Text>
         </View>
 
         <Svg
@@ -177,13 +180,14 @@ const StaticFarmMap = () => {
         </View>
 
         <View style={styles.completedPill}>
-          <Text style={styles.completedText}>Boundary Completed</Text>
+          <Text style={styles.completedText}>{t('mapFarm.boundary_completed')}</Text>
         </View>
       </ImageBackground>
     </View>
   );
 };
 export default function WalkAroundTrackingScreen({ navigation }) {
+  const { t } = useTranslation();
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <StatusBar barStyle="light-content" backgroundColor="#111827" />
@@ -196,16 +200,16 @@ export default function WalkAroundTrackingScreen({ navigation }) {
 
           <View style={styles.titleRow}>
             <View style={styles.orangeDot} />
-            <Text style={styles.sheetTitle}>Great! You're halfway done.</Text>
+            <Text style={styles.sheetTitle}>{t('walk.halfway')}</Text>
           </View>
 
           <Text style={styles.sheetSubtitle}>
-            Keep walking around the edge of your{'\n'}farm.
+            {t('walk.keep_walking')}
           </Text>
 
           <View style={styles.progressTextRow}>
-            <Text style={styles.progressLabel}>Boundary progress</Text>
-            <Text style={styles.progressValue}>45% complete</Text>
+            <Text style={styles.progressLabel}>{t('walk.boundary_progress')}</Text>
+            <Text style={styles.progressValue}>{t('walk.pct_complete', { n: 45 })}</Text>
           </View>
 
           <View style={styles.progressTrack}>
@@ -216,7 +220,7 @@ export default function WalkAroundTrackingScreen({ navigation }) {
             <View style={styles.pauseIconCircle}>
               <Pause size={22} color={DARK} strokeWidth={2.7} />
             </View>
-            <Text style={styles.pauseText}>Pause</Text>
+            <Text style={styles.pauseText}>{t('walk.pause')}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -227,12 +231,12 @@ export default function WalkAroundTrackingScreen({ navigation }) {
             <View style={styles.finishIconCircle}>
               <Check size={22} color="#FFFFFF" strokeWidth={3} />
             </View>
-            <Text style={styles.finishText}>Finish Mapping</Text>
+            <Text style={styles.finishText}>{t('walk.finish')}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity activeOpacity={0.75} style={styles.gpsIssueRow}>
             <CircleHelp size={18} color="#9CA3AF" strokeWidth={2.2} />
-            <Text style={styles.gpsIssueText}>Having GPS Issues?</Text>
+            <Text style={styles.gpsIssueText}>{t('walk.gps_issues')}</Text>
           </TouchableOpacity>
         </View>
       </View>

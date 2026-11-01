@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   Animated,
@@ -23,6 +24,7 @@ export default function ChatComposer({
   hasAttachment = false,
   disabled = false,
 }) {
+  const { t } = useTranslation();
   const [focused, setFocused] = useState(false);
   const canSend = value.trim().length > 0 || hasAttachment;
   const morph = useRef(new Animated.Value(canSend ? 1 : 0)).current;
@@ -73,7 +75,7 @@ export default function ChatComposer({
         style={[styles.composer, focused && styles.composerFocused]}
       >
         <PressableScale
-          accessibilityLabel="Add crop photo"
+          accessibilityLabel={t('aiGuru.add_photo_title')}
           onPress={onAttachmentPress}
           scaleTo={0.88}
           style={[styles.sideButton, hasAttachment && styles.sideButtonActive]}
@@ -90,7 +92,7 @@ export default function ChatComposer({
           onChangeText={onChangeText}
           onFocus={() => setFocused(true)}
           onBlur={() => setFocused(false)}
-          placeholder="Ask AI Guru…"
+          placeholder={t('aiGuru.ask_placeholder')}
           placeholderTextColor={COLORS.faint}
           multiline
           maxLength={1000}
@@ -103,7 +105,7 @@ export default function ChatComposer({
             style={[StyleSheet.absoluteFill, layer(false)]}
           >
             <Pressable
-              accessibilityLabel="Speak your question"
+              accessibilityLabel={t('aiGuru.speak_question')}
               onPress={onVoicePress}
             >
               <LinearGradient
@@ -122,7 +124,7 @@ export default function ChatComposer({
             style={[StyleSheet.absoluteFill, layer(true)]}
           >
             <PressableScale
-              accessibilityLabel="Send"
+              accessibilityLabel={t('common.send')}
               onPress={handleSend}
               disabled={disabled}
               scaleTo={0.86}

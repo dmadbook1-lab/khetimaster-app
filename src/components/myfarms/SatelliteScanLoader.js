@@ -1,3 +1,4 @@
+import { useTranslation } from 'react-i18next';
 import React, {useEffect, useRef, useState} from 'react';
 
 import {Animated, Easing, StyleSheet, Text, View} from 'react-native';
@@ -10,10 +11,10 @@ const ORBIT = 150;
 const CORE = 64;
 
 const STEPS = [
-  'Locating satellite pass…',
-  'Downloading imagery…',
-  'Clipping to your field…',
-  'Computing vegetation index…',
+  'farms.scan_step_1',
+  'farms.scan_step_2',
+  'farms.scan_step_3',
+  'farms.scan_step_4',
 ];
 
 /*
@@ -27,6 +28,7 @@ const STEPS = [
 */
 
 export default function SatelliteScanLoader({title, mapOnly}) {
+  const { t } = useTranslation();
   const orbit = useRef(new Animated.Value(0)).current;
   const sweep = useRef(new Animated.Value(0)).current;
   const pulse = useRef(new Animated.Value(0)).current;
@@ -184,7 +186,7 @@ export default function SatelliteScanLoader({title, mapOnly}) {
         <Text style={styles.title}>{title}</Text>
 
         <Text style={styles.subtitle}>
-          {mapOnly ? 'Preparing high-resolution basemap…' : STEPS[step]}
+          {mapOnly ? t('farms.preparing_basemap') : t(STEPS[step])}
         </Text>
 
         <View style={styles.dots}>
