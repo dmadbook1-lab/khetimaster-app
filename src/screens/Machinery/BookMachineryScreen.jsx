@@ -67,6 +67,7 @@ import {
   todayInIndiaKey,
 } from '../../utils/indiaSchedule';
 import { formatRupees } from '../../utils/marketFormat';
+import {useTranslation} from 'react-i18next';
 
 const WORK_TYPES = [
   'Ploughing',
@@ -107,6 +108,7 @@ const timeToDate = value => {
  * Loads the machine when opened directly, then shows the form.
  */
 export default function BookMachineryScreen({ navigation, route }) {
+  const {t} = useTranslation();
   const { machineryId } = route.params;
   const dispatch = useDispatch();
   const selected = useSelector(state => state.machinery.selected);
@@ -123,7 +125,7 @@ export default function BookMachineryScreen({ navigation, route }) {
         <MarketHero
           compact
           onBack={() => navigation.goBack()}
-          title="Book machine"
+          title={t('bookMachinery.bookMachine')}
         />
         <LoadingState />
       </SafeAreaView>
@@ -134,6 +136,7 @@ export default function BookMachineryScreen({ navigation, route }) {
 }
 
 function BookingForm({ navigation, machine }) {
+  const {t} = useTranslation();
   const dispatch = useDispatch();
   const insets = useSafeAreaInsets();
   const feedback = useFeedbackModal();
@@ -201,14 +204,14 @@ function BookingForm({ navigation, machine }) {
           key,
           top:
             index === 0
-              ? 'Today'
+              ? t('common.today')
               : index === 1
-              ? 'Tomorrow'
+              ? t('common.tomorrow')
               : formatDay(key).split(',')[0],
           bottom: formatDay(key, { weekday: false, year: false }),
         };
       }),
-    [today],
+    [today, t],
   );
 
   const isCustomDate = !quickDates.some(item => item.key === form.bookingDate);
@@ -260,19 +263,17 @@ function BookingForm({ navigation, machine }) {
 
     const when =
       kind === 'days' && payload.duration > 1
-        ? `${formatDay(payload.bookingDate, { year: false })} for ${
-            payload.duration
-          } days`
+        ? t('bookMachinery.forDays', {v1: formatDay(payload.bookingDate, { year: false }), duration: payload.duration})
         : `${formatDay(payload.bookingDate, { year: false })}, ${formatTime(
             payload.startTime,
           )}`;
 
     feedback.confirm({
-      title: `Rent ${machine.name}?`,
-      message: `${payload.workType} · ${when}. Estimated ${formatRupees(
+      title: t('bookMachinery.rent', {name: machine.name}),
+      message: t('bookMachinery.estimatedYoullGetTheOwners', {workType: payload.workType, when, v3: formatRupees(
         estimate.total,
-      )}. You'll get the owner's phone number once they confirm.`,
-      confirmLabel: 'Send Request',
+      )}),
+      confirmLabel: t('bookMachinery.sendRequest'),
       onConfirm: async () => {
         try {
           const result = await dispatch(
@@ -280,10 +281,10 @@ function BookingForm({ navigation, machine }) {
           ).unwrap();
 
           feedback.success(
-            'Request sent!',
-            'The owner will confirm your booking soon. We will show their phone number once they do.',
+            t('bookMachinery.requestSent'),
+            t('bookMachinery.theOwnerWillConfirmYour'),
             {
-              primaryLabel: 'View Booking',
+              primaryLabel: t('bookMachinery.viewBooking'),
               dismissable: false,
               onPrimary: () =>
                 navigation.replace(MACHINERY_ROUTES.BOOKING_DETAILS, {
@@ -294,8 +295,8 @@ function BookingForm({ navigation, machine }) {
         } catch (failure) {
           feedback.error('Could not send request', failure?.message, {
             ...(failure?.bookingId && {
-              primaryLabel: 'View Booking',
-              secondaryLabel: 'Close',
+              primaryLabel: t('bookMachinery.viewBooking'),
+              secondaryLabel: t('common.close'),
               onPrimary: () =>
                 navigation.replace(MACHINERY_ROUTES.BOOKING_DETAILS, {
                   bookingId: failure.bookingId,
@@ -326,8 +327,8 @@ function BookingForm({ navigation, machine }) {
           <MarketHero
             compact
             onBack={() => navigation.goBack()}
-            eyebrow="Book machinery"
-            title="Rent for your farm"
+            eyebrow={t('bookMachinery.bookMachinery')}
+            title={t('bookMachinery.rentForYourFarm')}
           >
             <View style={styles.machineCard}>
               <Image
@@ -344,7 +345,7 @@ function BookingForm({ navigation, machine }) {
                     .join(' · ')}
                 </Text>
                 <Text style={styles.machineOwner} numberOfLines={1}>
-                  Owner: {machine.owner?.fullName || machine.ownerName}
+                  {t('bookMachinery.owner', {v1: machine.owner?.fullName || machine.ownerName})}
                 </Text>
               </View>
             </View>
@@ -354,7 +355,7 @@ function BookingForm({ navigation, machine }) {
             {/* RATE */}
             <SectionHeading
               icon={<IndianRupee size={16} color={C.green} />}
-              title="How do you want to rent?"
+              title={t('bookMachinery.howDoYouWantTo')}
             />
             <View style={styles.rateList}>
               {rates.map(rate => {
@@ -394,11 +395,11 @@ function BookingForm({ navigation, machine }) {
             <FormCard>
               {kind === 'hours' && (
                 <Field
-                  label="How many hours?"
+                  label={t('bookMachinery.howManyHours')}
                   hint={
                     hourlyEnd
-                      ? `Ends around ${hourlyEnd}`
-                      : `Up to ${maxBookingHours} hours, on the same day`
+                      ? t('bookMachinery.endsAround', {hourlyEnd})
+                      : t('bookMachinery.upToHoursOnThe', {maxBookingHours})
                   }
                 >
                   <Stepper
@@ -411,14 +412,14 @@ function BookingForm({ navigation, machine }) {
               )}
               {kind === 'days' && (
                 <Field
-                  label="How many days?"
-                  hint={`Up to ${maxBookingDays} days`}
+                  label={t('bookMachinery.howManyDays')}
+                  hint={t('bookMachinery.upToDays', {maxBookingDays})}
                 >
                   <Stepper
                     value={Number(form.duration) || 1}
                     onChange={value => setField('duration', String(value))}
                     max={maxBookingDays}
-                    suffix={Number(form.duration) === 1 ? 'day' : 'days'}
+                    suffix={Number(form.duration) === 1 ? t('plural.day') : t('plural.days')}
                   />
                 </Field>
               )}
@@ -426,8 +427,8 @@ function BookingForm({ navigation, machine }) {
                 <Field
                   label={
                     option?.unit === 'custom'
-                      ? 'Quantity'
-                      : `How many ${UNIT_LABELS[option?.unit] || 'unit'}s?`
+                      ? t('bookMachinery.quantity')
+                      : t('bookMachinery.howManyS', {v1: UNIT_LABELS[option?.unit] || 'unit'})
                   }
                 >
                   <FormInput
@@ -444,7 +445,7 @@ function BookingForm({ navigation, machine }) {
             <SectionHeading
               icon={<CalendarDays size={16} color={C.blue} />}
               color={C.blue}
-              title="When?"
+              title={t('bookMachinery.when')}
             />
             <ScrollView
               horizontal
@@ -508,7 +509,7 @@ function BookingForm({ navigation, machine }) {
                         weekday: false,
                         year: false,
                       })
-                    : 'Other'}
+                    : t('bookMachinery.other')}
                 </Text>
               </TouchableOpacity>
             </ScrollView>
@@ -517,15 +518,15 @@ function BookingForm({ navigation, machine }) {
               <View style={styles.busyBanner}>
                 <AlertTriangle size={16} color={C.amber} />
                 <Text style={styles.busyText}>
-                  Already booked on this day:{' '}
+                  {t('bookMachinery.alreadyBookedOnThisDay')}{' '}
                   {bookedThatDay
                     .map(slot =>
                       slot.endTime
                         ? formatTimeRange(slot.startTime, slot.endTime)
-                        : 'whole day',
+                        : t('bookMachinery.wholeDay'),
                     )
                     .join(', ')}
-                  . Pick another time or day.
+                  {t('bookMachinery.pickAnotherTimeOrDay')}
                 </Text>
               </View>
             )}
@@ -534,22 +535,22 @@ function BookingForm({ navigation, machine }) {
               <FormCard>
                 <View style={styles.row}>
                   <View style={styles.flex}>
-                    <Field label="Start time *">
+                    <Field label={t('bookMachinery.startTime')}>
                       <PickerField
                         icon={<Clock size={16} color={C.green} />}
                         value={formatTime(form.startTime)}
-                        placeholder="Start"
+                        placeholder={t('bookMachinery.start')}
                         onPress={() => setPicker('start')}
                       />
                     </Field>
                   </View>
                   {kind === 'quantity' && (
                     <View style={styles.flex}>
-                      <Field label="End time">
+                      <Field label={t('bookMachinery.endTime')}>
                         <PickerField
                           icon={<Clock size={16} color={C.green} />}
                           value={form.endTime ? formatTime(form.endTime) : ''}
-                          placeholder="Optional"
+                          placeholder={t('bookMachinery.optional')}
                           onPress={() => setPicker('end')}
                           onClear={() => setField('endTime', '')}
                         />
@@ -564,10 +565,10 @@ function BookingForm({ navigation, machine }) {
             <SectionHeading
               icon={<Briefcase size={16} color={C.orange} />}
               color={C.orange}
-              title="What work?"
+              title={t('bookMachinery.whatWork')}
             />
             <FormCard>
-              <Field label="Type of work *">
+              <Field label={t('bookMachinery.typeOfWork')}>
                 <SelectChips
                   options={
                     form.workType && !WORK_TYPES.includes(form.workType)
@@ -579,7 +580,7 @@ function BookingForm({ navigation, machine }) {
                 />
               </Field>
               {implementOptions.length > 0 && (
-                <Field label="Implement needed" hint="Tap again to remove.">
+                <Field label={t('bookMachinery.implementNeeded')} hint={t('bookMachinery.tapAgainToRemove')}>
                   <SelectChips
                     options={implementOptions}
                     value={form.selectedImplement}
@@ -597,27 +598,27 @@ function BookingForm({ navigation, machine }) {
             {/* FARM */}
             <SectionHeading
               icon={<Sprout size={16} color={C.green} />}
-              title="About your farm"
-              subtitle="Helps the owner plan the work"
+              title={t('bookMachinery.aboutYourFarm')}
+              subtitle={t('bookMachinery.helpsTheOwnerPlanThe')}
             />
             <FormCard>
               <View style={styles.row}>
                 <View style={styles.flex}>
-                  <Field label="Farm size">
+                  <Field label={t('bookMachinery.farmSize')}>
                     <FormInput
                       value={form.farmSize}
                       onChangeText={value => setField('farmSize', value)}
-                      placeholder="e.g. 3 acres"
+                      placeholder={t('bookMachinery.eG3Acres')}
                       maxLength={50}
                     />
                   </Field>
                 </View>
                 <View style={styles.flex}>
-                  <Field label="Crop">
+                  <Field label={t('common.crop')}>
                     <FormInput
                       value={form.crop}
                       onChangeText={value => setField('crop', value)}
-                      placeholder="e.g. Soybean"
+                      placeholder={t('bookMachinery.eGSoybean')}
                       maxLength={100}
                     />
                   </Field>
@@ -629,39 +630,39 @@ function BookingForm({ navigation, machine }) {
             <SectionHeading
               icon={<MapPin size={16} color={C.blue} />}
               color={C.blue}
-              title="Where is the farm?"
-              subtitle="Filled from your profile. Change it if the farm is elsewhere."
+              title={t('bookMachinery.whereIsTheFarm')}
+              subtitle={t('bookMachinery.filledFromYourProfileChange')}
             />
             <FormCard>
               <View style={styles.row}>
                 <View style={styles.flex}>
-                  <Field label="Village">
+                  <Field label={t('bookMachinery.village')}>
                     <FormInput
                       value={form.village}
                       onChangeText={value => setField('village', value)}
-                      placeholder="Village"
+                      placeholder={t('bookMachinery.village')}
                     />
                   </Field>
                 </View>
                 <View style={styles.flex}>
-                  <Field label="District">
+                  <Field label={t('bookMachinery.district')}>
                     <FormInput
                       value={form.district}
                       onChangeText={value => setField('district', value)}
-                      placeholder="District"
+                      placeholder={t('bookMachinery.district')}
                     />
                   </Field>
                 </View>
               </View>
-              <Field label="Farm address / landmark">
+              <Field label={t('bookMachinery.farmAddressLandmark')}>
                 <FormInput
                   value={form.address}
                   onChangeText={value => setField('address', value)}
-                  placeholder="e.g. Behind the school, Patil farm"
+                  placeholder={t('bookMachinery.eGBehindTheSchool')}
                   maxLength={300}
                 />
               </Field>
-              <Field label="Pay with">
+              <Field label={t('bookMachinery.payWith')}>
                 <SelectChips
                   options={
                     paymentMethods.length ? paymentMethods : ['cod', 'upi']
@@ -671,19 +672,18 @@ function BookingForm({ navigation, machine }) {
                   onChange={value => setField('paymentMethod', value)}
                 />
               </Field>
-              <Field label="Note to owner (optional)">
+              <Field label={t('bookMachinery.noteToOwnerOptional')}>
                 <FormInput
                   value={form.farmerNotes}
                   onChangeText={value => setField('farmerNotes', value)}
-                  placeholder="e.g. Field is muddy after rain"
+                  placeholder={t('bookMachinery.eGFieldIsMuddy')}
                   maxLength={500}
                 />
               </Field>
             </FormCard>
 
             <Text style={styles.disclaimer}>
-              The final amount is calculated from the owner's rates when the
-              request is sent. Pay the owner directly after the work.
+              {t('bookMachinery.theFinalAmountIsCalculated')}
             </Text>
           </View>
         </ScrollView>
@@ -696,13 +696,13 @@ function BookingForm({ navigation, machine }) {
         ]}
       >
         <View style={styles.flex}>
-          <Text style={styles.bottomLabel}>Estimated total</Text>
+          <Text style={styles.bottomLabel}>{t('bookMachinery.estimatedTotal')}</Text>
           <Text style={styles.bottomTotal}>
             {estimate.total ? formatRupees(estimate.total) : '—'}
           </Text>
         </View>
         <MarketButton
-          label="Send Request"
+          label={t('bookMachinery.sendRequest')}
           icon={<Send size={16} color={C.white} />}
           loading={creating}
           onPress={handleSubmit}

@@ -8,6 +8,7 @@ import {
   clearNurseryCartApi,
 } from '../../api/nurseryCartApi';
 import { placeNurseryOrder } from './nurseryOrderSlice';
+import i18n from 'i18next';
 
 const errorMessage = (error, fallback) =>
   error.response?.data?.message || error.message || fallback;
@@ -27,7 +28,7 @@ export const fetchNurseryCart = createAsyncThunk(
     try {
       return await getNurseryCartApi();
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to load cart'));
+      return rejectWithValue(errorMessage(error, i18n.t('nurseryCartSlice.unableToLoadCart')));
     }
   },
 );
@@ -38,7 +39,7 @@ export const addToNurseryCart = createAsyncThunk(
     try {
       return await addToNurseryCartApi({ plantId, quantity });
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to add to cart'));
+      return rejectWithValue(errorMessage(error, i18n.t('nurseryCartSlice.unableToAddToCart')));
     }
   },
 );
@@ -49,7 +50,7 @@ export const updateNurseryCartItem = createAsyncThunk(
     try {
       return await updateNurseryCartItemApi(itemId, quantity);
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to update cart'));
+      return rejectWithValue(errorMessage(error, i18n.t('nurseryCartSlice.unableToUpdateCart')));
     }
   },
 );
@@ -60,7 +61,7 @@ export const removeNurseryCartItem = createAsyncThunk(
     try {
       return await removeNurseryCartItemApi(itemId);
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to remove item'));
+      return rejectWithValue(errorMessage(error, i18n.t('nurseryCartSlice.unableToRemoveItem')));
     }
   },
 );
@@ -85,7 +86,7 @@ export const syncAdjustedCartItems = createAsyncThunk(
 
       return latest;
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to update cart'));
+      return rejectWithValue(errorMessage(error, i18n.t('nurseryCartSlice.unableToUpdateCart')));
     }
   },
 );
@@ -96,7 +97,7 @@ export const clearNurseryCart = createAsyncThunk(
     try {
       return await clearNurseryCartApi();
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to clear cart'));
+      return rejectWithValue(errorMessage(error, i18n.t('nurseryCartSlice.unableToClearCart')));
     }
   },
 );

@@ -653,7 +653,7 @@ const ProfileSetupScreen = ({
                     styles.verifiedText
                   }
                 >
-                  Verified
+                  {t('profileSetup.verified')}
                 </Text>
               </View>
             </View>

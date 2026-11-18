@@ -27,20 +27,37 @@ import { DOCTOR_ROUTES } from '../../constants/doctorRoutes';
 import { fetchMyConsultations } from '../../redux/slices/doctorConsultationSlice';
 import { todayInIndiaKey } from '../../utils/indiaSchedule';
 import { isAcceptedStatus } from '../../utils/doctorFormat';
+import {useTranslation} from 'react-i18next';
+import i18n from 'i18next';
 
 const STATUS_FILTERS = [
-  { key: 'active', label: 'Upcoming' },
-  { key: 'pending', label: 'Requested' },
-  { key: 'accepted', label: 'Accepted' },
-  { key: 'completed', label: 'Completed' },
-  { key: 'cancelled', label: 'Cancelled' },
-  { key: 'rejected', label: 'Declined' },
-  { key: 'all', label: 'All' },
+  { key: 'active', get label() {
+    return i18n.t('myConsultations.upcoming');
+  } },
+  { key: 'pending', get label() {
+    return i18n.t('myConsultations.requested');
+  } },
+  { key: 'accepted', get label() {
+    return i18n.t('myConsultations.accepted');
+  } },
+  { key: 'completed', get label() {
+    return i18n.t('myConsultations.completed');
+  } },
+  { key: 'cancelled', get label() {
+    return i18n.t('myConsultations.cancelled');
+  } },
+  { key: 'rejected', get label() {
+    return i18n.t('myConsultations.declined');
+  } },
+  { key: 'all', get label() {
+    return i18n.t('myConsultations.all');
+  } },
 ];
 
 const PAGE_SIZE = 20;
 
 export default function MyConsultationsScreen({ navigation }) {
+  const {t} = useTranslation();
   const dispatch = useDispatch();
   const todayKey = todayInIndiaKey();
   const { items, page, totalPages, total, loading, loadingMore, error } =
@@ -110,16 +127,16 @@ export default function MyConsultationsScreen({ navigation }) {
                   <Stethoscope size={19} color={C.white} />
                 </CareGlassButton>
               }
-              eyebrow="Your health desk"
-              title="Consultations"
-              subtitle="Requests you sent to vets and crop doctors"
+              eyebrow={t('myConsultations.yourHealthDesk')}
+              title={t('myConsultations.consultations')}
+              subtitle={t('myConsultations.requestsYouSentToVets')}
             >
               <View style={styles.statsRow}>
-                <CareStat value={waiting} label="Waiting" />
-                <CareStat value={accepted} label="Accepted" />
+                <CareStat value={waiting} label={t('myConsultations.waiting')} />
+                <CareStat value={accepted} label={t('myConsultations.accepted')} />
                 <CareStat
                   value={toRate || total}
-                  label={toRate ? 'To rate' : 'Showing'}
+                  label={toRate ? t('myConsultations.toRate') : t('myConsultations.showing')}
                   highlight={toRate > 0}
                 />
               </View>
@@ -147,17 +164,17 @@ export default function MyConsultationsScreen({ navigation }) {
             <CareLoading />
           ) : error ? (
             <CareEmpty
-              title="Couldn't load your consultations"
+              title={t('myConsultations.couldntLoadYourConsultations')}
               message={error}
-              actionLabel="Try Again"
+              actionLabel={t('myConsultations.tryAgain')}
               onAction={load}
             />
           ) : (
             <CareEmpty
               icon={<CalendarCheck size={30} color={C.teal} />}
-              title="No consultations here"
-              message="Book a vet for your animals or a crop doctor for your fields."
-              actionLabel="Find a Doctor"
+              title={t('myConsultations.noConsultationsHere')}
+              message={t('myConsultations.bookAVetForYour')}
+              actionLabel={t('myConsultations.findADoctor')}
               onAction={() => navigation.navigate(DOCTOR_ROUTES.LIST)}
             />
           )

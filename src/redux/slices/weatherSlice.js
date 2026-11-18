@@ -49,7 +49,7 @@ export const fetchWeatherData = createAsyncThunk(
       Number.isFinite(Number(longitude));
 
     if (!hasLatLon) {
-      return rejectWithValue('latitude and longitude required');
+      return rejectWithValue(i18n.t('weatherSlice.latitudeAndLongitudeRequired'));
     }
 
     try {
@@ -62,7 +62,7 @@ export const fetchWeatherData = createAsyncThunk(
       return response.data;
     } catch (error) {
       return rejectWithValue(
-        getErrorMessage(error, 'Failed to fetch current weather'),
+        getErrorMessage(error, i18n.t('weatherSlice.failedToFetchCurrentWeather')),
       );
     }
   },
@@ -101,7 +101,7 @@ export const createAOI = createAsyncThunk(
       return response.data?.id ?? response.data;
     } catch (error) {
       return rejectWithValue(
-        getErrorMessage(error, 'Failed to create weather AOI'),
+        getErrorMessage(error, i18n.t('weatherSlice.failedToCreateWeatherAoi')),
       );
     }
   },
@@ -136,7 +136,7 @@ export const fetchAOIs = createAsyncThunk(
         : [];
     } catch (error) {
       return rejectWithValue(
-        getErrorMessage(error, 'Failed to fetch AOIs'),
+        getErrorMessage(error, i18n.t('weatherSlice.failedToFetchAois')),
       );
     }
   },
@@ -170,7 +170,7 @@ export const fetchForecastData = createAsyncThunk(
       return response.data;
     } catch (error) {
       return rejectWithValue(
-        getErrorMessage(error, 'Failed to fetch forecast data'),
+        getErrorMessage(error, i18n.t('weatherSlice.failedToFetchForecastData')),
       );
     }
   },
@@ -208,7 +208,7 @@ export const fetchAOICurrentWeather = createAsyncThunk(
       return rejectWithValue(
         getErrorMessage(
           error,
-          'Failed to fetch current AOI weather',
+          i18n.t('weatherSlice.failedToFetchCurrentAoi'),
         ),
       );
     }

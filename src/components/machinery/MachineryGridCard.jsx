@@ -10,11 +10,14 @@ import {
   FUEL_LABELS,
   startingPrice,
 } from '../../utils/machineryFormat';
+import {useTranslation} from 'react-i18next';
+import {tOpt} from '../../utils/tOpt';
 
 /*
  * Two-column browse card: photo with price overlay, details below.
  */
 function MachineryGridCard({ machinery, onPress, width }) {
+  const {t} = useTranslation();
   const location = [machinery.village, machinery.district]
     .filter(Boolean)
     .join(', ');
@@ -41,7 +44,7 @@ function MachineryGridCard({ machinery, onPress, width }) {
 
         <View style={styles.topRow}>
           <Text style={styles.category} numberOfLines={1}>
-            {machinery.category}
+            {tOpt(machinery.category)}
           </Text>
           {unavailable && (
             <Text
@@ -79,9 +82,9 @@ function MachineryGridCard({ machinery, onPress, width }) {
           <Text style={styles.meta}>
             {machinery.totalReviews
               ? `${machinery.rating} (${machinery.totalReviews})`
-              : 'New'}
+              : t('machineryGridCard.new')}
             {machinery.totalJobsCompleted
-              ? ` · ${machinery.totalJobsCompleted} jobs`
+              ? t('machineryGridCard.jobs', {totalJobsCompleted: machinery.totalJobsCompleted})
               : ''}
           </Text>
         </View>

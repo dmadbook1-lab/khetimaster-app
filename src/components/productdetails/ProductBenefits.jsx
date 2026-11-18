@@ -1,29 +1,40 @@
 import React from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { Zap, RefreshCcw, Search, Clock } from 'lucide-react-native';
+import {useTranslation} from 'react-i18next';
+import i18n from 'i18next';
 const { width } = Dimensions.get('window');
 const items = [
   {
     Icon: Zap,
-    title: 'Rich in Nitrogen &\nPhosphorus',
+    get title() {
+    return i18n.t('productBenefits.richInNitrogenPhosphorus');
+  },
   },
   {
     Icon: RefreshCcw,
-    title: 'Improves Root\nGrowth',
+    get title() {
+    return i18n.t('productBenefits.improvesRootGrowth');
+  },
   },
   {
     Icon: Search,
-    title: 'Suitable for Irrigated\nCrops',
+    get title() {
+    return i18n.t('productBenefits.suitableForIrrigatedCrops');
+  },
   },
   {
     Icon: Clock,
-    title: 'Long-lasting\nNutrition',
+    get title() {
+    return i18n.t('productBenefits.longLastingNutrition');
+  },
   },
 ];
 export default function ProductBenefits() {
+  const {t} = useTranslation();
   return (
     <View style={styles.wrapper}>
-      <Text style={styles.sectionTitle}>Product Benefits</Text>
+      <Text style={styles.sectionTitle}>{t('productBenefits.productBenefits')}</Text>
 
       <View style={styles.grid}>
         {items.map((item, index) => {

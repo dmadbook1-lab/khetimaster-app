@@ -9,6 +9,7 @@ import {
   getSellerNurseryOrdersApi,
   updateSellerNurseryOrderApi,
 } from '../../api/nurseryOrderApi';
+import i18n from 'i18next';
 
 const errorMessage = (error, fallback) =>
   error.response?.data?.message || error.message || fallback;
@@ -25,7 +26,7 @@ export const placeNurseryOrder = createAsyncThunk(
     try {
       return await createNurseryOrderApi(deliveryAddress);
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to place order'));
+      return rejectWithValue(errorMessage(error, i18n.t('nurseryOrderSlice.unableToPlaceOrder')));
     }
   },
 );
@@ -39,7 +40,7 @@ export const fetchMyNurseryOrders = createAsyncThunk(
     try {
       return await getMyNurseryOrdersApi(params);
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to load your orders'));
+      return rejectWithValue(errorMessage(error, i18n.t('nurseryOrderSlice.unableToLoadYourOrders')));
     }
   },
 );
@@ -50,7 +51,7 @@ export const fetchNurseryOrderById = createAsyncThunk(
     try {
       return await getNurseryOrderByIdApi(orderId);
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to load order'));
+      return rejectWithValue(errorMessage(error, i18n.t('nurseryOrderSlice.unableToLoadOrder')));
     }
   },
 );
@@ -61,7 +62,7 @@ export const cancelNurseryOrder = createAsyncThunk(
     try {
       return await cancelNurseryOrderApi(orderId, reason);
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to cancel order'));
+      return rejectWithValue(errorMessage(error, i18n.t('nurseryOrderSlice.unableToCancelOrder')));
     }
   },
 );
@@ -75,7 +76,7 @@ export const reviewNurseryOrderItem = createAsyncThunk(
         comment,
       });
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to submit review'));
+      return rejectWithValue(errorMessage(error, i18n.t('nurseryOrderSlice.unableToSubmitReview')));
     }
   },
 );
@@ -96,7 +97,7 @@ export const fetchSellerNurseryOrders = createAsyncThunk(
       return await getSellerNurseryOrdersApi(params);
     } catch (error) {
       return rejectWithValue(
-        errorMessage(error, 'Unable to load orders received'),
+        errorMessage(error, i18n.t('nurseryOrderSlice.unableToLoadOrdersReceived')),
       );
     }
   },
@@ -111,7 +112,7 @@ export const updateSellerNurseryOrder = createAsyncThunk(
     try {
       return await updateSellerNurseryOrderApi(orderId, status, reason);
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to update order'));
+      return rejectWithValue(errorMessage(error, i18n.t('nurseryOrderSlice.unableToUpdateOrder')));
     }
   },
 );

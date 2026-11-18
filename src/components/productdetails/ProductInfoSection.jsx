@@ -7,6 +7,8 @@ import {
   Dimensions,
 } from 'react-native';
 import { Star, Minus, Plus, Zap } from 'lucide-react-native';
+import {useTranslation} from 'react-i18next';
+import {tOpt} from '../../utils/tOpt';
 const { width } = Dimensions.get('window');
 const GREEN = '#16883E';
 const rf = size => {
@@ -14,17 +16,18 @@ const rf = size => {
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
 export default function ProductInfoSection({ product }) {
+  const {t} = useTranslation();
   const [selectedPack, setSelectedPack] = useState('50 kg');
   const [qty, setQty] = useState(1);
   return (
     <View style={styles.wrapper}>
       <View style={styles.brandRow}>
-        <Text style={styles.brandTag}>IFFCO</Text>
-        <Text style={styles.category}>Fertilizer</Text>
+        <Text style={styles.brandTag}>{t('productInfoSection.iffco')}</Text>
+        <Text style={styles.category}>{t('productInfoSection.fertilizer')}</Text>
       </View>
 
       <Text style={styles.title}>
-        {product?.name || 'IFFCO DAP Fertilizer'}
+        {tOpt(product?.name || 'IFFCO DAP Fertilizer')}
       </Text>
 
       <View style={styles.ratingRow}>
@@ -33,9 +36,9 @@ export default function ProductInfoSection({ product }) {
           <Text style={styles.ratingText}>4.8</Text>
         </View>
 
-        <Text style={styles.meta}>1,240 Reviews</Text>
+        <Text style={styles.meta}>{t('productInfoSection.1240Reviews')}</Text>
         <Text style={styles.dot}>•</Text>
-        <Text style={styles.meta}>5,200+ Sold</Text>
+        <Text style={styles.meta}>{t('productInfoSection.5200Sold')}</Text>
       </View>
 
       <View style={styles.priceRow}>
@@ -43,9 +46,9 @@ export default function ProductInfoSection({ product }) {
         <Text style={styles.oldPrice}>1,499</Text>
       </View>
 
-      <Text style={styles.save}>You save ₹149 on this order!</Text>
+      <Text style={styles.save}>{t('productInfoSection.youSave149OnThis')}</Text>
 
-      <Text style={styles.label}>Pack Size</Text>
+      <Text style={styles.label}>{t('productInfoSection.packSize')}</Text>
 
       <View style={styles.packRow}>
         {['5 kg', '50 kg', '100 kg'].map(size => {
@@ -86,7 +89,7 @@ export default function ProductInfoSection({ product }) {
 
         <View style={styles.deliveryPill}>
           <Zap size={12} color="#F97316" />
-          <Text style={styles.deliveryText}>Delivery by Tomorrow</Text>
+          <Text style={styles.deliveryText}>{t('productInfoSection.deliveryByTomorrow')}</Text>
         </View>
       </View>
     </View>

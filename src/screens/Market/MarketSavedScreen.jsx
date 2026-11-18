@@ -14,8 +14,10 @@ import {
   fetchSavedMarketListings,
   toggleSaveMarketListing,
 } from '../../redux/slices/marketSlice';
+import {useTranslation} from 'react-i18next';
 
 export default function MarketSavedScreen({ navigation }) {
+  const {t} = useTranslation();
   const dispatch = useDispatch();
   const { saved, savedLoading, savedError } = useSelector(
     state => state.market,
@@ -54,14 +56,12 @@ export default function MarketSavedScreen({ navigation }) {
             compact
             gradient="forest"
             onBack={() => navigation.goBack()}
-            eyebrow="Wishlist"
-            title="Saved Listings"
+            eyebrow={t('marketSaved.wishlist')}
+            title={t('marketSaved.savedListings')}
             subtitle={
               saved.length
-                ? `${saved.length} ${
-                    saved.length === 1 ? 'item' : 'items'
-                  } you're keeping an eye on`
-                : 'Bookmark listings to compare them later'
+                ? t('marketSaved.youreKeepingAnEyeOn', {length: saved.length, v2: saved.length === 1 ? 'item' : 'items'})
+                : t('marketSaved.bookmarkListingsToCompareThem')
             }
             style={styles.hero}
           />
@@ -95,17 +95,17 @@ export default function MarketSavedScreen({ navigation }) {
             <LoadingState />
           ) : savedError ? (
             <EmptyState
-              title="Couldn't load saved listings"
+              title={t('marketSaved.couldntLoadSavedListings')}
               message={savedError}
-              actionLabel="Try Again"
+              actionLabel={t('marketSaved.tryAgain')}
               onAction={load}
             />
           ) : (
             <EmptyState
               icon={<Bookmark size={30} color={C.green} />}
-              title="Nothing saved yet"
-              message="Tap the bookmark on any listing to keep it here for later."
-              actionLabel="Browse Market"
+              title={t('marketSaved.nothingSavedYet')}
+              message={t('marketSaved.tapTheBookmarkOnAny')}
+              actionLabel={t('marketSaved.browseMarket')}
               onAction={() => navigation.goBack()}
             />
           )

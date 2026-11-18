@@ -25,23 +25,32 @@ import {
 } from 'lucide-react-native';
 import { COLORS, rf, PAGE_PADDING } from '../../components/gov/theme';
 import { GOV_ROUTES } from '../../constants/govRoutes';
+import {useTranslation} from 'react-i18next';
+import i18n from 'i18next';
+import {tOpt} from '../../utils/tOpt';
 const CHIPS = ['All', 'Central', 'State', 'Subsidies'];
 const SCHEMES = [
   {
     id: 's1',
     name: 'PM-KISAN Samman Nidhi',
-    desc: 'Direct income support of\n₹6,000/year',
+    get desc() {
+    return i18n.t('latestSchemes.directIncomeSupportOf6');
+  },
     icon: Users,
     iconBg: '#DCFCE7',
     iconColor: COLORS.DARK_GREEN,
     tags: [
       {
-        label: 'Central',
+        get label() {
+    return i18n.t('latestSchemes.central');
+  },
         bg: '#DBEAFE',
         color: COLORS.BLUE,
       },
       {
-        label: 'Eligible',
+        get label() {
+    return i18n.t('latestSchemes.eligible');
+  },
         bg: '#DCFCE7',
         color: COLORS.DARK_GREEN,
       },
@@ -50,18 +59,24 @@ const SCHEMES = [
   {
     id: 's2',
     name: 'PM Fasal Bima Yojana',
-    desc: 'Crop insurance against natural\ncalamities',
+    get desc() {
+    return i18n.t('latestSchemes.cropInsuranceAgainstNaturalCalamities');
+  },
     icon: Users,
     iconBg: '#FFEDD5',
     iconColor: COLORS.ORANGE,
     tags: [
       {
-        label: 'Insurance',
+        get label() {
+    return i18n.t('latestSchemes.insurance');
+  },
         bg: '#DBEAFE',
         color: COLORS.BLUE,
       },
       {
-        label: 'Recommended',
+        get label() {
+    return i18n.t('latestSchemes.recommended');
+  },
         bg: '#DCFCE7',
         color: COLORS.DARK_GREEN,
       },
@@ -70,18 +85,24 @@ const SCHEMES = [
   {
     id: 's3',
     name: 'Kisan Credit Card',
-    desc: 'Low-interest agricultural loans at\n4%',
+    get desc() {
+    return i18n.t('latestSchemes.lowInterestAgriculturalLoansAt');
+  },
     icon: CreditCard,
     iconBg: '#FEF3C7',
     iconColor: COLORS.YELLOW,
     tags: [
       {
-        label: 'Loan',
+        get label() {
+    return i18n.t('latestSchemes.loan');
+  },
         bg: '#FFEDD5',
         color: COLORS.ORANGE,
       },
       {
-        label: 'Available',
+        get label() {
+    return i18n.t('latestSchemes.available');
+  },
         bg: '#DCFCE7',
         color: COLORS.DARK_GREEN,
       },
@@ -90,18 +111,24 @@ const SCHEMES = [
   {
     id: 's4',
     name: 'Soil Health Card Scheme',
-    desc: 'Free soil testing &\nrecommendations',
+    get desc() {
+    return i18n.t('latestSchemes.freeSoilTestingRecommendations');
+  },
     icon: Sprout,
     iconBg: '#DCFCE7',
     iconColor: COLORS.DARK_GREEN,
     tags: [
       {
-        label: 'Soil',
+        get label() {
+    return i18n.t('latestSchemes.soil');
+  },
         bg: '#FFEDD5',
         color: COLORS.ORANGE,
       },
       {
-        label: 'Available',
+        get label() {
+    return i18n.t('latestSchemes.available');
+  },
         bg: '#DCFCE7',
         color: COLORS.DARK_GREEN,
       },
@@ -110,18 +137,24 @@ const SCHEMES = [
   {
     id: 's5',
     name: 'PM Krishi Sinchai Yojana',
-    desc: 'Irrigation subsidy & water access',
+    get desc() {
+    return i18n.t('latestSchemes.irrigationSubsidyWaterAccess');
+  },
     icon: Droplet,
     iconBg: '#DBEAFE',
     iconColor: COLORS.BLUE,
     tags: [
       {
-        label: 'Subsidy',
+        get label() {
+    return i18n.t('latestSchemes.subsidy');
+  },
         bg: '#DBEAFE',
         color: COLORS.BLUE,
       },
       {
-        label: 'Available',
+        get label() {
+    return i18n.t('latestSchemes.available');
+  },
         bg: '#DCFCE7',
         color: COLORS.DARK_GREEN,
       },
@@ -130,18 +163,24 @@ const SCHEMES = [
   {
     id: 's6',
     name: 'Solar Pump Subsidy',
-    desc: 'Solar-powered irrigation support',
+    get desc() {
+    return i18n.t('latestSchemes.solarPoweredIrrigationSupport');
+  },
     icon: Sun,
     iconBg: '#FFEDD5',
     iconColor: COLORS.ORANGE,
     tags: [
       {
-        label: 'Energy',
+        get label() {
+    return i18n.t('latestSchemes.energy');
+  },
         bg: '#FFEDD5',
         color: COLORS.ORANGE,
       },
       {
-        label: 'New',
+        get label() {
+    return i18n.t('latestSchemes.new');
+  },
         bg: '#FFE4E6',
         color: COLORS.RED,
       },
@@ -149,6 +188,7 @@ const SCHEMES = [
   },
 ];
 export default function LatestSchemesScreen({ navigation }) {
+  const {t} = useTranslation();
   const [chip, setChip] = useState('All');
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
@@ -169,7 +209,7 @@ export default function LatestSchemesScreen({ navigation }) {
             alignItems: 'center',
           }}
         >
-          <Text style={styles.headerTitle}>Latest Agriculture Schemes</Text>
+          <Text style={styles.headerTitle}>{t('latestSchemes.latestAgricultureSchemes')}</Text>
         </View>
         <TouchableOpacity activeOpacity={0.8} style={styles.iconBtn}>
           <Bell size={rf(17)} color={COLORS.DARK} strokeWidth={2.4} />
@@ -186,7 +226,7 @@ export default function LatestSchemesScreen({ navigation }) {
           <View style={styles.searchBox}>
             <Search size={rf(16)} color={COLORS.MUTED} strokeWidth={2.3} />
             <TextInput
-              placeholder="Search schemes..."
+              placeholder={t('latestSchemes.searchSchemes')}
               placeholderTextColor={COLORS.MUTED}
               style={styles.searchInput}
             />
@@ -218,7 +258,7 @@ export default function LatestSchemesScreen({ navigation }) {
                 <Text
                   style={[styles.chipText, active && styles.chipTextActive]}
                 >
-                  {c}
+                  {tOpt(c)}
                 </Text>
               </TouchableOpacity>
             );
@@ -229,16 +269,16 @@ export default function LatestSchemesScreen({ navigation }) {
         <View style={styles.popularHero}>
           <View style={styles.heroTopRow}>
             <View style={styles.heroPillOrange}>
-              <Text style={styles.heroPillText}>MOST POPULAR</Text>
+              <Text style={styles.heroPillText}>{t('latestSchemes.mostPopular')}</Text>
             </View>
             <View style={styles.heroPillGreen}>
-              <Text style={styles.heroPillText}>ELIGIBLE</Text>
+              <Text style={styles.heroPillText}>{t('latestSchemes.eligible2')}</Text>
             </View>
           </View>
-          <Text style={styles.popularHeroTitle}>PM-KISAN Samman Nidhi</Text>
+          <Text style={styles.popularHeroTitle}>{t('latestSchemes.pmKisanSammanNidhi')}</Text>
           <Text style={styles.popularHeroDesc}>
-            Direct income support of{'\n'}₹6,000/year to all eligible{'\n'}
-            landholding farmers across{'\n'}India.
+            {t('latestSchemes.directIncomeSupportOf')}{'\n'}{t('latestSchemes.6000YearToAll')}{'\n'}
+            {t('latestSchemes.landholdingFarmersAcross')}{'\n'}{t('latestSchemes.india')}
           </Text>
           <TouchableOpacity
             activeOpacity={0.9}
@@ -249,7 +289,7 @@ export default function LatestSchemesScreen({ navigation }) {
             }
             style={styles.popularHeroBtn}
           >
-            <Text style={styles.popularHeroBtnText}>View Details →</Text>
+            <Text style={styles.popularHeroBtnText}>{t('latestSchemes.viewDetails')}</Text>
           </TouchableOpacity>
 
           {}
@@ -298,8 +338,8 @@ export default function LatestSchemesScreen({ navigation }) {
 
         {}
         <View style={styles.sectionHead}>
-          <Text style={styles.sectionTitle}>All Schemes</Text>
-          <Text style={styles.sectionCount}>{SCHEMES.length} schemes</Text>
+          <Text style={styles.sectionTitle}>{t('latestSchemes.allSchemes')}</Text>
+          <Text style={styles.sectionCount}>{t('latestSchemes.schemes', {length: SCHEMES.length})}</Text>
         </View>
 
         {}
@@ -331,7 +371,7 @@ export default function LatestSchemesScreen({ navigation }) {
                   flex: 1,
                 }}
               >
-                <Text style={styles.sName}>{s.name}</Text>
+                <Text style={styles.sName}>{tOpt(s.name)}</Text>
                 <Text style={styles.sDesc}>{s.desc}</Text>
                 <View style={styles.sTagsRow}>
                   {s.tags.map((t, i) => (
@@ -378,20 +418,20 @@ export default function LatestSchemesScreen({ navigation }) {
                 fill="#FFFFFF"
               />
             </View>
-            <Text style={styles.aiTitle}>AI Recommendation</Text>
+            <Text style={styles.aiTitle}>{t('latestSchemes.aiRecommendation')}</Text>
           </View>
           <Text style={styles.aiDesc}>
-            Based on your farm profile, you are eligible for:
+            {t('latestSchemes.basedOnYourFarmProfile')}
           </Text>
           <View style={styles.aiPillsRow}>
             <View style={styles.aiPill}>
-              <Text style={styles.aiPillText}>PM-KISAN</Text>
+              <Text style={styles.aiPillText}>{t('latestSchemes.pmKisan')}</Text>
             </View>
             <View style={styles.aiPill}>
-              <Text style={styles.aiPillText}>PMFBY</Text>
+              <Text style={styles.aiPillText}>{t('latestSchemes.pmfby')}</Text>
             </View>
             <View style={styles.aiPill}>
-              <Text style={styles.aiPillText}>Kisan Credit Card</Text>
+              <Text style={styles.aiPillText}>{t('latestSchemes.kisanCreditCard')}</Text>
             </View>
           </View>
           <TouchableOpacity
@@ -399,7 +439,7 @@ export default function LatestSchemesScreen({ navigation }) {
             onPress={() => navigation?.navigate(GOV_ROUTES.ELIGIBILITY_CHECK)}
             style={styles.aiBtn}
           >
-            <Text style={styles.aiBtnText}>Check Eligibility</Text>
+            <Text style={styles.aiBtnText}>{t('latestSchemes.checkEligibility')}</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

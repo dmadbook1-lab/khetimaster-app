@@ -22,6 +22,7 @@ import {
 } from '../../../api/communityApi';
 import { setPostCommentsCount } from '../../../redux/slices/communitySlice';
 import { shortTimeAgo } from '../../../utils/communityFormat';
+import {useTranslation} from 'react-i18next';
 
 const { height: SCREEN_HEIGHT } = Dimensions.get('window');
 
@@ -33,6 +34,7 @@ export default function CommentsSheet({
   onClose,
   onOpenProfile,
 }) {
+  const {t} = useTranslation();
   const dispatch = useDispatch();
   const me = useSelector(state => state.auth.user);
 
@@ -59,14 +61,14 @@ export default function CommentsSheet({
         setPages(data.pages || 1);
       } catch (error) {
         Alert.alert(
-          'Comments',
-          error.response?.data?.message || 'Unable to load comments',
+          t('commentsSheet.comments'),
+          error.response?.data?.message || t('commentsSheet.unableToLoadComments'),
         );
       } finally {
         setLoading(false);
       }
     },
-    [postId],
+    [postId, t],
   );
 
   useEffect(() => {
@@ -94,8 +96,8 @@ export default function CommentsSheet({
       );
     } catch (error) {
       Alert.alert(
-        'Comment',
-        error.response?.data?.message || 'Unable to post comment',
+        t('commentsSheet.comment'),
+        error.response?.data?.message || t('commentsSheet.unableToPostComment'),
       );
     } finally {
       setSending(false);
@@ -103,10 +105,10 @@ export default function CommentsSheet({
   };
 
   const remove = comment => {
-    Alert.alert('Delete comment?', comment.text, [
-      { text: 'Cancel', style: 'cancel' },
+    Alert.alert(t('commentsSheet.deleteComment'), comment.text, [
+      { text: t('common.cancel'), style: 'cancel' },
       {
-        text: 'Delete',
+        text: t('common.delete'),
         style: 'destructive',
         onPress: async () => {
           try {
@@ -121,8 +123,8 @@ export default function CommentsSheet({
             );
           } catch (error) {
             Alert.alert(
-              'Comment',
-              error.response?.data?.message || 'Unable to delete comment',
+              t('commentsSheet.comment'),
+              error.response?.data?.message || t('commentsSheet.unableToDeleteComment'),
             );
           }
         },
@@ -154,7 +156,7 @@ export default function CommentsSheet({
         </Text>
         <Text style={styles.commentText}>{item.text}</Text>
         {item.canDelete ? (
-          <Text style={styles.hint}>Hold to delete</Text>
+          <Text style={styles.hint}>{t('commentsSheet.holdToDelete')}</Text>
         ) : null}
       </View>
     </Pressable>
@@ -167,7 +169,7 @@ export default function CommentsSheet({
       height={SCREEN_HEIGHT * 0.72}
       keyboardAware
     >
-      <Text style={styles.title}>Comments</Text>
+      <Text style={styles.title}>{t('commentsSheet.comments')}</Text>
       <View style={styles.divider} />
 
       <FlatList
@@ -190,8 +192,8 @@ export default function CommentsSheet({
           ) : (
             <View style={styles.empty}>
               <MessageCircle size={40} color="#C5CCD3" strokeWidth={1.6} />
-              <Text style={styles.emptyTitle}>No comments yet</Text>
-              <Text style={styles.emptyText}>Start the conversation.</Text>
+              <Text style={styles.emptyTitle}>{t('commentsSheet.noCommentsYet')}</Text>
+              <Text style={styles.emptyText}>{t('commentsSheet.startTheConversation')}</Text>
             </View>
           )
         }
@@ -222,7 +224,7 @@ export default function CommentsSheet({
         <TextInput
           value={text}
           onChangeText={setText}
-          placeholder="Add a comment…"
+          placeholder={t('commentsSheet.addAComment')}
           placeholderTextColor={COLORS.MUTED}
           style={styles.input}
           multiline
@@ -237,7 +239,7 @@ export default function CommentsSheet({
             <ActivityIndicator color={COLORS.DARK_GREEN} />
           ) : (
             <Text style={[styles.post, !text.trim() && styles.postDisabled]}>
-              Post
+              {t('commentsSheet.post')}
             </Text>
           )}
         </Pressable>

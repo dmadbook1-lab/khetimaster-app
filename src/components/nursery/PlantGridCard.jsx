@@ -8,11 +8,14 @@ import { PlantImage } from './NurseryBits';
 import { categoryVisual } from './nurseryVisuals';
 import { formatRupees } from '../../utils/marketFormat';
 import { plantLocation, stockInfo } from '../../utils/nurseryFormat';
+import {useTranslation} from 'react-i18next';
+import {tOpt} from '../../utils/tOpt';
 
 /*
  * Two-column browse card: photo with price, details below.
  */
 function PlantGridCard({ plant, onPress, width }) {
+  const {t} = useTranslation();
   const visual = categoryVisual(plant.category);
   const stock = stockInfo(plant.quantity);
   const location = plantLocation(plant);
@@ -34,12 +37,12 @@ function PlantGridCard({ plant, onPress, width }) {
           style={[styles.category, { color: visual.color }]}
           numberOfLines={1}
         >
-          {plant.category}
+          {tOpt(plant.category)}
         </Text>
 
         <Text style={styles.price} numberOfLines={1}>
           {formatRupees(plant.price)}
-          <Text style={styles.per}> /plant</Text>
+          <Text style={styles.per}> {t('plantGridCard.plant')}</Text>
         </Text>
       </View>
 
@@ -53,8 +56,8 @@ function PlantGridCard({ plant, onPress, width }) {
           <Text style={styles.meta} numberOfLines={1}>
             {plant.totalReviews
               ? `${plant.rating} (${plant.totalReviews})`
-              : 'New'}
-            {plant.totalSold ? ` · ${plant.totalSold} sold` : ''}
+              : t('plantGridCard.new')}
+            {plant.totalSold ? t('plantGridCard.sold', {totalSold: plant.totalSold}) : ''}
           </Text>
         </View>
 

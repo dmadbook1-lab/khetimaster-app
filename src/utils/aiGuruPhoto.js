@@ -1,4 +1,5 @@
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+import i18n from 'i18next';
 
 /*
 |--------------------------------------------------------------------------
@@ -34,17 +35,17 @@ export const pickAiGuruPhoto = async ({ camera = false } = {}) => {
   if (result.errorCode) {
     throw new Error(
       result.errorCode === 'camera_unavailable'
-        ? 'Camera is not available on this device'
+        ? i18n.t('aiGuruPhoto.cameraIsNotAvailableOn')
         : result.errorCode === 'permission'
-        ? 'Allow camera / photo access in your phone settings'
-        : result.errorMessage || 'Unable to get the photo',
+        ? i18n.t('aiGuruPhoto.allowCameraPhotoAccessIn')
+        : result.errorMessage || i18n.t('aiGuruPhoto.unableToGetThePhoto'),
     );
   }
 
   const asset = result.assets?.[0];
 
   if (!asset?.base64) {
-    throw new Error('Unable to read the photo');
+    throw new Error(i18n.t('aiGuruPhoto.unableToReadThePhoto'));
   }
 
   return {

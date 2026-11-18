@@ -25,6 +25,7 @@ import {
   upsertCommunityPosts,
 } from '../../redux/slices/communitySlice';
 import { formatCount } from '../../utils/communityFormat';
+import {useTranslation} from 'react-i18next';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -37,6 +38,7 @@ const TILE = (SCREEN_WIDTH - GAP * 2) / 3;
  * params: query (e.g. '#organic' from a tapped hashtag)
  */
 export default function CommunitySearchScreen({ navigation, route }) {
+  const {t} = useTranslation();
   const initialQuery = route.params?.query || '';
 
   const dispatch = useDispatch();
@@ -137,7 +139,7 @@ export default function CommunitySearchScreen({ navigation, route }) {
           <ActivityIndicator style={styles.loader} color={COLORS.DARK_GREEN} />
         ) : (
           <Text style={styles.empty}>
-            {results ? 'No posts found' : 'Nothing to explore yet'}
+            {results ? t('communitySearch.noPostsFound') : t('communitySearch.nothingToExploreYet')}
           </Text>
         )
       }
@@ -173,7 +175,7 @@ export default function CommunitySearchScreen({ navigation, route }) {
         loading ? (
           <ActivityIndicator style={styles.loader} color={COLORS.DARK_GREEN} />
         ) : (
-          <Text style={styles.empty}>No accounts found</Text>
+          <Text style={styles.empty}>{t('communitySearch.noAccountsFound')}</Text>
         )
       }
     />
@@ -199,7 +201,7 @@ export default function CommunitySearchScreen({ navigation, route }) {
           <View style={styles.rowText}>
             <Text style={styles.name}>#{item.tag}</Text>
             <Text style={styles.sub}>
-              {formatCount(item.posts)} {item.posts === 1 ? 'post' : 'posts'}
+              {formatCount(item.posts)} {item.posts === 1 ? t('plural.post') : t('plural.posts')}
             </Text>
           </View>
         </Pressable>
@@ -208,7 +210,7 @@ export default function CommunitySearchScreen({ navigation, route }) {
         loading ? (
           <ActivityIndicator style={styles.loader} color={COLORS.DARK_GREEN} />
         ) : (
-          <Text style={styles.empty}>No hashtags found</Text>
+          <Text style={styles.empty}>{t('communitySearch.noHashtagsFound')}</Text>
         )
       }
     />
@@ -228,7 +230,7 @@ export default function CommunitySearchScreen({ navigation, route }) {
             value={query}
             onChangeText={setQuery}
             autoFocus={!initialQuery}
-            placeholder="Search farmers, crops, #hashtags"
+            placeholder={t('communitySearch.searchFarmersCropsHashtags')}
             placeholderTextColor={COLORS.MUTED}
             returnKeyType="search"
             autoCapitalize="none"
@@ -269,7 +271,7 @@ export default function CommunitySearchScreen({ navigation, route }) {
             : renderGrid(results.postIds)}
         </>
       ) : (
-        renderGrid(feed.ids, <Text style={styles.exploreTitle}>Explore</Text>)
+        renderGrid(feed.ids, <Text style={styles.exploreTitle}>{t('communitySearch.explore')}</Text>)
       )}
     </SafeAreaView>
   );

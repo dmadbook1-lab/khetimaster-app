@@ -52,6 +52,7 @@ import {
 import { placeNurseryOrder } from '../../redux/slices/nurseryOrderSlice';
 import { formatRupees } from '../../utils/marketFormat';
 import { validateAddress } from '../../utils/nurseryFormat';
+import {useTranslation} from 'react-i18next';
 
 const initialAddress = user => ({
   fullName: user?.fullName || user?.name || '',
@@ -84,6 +85,7 @@ const groupCartBySeller = items => {
 };
 
 export default function NurseryCheckoutScreen({ navigation }) {
+  const {t} = useTranslation();
   const dispatch = useDispatch();
   const insets = useSafeAreaInsets();
   const feedback = useFeedbackModal();
@@ -125,13 +127,13 @@ export default function NurseryCheckoutScreen({ navigation }) {
       const order = result?.data;
 
       feedback.success(
-        'Order placed!',
-        `Pay ${formatRupees(
+        t('nurseryCheckout.orderPlaced'),
+        t('nurseryCheckout.payInCashWhenYour', {v1: formatRupees(
           order?.total,
-        )} in cash when your plants arrive. Sellers will confirm soon.`,
+        )}),
         {
-          primaryLabel: 'Track Order',
-          secondaryLabel: 'Keep Shopping',
+          primaryLabel: t('nurseryCheckout.trackOrder'),
+          secondaryLabel: t('nurseryCheckout.keepShopping'),
           dismissable: false,
           onPrimary: () =>
             navigation.replace(NURSERY_ROUTES.ORDER_DETAILS, {
@@ -143,8 +145,8 @@ export default function NurseryCheckoutScreen({ navigation }) {
     } catch (failure) {
       dispatch(fetchNurseryCart());
       feedback.error('Could not place order', String(failure), {
-        primaryLabel: 'Review Cart',
-        secondaryLabel: 'Close',
+        primaryLabel: t('nurseryCheckout.reviewCart'),
+        secondaryLabel: t('common.close'),
         onPrimary: () => navigation.navigate(NURSERY_ROUTES.CART),
       });
     }
@@ -160,7 +162,7 @@ export default function NurseryCheckoutScreen({ navigation }) {
           compact
           gradient="forest"
           onBack={() => navigation.goBack()}
-          title="Checkout"
+          title={t('nurseryCheckout.checkout')}
         />
         <LoadingState />
       </SafeAreaView>
@@ -183,12 +185,12 @@ export default function NurseryCheckoutScreen({ navigation }) {
             compact
             gradient="forest"
             onBack={() => navigation.goBack()}
-            eyebrow="Checkout"
-            title="Where should we deliver?"
-            subtitle="Cash on delivery. Pay only when the plants reach you."
+            eyebrow={t('nurseryCheckout.checkout')}
+            title={t('nurseryCheckout.whereShouldWeDeliver')}
+            subtitle={t('nurseryCheckout.cashOnDeliveryPayOnly')}
           >
             <View style={styles.heroSteps}>
-              {['Cart', 'Address', 'Place order'].map((label, index) => (
+              {['Cart', 'Address', t('nurseryCheckout.placeOrder2')].map((label, index) => (
                 <View key={label} style={styles.heroStep}>
                   <View
                     style={[
@@ -218,9 +220,9 @@ export default function NurseryCheckoutScreen({ navigation }) {
           <View style={styles.body}>
             {!items.length ? (
               <EmptyState
-                title="Your cart is empty"
-                message="Add some plants before checking out."
-                actionLabel="Browse Plants"
+                title={t('nurseryCheckout.yourCartIsEmpty')}
+                message={t('nurseryCheckout.addSomePlantsBeforeChecking')}
+                actionLabel={t('nurseryCheckout.browsePlants')}
                 onAction={() => navigation.navigate(NURSERY_ROUTES.HOME)}
               />
             ) : (
@@ -228,27 +230,27 @@ export default function NurseryCheckoutScreen({ navigation }) {
                 {/* ADDRESS */}
                 <SectionHeading
                   icon={<UserRound size={16} color={C.green} />}
-                  title="Receiver"
-                  subtitle="Who will receive the plants"
+                  title={t('nurseryCheckout.receiver')}
+                  subtitle={t('nurseryCheckout.whoWillReceiveThePlants')}
                 />
                 <FormCard>
-                  <Field label="Full name *">
+                  <Field label={t('nurseryCheckout.fullName')}>
                     <FormInput
                       value={form.fullName}
                       onChangeText={value => setField('fullName', value)}
-                      placeholder="Receiver name"
+                      placeholder={t('nurseryCheckout.receiverName')}
                       maxLength={100}
                       style={inputStyle('fullName')}
                     />
                   </Field>
                   <Field
-                    label="Phone number *"
-                    hint="The seller calls this number for delivery."
+                    label={t('nurseryCheckout.phoneNumber')}
+                    hint={t('nurseryCheckout.theSellerCallsThisNumber')}
                   >
                     <FormInput
                       value={form.phoneNumber}
                       onChangeText={value => setField('phoneNumber', value)}
-                      placeholder="10 digit mobile number"
+                      placeholder={t('nurseryCheckout.10DigitMobileNumber')}
                       keyboardType="phone-pad"
                       maxLength={15}
                       style={inputStyle('phoneNumber')}
@@ -259,14 +261,14 @@ export default function NurseryCheckoutScreen({ navigation }) {
                 <SectionHeading
                   icon={<MapPin size={16} color={C.blue} />}
                   color={C.blue}
-                  title="Delivery address"
+                  title={t('nurseryCheckout.deliveryAddress')}
                 />
                 <FormCard>
-                  <Field label="House / street / landmark *">
+                  <Field label={t('nurseryCheckout.houseStreetLandmark')}>
                     <FormInput
                       value={form.address}
                       onChangeText={value => setField('address', value)}
-                      placeholder="e.g. Near Hanuman temple, Shivaji Nagar"
+                      placeholder={t('nurseryCheckout.eGNearHanumanTemple')}
                       maxLength={300}
                       multiline
                       textAlignVertical="top"
@@ -275,51 +277,51 @@ export default function NurseryCheckoutScreen({ navigation }) {
                   </Field>
                   <View style={styles.row}>
                     <View style={styles.flex}>
-                      <Field label="Village">
+                      <Field label={t('nurseryCheckout.village')}>
                         <FormInput
                           value={form.village}
                           onChangeText={value => setField('village', value)}
-                          placeholder="Village"
+                          placeholder={t('nurseryCheckout.village')}
                         />
                       </Field>
                     </View>
                     <View style={styles.flex}>
-                      <Field label="Taluka">
+                      <Field label={t('nurseryCheckout.taluka')}>
                         <FormInput
                           value={form.taluka}
                           onChangeText={value => setField('taluka', value)}
-                          placeholder="Taluka"
+                          placeholder={t('nurseryCheckout.taluka')}
                         />
                       </Field>
                     </View>
                   </View>
                   <View style={styles.row}>
                     <View style={styles.flex}>
-                      <Field label="District">
+                      <Field label={t('nurseryCheckout.district')}>
                         <FormInput
                           value={form.district}
                           onChangeText={value => setField('district', value)}
-                          placeholder="District"
+                          placeholder={t('nurseryCheckout.district')}
                         />
                       </Field>
                     </View>
                     <View style={styles.flex}>
-                      <Field label="State">
+                      <Field label={t('nurseryCheckout.state')}>
                         <FormInput
                           value={form.state}
                           onChangeText={value => setField('state', value)}
-                          placeholder="State"
+                          placeholder={t('nurseryCheckout.state')}
                         />
                       </Field>
                     </View>
                   </View>
-                  <Field label="Pincode *">
+                  <Field label={t('nurseryCheckout.pincode')}>
                     <FormInput
                       value={form.pincode}
                       onChangeText={value =>
                         setField('pincode', value.replace(/\D/g, ''))
                       }
-                      placeholder="6 digit pincode"
+                      placeholder={t('nurseryCheckout.6DigitPincode')}
                       keyboardType="number-pad"
                       maxLength={6}
                       style={inputStyle('pincode')}
@@ -331,10 +333,10 @@ export default function NurseryCheckoutScreen({ navigation }) {
                 <SectionHeading
                   icon={<Store size={16} color={C.orange} />}
                   color={C.orange}
-                  title="Order summary"
+                  title={t('nurseryCheckout.orderSummary')}
                   subtitle={
                     sellers.length > 1
-                      ? `From ${sellers.length} nurseries · each sends their own plants`
+                      ? t('nurseryCheckout.fromNurseriesEachSendsTheir', {length: sellers.length})
                       : `From ${sellers[0]?.name}`
                   }
                 />
@@ -373,17 +375,17 @@ export default function NurseryCheckoutScreen({ navigation }) {
 
                   <View style={styles.divider} />
                   <InfoRow
-                    label={`Plants (${cart.totalItems})`}
+                    label={t('nurseryCheckout.plants', {totalItems: cart.totalItems})}
                     value={formatRupees(cart.subtotal)}
                   />
                   <InfoRow
-                    label="Delivery"
+                    label={t('nurseryCheckout.delivery')}
                     value={
                       cart.deliveryFee ? formatRupees(cart.deliveryFee) : 'FREE'
                     }
                   />
                   <View style={styles.totalRow}>
-                    <Text style={styles.totalLabel}>To pay on delivery</Text>
+                    <Text style={styles.totalLabel}>{t('nurseryCheckout.toPayOnDelivery')}</Text>
                     <Text style={styles.totalValue}>
                       {formatRupees(cart.total)}
                     </Text>
@@ -396,10 +398,9 @@ export default function NurseryCheckoutScreen({ navigation }) {
                     <Banknote size={20} color={C.green} />
                   </View>
                   <View style={styles.flex}>
-                    <Text style={styles.payTitle}>Cash on delivery</Text>
+                    <Text style={styles.payTitle}>{t('nurseryCheckout.cashOnDelivery')}</Text>
                     <Text style={styles.payText}>
-                      Pay the delivery person in cash or UPI when your plants
-                      arrive.
+                      {t('nurseryCheckout.payTheDeliveryPersonIn')}
                     </Text>
                   </View>
                   <CircleCheck size={20} color={C.green} />
@@ -408,8 +409,7 @@ export default function NurseryCheckoutScreen({ navigation }) {
                 <View style={styles.safeRow}>
                   <ShieldCheck size={14} color={C.muted} />
                   <Text style={styles.safeText}>
-                    You can cancel free of charge until the plants are
-                    dispatched.
+                    {t('nurseryCheckout.youCanCancelFreeOf')}
                   </Text>
                 </View>
               </>
@@ -426,11 +426,11 @@ export default function NurseryCheckoutScreen({ navigation }) {
           ]}
         >
           <View style={styles.flex}>
-            <Text style={styles.bottomLabel}>Pay on delivery</Text>
+            <Text style={styles.bottomLabel}>{t('nurseryCheckout.payOnDelivery')}</Text>
             <Text style={styles.bottomPrice}>{formatRupees(cart.total)}</Text>
           </View>
           <MarketButton
-            label="Place Order"
+            label={t('nurseryCheckout.placeOrder')}
             icon={<CircleCheck size={17} color={C.white} />}
             loading={placing}
             onPress={handlePlace}

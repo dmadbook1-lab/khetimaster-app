@@ -33,7 +33,10 @@ import {
   Zap,
   Shield,
 } from 'lucide-react-native';
-import BottomTabBar from '../../common/BottomTabBar';
+import BottomTabBar, { useBottomTabBarInset } from '../../common/BottomTabBar';
+import {useTranslation} from 'react-i18next';
+import i18n from 'i18next';
+import {tOpt} from '../../utils/tOpt';
 const { width } = Dimensions.get('window');
 const GREEN = '#16A34A';
 const DARK_GREEN = '#15803D';
@@ -47,23 +50,31 @@ const rf = size => {
 const CATEGORIES = [
   {
     id: 'pesticide',
-    label: 'Pesticide\nSpraying',
+    get label() {
+    return i18n.t('droneServices.pesticideSpraying');
+  },
     Icon: Calendar,
     active: true,
   },
   {
     id: 'fertilizer',
-    label: 'Liquid\nFertilizer',
+    get label() {
+    return i18n.t('droneServices.liquidFertilizer');
+  },
     Icon: FlaskConical,
   },
   {
     id: 'micro',
-    label: 'Micronutrient\nSpray',
+    get label() {
+    return i18n.t('droneServices.micronutrientSpray');
+  },
     Icon: Sparkles,
   },
   {
     id: 'survey',
-    label: 'Crop Survey',
+    get label() {
+    return i18n.t('droneServices.cropSurvey');
+  },
     Icon: Grid3x3,
   },
 ];
@@ -72,10 +83,16 @@ const OPERATORS = [
     id: '1',
     name: 'SkyAgri Drone Services',
     initials: 'SA',
-    pilot: 'Rahul Patil',
-    role: 'Certified Drone Pilot',
+    get pilot() {
+    return i18n.t('droneServices.rahulPatil');
+  },
+    get role() {
+    return i18n.t('droneServices.certifiedDronePilot');
+  },
     distance: '3.5 km away',
-    availability: 'Available Today',
+    get availability() {
+    return i18n.t('droneServices.availableToday');
+  },
     rating: 4.9,
     reviews: 186,
     price: '750',
@@ -86,8 +103,12 @@ const OPERATORS = [
     id: '2',
     name: 'AgroWings Services',
     initials: 'AW',
-    pilot: 'Suresh Desai',
-    role: 'Senior Drone Pilot',
+    get pilot() {
+    return i18n.t('droneServices.sureshDesai');
+  },
+    get role() {
+    return i18n.t('droneServices.seniorDronePilot');
+  },
     distance: '5.2 km away',
     availability: 'Tomorrow',
     rating: 4.7,
@@ -102,32 +123,50 @@ const BENEFITS = [
     Icon: Droplet,
     color: '#3B82F6',
     bg: '#EFF6FF',
-    title: 'Saves Water',
-    desc: 'Up to 90% less water vs\nmanual spraying',
+    get title() {
+    return i18n.t('droneServices.savesWater');
+  },
+    get desc() {
+    return i18n.t('droneServices.upTo90LessWater');
+  },
   },
   {
     Icon: Check,
     color: GREEN,
     bg: '#ECFDF5',
-    title: 'Uniform Spraying',
-    desc: 'RTK GPS ensures even\ncoverage',
+    get title() {
+    return i18n.t('droneServices.uniformSpraying');
+  },
+    get desc() {
+    return i18n.t('droneServices.rtkGpsEnsuresEvenCoverage');
+  },
   },
   {
     Icon: Zap,
     color: '#F97316',
     bg: '#FFF7ED',
-    title: 'Fast Operation',
-    desc: '10 acres/hour, done in\nminutes',
+    get title() {
+    return i18n.t('droneServices.fastOperation');
+  },
+    get desc() {
+    return i18n.t('droneServices.10AcresHourDoneIn');
+  },
   },
   {
     Icon: Shield,
     color: '#9333EA',
     bg: '#FAF5FF',
-    title: 'Reduced Exposure',
-    desc: 'Zero chemical contact\nfor farmers',
+    get title() {
+    return i18n.t('droneServices.reducedExposure');
+  },
+    get desc() {
+    return i18n.t('droneServices.zeroChemicalContactForFarmers');
+  },
   },
 ];
 export default function DroneServicesScreen({ navigation }) {
+  const tabBarInset = useBottomTabBarInset();
+  const {t} = useTranslation();
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
@@ -140,7 +179,7 @@ export default function DroneServicesScreen({ navigation }) {
         >
           <ArrowLeft size={rf(22)} color={DARK} strokeWidth={2.4} />
         </TouchableOpacity>
-        <Text style={styles.headerTitle}>Drone Services</Text>
+        <Text style={styles.headerTitle}>{t('droneServices.droneServices')}</Text>
         <TouchableOpacity style={styles.iconBtn}>
           <Bell size={rf(20)} color={DARK} strokeWidth={2.2} />
           <View style={styles.dot} />
@@ -149,18 +188,18 @@ export default function DroneServicesScreen({ navigation }) {
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[styles.scrollContent, { paddingBottom: styles.scrollContent.paddingBottom + tabBarInset }]}
       >
         {}
         <View style={styles.locationBar}>
           <MapPin size={rf(15)} color={GREEN} strokeWidth={2.4} />
-          <Text style={styles.locationText}>Aurangabad, Maharashtra</Text>
+          <Text style={styles.locationText}>{t('droneServices.aurangabadMaharashtra')}</Text>
           <View
             style={{
               flex: 1,
             }}
           />
-          <Text style={styles.changeText}>Change</Text>
+          <Text style={styles.changeText}>{t('droneServices.change')}</Text>
           <ChevronDown size={rf(14)} color={GREEN} strokeWidth={2.4} />
         </View>
 
@@ -169,7 +208,7 @@ export default function DroneServicesScreen({ navigation }) {
           <View style={styles.searchBox}>
             <Search size={rf(17)} color={MUTED} strokeWidth={2.2} />
             <TextInput
-              placeholder="Search drone services..."
+              placeholder={t('droneServices.searchDroneServices')}
               placeholderTextColor="#94A3B8"
               style={styles.searchInput}
             />
@@ -198,12 +237,11 @@ export default function DroneServicesScreen({ navigation }) {
           />
           <View style={styles.heroPill}>
             <Sparkles size={rf(11)} color="#FFFFFF" strokeWidth={2.4} />
-            <Text style={styles.heroPillText}>AI-POWERED PRECISION</Text>
+            <Text style={styles.heroPillText}>{t('droneServices.aiPoweredPrecision')}</Text>
           </View>
-          <Text style={styles.heroTitle}>Smart Drone{'\n'}Services</Text>
+          <Text style={styles.heroTitle}>{t('droneServices.smartDrone')}{'\n'}{t('droneServices.services')}</Text>
           <Text style={styles.heroDesc}>
-            Precision spraying for{'\n'}healthier crops with trained{'\n'}drone
-            operators.
+            {t('droneServices.precisionSprayingFor')}{'\n'}{t('droneServices.healthierCropsWithTrained')}{'\n'}{t('droneServices.droneOperators')}
           </Text>
           <TouchableOpacity
             activeOpacity={0.9}
@@ -211,14 +249,14 @@ export default function DroneServicesScreen({ navigation }) {
             style={styles.heroBtn}
           >
             <Calendar size={rf(14)} color={DARK_GREEN} strokeWidth={2.4} />
-            <Text style={styles.heroBtnText}>Book Drone Service</Text>
+            <Text style={styles.heroBtnText}>{t('droneServices.bookDroneService')}</Text>
           </TouchableOpacity>
         </ImageBackground>
 
         {}
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Service Categories</Text>
-          <Text style={styles.seeAll}>See All</Text>
+          <Text style={styles.sectionTitle}>{t('droneServices.serviceCategories')}</Text>
+          <Text style={styles.seeAll}>{t('droneServices.seeAll')}</Text>
         </View>
         <View style={styles.catRow}>
           {CATEGORIES.map(c => {
@@ -260,45 +298,45 @@ export default function DroneServicesScreen({ navigation }) {
                 marginLeft: 10,
               }}
             >
-              <Text style={styles.aiTitle}>AI Spray Recommendation</Text>
+              <Text style={styles.aiTitle}>{t('droneServices.aiSprayRecommendation')}</Text>
               <Text style={styles.aiSubtitle}>
-                Based on crop health & weather
+                {t('droneServices.basedOnCropHealthWeather')}
               </Text>
             </View>
             <View style={styles.livePill}>
               <View style={styles.liveDot} />
-              <Text style={styles.liveText}>LIVE</Text>
+              <Text style={styles.liveText}>{t('droneServices.live')}</Text>
             </View>
           </View>
 
           <View style={styles.aiGrid}>
-            <AIStat label="FARM" value="Patil Farm" />
-            <AIStat label="CROP" value="Soybean" />
+            <AIStat label={t('droneServices.farm')} value={t('droneServices.patilFarm')} />
+            <AIStat label={t('droneServices.crop')} value="Soybean" />
           </View>
           <View style={styles.aiGrid}>
-            <AIStat label="AREA" value="2.34 Acres" />
-            <AIStat label="SERVICE" value="Pesticide Spray" />
+            <AIStat label={t('droneServices.area')} value="2.34 Acres" />
+            <AIStat label={t('droneServices.service')} value={t('droneServices.pesticideSpray')} />
           </View>
 
           <View style={styles.aiDateCard}>
-            <Text style={styles.aiDateLabel}>RECOMMENDED DATE</Text>
+            <Text style={styles.aiDateLabel}>{t('droneServices.recommendedDate')}</Text>
             <View style={styles.aiDateRow}>
-              <Text style={styles.aiDateValue}>Tomorrow Morning</Text>
-              <Text style={styles.aiDateTime}>6:00-8:00 AM</Text>
+              <Text style={styles.aiDateValue}>{t('droneServices.tomorrowMorning')}</Text>
+              <Text style={styles.aiDateTime}>{t('droneServices.600800Am')}</Text>
             </View>
           </View>
 
           <View style={styles.aiMetrics}>
-            <AIMetric value="35" unit="Min" label="EST. DURATION" />
+            <AIMetric value="35" unit={t('droneServices.minUnit')} label={t('droneServices.estDuration')} />
             <View style={styles.aiVDivider} />
-            <AIMetric value="90%" label="WATER SAVED" />
+            <AIMetric value="90%" label={t('droneServices.waterSaved')} />
             <View style={styles.aiVDivider} />
-            <AIMetric value="95%" label="ACCURACY" />
+            <AIMetric value="95%" label={t('droneServices.accuracy')} />
           </View>
 
           <View style={styles.aiCostRow}>
             <View>
-              <Text style={styles.aiCostLabel}>Estimated Cost</Text>
+              <Text style={styles.aiCostLabel}>{t('droneServices.estimatedCost')}</Text>
               <Text style={styles.aiCostValue}>₹1,850</Text>
             </View>
             <TouchableOpacity
@@ -306,7 +344,7 @@ export default function DroneServicesScreen({ navigation }) {
               onPress={() => navigation.navigate('BookDroneService')}
               style={styles.aiViewBtn}
             >
-              <Text style={styles.aiViewText}>View Recommendation</Text>
+              <Text style={styles.aiViewText}>{t('droneServices.viewRecommendation')}</Text>
               <ArrowRight size={rf(14)} color={DARK_GREEN} strokeWidth={2.4} />
             </TouchableOpacity>
           </View>
@@ -314,8 +352,8 @@ export default function DroneServicesScreen({ navigation }) {
 
         {}
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Available Operators</Text>
-          <Text style={styles.seeAll}>See All</Text>
+          <Text style={styles.sectionTitle}>{t('droneServices.availableOperators')}</Text>
+          <Text style={styles.seeAll}>{t('droneServices.seeAll')}</Text>
         </View>
 
         {OPERATORS.map(op => (
@@ -343,7 +381,7 @@ export default function DroneServicesScreen({ navigation }) {
               </View>
               <View style={styles.opAvailPill}>
                 <View style={styles.opAvailDot} />
-                <Text style={styles.opAvailText}>{op.availability}</Text>
+                <Text style={styles.opAvailText}>{tOpt(op.availability)}</Text>
               </View>
               <View style={styles.opInitialWrap}>
                 <View style={styles.opInitial}>
@@ -364,7 +402,7 @@ export default function DroneServicesScreen({ navigation }) {
                   <Text style={styles.opRole}>{op.role}</Text>
                   <View style={styles.dgcaPill}>
                     <BadgeCheck size={rf(11)} color={GREEN} strokeWidth={2.4} />
-                    <Text style={styles.dgcaText}>DGCA</Text>
+                    <Text style={styles.dgcaText}>{t('droneServices.dgca')}</Text>
                   </View>
                 </View>
               </View>
@@ -390,7 +428,7 @@ export default function DroneServicesScreen({ navigation }) {
               <View>
                 <Text style={styles.opPrice}>
                   ₹{op.price}
-                  <Text style={styles.opUnit}> / Acre</Text>
+                  <Text style={styles.opUnit}> {t('droneServices.acre')}</Text>
                 </Text>
               </View>
               <TouchableOpacity
@@ -403,7 +441,7 @@ export default function DroneServicesScreen({ navigation }) {
                 style={styles.bookNowBtn}
               >
                 <Calendar size={rf(13)} color="#FFFFFF" strokeWidth={2.4} />
-                <Text style={styles.bookNowText}>Book Now</Text>
+                <Text style={styles.bookNowText}>{t('droneServices.bookNow')}</Text>
               </TouchableOpacity>
             </View>
           </TouchableOpacity>
@@ -419,7 +457,7 @@ export default function DroneServicesScreen({ navigation }) {
             },
           ]}
         >
-          Why Drone Services?
+          {t('droneServices.whyDroneServices')}
         </Text>
         <View style={styles.benefitsGrid}>
           {BENEFITS.map(b => {

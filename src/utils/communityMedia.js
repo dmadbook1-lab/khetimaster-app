@@ -1,5 +1,6 @@
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import { CLOUDINARY_CLOUD_NAME, CLOUDINARY_UPLOAD_PRESET } from '@env';
+import i18n from 'i18next';
 
 export const MAX_POST_MEDIA = 10;
 
@@ -44,8 +45,8 @@ const handlePickerResult = result => {
   if (result.errorCode) {
     throw new Error(
       result.errorCode === 'camera_unavailable'
-        ? 'Camera is not available on this device'
-        : result.errorMessage || 'Unable to open media',
+        ? i18n.t('communityMedia.cameraIsNotAvailableOn')
+        : result.errorMessage || i18n.t('communityMedia.unableToOpenMedia'),
     );
   }
 
@@ -96,15 +97,15 @@ export const captureCommunityMedia = async ({ kind = 'video' } = {}) => {
  */
 export const validateCommunityAsset = (asset, type) => {
   if (type === 'reel' && asset.kind !== 'video') {
-    return 'Reels need a video. Pick a video from your gallery or record one.';
+    return i18n.t('communityMedia.reelsNeedAVideoPick');
   }
 
   if (asset.kind === 'video' && asset.fileSize > MAX_VIDEO_BYTES) {
-    return 'This video is larger than 100 MB. Please pick a shorter video.';
+    return i18n.t('communityMedia.thisVideoIsLargerThan');
   }
 
   if (type === 'reel' && asset.duration > MAX_REEL_SECONDS + 1) {
-    return `Reels can be up to ${MAX_REEL_SECONDS} seconds long.`;
+    return i18n.t('communityMedia.reelsCanBeUpTo', {MAX_REEL_SECONDS});
   }
 
   return null;
@@ -142,7 +143,7 @@ export const videoThumbnailUrl = videoUrl => {
 export const uploadCommunityAsset = (asset, onProgress) =>
   new Promise((resolve, reject) => {
     if (!CLOUDINARY_CLOUD_NAME || !CLOUDINARY_UPLOAD_PRESET) {
-      reject(new Error('Cloudinary configuration is missing'));
+      reject(new Error(i18n.t('communityMedia.cloudinaryConfigurationIsMissing')));
       return;
     }
 
@@ -182,7 +183,7 @@ export const uploadCommunityAsset = (asset, onProgress) =>
       }
 
       if (xhr.status < 200 || xhr.status >= 300 || !data?.secure_url) {
-        reject(new Error(data?.error?.message || 'Upload failed'));
+        reject(new Error(data?.error?.message || i18n.t('communityMedia.uploadFailed')));
         return;
       }
 
@@ -198,9 +199,9 @@ export const uploadCommunityAsset = (asset, onProgress) =>
     };
 
     xhr.onerror = () =>
-      reject(new Error('Upload failed. Check your internet connection.'));
+      reject(new Error(i18n.t('communityMedia.uploadFailedCheckYourInternet')));
 
-    xhr.ontimeout = () => reject(new Error('Upload timed out'));
+    xhr.ontimeout = () => reject(new Error(i18n.t('communityMedia.uploadTimedOut')));
 
     xhr.send(formData);
   });

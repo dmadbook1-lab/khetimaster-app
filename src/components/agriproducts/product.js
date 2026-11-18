@@ -1,8 +1,17 @@
-export const categoryTabs = [
-  {id: 'seeds', label: 'Seeds', icon: 'sprout'},
-  {id: 'fertilizers', label: 'Fertilizers', icon: 'flask'},
-  {id: 'pesticides', label: 'Pesticides', icon: 'bug'},
-  {id: 'tools', label: 'Tools', icon: 'wrench'},
+
+import i18n from 'i18next';export const categoryTabs = [
+  {id: 'seeds', get label() {
+    return i18n.t('product.seeds');
+  }, icon: 'sprout'},
+  {id: 'fertilizers', get label() {
+    return i18n.t('product.fertilizers');
+  }, icon: 'flask'},
+  {id: 'pesticides', get label() {
+    return i18n.t('product.pesticides');
+  }, icon: 'bug'},
+  {id: 'tools', get label() {
+    return i18n.t('product.tools');
+  }, icon: 'wrench'},
 ];
 
 export const recommendedProducts = [
@@ -11,7 +20,9 @@ export const recommendedProducts = [
     name: 'SSP Fertilizer',
     brand: 'COROMANDEL',
     image: require('../../assets/bazar/product1.jpg'),
-    badge: 'Best for Soybean',
+    get badge() {
+    return i18n.t('product.bestForSoybean');
+  },
     rating: 4.7,
     reviews: '1.2k',
     price: 290,
@@ -24,7 +35,9 @@ export const recommendedProducts = [
     name: 'Chlorpyrifos 50EC',
     brand: 'BAYER CROPSCI',
     image: require('../../assets/bazar/product2.jpg'),
-    badge: 'Protects Soybean',
+    get badge() {
+    return i18n.t('product.protectsSoybean');
+  },
     rating: 4.5,
     reviews: 890,
     price: 480,
@@ -37,7 +50,9 @@ export const recommendedProducts = [
     name: 'DAP Fertilizer',
     brand: 'IFFCO',
     image: require('../../assets/bazar/product3.jpg'),
-    badge: 'Protects Crop',
+    get badge() {
+    return i18n.t('product.protectsCrop');
+  },
     rating: 4.5,
     reviews: 812,
     price: 480,
@@ -53,7 +68,9 @@ export const allProducts = [
     name: 'DAP Fertilizer',
     brand: 'IFFCO',
     image: require('../../assets/bazar/product1.jpg'),
-    badge: 'Bestseller',
+    get badge() {
+    return i18n.t('product.bestseller');
+  },
     rating: 4.9,
     reviews: '3.4k',
     price: 1350,
@@ -64,8 +81,9 @@ export const allProducts = [
     sold: '5,200+',
     packSizes: ['5 kg', '50 kg', '100 kg'],
     selectedPack: '50 kg',
-    description:
-      'This fertilizer is best suited for your Soybean crop during the vegetative stage. Apply 100 kg/hectare for optimal yield improvement.',
+    get description() {
+    return i18n.t('product.thisFertilizerIsBestSuited');
+  },
     benefits: [
       'Rich in Nitrogen & Phosphorus',
       'Improves Root Growth',
@@ -78,7 +96,9 @@ export const allProducts = [
     name: 'Hybrid Maize Seeds',
     brand: 'PIONEER SEEDS',
     image: require('../../assets/bazar/product2.jpg'),
-    badge: 'New Arrival',
+    get badge() {
+    return i18n.t('product.newArrival');
+  },
     rating: 4.6,
     reviews: '1.6k',
     price: 650,
@@ -105,7 +125,9 @@ export const allProducts = [
     name: 'Knapsack Sprayer',
     brand: 'VENUS AGRO',
     image: require('../../assets/bazar/tractor.png'),
-    badge: 'Top Rated',
+    get badge() {
+    return i18n.t('product.topRated');
+  },
     rating: 4.7,
     reviews: '2.2k',
     price: 1100,
@@ -119,7 +141,9 @@ export const allProducts = [
     name: 'Neem Oil Organic',
     brand: 'ANAND AGRO',
     image: require('../../assets/bazar/product3.jpg'),
-    badge: 'Organic',
+    get badge() {
+    return i18n.t('product.organic');
+  },
     rating: 4.5,
     reviews: '1.1k',
     price: 280,
@@ -133,7 +157,9 @@ export const allProducts = [
     name: 'Drip Irrigation Kit',
     brand: 'NETAFIM',
     image: require('../../assets/bazar/drone.png'),
-    badge: 'Premium',
+    get badge() {
+    return i18n.t('product.premium');
+  },
     rating: 4.8,
     reviews: 567,
     price: 2400,
@@ -171,23 +197,39 @@ export const recentlyViewed = [
 export const applicationGuide = [
   {
     step: 1,
-    title: 'Dosage',
-    text: 'Apply 100 kg per hectare as basal dose. For top dressing, use 50 kg/hectare after 30 days of sowing.',
+    get title() {
+    return i18n.t('product.dosage');
+  },
+    get text() {
+    return i18n.t('product.apply100KgPerHectare');
+  },
   },
   {
     step: 2,
-    title: 'Application Method',
-    text: 'Broadcast evenly or apply in furrows near root zone. Mix with moist soil for best absorption.',
+    get title() {
+    return i18n.t('product.applicationMethod');
+  },
+    get text() {
+    return i18n.t('product.broadcastEvenlyOrApplyIn');
+  },
   },
   {
     step: 3,
-    title: 'Best Crop Stage',
-    text: 'Vegetative & early reproductive stages. Apply before irrigation for maximum effectiveness.',
+    get title() {
+    return i18n.t('product.bestCropStage');
+  },
+    get text() {
+    return i18n.t('product.vegetativeEarlyReproductiveStagesApply');
+  },
   },
   {
     step: 4,
-    title: 'Safety Instructions',
-    text: 'Store in a cool, dry place. Wear gloves during handling. Keep away from direct sunlight.',
+    get title() {
+    return i18n.t('product.safetyInstructions');
+  },
+    get text() {
+    return i18n.t('product.storeInACoolDry');
+  },
   },
 ];
 
@@ -198,7 +240,9 @@ export const reviews = [
     location: 'Maharashtra',
     time: '2 weeks ago',
     rating: 5,
-    text: 'Excellent product! My soybean yield increased by 20% after using this. Delivery was on time and packaging was perfect. Highly recommend to all farmers.',
+    get text() {
+    return i18n.t('product.excellentProductMySoybeanYield');
+  },
   },
   {
     id: 2,
@@ -206,7 +250,9 @@ export const reviews = [
     location: 'Punjab',
     time: '1 month ago',
     rating: 4.5,
-    text: 'Good quality fertilizer. The AI recommendation was accurate for my wheat crop. Quick delivery and reasonable price compared to local market.',
+    get text() {
+    return i18n.t('product.goodQualityFertilizerTheAi');
+  },
   },
 ];
 

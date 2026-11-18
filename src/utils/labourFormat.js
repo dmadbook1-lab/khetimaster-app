@@ -20,6 +20,7 @@ import {
   formatTime,
   formatTimeRange,
 } from './indiaSchedule';
+import i18n from 'i18next';
 
 export {
   toDayKey,
@@ -37,24 +38,48 @@ export {
 export const DEFAULT_MAX_BOOKING_DAYS = 90;
 
 export const WAGE_TYPE_LABELS = {
-  daily: 'per day',
-  hourly: 'per hour',
-  monthly: 'per month',
+  get daily() {
+    return i18n.t('labourFormat.perDay');
+  },
+  get hourly() {
+    return i18n.t('labourFormat.perHour');
+  },
+  get monthly() {
+    return i18n.t('labourFormat.perMonth');
+  },
 };
 
 export const AVAILABILITY_META = {
-  available: { label: 'Available', color: '#159447', bg: '#EAF7EF' },
-  busy: { label: 'Busy', color: '#B7791F', bg: '#FFF6E0' },
-  unavailable: { label: 'Not available', color: '#475467', bg: '#EEF0F2' },
+  available: { get label() {
+    return i18n.t('labourFormat.available');
+  }, color: '#159447', bg: '#EAF7EF' },
+  busy: { get label() {
+    return i18n.t('labourFormat.busy');
+  }, color: '#B7791F', bg: '#FFF6E0' },
+  unavailable: { get label() {
+    return i18n.t('labourFormat.notAvailable');
+  }, color: '#475467', bg: '#EEF0F2' },
 };
 
 export const BOOKING_STATUS_META = {
-  pending: { label: 'Requested', color: '#B7791F', bg: '#FFF6E0' },
-  accepted: { label: 'Confirmed', color: '#2563EB', bg: '#EAF1FF' },
-  confirmed: { label: 'Confirmed', color: '#2563EB', bg: '#EAF1FF' },
-  completed: { label: 'Completed', color: '#159447', bg: '#EAF7EF' },
-  rejected: { label: 'Declined', color: '#B42318', bg: '#FDECEA' },
-  cancelled: { label: 'Cancelled', color: '#475467', bg: '#EEF0F2' },
+  pending: { get label() {
+    return i18n.t('labourFormat.requested');
+  }, color: '#B7791F', bg: '#FFF6E0' },
+  accepted: { get label() {
+    return i18n.t('labourFormat.confirmed');
+  }, color: '#2563EB', bg: '#EAF1FF' },
+  confirmed: { get label() {
+    return i18n.t('labourFormat.confirmed');
+  }, color: '#2563EB', bg: '#EAF1FF' },
+  completed: { get label() {
+    return i18n.t('labourFormat.completed');
+  }, color: '#159447', bg: '#EAF7EF' },
+  rejected: { get label() {
+    return i18n.t('labourFormat.declined');
+  }, color: '#B42318', bg: '#FDECEA' },
+  cancelled: { get label() {
+    return i18n.t('labourFormat.cancelled');
+  }, color: '#475467', bg: '#EEF0F2' },
 };
 
 export const isAcceptedStatus = status =>
@@ -62,7 +87,7 @@ export const isAcceptedStatus = status =>
 
 export const formatWage = (wage, wageType = 'daily') => {
   const amount = Number(wage);
-  if (!Number.isFinite(amount) || amount <= 0) return 'Wage not set';
+  if (!Number.isFinite(amount) || amount <= 0) return i18n.t('labourFormat.wageNotSet');
 
   return `₹${Math.round(amount * 100) / 100} ${
     WAGE_TYPE_LABELS[wageType] || ''
@@ -71,10 +96,13 @@ export const formatWage = (wage, wageType = 'daily') => {
 
 export const formatExperience = (experience, unit = 'years') => {
   const value = Number(experience);
-  if (!Number.isFinite(value) || value <= 0) return 'New';
+  if (!Number.isFinite(value) || value <= 0) return i18n.t('plural.new');
 
-  const label = unit === 'months' ? 'month' : 'year';
-  return `${value} ${label}${value === 1 ? '' : 's'}`;
+  const label =
+    unit === 'months'
+      ? i18n.t(value === 1 ? 'plural.month' : 'plural.months')
+      : i18n.t(value === 1 ? 'plural.year' : 'plural.years');
+  return `${value} ${label}`;
 };
 
 /*
@@ -125,31 +153,31 @@ export const describeBookingState = (booking, today = todayInIndiaKey()) => {
   switch (booking.status) {
     case 'pending':
       return isFarmer
-        ? 'Waiting for the worker to accept your request'
-        : 'New work request - accept or decline it';
+        ? i18n.t('labourFormat.waitingForTheWorkerTo')
+        : i18n.t('labourFormat.newWorkRequestAcceptOr');
     case 'accepted':
     case 'confirmed':
       if (started) {
-        return 'Work has started. Mark it completed when it is done';
+        return i18n.t('labourFormat.workHasStartedMarkIt');
       }
       return isFarmer
-        ? 'Confirmed. Call the worker to share the exact location'
-        : 'Confirmed. Reach the farm on time';
+        ? i18n.t('labourFormat.confirmedCallTheWorkerTo')
+        : i18n.t('labourFormat.confirmedReachTheFarmOn');
     case 'completed':
       return booking.canReview
-        ? 'Work done. Rate the worker'
-        : 'Work completed';
+        ? i18n.t('labourFormat.workDoneRateTheWorker')
+        : i18n.t('labourFormat.workCompleted');
     case 'rejected':
       return isFarmer
-        ? 'The worker declined this request'
-        : 'You declined this request';
+        ? i18n.t('labourFormat.theWorkerDeclinedThisRequest')
+        : i18n.t('labourFormat.youDeclinedThisRequest');
     case 'cancelled':
       if (booking.cancelledBy === 'system') {
-        return booking.cancellationReason || 'Request expired';
+        return booking.cancellationReason || i18n.t('labourFormat.requestExpired');
       }
       return booking.cancelledBy === booking.myRole
-        ? 'You cancelled this booking'
-        : `Cancelled by the ${booking.cancelledBy || 'other side'}`;
+        ? i18n.t('labourFormat.youCancelledThisBooking')
+        : i18n.t('labourFormat.cancelledByThe', {v1: booking.cancelledBy || i18n.t('labourFormat.otherSide')});
     default:
       return '';
   }
@@ -190,9 +218,9 @@ export const buildBookingPayload = (
   form,
   { maxDays = DEFAULT_MAX_BOOKING_DAYS, today = todayInIndiaKey() } = {},
 ) => {
-  if (!form.bookingDate) return { error: 'Choose the work date' };
+  if (!form.bookingDate) return { error: i18n.t('labourFormat.chooseTheWorkDate') };
   if (form.bookingDate < today)
-    return { error: 'The work date cannot be in the past' };
+    return { error: i18n.t('labourFormat.theWorkDateCannotBe') };
 
   const numberOfDays = Number(form.numberOfDays) || 1;
 
@@ -201,27 +229,27 @@ export const buildBookingPayload = (
     numberOfDays < 1 ||
     numberOfDays > maxDays
   ) {
-    return { error: `Number of days must be between 1 and ${maxDays}` };
+    return { error: i18n.t('labourFormat.numberOfDaysMustBe', {maxDays}) };
   }
 
   const start = parseTime(form.startTime);
-  if (start === null) return { error: 'Choose a start time' };
+  if (start === null) return { error: i18n.t('labourFormat.chooseAStartTime') };
 
   const end = form.endTime ? parseTime(form.endTime) : null;
-  if (form.endTime && end === null) return { error: 'Invalid end time' };
+  if (form.endTime && end === null) return { error: i18n.t('labourFormat.invalidEndTime') };
   if (end !== null && end <= start)
-    return { error: 'End time must be after the start time' };
+    return { error: i18n.t('labourFormat.endTimeMustBeAfter') };
 
   if (form.wageType === 'hourly' && end === null) {
-    return { error: 'Add an end time for hourly wages' };
+    return { error: i18n.t('labourFormat.addAnEndTimeFor') };
   }
 
   if (!(form.workType || '').trim())
-    return { error: 'Choose the type of work' };
+    return { error: i18n.t('labourFormat.chooseTheTypeOfWork') };
 
   const wage = Number(form.wage);
   if (!Number.isFinite(wage) || wage <= 0)
-    return { error: 'Enter a valid wage' };
+    return { error: i18n.t('labourFormat.enterAValidWage') };
 
   const trim = value => (value || '').trim();
 
@@ -256,26 +284,26 @@ const numberOrNull = value => {
  */
 export const buildLabourerPayload = form => {
   const fullName = (form.fullName || '').trim();
-  if (!fullName) return { error: 'Enter your full name', field: 'fullName' };
+  if (!fullName) return { error: i18n.t('labourFormat.enterYourFullName'), field: 'fullName' };
 
   const phoneNumber = (form.phoneNumber || '').trim();
   if (phoneNumber && !/^\+?[0-9\s-]{10,15}$/.test(phoneNumber)) {
-    return { error: 'Enter a valid phone number', field: 'phoneNumber' };
+    return { error: i18n.t('labourFormat.enterAValidPhoneNumber'), field: 'phoneNumber' };
   }
 
   const labourType = (form.labourType || '').trim();
   if (!labourType)
-    return { error: 'Choose the main work you do', field: 'labourType' };
+    return { error: i18n.t('labourFormat.chooseTheMainWorkYou'), field: 'labourType' };
 
   const age = numberOrNull(form.age);
   if (age !== null && (!Number.isInteger(age) || age < 18 || age > 100)) {
-    return { error: 'Age must be between 18 and 100', field: 'age' };
+    return { error: i18n.t('labourFormat.ageMustBeBetween18'), field: 'age' };
   }
 
   const experience = numberOrNull(form.experience) ?? 0;
   if (!Number.isFinite(experience) || experience < 0 || experience > 80) {
     return {
-      error: 'Experience must be between 0 and 80',
+      error: i18n.t('labourFormat.experienceMustBeBetween0'),
       field: 'experience',
     };
   }
@@ -286,7 +314,7 @@ export const buildLabourerPayload = form => {
     !Number.isFinite(expectedWage) ||
     expectedWage <= 0
   ) {
-    return { error: 'Enter the wage you expect', field: 'expectedWage' };
+    return { error: i18n.t('labourFormat.enterTheWageYouExpect'), field: 'expectedWage' };
   }
 
   if (
@@ -295,7 +323,7 @@ export const buildLabourerPayload = form => {
     form.availableUntil < form.availableFrom
   ) {
     return {
-      error: '"Available until" must be after "available from"',
+      error: i18n.t('labourFormat.availableUntilMustBeAfter'),
       field: 'availableUntil',
     };
   }

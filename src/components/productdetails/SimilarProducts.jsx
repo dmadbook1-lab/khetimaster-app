@@ -1,6 +1,8 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, Dimensions } from 'react-native';
 import { Star } from 'lucide-react-native';
+import {useTranslation} from 'react-i18next';
+import {tOpt} from '../../utils/tOpt';
 const { width } = Dimensions.get('window');
 const products = [
   {
@@ -21,9 +23,10 @@ const products = [
   },
 ];
 export default function SimilarProducts() {
+  const {t} = useTranslation();
   return (
     <View style={styles.wrapper}>
-      <Text style={styles.sectionTitle}>Similar Products</Text>
+      <Text style={styles.sectionTitle}>{t('similarProducts.similarProducts')}</Text>
 
       <View style={styles.row}>
         {products.map((item, index) => (
@@ -34,7 +37,7 @@ export default function SimilarProducts() {
               resizeMode="cover"
             />
 
-            <Text style={styles.name}>{item.name}</Text>
+            <Text style={styles.name}>{tOpt(item.name)}</Text>
             <Text style={styles.brand}>{item.brand}</Text>
 
             <View style={styles.priceRow}>

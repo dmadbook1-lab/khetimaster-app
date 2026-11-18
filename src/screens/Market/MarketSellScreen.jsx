@@ -60,13 +60,21 @@ import {
   isDiscreteUnit,
   validateListingForm,
 } from '../../utils/marketFormat';
+import {useTranslation} from 'react-i18next';
+import i18n from 'i18next';
 
 const MAX_IMAGES = 6;
 
 const HERO_TIPS = [
-  { icon: Camera, label: 'Clear photos' },
-  { icon: Tag, label: 'Fair price' },
-  { icon: CircleCheck, label: 'Free to list' },
+  { icon: Camera, get label() {
+    return i18n.t('marketSell.clearPhotos');
+  } },
+  { icon: Tag, get label() {
+    return i18n.t('marketSell.fairPrice');
+  } },
+  { icon: CircleCheck, get label() {
+    return i18n.t('marketSell.freeToList');
+  } },
 ];
 
 const DAY_MS = 24 * 60 * 60 * 1000;
@@ -188,7 +196,9 @@ function SwitchRow({ label, description, value, onValueChange }) {
   );
 }
 
-function DateField({ value, placeholder = 'Select date', onPress, onClear }) {
+function DateField({ value, placeholder, onPress, onClear }) {
+  const {t} = useTranslation();
+  placeholder = placeholder ?? t('marketSell.selectDate');
   return (
     <TouchableOpacity
       activeOpacity={0.8}
@@ -201,7 +211,7 @@ function DateField({ value, placeholder = 'Select date', onPress, onClear }) {
       </Text>
       {!!value && (
         <TouchableOpacity hitSlop={10} onPress={onClear}>
-          <Text style={styles.clearText}>Clear</Text>
+          <Text style={styles.clearText}>{t('common.clear')}</Text>
         </TouchableOpacity>
       )}
     </TouchableOpacity>
@@ -220,6 +230,7 @@ function SectionHeading({ icon, title, color = C.green }) {
 }
 
 export default function MarketSellScreen({ navigation, route }) {
+  const {t} = useTranslation();
   const dispatch = useDispatch();
   const editingListing = route?.params?.listing || null;
   const feedback = useFeedbackModal();
@@ -294,8 +305,8 @@ export default function MarketSellScreen({ navigation, route }) {
 
     if (remaining <= 0) {
       feedback.info(
-        'Maximum reached',
-        `You can add up to ${MAX_IMAGES} photos.`,
+        t('marketSell.maximumReached'),
+        t('marketSell.youCanAddUpTo', {MAX_IMAGES}),
       );
       return;
     }
@@ -308,7 +319,7 @@ export default function MarketSellScreen({ navigation, route }) {
     } catch (error) {
       feedback.error(
         'Image selection failed',
-        error?.message || 'Unable to select images.',
+        error?.message || t('marketSell.unableToSelectImages'),
       );
     }
   };
@@ -353,8 +364,8 @@ export default function MarketSellScreen({ navigation, route }) {
           updateMarketListing({ listingId: editingListing._id, listingData }),
         ).unwrap();
 
-        feedback.success('Listing updated', 'Your changes have been saved.', {
-          primaryLabel: 'Done',
+        feedback.success(t('marketSell.listingUpdated'), t('marketSell.yourChangesHaveBeenSaved'), {
+          primaryLabel: t('marketSell.done'),
           dismissable: false,
           onPrimary: () => navigation.goBack(),
         });
@@ -364,10 +375,10 @@ export default function MarketSellScreen({ navigation, route }) {
         ).unwrap();
 
         feedback.success(
-          'Listing published!',
-          'Buyers can now see your listing and send offers.',
+          t('marketSell.listingPublished'),
+          t('marketSell.buyersCanNowSeeYour'),
           {
-            primaryLabel: 'View Listing',
+            primaryLabel: t('marketSell.viewListing'),
             dismissable: false,
             onPrimary: () =>
               navigation.replace(MARKET_ROUTES.LISTING_DETAILS, {
@@ -382,7 +393,7 @@ export default function MarketSellScreen({ navigation, route }) {
         'Unable to save listing',
         typeof error === 'string'
           ? error
-          : error?.message || 'Please try again.',
+          : error?.message || t('common.please_try_again'),
       );
     }
   };
@@ -405,12 +416,12 @@ export default function MarketSellScreen({ navigation, route }) {
         >
           <MarketHero
             onBack={() => navigation.goBack()}
-            eyebrow={isEdit ? 'Update listing' : 'Free listing'}
-            title={isEdit ? 'Edit your listing' : 'Sell to farmers\nnear you'}
+            eyebrow={isEdit ? t('marketSell.updateListing') : t('marketSell.freeListing')}
+            title={isEdit ? t('marketSell.editYourListing') : t('marketSell.sellToFarmersNearYou')}
             subtitle={
               isEdit
-                ? 'Keep price and stock up to date so buyers can trust your listing.'
-                : 'Add details, set your price and start getting offers in minutes.'
+                ? t('marketSell.keepPriceAndStockUp')
+                : t('marketSell.addDetailsSetYourPrice')
             }
           >
             <View style={styles.tipRow}>
@@ -425,7 +436,7 @@ export default function MarketSellScreen({ navigation, route }) {
 
           <View style={styles.body}>
             {/* WHAT ARE YOU SELLING */}
-            <Text style={styles.sectionTitle}>What are you selling?</Text>
+            <Text style={styles.sectionTitle}>{t('marketSell.whatAreYouSelling')}</Text>
             <View style={styles.kindRow}>
               {KIND_ORDER.map(key => {
                 const meta = KIND_META[key];
@@ -490,13 +501,12 @@ export default function MarketSellScreen({ navigation, route }) {
             </View>
             {isEdit && (
               <Text style={styles.hint}>
-                Type can't be changed after publishing. Create a new listing
-                instead.
+                {t('marketSell.typeCantBeChangedAfter')}
               </Text>
             )}
 
             <View style={styles.card}>
-              <Field label="Category *">
+              <Field label={t('marketSell.category')}>
                 {metaLoading && !categoryOptions.length ? (
                   <ActivityIndicator color={C.green} style={styles.loader} />
                 ) : (
@@ -510,7 +520,7 @@ export default function MarketSellScreen({ navigation, route }) {
               </Field>
 
               <Field
-                label="Title *"
+                label={t('marketSell.title')}
                 hint={
                   selectedCategory?.examples?.length
                     ? `e.g. ${selectedCategory.examples.slice(0, 3).join(', ')}`
@@ -522,8 +532,8 @@ export default function MarketSellScreen({ navigation, route }) {
                   onChangeText={value => setField('title', value)}
                   placeholder={
                     isEquipment
-                      ? 'Mahindra 575 DI Tractor'
-                      : 'Fresh Soybean, JS-335'
+                      ? t('marketSell.mahindra575DiTractor')
+                      : t('marketSell.freshSoybeanJs335')
                   }
                   placeholderTextColor={C.placeholder}
                   maxLength={120}
@@ -531,14 +541,14 @@ export default function MarketSellScreen({ navigation, route }) {
                 />
               </Field>
 
-              <Field label="Description">
+              <Field label={t('marketSell.description')}>
                 <TextInput
                   value={form.description}
                   onChangeText={value => setField('description', value)}
                   placeholder={
                     isEquipment
-                      ? 'Service history, attachments included, reason for selling...'
-                      : 'Moisture, packing, storage, quality details...'
+                      ? t('marketSell.serviceHistoryAttachmentsIncludedReason')
+                      : t('marketSell.moisturePackingStorageQualityDetails')
                   }
                   placeholderTextColor={C.placeholder}
                   maxLength={2000}
@@ -550,9 +560,9 @@ export default function MarketSellScreen({ navigation, route }) {
             </View>
 
             {/* PHOTOS */}
-            <Text style={styles.sectionTitle}>Photos</Text>
+            <Text style={styles.sectionTitle}>{t('marketSell.photos')}</Text>
             <Text style={styles.hint}>
-              Clear photos get more offers. Add up to {MAX_IMAGES}.
+              {t('marketSell.clearPhotosGetMoreOffers', {MAX_IMAGES})}
             </Text>
             <ScrollView
               horizontal
@@ -602,15 +612,15 @@ export default function MarketSellScreen({ navigation, route }) {
                   onPress={chooseImages}
                 >
                   <ImagePlus size={26} color={C.green} />
-                  <Text style={styles.addImageText}>Add Photos</Text>
+                  <Text style={styles.addImageText}>{t('marketSell.addPhotos')}</Text>
                 </TouchableOpacity>
               )}
             </ScrollView>
 
             {/* QUANTITY & PRICE */}
-            <Text style={styles.sectionTitle}>Quantity & Price</Text>
+            <Text style={styles.sectionTitle}>{t('marketSell.quantityPrice')}</Text>
             <View style={styles.card}>
-              <Field label="Unit *">
+              <Field label={t('marketSell.unit')}>
                 <ChipRow
                   options={unitOptions}
                   value={form.unit}
@@ -620,7 +630,7 @@ export default function MarketSellScreen({ navigation, route }) {
 
               <View style={styles.row}>
                 <View style={styles.flex}>
-                  <Field label={isEdit ? 'Quantity left *' : 'Quantity *'}>
+                  <Field label={isEdit ? t('marketSell.quantityLeft') : t('marketSell.quantity')}>
                     <TextInput
                       value={form.quantity}
                       onChangeText={value => setField('quantity', value)}
@@ -635,7 +645,7 @@ export default function MarketSellScreen({ navigation, route }) {
                 </View>
 
                 <View style={styles.flex}>
-                  <Field label={`Price per ${form.unit} *`}>
+                  <Field label={t('marketSell.pricePer', {unit: form.unit})}>
                     <View style={[styles.input, styles.priceBox]}>
                       <Text style={styles.rupee}>₹</Text>
                       <TextInput
@@ -653,15 +663,15 @@ export default function MarketSellScreen({ navigation, route }) {
 
               {isEdit && (
                 <Text style={styles.hint}>
-                  Set quantity to 0 to mark this listing as sold out.
+                  {t('marketSell.setQuantityTo0To')}
                 </Text>
               )}
 
-              <Field label="Minimum order (optional)">
+              <Field label={t('marketSell.minimumOrderOptional')}>
                 <TextInput
                   value={form.minOrderQuantity}
                   onChangeText={value => setField('minOrderQuantity', value)}
-                  placeholder={`Smallest amount a buyer can order, in ${form.unit}`}
+                  placeholder={t('marketSell.smallestAmountABuyerCan', {unit: form.unit})}
                   placeholderTextColor={C.placeholder}
                   keyboardType="decimal-pad"
                   style={styles.input}
@@ -670,7 +680,7 @@ export default function MarketSellScreen({ navigation, route }) {
 
               {Number.isFinite(totalValue) && totalValue > 0 && (
                 <View style={styles.totalRow}>
-                  <Text style={styles.totalLabel}>Total value of stock</Text>
+                  <Text style={styles.totalLabel}>{t('marketSell.totalValueOfStock')}</Text>
                   <Text style={styles.totalValue}>
                     {formatRupees(totalValue)}
                   </Text>
@@ -678,8 +688,8 @@ export default function MarketSellScreen({ navigation, route }) {
               )}
 
               <SwitchRow
-                label="Price is negotiable"
-                description="Buyers can propose their own price"
+                label={t('marketSell.priceIsNegotiable')}
+                description={t('marketSell.buyersCanProposeTheirOwn')}
                 value={form.isNegotiable}
                 onValueChange={value => setField('isNegotiable', value)}
               />
@@ -691,27 +701,27 @@ export default function MarketSellScreen({ navigation, route }) {
                 <SectionHeading
                   icon={<FlaskConical size={16} color={C.orange} />}
                   color={C.orange}
-                  title="Product Details"
+                  title={t('marketSell.productDetails')}
                 />
                 <View style={styles.card}>
                   <View style={styles.row}>
                     <View style={styles.flex}>
-                      <Field label="Brand">
+                      <Field label={t('marketSell.brand')}>
                         <TextInput
                           value={form.brand}
                           onChangeText={value => setField('brand', value)}
-                          placeholder="IFFCO, Bayer..."
+                          placeholder={t('marketSell.iffcoBayer')}
                           placeholderTextColor={C.placeholder}
                           style={styles.input}
                         />
                       </Field>
                     </View>
                     <View style={styles.flex}>
-                      <Field label="Pack size">
+                      <Field label={t('marketSell.packSize')}>
                         <TextInput
                           value={form.packSize}
                           onChangeText={value => setField('packSize', value)}
-                          placeholder="50 kg bag"
+                          placeholder={t('marketSell.50KgBag')}
                           placeholderTextColor={C.placeholder}
                           maxLength={50}
                           style={styles.input}
@@ -720,11 +730,11 @@ export default function MarketSellScreen({ navigation, route }) {
                     </View>
                   </View>
 
-                  <Field label="Composition / technical content">
+                  <Field label={t('marketSell.compositionTechnicalContent')}>
                     <TextInput
                       value={form.composition}
                       onChangeText={value => setField('composition', value)}
-                      placeholder="e.g. NPK 19:19:19, Chlorpyrifos 20% EC"
+                      placeholder={t('marketSell.eGNpk1919')}
                       placeholderTextColor={C.placeholder}
                       maxLength={200}
                       style={styles.input}
@@ -733,7 +743,7 @@ export default function MarketSellScreen({ navigation, route }) {
 
                   <View style={styles.row}>
                     <View style={styles.flex}>
-                      <Field label="Manufactured">
+                      <Field label={t('marketSell.manufactured')}>
                         <DateField
                           value={form.manufacturingDate}
                           onPress={() => setDateField('manufacturingDate')}
@@ -745,8 +755,8 @@ export default function MarketSellScreen({ navigation, route }) {
                       <Field
                         label={
                           selectedCategory?.requiresExpiry
-                            ? 'Expiry *'
-                            : 'Expiry'
+                            ? t('marketSell.expiry')
+                            : t('marketSell.expiry2')
                         }
                       >
                         <DateField
@@ -760,14 +770,13 @@ export default function MarketSellScreen({ navigation, route }) {
 
                   {selectedCategory?.requiresExpiry && (
                     <Text style={styles.hint}>
-                      {selectedCategory.label} must have an expiry date. Expired
-                      products can't be listed or sold.
+                      {t('marketSell.mustHaveAnExpiryDate', {label: selectedCategory.label})}
                     </Text>
                   )}
 
                   <SwitchRow
-                    label="Sealed, unopened pack"
-                    description="Buyers trust sealed packs more"
+                    label={t('marketSell.sealedUnopenedPack')}
+                    description={t('marketSell.buyersTrustSealedPacksMore')}
                     value={form.isSealed}
                     onValueChange={value => setField('isSealed', value)}
                   />
@@ -778,10 +787,10 @@ export default function MarketSellScreen({ navigation, route }) {
                 <SectionHeading
                   icon={<Tractor size={16} color={C.blue} />}
                   color={C.blue}
-                  title="Equipment Details"
+                  title={t('marketSell.equipmentDetails')}
                 />
                 <View style={styles.card}>
-                  <Field label="Condition *">
+                  <Field label={t('marketSell.condition')}>
                     <ChipRow
                       scroll={false}
                       options={(equipmentConditions.length
@@ -798,22 +807,22 @@ export default function MarketSellScreen({ navigation, route }) {
 
                   <View style={styles.row}>
                     <View style={styles.flex}>
-                      <Field label="Brand">
+                      <Field label={t('marketSell.brand')}>
                         <TextInput
                           value={form.brand}
                           onChangeText={value => setField('brand', value)}
-                          placeholder="Mahindra"
+                          placeholder={t('marketSell.mahindra')}
                           placeholderTextColor={C.placeholder}
                           style={styles.input}
                         />
                       </Field>
                     </View>
                     <View style={styles.flex}>
-                      <Field label="Model">
+                      <Field label={t('marketSell.model')}>
                         <TextInput
                           value={form.model}
                           onChangeText={value => setField('model', value)}
-                          placeholder="575 DI"
+                          placeholder={t('marketSell.575Di')}
                           placeholderTextColor={C.placeholder}
                           style={styles.input}
                         />
@@ -823,7 +832,7 @@ export default function MarketSellScreen({ navigation, route }) {
 
                   <View style={styles.row}>
                     <View style={styles.flex}>
-                      <Field label="Model year">
+                      <Field label={t('marketSell.modelYear')}>
                         <TextInput
                           value={form.modelYear}
                           onChangeText={value => setField('modelYear', value)}
@@ -836,7 +845,7 @@ export default function MarketSellScreen({ navigation, route }) {
                       </Field>
                     </View>
                     <View style={styles.flex}>
-                      <Field label="Usage (hours)">
+                      <Field label={t('marketSell.usageHours')}>
                         <TextInput
                           value={form.usageHours}
                           onChangeText={value => setField('usageHours', value)}
@@ -854,20 +863,20 @@ export default function MarketSellScreen({ navigation, route }) {
               <>
                 <SectionHeading
                   icon={<Leaf size={16} color={C.green} />}
-                  title="Produce Details"
+                  title={t('marketSell.produceDetails')}
                 />
                 <View style={styles.card}>
-                  <Field label="Variety">
+                  <Field label={t('marketSell.variety')}>
                     <TextInput
                       value={form.variety}
                       onChangeText={value => setField('variety', value)}
-                      placeholder="e.g. JS-335, Nashik Red"
+                      placeholder={t('marketSell.eGJs335Nashik')}
                       placeholderTextColor={C.placeholder}
                       style={styles.input}
                     />
                   </Field>
 
-                  <Field label="Grade">
+                  <Field label={t('marketSell.grade')}>
                     <ChipRow
                       scroll={false}
                       options={(produceGrades.length
@@ -879,7 +888,7 @@ export default function MarketSellScreen({ navigation, route }) {
                     />
                   </Field>
 
-                  <Field label="Harvest date">
+                  <Field label={t('marketSell.harvestDate')}>
                     <DateField
                       value={form.harvestDate}
                       onPress={() => setDateField('harvestDate')}
@@ -888,8 +897,8 @@ export default function MarketSellScreen({ navigation, route }) {
                   </Field>
 
                   <SwitchRow
-                    label="Organic produce"
-                    description="Grown without chemical fertilizers or pesticides"
+                    label={t('marketSell.organicProduce')}
+                    description={t('marketSell.grownWithoutChemicalFertilizersOr')}
                     value={form.isOrganic}
                     onValueChange={value => setField('isOrganic', value)}
                   />
@@ -901,22 +910,22 @@ export default function MarketSellScreen({ navigation, route }) {
             <SectionHeading
               icon={<Truck size={16} color={C.blue} />}
               color={C.blue}
-              title="Delivery"
+              title={t('marketSell.delivery')}
             />
             <View style={styles.card}>
               <SwitchRow
-                label="I can deliver"
-                description="Otherwise buyers will pick up from your location"
+                label={t('marketSell.iCanDeliver')}
+                description={t('marketSell.otherwiseBuyersWillPickUp')}
                 value={form.deliveryAvailable}
                 onValueChange={value => setField('deliveryAvailable', value)}
               />
 
               {form.deliveryAvailable && (
-                <Field label="Delivery notes">
+                <Field label={t('marketSell.deliveryNotes')}>
                   <TextInput
                     value={form.deliveryNotes}
                     onChangeText={value => setField('deliveryNotes', value)}
-                    placeholder="e.g. Free within 20 km, transport charges extra beyond"
+                    placeholder={t('marketSell.eGFreeWithin20')}
                     placeholderTextColor={C.placeholder}
                     maxLength={300}
                     style={styles.input}
@@ -928,27 +937,27 @@ export default function MarketSellScreen({ navigation, route }) {
             {/* LOCATION */}
             <SectionHeading
               icon={<MapPin size={16} color={C.green} />}
-              title="Location"
+              title={t('marketSell.location')}
             />
             <View style={styles.card}>
               <View style={styles.row}>
                 <View style={styles.flex}>
-                  <Field label="Village">
+                  <Field label={t('marketSell.village')}>
                     <TextInput
                       value={form.location.village}
                       onChangeText={value => setLocationField('village', value)}
-                      placeholder="Village"
+                      placeholder={t('marketSell.village')}
                       placeholderTextColor={C.placeholder}
                       style={styles.input}
                     />
                   </Field>
                 </View>
                 <View style={styles.flex}>
-                  <Field label="Taluka">
+                  <Field label={t('marketSell.taluka')}>
                     <TextInput
                       value={form.location.taluka}
                       onChangeText={value => setLocationField('taluka', value)}
-                      placeholder="Taluka"
+                      placeholder={t('marketSell.taluka')}
                       placeholderTextColor={C.placeholder}
                       style={styles.input}
                     />
@@ -958,24 +967,24 @@ export default function MarketSellScreen({ navigation, route }) {
 
               <View style={styles.row}>
                 <View style={styles.flex}>
-                  <Field label="District">
+                  <Field label={t('marketSell.district')}>
                     <TextInput
                       value={form.location.district}
                       onChangeText={value =>
                         setLocationField('district', value)
                       }
-                      placeholder="District"
+                      placeholder={t('marketSell.district')}
                       placeholderTextColor={C.placeholder}
                       style={styles.input}
                     />
                   </Field>
                 </View>
                 <View style={styles.flex}>
-                  <Field label="State">
+                  <Field label={t('marketSell.state')}>
                     <TextInput
                       value={form.location.state}
                       onChangeText={value => setLocationField('state', value)}
-                      placeholder="State"
+                      placeholder={t('marketSell.state')}
                       placeholderTextColor={C.placeholder}
                       style={styles.input}
                     />
@@ -983,7 +992,7 @@ export default function MarketSellScreen({ navigation, route }) {
                 </View>
               </View>
 
-              <Field label="Pincode">
+              <Field label={t('marketSell.pincode')}>
                 <TextInput
                   value={form.location.pincode}
                   onChangeText={value => setLocationField('pincode', value)}
@@ -997,7 +1006,7 @@ export default function MarketSellScreen({ navigation, route }) {
 
               {!isEdit && (
                 <Text style={styles.hint}>
-                  Left blank? We'll use the location from your profile.
+                  {t('marketSell.leftBlankWellUseThe')}
                 </Text>
               )}
             </View>
@@ -1005,10 +1014,10 @@ export default function MarketSellScreen({ navigation, route }) {
             <MarketButton
               label={
                 uploading
-                  ? 'Uploading photos…'
+                  ? t('marketSell.uploadingPhotos')
                   : isEdit
-                  ? 'Save Changes'
-                  : 'Publish Listing'
+                  ? t('marketSell.saveChanges')
+                  : t('marketSell.publishListing')
               }
               icon={
                 isEdit ? (

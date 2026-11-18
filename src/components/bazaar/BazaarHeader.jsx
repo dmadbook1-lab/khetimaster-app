@@ -7,6 +7,7 @@ import {
   Dimensions,
 } from 'react-native';
 import { Menu, MapPin, Bell } from 'lucide-react-native';
+import {useTranslation} from 'react-i18next';
 const { width } = Dimensions.get('window');
 const DARK = '#111827';
 const GREEN = '#16883E';
@@ -15,6 +16,7 @@ const rf = size => {
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
 export default function BazaarHeader() {
+  const {t} = useTranslation();
   return (
     <View style={styles.header}>
       <TouchableOpacity activeOpacity={0.8} style={styles.headerIcon}>
@@ -22,11 +24,11 @@ export default function BazaarHeader() {
       </TouchableOpacity>
 
       <View style={styles.locationBox}>
-        <Text style={styles.locationLabel}>Your Location⌄</Text>
+        <Text style={styles.locationLabel}>{t('bazaarHeader.yourLocation')}</Text>
 
         <View style={styles.locationRow}>
           <MapPin size={14} color={GREEN} fill={GREEN} />
-          <Text style={styles.location}>Punjab, India</Text>
+          <Text style={styles.location}>{t('bazaarHeader.punjabIndia')}</Text>
         </View>
       </View>
 

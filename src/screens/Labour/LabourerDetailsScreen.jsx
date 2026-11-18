@@ -54,11 +54,25 @@ import {
   formatLabourLocation,
 } from '../../utils/labourFormat';
 import { timeAgo } from '../../utils/marketFormat';
+import {useTranslation} from 'react-i18next';
+import i18n from 'i18next';
 
 const STEPS = [
-  { title: 'Send request', text: 'Pick the date, time and wage' },
-  { title: 'Worker accepts', text: 'Phone numbers are shared' },
-  { title: 'Pay after work', text: 'Then rate the worker' },
+  { get title() {
+    return i18n.t('labourerDetails.sendRequest');
+  }, get text() {
+    return i18n.t('labourerDetails.pickTheDateTimeAnd');
+  } },
+  { get title() {
+    return i18n.t('labourerDetails.workerAccepts');
+  }, get text() {
+    return i18n.t('labourerDetails.phoneNumbersAreShared');
+  } },
+  { get title() {
+    return i18n.t('labourerDetails.payAfterWork');
+  }, get text() {
+    return i18n.t('labourerDetails.thenRateTheWorker');
+  } },
 ];
 
 function ChipList({ items }) {
@@ -74,6 +88,7 @@ function ChipList({ items }) {
 }
 
 export default function LabourerDetailsScreen({ navigation, route }) {
+  const {t} = useTranslation();
   const { labourerId } = route.params;
   const dispatch = useDispatch();
   const insets = useSafeAreaInsets();
@@ -95,12 +110,12 @@ export default function LabourerDetailsScreen({ navigation, route }) {
   if (!labourer) {
     return (
       <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
-        <MarketHeader title="Worker" onBack={() => navigation.goBack()} />
+        <MarketHeader title={t('labourerDetails.worker')} onBack={() => navigation.goBack()} />
         {labourerError && !labourerLoading ? (
           <EmptyState
-            title="Worker not available"
+            title={t('labourerDetails.workerNotAvailable')}
             message={labourerError}
-            actionLabel="Go Back"
+            actionLabel={t('labourerDetails.goBack')}
             onAction={() => navigation.goBack()}
           />
         ) : (
@@ -196,10 +211,10 @@ export default function LabourerDetailsScreen({ navigation, route }) {
             <View style={styles.statBox}>
               <Star size={17} color={C.gold} fill={C.gold} />
               <Text style={styles.statValue}>
-                {labourer.totalReviews ? labourer.rating : 'New'}
+                {labourer.totalReviews ? labourer.rating : t('labourerDetails.new')}
               </Text>
               <Text style={styles.statLabel}>
-                {labourer.totalReviews || 0} reviews
+                {t('labourerDetails.reviews', {v1: labourer.totalReviews || 0})}
               </Text>
             </View>
             <View style={styles.statBox}>
@@ -207,14 +222,14 @@ export default function LabourerDetailsScreen({ navigation, route }) {
               <Text style={styles.statValue}>
                 {formatExperience(labourer.experience, labourer.experienceUnit)}
               </Text>
-              <Text style={styles.statLabel}>Experience</Text>
+              <Text style={styles.statLabel}>{t('labourerDetails.experience')}</Text>
             </View>
             <View style={styles.statBox}>
               <BadgeCheck size={17} color={C.green} />
               <Text style={styles.statValue}>
                 {labourer.totalJobsCompleted || 0}
               </Text>
-              <Text style={styles.statLabel}>Jobs done</Text>
+              <Text style={styles.statLabel}>{t('labourerDetails.jobsDone')}</Text>
             </View>
           </View>
 
@@ -229,7 +244,7 @@ export default function LabourerDetailsScreen({ navigation, route }) {
               <CalendarCheck size={20} color={C.blue} />
               <View style={styles.flex}>
                 <Text style={styles.activeTitle}>
-                  You have a booking with this worker
+                  {t('labourerDetails.youHaveABookingWith')}
                 </Text>
                 <Text style={styles.activeText}>
                   {activeBooking.workType} ·{' '}
@@ -245,11 +260,11 @@ export default function LabourerDetailsScreen({ navigation, route }) {
 
           {/* ABOUT */}
           <View style={styles.card}>
-            <Text style={styles.sectionTitle}>Work & skills</Text>
+            <Text style={styles.sectionTitle}>{t('labourerDetails.workSkills')}</Text>
 
             {work.length > 0 && (
               <>
-                <Text style={styles.label}>Preferred work</Text>
+                <Text style={styles.label}>{t('labourerDetails.preferredWork')}</Text>
                 <ChipList items={work} />
               </>
             )}
@@ -258,7 +273,7 @@ export default function LabourerDetailsScreen({ navigation, route }) {
               <>
                 <View style={[styles.inline, styles.labelRow]}>
                   <Wrench size={13} color={C.muted} />
-                  <Text style={styles.labelInline}>Skills</Text>
+                  <Text style={styles.labelInline}>{t('labourerDetails.skills')}</Text>
                 </View>
                 <ChipList items={skills} />
               </>
@@ -268,7 +283,7 @@ export default function LabourerDetailsScreen({ navigation, route }) {
               <>
                 <View style={[styles.inline, styles.labelRow]}>
                   <Languages size={13} color={C.muted} />
-                  <Text style={styles.labelInline}>Speaks</Text>
+                  <Text style={styles.labelInline}>{t('labourerDetails.speaks')}</Text>
                 </View>
                 <Text style={styles.value}>{languages.join(', ')}</Text>
               </>
@@ -278,7 +293,7 @@ export default function LabourerDetailsScreen({ navigation, route }) {
               <>
                 <View style={[styles.inline, styles.labelRow]}>
                   <CalendarRange size={13} color={C.muted} />
-                  <Text style={styles.labelInline}>Available</Text>
+                  <Text style={styles.labelInline}>{t('labourerDetails.available')}</Text>
                 </View>
                 <Text style={styles.value}>{availabilityWindow}</Text>
               </>
@@ -291,7 +306,7 @@ export default function LabourerDetailsScreen({ navigation, route }) {
 
           {/* REVIEWS */}
           <Text style={styles.blockTitle}>
-            Reviews {labourer.totalReviews ? `(${labourer.totalReviews})` : ''}
+            {t('labourerDetails.reviews2', {v1: labourer.totalReviews ? `(${labourer.totalReviews})` : ''})}
           </Text>
           {reviews.length ? (
             reviews.map((review, index) => (
@@ -326,13 +341,13 @@ export default function LabourerDetailsScreen({ navigation, route }) {
           ) : (
             <View style={styles.noReviews}>
               <Text style={styles.noReviewsText}>
-                No reviews yet. Farmers can rate a worker after the job is done.
+                {t('labourerDetails.noReviewsYetFarmersCan')}
               </Text>
             </View>
           )}
 
           {/* HOW IT WORKS */}
-          <Text style={styles.blockTitle}>How hiring works</Text>
+          <Text style={styles.blockTitle}>{t('labourerDetails.howHiringWorks')}</Text>
           <View style={styles.steps}>
             {STEPS.map((step, index) => (
               <View key={step.title} style={styles.step}>
@@ -359,7 +374,7 @@ export default function LabourerDetailsScreen({ navigation, route }) {
       >
         {labourer.isOwner ? (
           <MarketButton
-            label="Edit My Profile"
+            label={t('labourerDetails.editMyProfile')}
             icon={<Pencil size={16} color={C.white} />}
             onPress={() => navigation.navigate(LABOUR_ROUTES.PROFILE_FORM)}
             style={styles.flex}
@@ -367,7 +382,7 @@ export default function LabourerDetailsScreen({ navigation, route }) {
         ) : (
           <>
             <View style={styles.flex}>
-              <Text style={styles.bottomLabel}>Expected wage</Text>
+              <Text style={styles.bottomLabel}>{t('labourerDetails.expectedWage')}</Text>
               <Text style={styles.bottomWage}>
                 ₹{Number(labourer.expectedWage || 0)}
                 <Text style={styles.bottomUnit}>
@@ -378,7 +393,7 @@ export default function LabourerDetailsScreen({ navigation, route }) {
             </View>
             {activeBooking ? (
               <MarketButton
-                label="View Booking"
+                label={t('labourerDetails.viewBooking')}
                 icon={<CalendarCheck size={17} color={C.white} />}
                 onPress={() =>
                   navigation.navigate(LABOUR_ROUTES.BOOKING_DETAILS, {
@@ -389,7 +404,7 @@ export default function LabourerDetailsScreen({ navigation, route }) {
               />
             ) : (
               <MarketButton
-                label={isAvailable ? 'Book Worker' : 'Not available'}
+                label={isAvailable ? t('labourerDetails.bookWorker') : t('labourerDetails.notAvailable')}
                 icon={
                   isAvailable ? (
                     <CalendarCheck size={17} color={C.white} />

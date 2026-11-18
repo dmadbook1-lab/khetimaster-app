@@ -107,7 +107,7 @@ function NutrientRing({nutrient, current, required, applyMessage}) {
 
       <Text style={styles.ringNumbers}>
         <Text style={styles.ringCurrent}>{Math.round(current)}</Text>
-        <Text style={styles.ringTarget}> / {Math.round(required)} kg/ha</Text>
+        <Text style={styles.ringTarget}> {t('nutrientBalanceCard.kgHa', {v1: Math.round(required)})}</Text>
       </Text>
 
       <View
@@ -323,7 +323,7 @@ export default function NutrientBalanceCard({npkManagement, farmAcre}) {
 
             {acres ? (
               <Text style={styles.fertHeaderMeta}>
-                for {acres.toFixed(2)} acres
+                {t('nutrientBalanceCard.forAcres', {v1: acres.toFixed(2)})}
               </Text>
             ) : null}
           </View>

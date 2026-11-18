@@ -11,7 +11,9 @@ import LinearGradient from 'react-native-linear-gradient';
 import {ArrowRight} from 'lucide-react-native';
 
 import {MARKET_ROUTES} from '../../constants/marketRoutes';
+import {useTranslation} from 'react-i18next';
 
+import {tOpt} from '../../utils/tOpt';
 const {width} = Dimensions.get('window');
 const rf = size => {
   const scale = width / 390;
@@ -21,6 +23,7 @@ const rf = size => {
 const KINDS = ['Crops', 'Equipment', 'Fertilizers'];
 
 export default function MarketPromoCard({navigation}) {
+  const {t} = useTranslation();
   return (
     <TouchableOpacity
       activeOpacity={0.9}
@@ -39,19 +42,19 @@ export default function MarketPromoCard({navigation}) {
         />
 
         <View style={styles.content}>
-          <Text style={styles.eyebrow}>NEW · KHETI MARKET</Text>
-          <Text style={styles.title}>Buy & sell{'\n'}directly</Text>
+          <Text style={styles.eyebrow}>{t('marketPromoCard.newKhetiMarket')}</Text>
+          <Text style={styles.title}>{t('marketPromoCard.buySell')}{'\n'}{t('marketPromoCard.directly')}</Text>
 
           <View style={styles.kindRow}>
             {KINDS.map(kind => (
               <Text key={kind} style={styles.kind}>
-                {kind}
+                {tOpt(kind)}
               </Text>
             ))}
           </View>
 
           <View style={styles.button}>
-            <Text style={styles.buttonText}>Open Market</Text>
+            <Text style={styles.buttonText}>{t('marketPromoCard.openMarket')}</Text>
             <ArrowRight size={14} color="#073F20" strokeWidth={2.8} />
           </View>
         </View>

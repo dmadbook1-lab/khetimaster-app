@@ -7,12 +7,14 @@ import {
   Droplets,
   CloudRain,
 } from 'lucide-react-native';
+import {useTranslation} from 'react-i18next';
 const { width } = Dimensions.get('window');
 const rf = size => {
   const scale = width / 390;
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
 export default function FarmWeatherCard() {
+  const {t} = useTranslation();
   return (
     <View style={styles.card}>
       <View style={styles.leftBlock}>
@@ -28,16 +30,16 @@ export default function FarmWeatherCard() {
 
         <View>
           <Text style={styles.temp}>29°C</Text>
-          <Text style={styles.condition}>Partly Cloudy</Text>
+          <Text style={styles.condition}>{t('farmWeatherCard.partlyCloudy')}</Text>
         </View>
       </View>
 
       <View style={styles.divider} />
 
       <View style={styles.infoRow}>
-        <WeatherItem Icon={FlaskConical} value="58%" label="Humidity" />
-        <WeatherItem Icon={Droplets} value="12" label="km/h Wind" />
-        <WeatherItem Icon={CloudRain} value="10%" label="Rain Forecast" />
+        <WeatherItem Icon={FlaskConical} value="58%" label={t('farmWeatherCard.humidity')} />
+        <WeatherItem Icon={Droplets} value="12" label={t('farmWeatherCard.kmHWind')} />
+        <WeatherItem Icon={CloudRain} value="10%" label={t('farmWeatherCard.rainForecast')} />
       </View>
     </View>
   );

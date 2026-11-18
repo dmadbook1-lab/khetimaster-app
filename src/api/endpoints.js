@@ -11,14 +11,8 @@ const API_ENDPOINTS = {
   ARTICLE_STATS: '/api/articles/stats',
   REFRESH_ARTICLES: '/api/articles/refresh',
 
-    MANDI_CROPS: '/api/mandi/crops',
-
-  MANDI_STATES: '/api/mandi/states',
-
-  MANDI_DISTRICTS: '/api/mandi/districts',
-
-  MANDI_RATES: '/api/mandi/rates',
-
+  // Mandi rates: no backend endpoint - the app calls data.gov.in directly
+  // (src/api/mandiService.js).
 
   /*
   |--------------------------------------------------------------------------

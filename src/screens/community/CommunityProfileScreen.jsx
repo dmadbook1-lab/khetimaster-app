@@ -49,6 +49,8 @@ import { mergeAuthUser } from '../../redux/slices/authSlice';
 import { pickNurseryImages } from '../../utils/nurseryImagePicker';
 import { uploadCommunityAsset } from '../../utils/communityMedia';
 import { formatCount } from '../../utils/communityFormat';
+import {useTranslation} from 'react-i18next';
+import i18n from 'i18next';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -57,9 +59,15 @@ const GAP = 10;
 const TILE = (SCREEN_WIDTH - SIDE * 2 - GAP) / 2;
 
 const PROFILE_TABS = [
-  { key: 'posts', label: 'Posts', Icon: LayoutGrid },
-  { key: 'reels', label: 'Reels', Icon: Clapperboard },
-  { key: 'saved', label: 'Saved', Icon: Bookmark, mineOnly: true },
+  { key: 'posts', get label() {
+    return i18n.t('communityProfile.posts');
+  }, Icon: LayoutGrid },
+  { key: 'reels', get label() {
+    return i18n.t('communityProfile.reels');
+  }, Icon: Clapperboard },
+  { key: 'saved', get label() {
+    return i18n.t('communityProfile.saved');
+  }, Icon: Bookmark, mineOnly: true },
 ];
 
 const emptyTab = () => ({ ids: [], page: 0, pages: 1, loading: false });
@@ -77,6 +85,7 @@ function Stat({ value, label, onPress }) {
  * params: userId (defaults to the signed-in user)
  */
 export default function CommunityProfileScreen({ navigation, route }) {
+  const {t} = useTranslation();
   const dispatch = useDispatch();
   const myId = useSelector(selectMyUserId);
   const userId = route.params?.userId || myId;
@@ -114,9 +123,9 @@ export default function CommunityProfileScreen({ navigation, route }) {
         setFollowing({ userId, isFollowing: data.profile.isFollowing }),
       );
     } catch (err) {
-      setError(err.response?.data?.message || 'Unable to load profile');
+      setError(err.response?.data?.message || t('communityProfile.unableToLoadProfile'));
     }
-  }, [dispatch, userId]);
+  }, [dispatch, userId, t]);
 
   const loadTab = useCallback(
     async (key, refresh = false) => {
@@ -181,7 +190,7 @@ export default function CommunityProfileScreen({ navigation, route }) {
       navigation.push(COMMUNITY_ROUTES.REELS, {
         ids: ids.filter(id => postsById[id]?.type === 'reel'),
         startId: post._id,
-        title: isMe ? 'Your reels' : profile?.fullName,
+        title: isMe ? t('communityProfile.yourReels') : profile?.fullName,
       });
       return;
     }
@@ -189,7 +198,7 @@ export default function CommunityProfileScreen({ navigation, route }) {
     navigation.push(COMMUNITY_ROUTES.POSTS, {
       ids: ids.filter(id => postsById[id]?.type !== 'reel'),
       startId: post._id,
-      title: tab === 'saved' ? 'Saved' : 'Posts',
+      title: tab === 'saved' ? t('communityProfile.saved') : t('communityProfile.posts'),
     });
   };
 
@@ -202,7 +211,7 @@ export default function CommunityProfileScreen({ navigation, route }) {
 
   const shareProfile = () =>
     Share.share({
-      message: `Follow ${profile?.fullName || 'me'} on KhetiMaster Community to see farm posts and reels.`,
+      message: t('communityProfile.followOnKhetimasterCommunityTo', {v1: profile?.fullName || 'me'}),
     }).catch(() => {});
 
   const openEdit = () => {
@@ -228,7 +237,7 @@ export default function CommunityProfileScreen({ navigation, route }) {
 
       setAvatarDraft(uploaded.url);
     } catch (err) {
-      Alert.alert('Profile photo', err.message);
+      Alert.alert(t('communityProfile.profilePhoto'), err.message);
     } finally {
       setUploadingAvatar(false);
     }
@@ -249,8 +258,8 @@ export default function CommunityProfileScreen({ navigation, route }) {
       setEditing(false);
     } catch (err) {
       Alert.alert(
-        'Edit profile',
-        err.response?.data?.message || 'Unable to save profile',
+        t('communityProfile.editProfile'),
+        err.response?.data?.message || t('communityProfile.unableToSaveProfile'),
       );
     } finally {
       setSavingProfile(false);
@@ -299,12 +308,12 @@ export default function CommunityProfileScreen({ navigation, route }) {
               strokeWidth={2.4}
             />
             <Text style={[styles.metaText, styles.metaTextDark]}>
-              {formatCount(profile?.stats?.likes)} likes
+              {t('communityProfile.likes', {v1: formatCount(profile?.stats?.likes)})}
             </Text>
           </View>
           {profile?.followsYou && !isMe ? (
             <View style={styles.metaChip}>
-              <Text style={styles.metaText}>Follows you</Text>
+              <Text style={styles.metaText}>{t('communityProfile.followsYou')}</Text>
             </View>
           ) : null}
         </View>
@@ -313,17 +322,17 @@ export default function CommunityProfileScreen({ navigation, route }) {
       </View>
 
       <View style={styles.statsCard}>
-        <Stat value={profile?.stats?.posts} label="Posts" />
+        <Stat value={profile?.stats?.posts} label={t('communityProfile.posts')} />
         <View style={styles.statDivider} />
         <Stat
           value={profile?.stats?.followers}
-          label="Followers"
+          label={t('communityProfile.followers')}
           onPress={() => openFollows('followers')}
         />
         <View style={styles.statDivider} />
         <Stat
           value={profile?.stats?.following}
-          label="Following"
+          label={t('communityProfile.following')}
           onPress={() => openFollows('following')}
         />
       </View>
@@ -331,7 +340,7 @@ export default function CommunityProfileScreen({ navigation, route }) {
       <View style={styles.buttonsRow}>
         {isMe ? (
           <Pressable style={styles.primaryButton} onPress={openEdit}>
-            <Text style={styles.primaryButtonText}>Edit profile</Text>
+            <Text style={styles.primaryButtonText}>{t('communityProfile.editProfile')}</Text>
           </Pressable>
         ) : (
           <FollowButton
@@ -355,7 +364,7 @@ export default function CommunityProfileScreen({ navigation, route }) {
         <Pressable
           style={styles.shareButton}
           onPress={shareProfile}
-          accessibilityLabel="Share profile"
+          accessibilityLabel={t('communityProfile.shareProfile')}
         >
           <Share2 size={rf(17)} color={FIELD.FOREST} strokeWidth={2.4} />
         </Pressable>
@@ -397,12 +406,12 @@ export default function CommunityProfileScreen({ navigation, route }) {
 
     const copy = {
       posts: isMe
-        ? ['Share your first post', 'Photos and videos you share will appear on your profile.']
-        : ['No posts yet', `${profile?.fullName || 'This farmer'} hasn't shared anything yet.`],
+        ? [t('communityProfile.shareYourFirstPost'), t('communityProfile.photosAndVideosYouShare')]
+        : [t('communityProfile.noPostsYet'), t('communityProfile.hasntSharedAnythingYet', {v1: profile?.fullName || t('communityProfile.thisFarmer')})],
       reels: isMe
-        ? ['Create your first reel', 'Short videos from your farm reach more farmers.']
-        : ['No reels yet', 'Reels they share will show up here.'],
-      saved: ['Nothing saved yet', 'Tap the bookmark on any post or reel to save it here.'],
+        ? [t('communityProfile.createYourFirstReel'), t('communityProfile.shortVideosFromYourFarm')]
+        : [t('communityProfile.noReelsYet'), t('communityProfile.reelsTheyShareWillShow')],
+      saved: [t('communityProfile.nothingSavedYet'), t('communityProfile.tapTheBookmarkOnAny')],
     }[tab];
 
     const Icon = tab === 'reels' ? Clapperboard : tab === 'saved' ? Bookmark : Camera;
@@ -423,7 +432,7 @@ export default function CommunityProfileScreen({ navigation, route }) {
             }
           >
             <Text style={styles.emptyLink}>
-              {tab === 'reels' ? 'Create reel' : 'Share a post'}
+              {tab === 'reels' ? t('communityProfile.createReel') : t('communityProfile.shareAPost')}
             </Text>
           </Pressable>
         ) : null}
@@ -442,10 +451,10 @@ export default function CommunityProfileScreen({ navigation, route }) {
         <View style={styles.centerFill}>
           {error ? (
             <>
-              <Text style={styles.emptyTitle}>Profile not available</Text>
+              <Text style={styles.emptyTitle}>{t('communityProfile.profileNotAvailable')}</Text>
               <Text style={styles.emptyText}>{error}</Text>
               <Pressable onPress={loadProfile}>
-                <Text style={styles.emptyLink}>Try again</Text>
+                <Text style={styles.emptyLink}>{t('common.try_again')}</Text>
               </Pressable>
             </>
           ) : (
@@ -519,7 +528,7 @@ export default function CommunityProfileScreen({ navigation, route }) {
       {/* EDIT PROFILE */}
       <BottomSheet visible={editing} onClose={() => setEditing(false)} keyboardAware>
         <View style={styles.editBody}>
-          <Text style={styles.editTitle}>Edit profile</Text>
+          <Text style={styles.editTitle}>{t('communityProfile.editProfile')}</Text>
 
           <Pressable onPress={changeAvatar} style={styles.editAvatar}>
             <Avatar user={{ ...profile, avatar: avatarDraft }} size={92} />
@@ -528,19 +537,19 @@ export default function CommunityProfileScreen({ navigation, route }) {
                 <ActivityIndicator color="#FFFFFF" />
               </View>
             ) : null}
-            <Text style={styles.editAvatarText}>Change photo</Text>
+            <Text style={styles.editAvatarText}>{t('communityProfile.changePhoto')}</Text>
           </Pressable>
 
-          <Text style={styles.fieldLabel}>Name</Text>
+          <Text style={styles.fieldLabel}>{t('communityProfile.name')}</Text>
           <Text style={styles.readonlyField}>{profile.fullName}</Text>
 
-          <Text style={styles.fieldLabel}>Bio</Text>
+          <Text style={styles.fieldLabel}>{t('communityProfile.bio')}</Text>
           <TextInput
             value={bioDraft}
             onChangeText={setBioDraft}
             maxLength={150}
             multiline
-            placeholder="e.g. Organic wheat & soybean farmer · 12 acres · Indore"
+            placeholder={t('communityProfile.eGOrganicWheatSoybean')}
             placeholderTextColor={COLORS.MUTED}
             style={styles.bioInput}
           />
@@ -557,7 +566,7 @@ export default function CommunityProfileScreen({ navigation, route }) {
             {savingProfile ? (
               <ActivityIndicator color="#FFFFFF" />
             ) : (
-              <Text style={styles.saveText}>Save</Text>
+              <Text style={styles.saveText}>{t('communityProfile.save')}</Text>
             )}
           </Pressable>
         </View>

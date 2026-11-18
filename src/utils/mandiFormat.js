@@ -1,5 +1,6 @@
 import { addDaysToKey, formatDay } from './indiaSchedule';
 import { formatAmount } from './marketFormat';
+import i18n from 'i18next';
 
 /*
 |--------------------------------------------------------------------------
@@ -116,7 +117,7 @@ export const scopeParams = (scope, location) => {
 export const scopeLabel = (scope, location) => {
   if (scope === 'district' && location?.district) return location.district;
   if (scope !== 'india' && location?.state) return location.state;
-  return 'All India';
+  return i18n.t('mandiFormat.allIndia');
 };
 
 /*

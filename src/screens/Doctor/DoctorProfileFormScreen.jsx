@@ -56,12 +56,30 @@ import {
   DOCTOR_TYPE_META,
   buildDoctorProfilePayload,
 } from '../../utils/doctorFormat';
+import {useTranslation} from 'react-i18next';
+import i18n from 'i18next';
 
 const STEPS = [
-  { title: 'About you', text: 'Who you are and how farmers reach you' },
-  { title: 'Expertise', text: 'What you treat and your qualifications' },
-  { title: 'Fee & dates', text: 'What you charge and when you are available' },
-  { title: 'Location', text: 'Where you practise' },
+  { get title() {
+    return i18n.t('doctorProfileForm.aboutYou');
+  }, get text() {
+    return i18n.t('doctorProfileForm.whoYouAreAndHow');
+  } },
+  { get title() {
+    return i18n.t('doctorProfileForm.expertise');
+  }, get text() {
+    return i18n.t('doctorProfileForm.whatYouTreatAndYour');
+  } },
+  { get title() {
+    return i18n.t('doctorProfileForm.feeDates');
+  }, get text() {
+    return i18n.t('doctorProfileForm.whatYouChargeAndWhen');
+  } },
+  { get title() {
+    return i18n.t('doctorProfileForm.location');
+  }, get text() {
+    return i18n.t('doctorProfileForm.whereYouPractise');
+  } },
 ];
 
 // page each validated field lives on (fields from buildDoctorProfilePayload)
@@ -170,6 +188,7 @@ function TagInput({ value, onChange, placeholder }) {
 }
 
 export default function DoctorProfileFormScreen({ navigation, route }) {
+  const {t} = useTranslation();
   const editing = route.params?.doctor || null;
   const isCreate = !editing;
 
@@ -268,20 +287,20 @@ export default function DoctorProfileFormScreen({ navigation, route }) {
 
       if (isCreate) {
         feedback.success(
-          'Welcome, doctor!',
-          'Your profile is live. Farmers can now find you and send consultation requests.',
+          t('doctorProfileForm.welcomeDoctor'),
+          t('doctorProfileForm.yourProfileIsLiveFarmers'),
           {
-            primaryLabel: 'Go to Dashboard',
+            primaryLabel: t('doctorProfileForm.goToDashboard'),
             dismissable: false,
             onPrimary: () => navigation.replace(DOCTOR_ROUTES.DASHBOARD),
           },
         );
       } else {
         feedback.success(
-          'Profile updated',
-          'A new fee applies to new consultations only.',
+          t('doctorProfileForm.profileUpdated'),
+          t('doctorProfileForm.aNewFeeAppliesTo'),
           {
-            primaryLabel: 'Done',
+            primaryLabel: t('doctorProfileForm.done'),
             dismissable: false,
             onPrimary: () => navigation.goBack(),
           },
@@ -322,14 +341,14 @@ export default function DoctorProfileFormScreen({ navigation, route }) {
             gradient={isCreate ? 'care' : 'vet'}
             eyebrow={
               isCreate
-                ? `Step ${step + 1} of ${STEPS.length} · ${STEPS[step].title}`
-                : 'Edit profile'
+                ? t('doctorProfileForm.stepOf', {v1: step + 1, length: STEPS.length, title: STEPS[step].title})
+                : t('doctorProfileForm.editProfile')
             }
             title={isCreate ? STEPS[step].text : form.fullName || 'Doctor'}
             subtitle={
               isCreate
-                ? 'Farmers see this on your profile.'
-                : 'Fee changes only apply to new consultations.'
+                ? t('doctorProfileForm.farmersSeeThisOnYour')
+                : t('doctorProfileForm.feeChangesOnlyApplyTo')
             }
           >
             {isCreate && (
@@ -350,7 +369,7 @@ export default function DoctorProfileFormScreen({ navigation, route }) {
           <View style={styles.body}>
             {shows(0) && (
               <>
-                <Text style={styles.blockTitle}>I am a</Text>
+                <Text style={styles.blockTitle}>{t('doctorProfileForm.iAmA')}</Text>
                 <View style={styles.typeRow}>
                   {TYPE_CARDS.map(({ key, icon: Icon, color, bg }) => {
                     const selected = form.doctorType === key;
@@ -404,40 +423,40 @@ export default function DoctorProfileFormScreen({ navigation, route }) {
                       </View>
                     </TouchableOpacity>
                     <View style={styles.flex}>
-                      <Text style={styles.photoTitle}>Profile photo</Text>
+                      <Text style={styles.photoTitle}>{t('doctorProfileForm.profilePhoto')}</Text>
                       <Text style={styles.photoText}>
-                        A clear photo builds trust with farmers.
+                        {t('doctorProfileForm.aClearPhotoBuildsTrust')}
                       </Text>
                     </View>
                   </View>
 
-                  <CareField label="Full name *">
+                  <CareField label={t('doctorProfileForm.fullName')}>
                     <CareInput
                       value={form.fullName}
                       onChangeText={value => setField('fullName', value)}
-                      placeholder="e.g. Dr. Sunil Patil"
+                      placeholder={t('doctorProfileForm.eGDrSunilPatil')}
                       maxLength={100}
                       invalid={errorField === 'fullName'}
                     />
                   </CareField>
                   <CareField
-                    label="Phone number"
-                    hint="Shared only with farmers whose request you accept."
+                    label={t('doctorProfileForm.phoneNumber')}
+                    hint={t('doctorProfileForm.sharedOnlyWithFarmersWhose')}
                   >
                     <CareInput
                       value={form.phoneNumber}
                       onChangeText={value => setField('phoneNumber', value)}
-                      placeholder="10 digit mobile number"
+                      placeholder={t('doctorProfileForm.10DigitMobileNumber')}
                       keyboardType="phone-pad"
                       maxLength={15}
                       invalid={errorField === 'phoneNumber'}
                     />
                   </CareField>
-                  <CareField label="Email" hint="Never shown to farmers.">
+                  <CareField label={t('doctorProfileForm.email')} hint={t('doctorProfileForm.neverShownToFarmers')}>
                     <CareInput
                       value={form.email}
                       onChangeText={value => setField('email', value)}
-                      placeholder="you@example.com"
+                      placeholder={t('doctorProfileForm.youExampleCom')}
                       keyboardType="email-address"
                       autoCapitalize="none"
                       invalid={errorField === 'email'}
@@ -450,16 +469,16 @@ export default function DoctorProfileFormScreen({ navigation, route }) {
             {shows(1) && (
               <CareCard>
                 <CareField
-                  label="What do you treat? *"
+                  label={t('doctorProfileForm.whatDoYouTreat')}
                   error={
                     errorField === 'specialization'
-                      ? 'Choose at least one'
+                      ? t('doctorProfileForm.chooseAtLeastOne')
                       : null
                   }
                   hint={
                     form.doctorType
-                      ? 'Tap all that apply.'
-                      : 'Choose Veterinarian or Crop Doctor first.'
+                      ? t('doctorProfileForm.tapAllThatApply')
+                      : t('doctorProfileForm.chooseVeterinarianOrCropDoctor')
                   }
                 >
                   <CareChips
@@ -476,7 +495,7 @@ export default function DoctorProfileFormScreen({ navigation, route }) {
                     }
                   />
                 </CareField>
-                <CareField label="Other specialities">
+                <CareField label={t('doctorProfileForm.otherSpecialities')}>
                   <TagInput
                     value={extraSpecialities}
                     onChange={extra =>
@@ -487,17 +506,17 @@ export default function DoctorProfileFormScreen({ navigation, route }) {
                         ...extra,
                       ])
                     }
-                    placeholder="Type and press +"
+                    placeholder={t('doctorProfileForm.typeAndPress')}
                   />
                 </CareField>
-                <CareField label="Qualifications">
+                <CareField label={t('doctorProfileForm.qualifications')}>
                   <TagInput
                     value={form.qualification}
                     onChange={value => setField('qualification', value)}
-                    placeholder="e.g. BVSc & AH, MSc Agri"
+                    placeholder={t('doctorProfileForm.eGBvscAhMsc')}
                   />
                 </CareField>
-                <CareField label="Languages you speak">
+                <CareField label={t('doctorProfileForm.languagesYouSpeak')}>
                   <CareChips
                     multiple
                     options={meta.languages || []}
@@ -505,11 +524,11 @@ export default function DoctorProfileFormScreen({ navigation, route }) {
                     onChange={value => setField('languages', value)}
                   />
                 </CareField>
-                <CareField label="About you">
+                <CareField label={t('doctorProfileForm.aboutYou')}>
                   <CareInput
                     value={form.about}
                     onChangeText={value => setField('about', value)}
-                    placeholder="Years of experience, what you are good at, do you visit farms..."
+                    placeholder={t('doctorProfileForm.yearsOfExperienceWhatYou')}
                     multiline
                     maxLength={1000}
                     invalid={errorField === 'about'}
@@ -520,11 +539,11 @@ export default function DoctorProfileFormScreen({ navigation, route }) {
 
             {shows(2) && (
               <CareCard>
-                <CareField label="Consultation fee">
+                <CareField label={t('doctorProfileForm.consultationFee')}>
                   <View style={styles.feeTypes}>
                     {[
-                      { key: 'perConsultation', label: 'I charge a fee' },
-                      { key: 'free', label: 'Free consultation' },
+                      { key: 'perConsultation', label: t('doctorProfileForm.iChargeAFee') },
+                      { key: 'free', label: t('doctorProfileForm.freeConsultation') },
                     ].map(option => {
                       const selected = form.consultationFeeType === option.key;
 
@@ -564,8 +583,8 @@ export default function DoctorProfileFormScreen({ navigation, route }) {
 
                 {!isFree && (
                   <CareField
-                    label="Fee per consultation *"
-                    hint="Farmers see this before booking and pay you directly."
+                    label={t('doctorProfileForm.feePerConsultation')}
+                    hint={t('doctorProfileForm.farmersSeeThisBeforeBooking')}
                   >
                     <View style={styles.moneyBox}>
                       <Wallet
@@ -591,11 +610,11 @@ export default function DoctorProfileFormScreen({ navigation, route }) {
                 )}
 
                 <CareField
-                  label="Taking consultations (optional)"
-                  hint="Leave empty if you are always available."
+                  label={t('doctorProfileForm.takingConsultationsOptional')}
+                  hint={t('doctorProfileForm.leaveEmptyIfYouAre')}
                   error={
                     errorField === 'availableUntil'
-                      ? '"Until" must be after "from"'
+                      ? t('doctorProfileForm.untilMustBeAfterFrom')
                       : null
                   }
                 >
@@ -610,14 +629,14 @@ export default function DoctorProfileFormScreen({ navigation, route }) {
                         <Calendar size={16} color={C.teal} />
                         <View style={styles.flex}>
                           <Text style={styles.dateLabel}>
-                            {key === 'availableFrom' ? 'From' : 'Until'}
+                            {key === 'availableFrom' ? t('doctorProfileForm.from') : t('doctorProfileForm.until')}
                           </Text>
                           <Text style={styles.dateValue} numberOfLines={1}>
                             {form[key]
                               ? formatDay(form[key], { weekday: false })
                               : key === 'availableFrom'
-                              ? 'Now'
-                              : 'No end'}
+                              ? t('common.now')
+                              : t('doctorProfileForm.noEnd')}
                           </Text>
                         </View>
                         {!!form[key] && (
@@ -639,42 +658,42 @@ export default function DoctorProfileFormScreen({ navigation, route }) {
               <CareCard>
                 <View style={styles.row}>
                   <View style={styles.flex}>
-                    <CareField label="Village / town">
+                    <CareField label={t('doctorProfileForm.villageTown')}>
                       <CareInput
                         value={form.village}
                         onChangeText={value => setField('village', value)}
-                        placeholder="Village"
+                        placeholder={t('doctorProfileForm.village')}
                       />
                     </CareField>
                   </View>
                   <View style={styles.flex}>
-                    <CareField label="District">
+                    <CareField label={t('doctorProfileForm.district')}>
                       <CareInput
                         value={form.district}
                         onChangeText={value => setField('district', value)}
-                        placeholder="District"
+                        placeholder={t('doctorProfileForm.district')}
                       />
                     </CareField>
                   </View>
                 </View>
-                <CareField label="State">
+                <CareField label={t('doctorProfileForm.state')}>
                   <CareInput
                     value={form.state}
                     onChangeText={value => setField('state', value)}
-                    placeholder="State"
+                    placeholder={t('doctorProfileForm.state')}
                   />
                 </CareField>
-                <CareField label="Clinic address">
+                <CareField label={t('doctorProfileForm.clinicAddress')}>
                   <CareInput
                     value={form.address}
                     onChangeText={value => setField('address', value)}
-                    placeholder="Clinic / dispensary address"
+                    placeholder={t('doctorProfileForm.clinicDispensaryAddress')}
                   />
                 </CareField>
 
                 <CareField
-                  label="Degree certificate (optional)"
-                  hint="Kept private. Helps us verify doctors."
+                  label={t('doctorProfileForm.degreeCertificateOptional')}
+                  hint={t('doctorProfileForm.keptPrivateHelpsUsVerify')}
                 >
                   <TouchableOpacity
                     activeOpacity={0.85}
@@ -696,8 +715,8 @@ export default function DoctorProfileFormScreen({ navigation, route }) {
                     )}
                     <Text style={styles.certificateText}>
                       {certificateAsset || form.doctorateCertificate
-                        ? 'Change photo'
-                        : 'Add a photo of your certificate'}
+                        ? t('doctorProfileForm.changePhoto')
+                        : t('doctorProfileForm.addAPhotoOfYour')}
                     </Text>
                   </TouchableOpacity>
                 </CareField>
@@ -725,7 +744,7 @@ export default function DoctorProfileFormScreen({ navigation, route }) {
         {isCreate && step > 0 && (
           <CareButton
             variant="outline"
-            label="Back"
+            label={t('common.back')}
             icon={<ArrowLeft size={16} color={C.tealDark} />}
             disabled={saving || uploading}
             onPress={handleBack}
@@ -736,10 +755,10 @@ export default function DoctorProfileFormScreen({ navigation, route }) {
           <CareButton
             label={
               uploading
-                ? 'Uploading photos…'
+                ? t('doctorProfileForm.uploadingPhotos')
                 : isCreate
-                ? 'Create Profile'
-                : 'Save Changes'
+                ? t('doctorProfileForm.createProfile')
+                : t('doctorProfileForm.saveChanges')
             }
             icon={<Save size={17} color={C.white} />}
             loading={saving || uploading}
@@ -748,7 +767,7 @@ export default function DoctorProfileFormScreen({ navigation, route }) {
           />
         ) : (
           <CareButton
-            label="Next"
+            label={t('doctorProfileForm.next')}
             icon={<ArrowRight size={17} color={C.white} />}
             onPress={handleNext}
             style={styles.flexWide}

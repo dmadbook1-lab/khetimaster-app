@@ -16,6 +16,7 @@ import {
   formatTimeRange,
 } from '../../utils/indiaSchedule';
 import { formatRupees } from '../../utils/marketFormat';
+import {useTranslation} from 'react-i18next';
 
 const scheduleLabel = booking => {
   if (booking.durationUnit === 'days') {
@@ -28,6 +29,7 @@ const scheduleLabel = booking => {
  * Rental row for "My Rentals" (farmer) and "Rental Requests" (owner).
  */
 function RentalCard({ booking, onPress, footer }) {
+  const {t} = useTranslation();
   const machine = booking.machinery || {};
   const isOwner = booking.myRole === 'owner';
   const needsMe = isOwner && booking.status === 'pending';
@@ -53,7 +55,7 @@ function RentalCard({ booking, onPress, footer }) {
           <View style={styles.inline}>
             <UserRound size={11} color={C.muted} />
             <Text style={styles.person} numberOfLines={1}>
-              {isOwner ? 'Farmer' : 'Owner'}:{' '}
+              {isOwner ? t('common.farmer') : t('rentalCard.owner')}:{' '}
               {other?.fullName || machine.ownerName || '—'}
             </Text>
           </View>

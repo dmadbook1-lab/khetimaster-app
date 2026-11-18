@@ -105,7 +105,7 @@ export default function ChatMessage({
               strokeWidth={2.3}
             />
             <Text style={[styles.photoTagText, isUser && styles.userText]}>
-              Photo
+              {t('chatMessage.photo')}
             </Text>
           </View>
         ) : null}

@@ -17,7 +17,42 @@
     "acres": "ᱮᱠᱟᱲ",
     "bookings": "ᱵᱩᱠᱤᱝ",
     "orders": "ᱚᱨᱰᱟᱨ",
-    "no_crops": "ᱡᱟᱦᱟᱱ ᱡᱚ ᱵᱟᱹᱱᱩᱜᱼᱟ"
+    "no_crops": "ᱡᱟᱦᱟᱱ ᱡᱚ ᱵᱟᱹᱱᱩᱜᱼᱟ",
+    "gallery": "ᱜᱮᱞᱟᱨᱤ",
+    "camera": "ᱠᱮᱢᱟᱨᱟ",
+    "delete": "ᱢᱮᱴᱟᱣ",
+    "clear": "ᱯᱟᱨᱥᱟᱣ",
+    "today": "ᱛᱤᱱᱟᱜ",
+    "close": "ᱵᱚᱸᱫᱚ",
+    "send": "ᱞᱟᱹᱠᱛᱤᱭ",
+    "barren_land": "ᱵᱟᱨᱡᱷᱟ ᱥᱟᱱᱟᱢ",
+    "my_farm": "ᱤᱧᱟᱜ ᱠᱷᱮᱛ",
+    "crop": "ᱯᱷᱚᱥᱚᱞ",
+    "acre_count": "{{n}} ᱮᱠᱟᱨ",
+    "back": "ᱨᱟᱪᱷᱟ",
+    "back_to_home": "ᱚᱲᱟᱜ ᱥᱮᱫ ᱨᱟᱪᱷᱟ",
+    "step_of": "ᱥᱴᱮᱯ {{step}} / {{total}}",
+    "yesterday": "ᱦᱤᱡᱩᱜ",
+    "tomorrow": "ᱥᱟᱵᱩᱱ",
+    "try_again": "ᱨᱩᱣᱟᱹᱲ ᱠᱩᱠᱞᱤ ᱢᱮ",
+    "tap_to_retry": "ᱨᱩᱣᱟᱹᱲ ᱠᱩᱠᱞᱤ ᱞᱟᱹᱜᱤᱫ ᱴᱮᱯ ᱢᱮ",
+    "just_now": "ᱱᱤᱛᱚᱜ",
+    "now": "ᱱᱤᱛᱚᱜ",
+    "none": "ᱵᱟᱹᱱᱩᱜ",
+    "allow": "ᱪᱷᱟᱰ ᱢᱮ",
+    "not_now": "ᱱᱤᱛᱚᱜ ᱵᱟᱝ",
+    "please_wait": "ᱠᱷᱟᱱᱤᱠ ᱛᱟᱦᱮᱱ ᱢᱮ…",
+    "ok": "ᱴᱷᱤᱠ",
+    "confirm": "ᱚᱠᱟ ᱢᱮ",
+    "please_try_again": "ᱫᱟᱭᱠᱟᱛᱮ ᱨᱩᱣᱟᱹᱲ ᱠᱩᱠᱞᱤ ᱢᱮ ᱾",
+    "view_details": "ᱵᱟᱨᱭᱟ ᱧᱮᱞ ᱢᱮ",
+    "crop_not_specified": "ᱯᱷᱚᱥᱚᱞ ᱵᱟᱝ ᱡᱟᱱᱟᱹᱣ ᱟ",
+    "barren": "ᱵᱟᱨᱡᱷᱟ",
+    "active": "ᱥᱚᱠᱨᱤᱭ",
+    "view": "ᱧᱮᱞ ᱢᱮ",
+    "save_changes": "ᱵᱚᱫᱚᱞ ᱥᱟᱵᱟᱛ ᱢᱮ",
+    "cannot_undo": "ᱱᱚᱶᱟ ᱠᱟᱹᱢᱤ ᱨᱩᱣᱟᱹᱲ ᱫᱚ ᱵᱟᱝ ᱦᱩᱭ ᱫᱟᱲᱮᱭᱟᱜ ᱟ ᱾",
+    "refresh": "ᱨᱤᱯᱷᱨᱮᱥ"
   },
   "language": {
     "title_line1": "ᱟᱢᱟᱜ",
@@ -32,7 +67,9 @@
   },
   "splash": {
     "tagline": "ᱥᱢᱟᱨᱴ ᱪᱟᱥ ᱨᱮᱭᱟᱜ ᱥᱟᱹᱜᱤ",
-    "powered": "AI ᱛᱮ ᱪᱟᱞᱟᱣᱜ ᱥᱢᱟᱨᱴ ᱪᱟᱥ"
+    "powered": "AI ᱛᱮ ᱪᱟᱞᱟᱣᱜ ᱥᱢᱟᱨᱴ ᱪᱟᱥ",
+    "kheti": "ᱠᱷᱮᱛᱤ",
+    "master": "ᱢᱟᱥᱴᱟᱨ"
   },
   "onboarding": {
     "ai_assistant": "AI ᱜᱚᱲᱚ",
@@ -69,7 +106,9 @@
     "terms": "ᱥᱮᱵᱟ ᱥᱚᱨᱛᱚ",
     "and": "ᱟᱨ",
     "privacy": "ᱩᱠᱩ ᱱᱤᱛᱤ",
-    "change_language": "ᱯᱟᱹᱨᱥᱤ ᱵᱚᱫᱚᱞ ᱢᱮ"
+    "change_language": "ᱯᱟᱹᱨᱥᱤ ᱵᱚᱫᱚᱞ ᱢᱮ",
+    "khetimaster": "KhetiMaster 👋",
+    "exampleGmailCom": "example@gmail.com"
   },
   "otp": {
     "title": "ᱟᱢᱟᱜ",
@@ -137,7 +176,9 @@
     "complete_your_profile": "ᱟᱢᱟᱜ ᱯᱨᱚᱯᱷᱟᱭᱤᱞ ᱯᱩᱨᱟᱹᱣ ᱢᱮ",
     "view_profile": "ᱯᱨᱚᱯᱷᱟᱭᱤᱞ ᱧᱮᱞ ᱢᱮ",
     "complete_profile": "ᱯᱨᱚᱯᱷᱟᱭᱤᱞ ᱯᱩᱨᱟᱹᱣ ᱢᱮ",
-    "my_farming": "ᱤᱧᱟᱜ ᱪᱟᱥ"
+    "my_farming": "ᱤᱧᱟᱜ ᱪᱟᱥ",
+    "profile": "ᱯᱨᱚᱯᱷᱟᱭᱤᱞ",
+    "profilesetup": "ᱯᱨᱚᱯᱷᱟᱭᱤᱞ ᱥᱮᱴᱚᱯ"
   },
   "profile": {
     "title": "ᱯᱨᱚᱯᱷᱟᱭᱤᱞ",
@@ -154,7 +195,8 @@
     "complete_profile": "ᱯᱨᱚᱯᱷᱟᱭᱤᱞ ᱯᱩᱨᱟᱹᱣ ᱢᱮ",
     "member_since": "{{year}} ᱠᱷᱚᱱ ᱥᱚᱫᱚᱥᱭᱚ",
     "edit_profile": "ᱯᱨᱚᱯᱷᱟᱭᱤᱞ ᱥᱟᱯᱲᱟᱣ",
-    "logout_confirm": "ᱟᱢ ᱥᱟᱹᱨᱤ ᱜᱮ ᱞᱚᱜ ᱟᱣᱴ ᱥᱟᱱᱟᱢ ᱠᱟᱱᱟ ᱥᱮ?"
+    "logout_confirm": "ᱟᱢ ᱥᱟᱹᱨᱤ ᱜᱮ ᱞᱚᱜ ᱟᱣᱴ ᱥᱟᱱᱟᱢ ᱠᱟᱱᱟ ᱥᱮ?",
+    "english": "English"
   },
   "home": {
     "good_morning": "ᱥᱟᱹᱜᱩᱱ ᱥᱮᱛᱟᱜ",
@@ -190,6 +232,789 @@
     "qa_warehouse": "ᱜᱩᱫᱟᱢ",
     "qa_delivery": "ᱥᱤᱯᱤᱝ /\nᱰᱮᱞᱤᱵᱷᱟᱨᱤ",
     "qa_disease": "AI ᱨᱚᱜ\nᱪᱤᱱᱦᱟᱹ",
-    "qa_schemes": "ᱥᱚᱨᱠᱟᱨᱤ\nᱡᱚᱡᱚᱱᱟ"
-  }
+    "qa_schemes": "ᱥᱚᱨᱠᱟᱨᱤ\nᱡᱚᱡᱚᱱᱟ",
+    "detecting_location": "ᱴᱷᱟᱶ ᱥᱮᱸᱫᱽᱨᱟ ᱦᱩᱭᱩᱜ ᱠᱟᱱᱟ..."
+  },
+  "weather": {
+    "uv": "UV",
+    "cond_clear": "ᱯᱟᱨᱥᱟᱣ",
+    "dir_N": "N",
+    "dir_NNE": "NNE",
+    "dir_NE": "NE",
+    "dir_ENE": "ENE",
+    "dir_E": "E",
+    "dir_ESE": "ESE",
+    "dir_SE": "SE",
+    "dir_SSE": "SSE",
+    "dir_S": "S",
+    "dir_SSW": "SSW",
+    "dir_SW": "SW",
+    "dir_WSW": "WSW",
+    "dir_W": "W",
+    "dir_WNW": "WNW",
+    "dir_NW": "NW",
+    "dir_NNW": "NNW",
+    "uv_extreme": "ᱟᱹᱰᱤ ᱥᱟᱱᱟᱢ",
+    "uv_very_high": "ᱟᱹᱰᱤ ᱢᱟᱨᱟᱝ",
+    "uv_high": "ᱢᱟᱨᱟᱝ",
+    "uv_moderate": "ᱢᱟᱹᱦᱮᱞ",
+    "uv_low": "ᱠᱚᱢ",
+    "spray_avoid": "ᱛᱤᱱᱟᱜ ᱵᱟᱝ ᱪᱷᱟᱴᱟᱣ ᱢᱮ",
+    "spray_avoid_rain": "ᱵᱟᱨᱥᱟ ᱦᱩᱭ ᱫᱟᱲᱮᱭᱟᱜ ᱟ ᱟᱨ ᱪᱷᱟᱴᱟᱣ ᱠᱚ ᱪᱷᱟᱯᱟᱜ ᱠᱟᱛᱮ ᱥᱮᱱᱟᱭᱟ ᱾",
+    "spray_avoid_wind": "ᱡᱚᱛᱚᱱ ᱵᱟᱭᱨᱟ ᱪᱷᱟᱴᱟᱣ ᱠᱚ ᱞᱟᱫᱮ ᱥᱮᱱᱟᱭᱟ ᱾",
+    "spray_avoid_heat": "ᱟᱹᱰᱤ ᱛᱟᱛᱮᱭᱟ: ᱪᱷᱟᱴᱟᱣ ᱫᱚ ᱩᱥᱟᱹᱨ ᱦᱩᱭᱟ ᱟᱨ ᱟᱨᱟ ᱠᱚ ᱡᱚᱞᱟᱹᱣ ᱫᱟᱲᱮᱭᱟᱜ ᱟ ᱾",
+    "spray_caution": "ᱩᱥᱟᱹᱨ ᱥᱮᱛᱟᱜ ᱜᱮ ᱪᱷᱟᱴᱟᱣ ᱢᱮ",
+    "spray_caution_text": "ᱪᱷᱟᱭᱛᱮ ᱵᱟᱭᱨᱟ ᱥᱮ ᱛᱟᱛᱮᱭ ᱥᱚᱨᱟᱜ ᱦᱩᱭᱟ ᱾",
+    "spray_good": "ᱪᱷᱟᱴᱟᱣ ᱞᱟᱹᱜᱤᱫ ᱵᱷᱟᱞᱮ ᱢᱟᱦᱟ",
+    "spray_good_text": "ᱵᱟᱭᱨᱟ ᱠᱚᱢ ᱟᱨ ᱵᱟᱨᱥᱟ ᱨᱮᱭᱟᱜ ᱥᱚᱞᱦᱟ ᱠᱚᱢ ᱾",
+    "skip_watering": "ᱫᱟᱜ ᱮᱢ ᱵᱟᱝ ᱢᱮ",
+    "skip_watering_text": "2 ᱢᱟᱦᱟ ᱨᱮ ᱡᱷᱟᱞᱮ {{mm}} ᱢᱤ.ᱢᱤ. ᱵᱟᱨᱥᱟ ᱦᱩᱭ ᱫᱟᱲᱮᱭᱟᱜ ᱟ ᱾",
+    "water_early": "ᱩᱥᱟᱹᱨ ᱥᱮ ᱪᱷᱟᱭᱛᱮ ᱫᱟᱜ ᱮᱢ ᱢᱮ",
+    "water_early_text": "ᱛᱟᱛᱮᱭ ᱢᱟᱦᱟ: ᱫᱟᱜ ᱵᱟᱪᱟᱣ ᱞᱟᱹᱜᱤᱫ 9 ᱵᱟᱡᱷᱮ ᱞᱟᱦᱟ ᱥᱮ 5 ᱵᱟᱡᱷᱮ ᱛᱟᱭᱚᱢ ᱫᱟᱜ ᱮᱢ ᱢᱮ ᱾",
+    "water_usual": "ᱨᱮᱯᱮᱫ ᱞᱮᱠᱟᱛᱮ ᱫᱟᱜ ᱮᱢ ᱢᱮ",
+    "water_usual_text": "ᱛᱟᱭᱚᱢ 2 ᱢᱟᱦᱟ ᱨᱮ ᱵᱟᱨᱥᱟ ᱵᱟᱝ ᱦᱩᱭ ᱫᱟᱲᱮᱭᱟᱜ ᱟ ᱾",
+    "heat_alert": "ᱛᱟᱛᱮᱭ ᱥᱮᱞᱮᱫ ᱥᱟᱵᱟᱫ",
+    "heat_alert_text": "12–4 ᱵᱟᱡᱷᱮ ᱠᱷᱮᱛ ᱠᱟᱹᱢᱤ ᱵᱟᱝ ᱢᱮ ᱾ ᱯᱚᱥᱩ ᱠᱚ ᱪᱷᱟᱭᱟ ᱟᱨ ᱫᱟᱜ ᱮᱢ ᱢᱮ ᱾",
+    "frost_risk": "ᱱᱟᱣᱟ ᱪᱟᱱᱫᱚ ᱨᱮ ᱯᱟᱞᱟ ᱨᱮᱭᱟᱜ ᱰᱚᱨ",
+    "frost_risk_text": "ᱵᱤᱡᱽ ᱵᱚᱱᱚᱜ ᱵᱟᱨᱟ ᱠᱚ ᱪᱷᱟᱣ ᱢᱮ ᱟᱨ ᱪᱷᱟᱭᱛᱮ ᱠᱷᱮᱛ ᱨᱮ ᱠᱷᱟᱱᱤᱠ ᱫᱟᱜ ᱮᱢ ᱢᱮ ᱾",
+    "good_harvest": "ᱯᱷᱚᱥᱚᱞ ᱠᱷᱟᱴᱟᱣ ᱟᱨ ᱥᱩᱠᱟᱣ ᱞᱟᱹᱜᱤᱫ ᱵᱷᱟᱞᱮ",
+    "good_harvest_text": "ᱛᱟᱭᱚᱢ 2 ᱢᱟᱦᱟ ᱨᱮ ᱥᱩᱠᱟᱹ ᱥᱟᱭᱚᱜ ᱾",
+    "keep_covered": "ᱯᱷᱚᱥᱚᱞ ᱪᱷᱟᱣ ᱛᱟᱦᱮᱱ ᱢᱮ",
+    "keep_covered_text": "ᱛᱟᱞᱟ ᱠᱟᱛᱮ ᱵᱟᱨᱥᱟ ᱥᱟᱭᱚᱜ ᱦᱤᱡᱩᱜᱼᱟ ᱾ ᱯᱷᱚᱥᱚᱞ ᱪᱷᱟᱣ ᱞᱟᱛᱟᱨ ᱨᱮ ᱛᱟᱦᱮᱱ ᱢᱮ ᱾",
+    "title": "ᱥᱟᱭᱚᱜ",
+    "turn_on_location": "ᱴᱷᱟᱶ ᱡᱷᱤᱡᱽ ᱢᱮ",
+    "not_available": "ᱥᱟᱭᱚᱜ ᱵᱟᱹᱱᱩᱜᱼᱟ",
+    "allow_location": "ᱴᱷᱟᱶ ᱪᱷᱟᱰ ᱢᱮ ᱡᱚᱠᱷᱟ ᱟᱞᱮ ᱟᱢᱟᱜ ᱠᱷᱮᱛ ᱨᱮᱭᱟᱜ ᱥᱟᱭᱚᱜ ᱩᱫᱩᱜ ᱫᱟᱲᱮᱭᱟᱜ ᱟ ᱾",
+    "tap_to_see": "ᱟᱢᱟᱜ ᱠᱷᱮᱛ ᱨᱮᱭᱟᱜ ᱥᱟᱭᱚᱜ ᱧᱮᱞ ᱞᱟᱹᱜᱤᱫ ᱴᱮᱯ ᱢᱮ",
+    "updated": "{{when}} ᱱᱟᱣᱟ ᱦᱩᱭ ᱞᱮᱱᱟ",
+    "showing_saved": "ᱱᱟᱣᱟ ᱵᱟᱝ ᱦᱩᱭ ᱞᱮᱱᱟ, ᱥᱟᱵᱟᱛ ᱟᱠᱟᱱ ᱥᱟᱭᱚᱜ ᱩᱫᱩᱜ ᱠᱟᱱᱟ",
+    "farm_advice_today": "ᱛᱤᱱᱟᱜ ᱨᱮᱭᱟᱜ ᱪᱟᱥ ᱥᱚᱞᱦᱟ",
+    "farm_advice": "ᱪᱟᱥ ᱥᱚᱞᱦᱟ",
+    "tap_card": "ᱪᱮᱫ ᱠᱚᱨᱚᱜ ᱧᱮᱞ ᱞᱟᱹᱜᱤᱫ ᱠᱟᱨᱰ ᱴᱮᱯ ᱢᱮ",
+    "spraying": "ᱪᱷᱟᱴᱟᱣ",
+    "watering": "ᱫᱟᱜ ᱮᱢ",
+    "field_work": "ᱠᱷᱮᱛ ᱠᱟᱹᱢᱤ",
+    "forecast_7": "7 ᱢᱟᱦᱟ ᱨᱮᱭᱟᱜ ᱟᱱᱩᱢᱟᱱ",
+    "tap_day": "ᱵᱤᱵᱨᱚᱬ ᱞᱟᱹᱜᱤᱫ ᱢᱤᱫ ᱢᱟᱦᱟ ᱴᱮᱯ ᱢᱮ",
+    "next_24": "ᱛᱟᱭᱚᱢ 24 ᱜᱷᱚᱱᱴᱟ",
+    "rain_week": "ᱱᱚᱶᱟ ᱦᱟᱯᱛᱟ ᱨᱮ ᱵᱟᱨᱥᱟ",
+    "rain_week_mm": "7 ᱢᱟᱦᱟ ᱨᱮ ᱡᱷᱟᱞᱮ {{mm}} ᱢᱤ.ᱢᱤ. ᱦᱩᱭ ᱫᱟᱲᱮᱭᱟᱜ ᱟ",
+    "rain_week_none": "ᱛᱟᱭᱚᱢ 7 ᱢᱟᱦᱟ ᱨᱮ ᱟᱹᱰᱤ ᱵᱟᱨᱥᱟ ᱵᱟᱝ ᱦᱩᱭ ᱫᱟᱲᱮᱭᱟᱜ ᱟ",
+    "bars_note": "ᱵᱟᱨ ᱫᱚ ᱵᱟᱨᱥᱟ ᱢᱤ.ᱢᱤ. ᱨᱮ ᱩᱫᱩᱜ ᱠᱟᱱᱟ · % ᱫᱚ ᱵᱟᱨᱥᱟ ᱨᱮᱭᱟᱜ ᱥᱚᱞᱦᱟ",
+    "next_days": "ᱛᱟᱭᱚᱢ {{n}} ᱢᱟᱦᱟ",
+    "feels_like": "ᱪᱷᱟᱣᱞᱮᱠᱟ ᱞᱟᱜᱟᱣ",
+    "feels": "ᱞᱟᱜᱟᱣ {{temp}}",
+    "feels_hotter": "ᱟᱨᱦᱚᱸ ᱛᱟᱛᱮᱭ ᱞᱟᱜᱟᱣ (ᱞᱟᱛᱟᱨ ᱨᱮ ᱫᱟᱜ)",
+    "feels_cooler": "ᱟᱨᱦᱚᱸ ᱴᱷᱟᱸᱰᱟ ᱞᱟᱜᱟᱣ (ᱵᱟᱭᱨᱟ)",
+    "feels_same": "ᱱᱤᱡ ᱞᱮᱠᱟᱛᱮ ᱜᱮ",
+    "wind": "ᱵᱟᱭᱨᱟ",
+    "from_dir": "{{dir}} ᱠᱷᱚᱱ",
+    "gusts": "ᱡᱷᱚᱠ {{n}}",
+    "uv_index": "UV ᱥᱩᱪᱠᱟᱸᱠ",
+    "dew_point": "ᱥᱮᱛᱮᱛ ᱵᱤᱱᱫᱩ",
+    "humidity": "ᱥᱮᱛᱮᱛ",
+    "humidity_pct": "ᱥᱮᱛᱮᱛ {{n}}%",
+    "pressure": "ᱫᱟᱵ",
+    "clouds_pct": "ᱥᱮᱱᱫᱨᱟ {{n}}%",
+    "visibility": "ᱧᱮᱞ ᱫᱟᱲᱮ",
+    "sunrise": "ᱥᱤᱸᱜᱚᱱ ᱦᱚᱪᱚ",
+    "sunset": "ᱥᱤᱸ ᱨᱟᱪᱷᱟ",
+    "day_gone": "ᱱᱚᱶᱟ ᱢᱟᱦᱟ ᱫᱚ ᱟᱱᱩᱢᱟᱱ ᱨᱮ ᱵᱟᱹᱱᱩᱜᱼᱟ ᱾",
+    "low": "ᱠᱚᱢ {{temp}}",
+    "high_low": "ᱢᱟᱨ {{high}} · ᱠᱚᱢ {{low}}",
+    "rain": "ᱵᱟᱨᱥᱟ",
+    "cond_rain": "ᱵᱟᱨᱥᱟ",
+    "chance_pct": "{{n}}% ᱥᱚᱞᱦᱟ",
+    "rain_and_wind": "ᱵᱟᱨᱥᱟ ᱟᱨ ᱵᱟᱭᱨᱟ",
+    "hour_by_hour": "ᱜᱷᱚᱱᱴᱟ ᱞᱮᱠᱟᱛᱮ",
+    "tone_good": "ᱵᱷᱟᱞᱮ",
+    "tone_careful": "ᱥᱟᱵᱷᱟᱹᱱ",
+    "tone_avoid": "ᱵᱟᱝ ᱢᱮ",
+    "weather_now": "ᱱᱤᱛᱚᱜ ᱨᱮᱭᱟᱜ ᱥᱟᱭᱚᱜ",
+    "open_weather": "ᱥᱟᱭᱚᱜ ᱡᱷᱤᱡᱽ ᱢᱮ",
+    "your_location": "ᱟᱢᱟᱜ ᱴᱷᱟᱶ",
+    "err_busy": "ᱥᱟᱭᱚᱜ ᱥᱮᱣᱟ ᱵᱤᱥᱤ ᱢᱮᱱᱟᱜᱼᱟ ᱾ ᱫᱟᱭᱠᱟᱛᱮ ᱢᱤᱫ ᱢᱤᱱᱤᱴ ᱛᱟᱭᱚᱢ ᱫᱩᱦᱲᱟᱹ ᱠᱩᱠᱞᱤ ᱢᱮ ᱾",
+    "err_load": "ᱥᱟᱭᱚᱜ ᱵᱟᱝ ᱞᱟᱫᱮ ᱫᱟᱲᱮᱭᱟᱜ ᱠᱟᱱᱟ ᱾ ᱫᱟᱭᱠᱟᱛᱮ ᱫᱩᱦᱲᱟᱹ ᱠᱩᱠᱞᱤ ᱢᱮ ᱾",
+    "err_offline": "ᱤᱱᱴᱟᱨᱱᱮᱴ ᱵᱟᱹᱱᱩᱜᱼᱟ ᱾ ᱥᱟᱭᱚᱜ ᱞᱟᱹᱜᱤᱫ ᱠᱚᱱᱮᱠᱥᱚᱱ ᱞᱟᱹᱠᱛᱤ ᱾",
+    "cond_partially_cloudy": "ᱠᱷᱟᱱᱤᱠ ᱥᱮᱱᱫᱨᱟ",
+    "cond_overcast": "ᱡᱷᱚᱛᱚ ᱥᱮᱱᱫᱨᱟ",
+    "cond_light_rain": "ᱦᱚᱨᱚᱢ ᱵᱟᱨᱥᱟ",
+    "cond_heavy_rain": "ᱟᱹᱰᱤ ᱵᱟᱨᱥᱟ",
+    "cond_rain_showers": "ᱵᱟᱨᱥᱟ ᱪᱷᱟᱴᱟ",
+    "cond_drizzle": "ᱵᱩᱸᱫ ᱵᱩᱸᱫ ᱵᱟᱨᱥᱟ",
+    "cond_light_drizzle": "ᱦᱚᱨᱚᱢ ᱵᱩᱸᱫ ᱵᱟᱨᱥᱟ",
+    "cond_heavy_drizzle": "ᱟᱹᱰᱤ ᱵᱩᱸᱫ ᱵᱟᱨᱥᱟ",
+    "cond_light_drizzle_rain": "ᱦᱚᱨᱚᱢ ᱵᱩᱸᱫ/ᱵᱟᱨᱥᱟ",
+    "cond_heavy_drizzle_rain": "ᱟᱹᱰᱤ ᱵᱩᱸᱫ/ᱵᱟᱨᱥᱟ",
+    "cond_thunderstorm": "ᱵᱟᱹᱫᱞᱟ ᱵᱟᱭᱨᱟ",
+    "cond_thunderstorm_without_precipitation": "ᱵᱟᱨᱥᱟ ᱵᱟᱹᱱᱩᱜ ᱵᱟᱹᱫᱞᱟ ᱵᱟᱭᱨᱟ",
+    "cond_lightning_without_thunder": "ᱜᱚᱨᱚᱜ ᱵᱟᱹᱱᱩᱜ ᱵᱮᱞᱟᱣ",
+    "cond_fog": "ᱠᱩᱦᱤ",
+    "cond_mist": "ᱥᱮᱛᱮᱛ ᱠᱩᱦᱤ",
+    "cond_smoke_or_haze": "ᱫᱷᱩᱣᱟᱹ ᱥᱮ ᱫᱷᱩᱸᱫᱷ",
+    "cond_duststorm": "ᱫᱷᱩᱞᱤ ᱵᱟᱭᱨᱟ",
+    "cond_hail": "ᱥᱤᱞᱟ ᱵᱟᱨᱥᱟ",
+    "cond_hail_showers": "ᱥᱤᱞᱟ ᱵᱟᱨᱥᱟ ᱪᱷᱟᱴᱟ",
+    "cond_snow": "ᱵᱚᱨᱚᱯᱷ",
+    "cond_squalls": "ᱡᱷᱚᱠ ᱵᱟᱭᱨᱟ",
+    "cond_precipitation_in_vicinity": "ᱞᱟᱛᱟᱨ ᱨᱮ ᱵᱟᱨᱥᱟ",
+    "cond_sky_coverage_increasing": "ᱥᱮᱱᱫᱨᱟ ᱵᱟᱲᱦᱟᱣ ᱠᱟᱱᱟ",
+    "cond_sky_coverage_decreasing": "ᱥᱮᱱᱫᱨᱟ ᱠᱚᱢ ᱠᱟᱱᱟ",
+    "cond_sky_unchanged": "ᱥᱮᱱᱫᱨᱟ ᱵᱟᱭ ᱵᱚᱫᱚᱞ",
+    "sunny": "ᱥᱤᱸ ᱞᱟᱨᱮ",
+    "rainy": "ᱵᱟᱨᱥᱟ",
+    "cloudy": "ᱥᱮᱱᱫᱨᱟ",
+    "weatherDetails": "ᱥᱟᱭᱚᱜ ᱵᱤᱵᱨᱚᱬ",
+    "weatherDataVisualCrossing": "ᱥᱟᱭᱚᱜ ᱰᱮᱴᱟ: Visual Crossing · {{address}}"
+  },
+  "farms": {
+    "delete_confirm_after": "?",
+    "filter_barren": "ᱵᱟᱨᱡᱷᱟ",
+    "filter_active": "ᱥᱚᱠᱨᱤᱭ",
+    "err_missing_id": "ᱠᱷᱮᱛ ID ᱵᱟᱹᱱᱩᱜᱼᱟ ᱾ ᱫᱟᱭᱠᱟᱛᱮ ᱟᱢᱟᱜ ᱠᱷᱮᱛ ᱠᱚ ᱫᱩᱦᱲᱟᱹ ᱞᱟᱫᱮ ᱢᱮ ᱾",
+    "err_name": "ᱫᱟᱭᱠᱟᱛᱮ ᱠᱷᱮᱛ ᱨᱮᱭᱟᱜ ᱧᱩᱛᱩᱢ ᱞᱟᱹᱠᱛᱤᱭ ᱢᱮ ᱾",
+    "err_crop": "ᱫᱟᱭᱠᱟᱛᱮ ᱯᱷᱚᱥᱚᱞ ᱨᱮᱭᱟᱜ ᱧᱩᱛᱩᱢ ᱞᱟᱹᱠᱛᱤᱭ ᱢᱮ ᱾",
+    "err_area": "ᱠᱷᱮᱛ ᱨᱮᱭᱟᱜ ᱯᱟᱥᱱᱟᱣ ᱥᱩᱱᱭ ᱠᱷᱚᱱ ᱟᱹᱰᱤ ᱞᱟᱹᱠᱛᱤ ᱾",
+    "err_variety": "ᱫᱟᱭᱠᱟᱛᱮ ᱯᱷᱚᱥᱚᱞ ᱨᱮᱭᱟᱜ ᱵᱤᱰᱟᱹ ᱞᱟᱹᱠᱛᱤᱭ ᱢᱮ ᱾",
+    "err_sowing": "ᱫᱟᱭᱠᱟᱛᱮ ᱵᱤᱡᱽ ᱵᱚᱱᱚᱜ ᱢᱟᱦᱟ ᱞᱟᱹᱠᱛᱤᱭ ᱢᱮ ᱾",
+    "err_irrigation": "ᱫᱟᱭᱠᱟᱛᱮ ᱥᱮᱪ ᱨᱮᱭᱟᱜ ᱥᱟᱠᱟᱢ ᱞᱟᱹᱠᱛᱤᱭ ᱢᱮ ᱾",
+    "err_farming_type": "ᱫᱟᱭᱠᱟᱛᱮ ᱴᱷᱤᱠ ᱪᱟᱥ ᱨᱮᱭᱟᱜ ᱥᱟᱠᱟᱢ ᱵᱟᱪᱷᱟᱣ ᱢᱮ ᱾",
+    "updated": "ᱠᱷᱮᱛ ᱱᱟᱣᱟ ᱦᱩᱭ ᱞᱮᱱᱟ",
+    "updated_text": "ᱟᱢᱟᱜ ᱠᱷᱮᱛ ᱨᱮᱭᱟᱜ ᱵᱤᱵᱨᱚᱬ ᱵᱷᱟᱞᱮ ᱞᱮᱠᱟᱛᱮ ᱱᱟᱣᱟ ᱦᱩᱭ ᱞᱮᱱᱟ ᱾",
+    "err_update": "ᱠᱷᱮᱛ ᱱᱟᱣᱟ ᱵᱟᱝ ᱦᱩᱭ ᱫᱟᱲᱮᱭᱟᱜ ᱠᱟᱱᱟ ᱾ ᱫᱟᱭᱠᱟᱛᱮ ᱫᱩᱦᱲᱟᱹ ᱠᱩᱠᱞᱤ ᱢᱮ ᱾",
+    "deleted": "ᱠᱷᱮᱛ ᱢᱮᱴᱟᱣ ᱦᱩᱭ ᱞᱮᱱᱟ",
+    "deleted_text": "{{name}} ᱵᱷᱟᱞᱮ ᱞᱮᱠᱟᱛᱮ ᱢᱮᱴᱟᱣ ᱦᱩᱭ ᱞᱮᱱᱟ ᱾",
+    "err_delete": "ᱠᱷᱮᱛ ᱵᱟᱝ ᱢᱮᱴᱟᱣ ᱦᱩᱭ ᱫᱟᱲᱮᱭᱟᱜ ᱠᱟᱱᱟ ᱾ ᱫᱟᱭᱠᱟᱛᱮ ᱫᱩᱦᱲᱟᱹ ᱠᱩᱠᱞᱤ ᱢᱮ ᱾",
+    "manage": "ᱠᱷᱮᱛ ᱠᱚᱨᱚᱜ ᱢᱮ",
+    "edit_details": "ᱠᱷᱮᱛ ᱵᱤᱵᱨᱚᱬ ᱵᱚᱫᱚᱞ ᱢᱮ",
+    "edit_details_sub": "ᱯᱷᱚᱥᱚᱞ, ᱮᱠᱟᱨ ᱟᱨ ᱮᱴᱟᱜ ᱵᱤᱵᱨᱚᱬ ᱱᱟᱣᱟ ᱢᱮ",
+    "delete": "ᱠᱷᱮᱛ ᱢᱮᱴᱟᱣ ᱢᱮ",
+    "delete_sub": "ᱱᱚᱶᱟ ᱠᱷᱮᱛ ᱚᱪᱚᱜ ᱞᱮᱠᱟᱛᱮ ᱢᱮᱴᱟᱣ ᱢᱮ",
+    "edit": "ᱠᱷᱮᱛ ᱵᱚᱫᱚᱞ ᱢᱮ",
+    "edit_sub": "ᱟᱢᱟᱜ ᱠᱷᱮᱛ ᱨᱮᱭᱟᱜ ᱵᱤᱵᱨᱚᱬ ᱱᱟᱣᱟ ᱢᱮ",
+    "farm_name_req": "ᱠᱷᱮᱛ ᱨᱮᱭᱟᱜ ᱧᱩᱛᱩᱢ *",
+    "farm_name_ph": "ᱢᱤᱫ ᱥᱟᱠᱟᱢ: ᱥᱤᱱᱰᱮ ᱠᱷᱮᱛ",
+    "crop_name_req": "ᱯᱷᱚᱥᱚᱞ ᱧᱩᱛᱩᱢ *",
+    "crop_name_ph": "ᱢᱤᱫ ᱥᱟᱠᱟᱢ: ᱠᱚᱴᱚᱱ",
+    "variety_req": "ᱯᱷᱚᱥᱚᱞ ᱵᱤᱰᱟᱹ *",
+    "variety_ph": "ᱢᱤᱫ ᱥᱟᱠᱟᱢ: Bt ᱠᱚᱴᱚᱱ",
+    "area_req": "ᱠᱷᱮᱛ ᱨᱮᱭᱟᱜ ᱯᱟᱥᱱᱟᱣ (ᱮᱠᱟᱨ) *",
+    "sowing_req": "ᱵᱤᱡᱽ ᱵᱚᱱᱚᱜ ᱢᱟᱦᱟ *",
+    "irrigation_req": "ᱥᱮᱪ ᱨᱮᱭᱟᱜ ᱥᱟᱠᱟᱢ *",
+    "irrigation_ph": "ᱢᱤᱫ ᱥᱟᱠᱟᱢ: ᱴᱚᱯᱠᱟ, ᱥᱯᱨᱤᱱᱠᱞᱟᱨ, ᱵᱟᱨᱥᱟ ᱛᱮ ᱪᱟᱥ",
+    "method_req": "ᱪᱟᱥ ᱨᱮᱭᱟᱜ ᱯᱟᱱᱛᱮ *",
+    "type_organic": "ᱡᱤᱣᱤ",
+    "type_inorganic": "ᱠᱷᱟᱫ ᱥᱟᱶ",
+    "type_integrated": "ᱢᱤᱞᱟᱹᱣ ᱥᱟᱶ",
+    "no_standing_crop": "ᱱᱤᱛᱚᱜ ᱯᱷᱚᱥᱚᱞ ᱵᱟᱹᱱᱩᱜᱼᱟ",
+    "delete_confirm": "ᱱᱚᱶᱟ ᱠᱷᱮᱛ ᱢᱮᱴᱟᱣ ᱢᱮ ᱥᱮ?",
+    "keep": "ᱠᱷᱮᱛ ᱛᱟᱦᱮᱱ ᱢᱮ",
+    "delete_confirm_before": "ᱟᱢ ᱪᱮᱫ ᱴᱷᱤᱠ ᱢᱮᱴᱟᱣ ᱥᱮᱱᱟ",
+    "add_farm": "ᱠᱷᱮᱛ ᱥᱮᱞᱮᱫ ᱢᱮ",
+    "add_farm_sub": "ᱱᱟᱶᱟ ᱠᱷᱮᱛ ᱧᱩᱛᱩᱢ ᱚᱞ ᱢᱮ",
+    "overview": "ᱠᱷᱮᱛ ᱡᱷᱚᱛᱚ ᱧᱮᱞ",
+    "my_farms": "ᱤᱧᱟᱜ ᱠᱷᱮᱛ ᱠᱚ",
+    "variety_not_specified": "ᱵᱤᱰᱟᱹ ᱵᱟᱝ ᱡᱟᱱᱟᱹᱣ ᱟ",
+    "active_caps": "ᱥᱚᱠᱨᱤᱭ",
+    "area": "ᱯᱟᱥᱱᱟᱣ",
+    "satellite": "ᱥᱮᱴᱮᱞᱟᱭᱴ",
+    "search_ph": "ᱧᱩᱛᱩᱢ ᱥᱮ ᱯᱷᱚᱥᱚᱞ ᱛᱮ ᱠᱷᱮᱛ ᱥᱮᱸᱫᱽᱨᱟ ᱢᱮ",
+    "header_sub": "ᱟᱢᱟᱜ ᱡᱷᱚᱛᱚ ᱠᱷᱮᱛ ᱢᱤᱫ ᱴᱷᱟᱶ ᱨᱮ ᱠᱚᱨᱚᱜ ᱟᱨ ᱧᱮᱞ ᱢᱮ",
+    "current_observation": "ᱱᱤᱛᱚᱜ ᱨᱮᱭᱟᱜ ᱧᱮᱞ",
+    "waiting_satellite_date": "ᱥᱮᱴᱮᱞᱟᱭᱴ ᱢᱟᱦᱟ ᱞᱟᱹᱜᱤᱫ ᱛᱟᱦᱮᱱ ᱠᱟᱱᱟ"
+  },
+  "featuredProducts": {
+    "iffcoNpk191919": "IFFCO NPK 19:19:19"
+  },
+  "farmOverviewHero": {
+    "sentinel1": "Sentinel-1",
+    "sentinel2": "Sentinel-2"
+  },
+  "data": {
+    "ndvi": "NDVI"
+  },
+  "cropHealthCard": {
+    "ndvi": "NDVI",
+    "ndre": "NDRE",
+    "moderate": "ᱢᱟᱹᱦᱮᱞ"
+  },
+  "productInfoSection": {
+    "iffco": "IFFCO"
+  },
+  "doctorProfileForm": {
+    "youExampleCom": "you@example.com"
+  },
+  "machineryForm": {
+    "575Di": "575 DI"
+  },
+  "cart": {
+    "upi": "UPI",
+    "gst5": "GST (5%)"
+  },
+  "checkout": {
+    "visaMastercardRupay": "Visa, Mastercard, RuPay",
+    "paytmAmazonPayAirtel": "Paytm, Amazon Pay, Airtel",
+    "gst5": "GST (5%)"
+  },
+  "orderDetails": {
+    "iffco": "IFFCO",
+    "del9234871km": "DEL9234871KM"
+  },
+  "communityProfile": {
+    "avatarJpg": "avatar-{{v1}}.jpg"
+  },
+  "aIDiagnosis": {
+    "khetimasterAi": "KhetiMaster AI"
+  },
+  "uploadCropPhoto": {
+    "tomatoLeaf01Jpg2": "tomato_leaf_01.jpg • 2.4 MB"
+  },
+  "bookDroneService": {
+    "sa": "SA",
+    "gst18": "GST (18%)",
+    "soybean": "ᱥᱚᱭᱟᱵᱤᱱ",
+    "cropType": "ᱯᱷᱚᱥᱚᱞ ᱨᱮᱭᱟᱜ ᱥᱟᱠᱟᱢ"
+  },
+  "confirmDroneBooking": {
+    "sa": "SA",
+    "ai": "AI",
+    "upi": "UPI",
+    "gpayPhonepePaytm": "GPay, PhonePe, Paytm",
+    "visaMastercardRupay": "Visa, Mastercard, RuPay"
+  },
+  "droneBookingSuccess": {
+    "sa": "SA"
+  },
+  "droneServiceDetails": {
+    "dgca": "DGCA",
+    "rtkGps": "RTK GPS",
+    "soybean": "ᱥᱚᱭᱟᱵᱤᱱ"
+  },
+  "droneServices": {
+    "dgca": "DGCA"
+  },
+  "governmentSchemes": {
+    "pmKisan": "PM-KISAN",
+    "governmentSchemes": "ᱥᱚᱨᱠᱟᱨᱤ ᱥᱠᱤᱢ"
+  },
+  "latestSchemes": {
+    "pmKisan": "PM-KISAN",
+    "pmfby": "PMFBY"
+  },
+  "agricultureNews": {
+    "khetimaster": "KhetiMaster",
+    "weather": "ᱥᱟᱭᱚᱜ"
+  },
+  "articleDetails": {
+    "khetimaster": "KhetiMaster"
+  },
+  "marketSell": {
+    "575Di": "575 DI",
+    "variety": "ᱵᱤᱰᱟᱹ"
+  },
+  "doctorFormat": {
+    "upi": "UPI"
+  },
+  "machineryFormat": {
+    "upi": "UPI",
+    "other": "ᱮᱴᱟᱜ"
+  },
+  "farmGridCard": {
+    "yyyyMmDd": "YYYY-MM-DD",
+    "farmsType": "farms.type_{{v1}}",
+    "integrated": "ᱢᱤᱞᱟᱹᱣ ᱥᱟᱶ"
+  },
+  "satelliteControls": {
+    "sentinel2": "Sentinel-2",
+    "sentinel1": "Sentinel-1"
+  },
+  "reviewFarmBoundary": {
+    "khetimaster": "KHETIMASTER"
+  },
+  "farmOverview": {
+    "ndvi": "NDVI",
+    "evi": "EVI",
+    "evi2": "EVI2",
+    "savi": "SAVI",
+    "msavi": "MSAVI",
+    "ndmi": "NDMI",
+    "ndwi": "NDWI",
+    "smi": "SMI",
+    "ccc": "CCC",
+    "soc": "SOC",
+    "ndre": "NDRE",
+    "reci": "RECI",
+    "vv": "VV",
+    "vh": "VH",
+    "vvVh": "VV / VH",
+    "vhVv": "VH / VV",
+    "rvi": "RVI",
+    "sdwi": "SDWI"
+  },
+  "weatherDay": {
+    "uv": "UV"
+  },
+  "voiceAssistantModal": {
+    "khetimaster": "KhetiMaster"
+  },
+  "satelliteMapCard": {
+    "ndvi": "{{v1}} • NDVI"
+  },
+  "aIGuruHeader": {
+    "english": "English"
+  },
+  "farmMapping": {
+    "mappingStep": "mapping.step_{{v1}}"
+  },
+  "nurseryCloudinary": {
+    "plantJpg": "plant-{{v1}}.jpg"
+  },
+  "weatherFormat": {
+    "weatherDir": "weather.dir_{{code}}",
+    "weatherCond": "weather.cond_{{v1}}"
+  },
+  "opt": {
+    "pMKISAN": "PM-KISAN",
+    "tomorrow": "ᱥᱟᱵᱩᱱ",
+    "barren": "ᱵᱟᱨᱡᱷᱟ",
+    "active": "ᱥᱚᱠᱨᱤᱭ",
+    "acres": "ᱮᱠᱟᱨ",
+    "hectares": "ᱦᱮᱠᱴᱮᱨ",
+    "wheat": "ᱜᱷᱮᱦᱩᱸ",
+    "soybean": "ᱥᱚᱭᱟᱵᱤᱱ",
+    "cotton": "ᱠᱚᱴᱚᱱ",
+    "tomato": "ᱴᱚᱢᱟᱴᱚ",
+    "maize": "ᱢᱟᱠᱷᱟᱭ",
+    "rice": "ᱫᱟᱣᱟ",
+    "onion": "ᱯᱮᱸᱡᱟ",
+    "potato": "ᱟᱞᱩ",
+    "sugarcane": "ᱤᱠᱷᱩ",
+    "sprinkler": "ᱥᱯᱨᱤᱱᱠᱞᱟᱨ",
+    "rainfed": "ᱵᱟᱨᱥᱟ ᱛᱮ ᱪᱟᱥ",
+    "irrigation": "ᱥᱮᱪ",
+    "drip": "ᱴᱚᱯᱠᱟ",
+    "flood": "ᱵᱟᱱ",
+    "other": "ᱮᱴᱟᱜ",
+    "moderate": "ᱢᱟᱹᱦᱮᱞ",
+    "low": "ᱠᱚᱢ",
+    "spraying": "ᱪᱷᱟᱴᱟᱣ",
+    "good": "ᱵᱷᱟᱞᱮ",
+    "organic": "ᱡᱤᱣᱤ",
+    "inorganic": "ᱠᱷᱟᱫ ᱥᱟᱶ",
+    "integrated": "ᱢᱤᱞᱟᱹᱣ ᱥᱟᱶ"
+  },
+  "profileSetup": {
+    "profile": "ᱯᱨᱚᱯᱷᱟᱭᱤᱞ"
+  },
+  "mapping": {
+    "step_profile": "ᱯᱨᱚᱯᱷᱟᱭᱤᱞ"
+  },
+  "doctorDashboard": {
+    "profile": "ᱯᱨᱚᱯᱷᱟᱭᱤᱞ"
+  },
+  "aiGuru": {
+    "namaste": "ᱡᱚᱦᱟᱨ!",
+    "namaste_name": "ᱡᱚᱦᱟᱨ {{name}}!",
+    "welcome_farm": "ᱤᱧ ᱫᱚ AI ᱜᱩᱨᱩ ᱠᱟᱱᱟ ᱾ ᱤᱧ {{farm}} ({{crop}}) ᱧᱮᱞᱚᱜ ᱠᱟᱱᱟ ᱾ ᱱᱚᱶᱟ ᱠᱷᱮᱛ ᱞᱟᱹᱜᱤᱫ ᱥᱮᱪ, ᱨᱚᱜ ᱨᱮᱭᱟᱜ ᱰᱚᱨ, ᱠᱷᱟᱫ, ᱥᱟᱭᱚᱜ ᱥᱮ ᱢᱟᱸᱰᱤ ᱫᱟᱢ ᱵᱟᱵᱚᱛ ᱤᱧ ᱥᱟᱶ ᱜᱟᱞᱢᱟᱨᱟᱣ ᱢᱮ ᱾",
+    "welcome_general": "ᱤᱧ ᱫᱚ AI ᱜᱩᱨᱩ, ᱟᱢᱟᱜ ᱪᱟᱥ ᱨᱮᱭᱟᱜ ᱜᱚᱲᱚᱭᱤᱡ ᱠᱟᱱᱟ ᱾ ᱯᱷᱚᱥᱚᱞ, ᱯᱚᱠᱟ, ᱥᱟᱭᱚᱜ ᱟᱨ ᱢᱟᱸᱰᱤ ᱫᱟᱢ ᱵᱟᱵᱚᱛ, ᱟᱨ KhetiMaster ᱨᱮ ᱪᱮᱫ ᱞᱟᱹᱠᱛᱤ ᱠᱟᱱᱟ: ᱢᱚᱩᱱᱤ, ᱴᱨᱮᱠᱴᱚᱨ, ᱰᱟᱜᱴᱟᱨ, ᱵᱷᱟᱨᱮ ᱟᱨ ᱵᱟᱡᱟᱨ ᱵᱟᱵᱚᱛ ᱞᱟᱹᱠᱛᱤ ᱠᱷᱚᱵᱚᱨ ᱫᱚ ᱪᱮᱫ ᱠᱟᱱᱟ ᱠᱚ ᱛᱮ ᱥᱮ ᱜᱟᱞᱢᱟᱨᱟᱣ ᱢᱮ ᱾",
+    "barren_land": "ᱵᱟᱨᱡᱷᱟ ᱥᱟᱱᱟᱢ",
+    "photo": "ᱯᱷᱚᱴᱚ",
+    "add_photo_title": "ᱯᱷᱚᱥᱚᱞ ᱯᱷᱚᱴᱚ ᱥᱮᱞᱮᱫ ᱢᱮ",
+    "add_photo_text": "AI ᱜᱩᱨᱩ ᱫᱚ ᱵᱟᱨᱟ, ᱯᱚᱠᱟ ᱥᱮ ᱨᱚᱜ ᱨᱮᱭᱟᱜ ᱪᱤᱱᱦᱟᱹ ᱧᱮᱞ ᱫᱟᱲᱮᱭᱟᱜ ᱟ ᱾",
+    "delete_chat": "ᱪᱟᱴ ᱢᱮᱴᱟᱣ ᱢᱮ",
+    "delete_chat_text": "ᱱᱚᱶᱟ ᱜᱟᱞᱢᱟᱨᱟᱣ ᱟᱢᱟᱜ ᱤᱛᱷᱟᱥ ᱠᱷᱚᱱ ᱚᱪᱚᱜ ᱢᱮᱴᱟᱣ ᱥᱮ?",
+    "clear_all": "ᱡᱷᱚᱛᱚ ᱪᱟᱴ ᱯᱟᱨᱥᱟᱣ ᱢᱮ",
+    "clear_all_text": "ᱟᱢᱟᱜ ᱤᱛᱷᱟᱥ ᱠᱷᱚᱱ ᱡᱷᱚᱛᱚ AI ᱜᱩᱨᱩ ᱪᱟᱴ ᱚᱪᱚᱜ ᱢᱮᱴᱟᱣ ᱥᱮ?",
+    "clear_conversation": "ᱜᱟᱞᱢᱟᱨᱟᱣ ᱯᱟᱨᱥᱟᱣ ᱢᱮ",
+    "clear_conversation_text": "ᱱᱚᱶᱟ ᱜᱟᱞᱢᱟᱨᱟᱣ ᱨᱮᱭᱟᱜ ᱡᱷᱚᱛᱚ ᱠᱷᱚᱵᱚᱨ ᱚᱪᱚᱜ ᱢᱮᱴᱟᱣ ᱥᱮ?",
+    "opening_chat": "ᱪᱟᱴ ᱡᱷᱤᱡᱽ ᱦᱩᱭᱩᱜ ᱠᱟᱱᱟ…",
+    "photo_attached": "ᱯᱷᱚᱥᱚᱞ ᱯᱷᱚᱴᱚ ᱞᱟᱛᱟᱨ ᱦᱩᱭ ᱞᱮᱱᱟ",
+    "photo_attached_hint": "ᱢᱤᱫ ᱠᱩᱠᱞᱤ ᱥᱮᱞᱮᱫ ᱢᱮ ᱥᱮ ᱟᱹᱰᱤ ᱞᱟᱹᱠᱛᱤᱭ ᱢᱮ",
+    "name": "AI ᱜᱩᱨᱩ",
+    "open_menu": "ᱢᱮᱱᱩ ᱡᱷᱤᱡᱽ ᱢᱮ",
+    "online": "ᱚᱱᱞᱟᱭᱤᱱ",
+    "chat_history": "ᱪᱟᱴ ᱤᱛᱷᱟᱥ",
+    "ready_title": "ᱪᱮᱫ ᱞᱮᱠᱟᱛᱮ ᱤᱧ ᱟᱢ ᱜᱚᱲᱚ\nᱫᱟᱲᱮᱭᱟᱜ ᱟ ᱪᱮᱫ ᱪᱟᱞᱟᱜ ᱛᱮ?",
+    "ready_subtitle": "ᱯᱷᱚᱥᱚᱞ, ᱥᱟᱭᱚᱜ, ᱨᱚᱜ,\nᱢᱟᱸᱰᱤ ᱫᱟᱢ ᱥᱮ ᱟᱢᱟᱜ ᱠᱷᱮᱛ ᱨᱮᱭᱟᱜ ᱪᱮᱫ ᱦᱚᱸ ᱵᱟᱵᱚᱛ ᱠᱩᱠᱞᱤ ᱢᱮ",
+    "tap_and_speak": "ᱴᱮᱯ ᱪᱷᱚ ᱟᱨ ᱜᱟᱞᱚᱜ ᱢᱮ",
+    "tap_to_speak": "ᱜᱟᱞᱚᱜ ᱞᱟᱹᱜᱤᱫ ᱴᱮᱯ ᱢᱮ",
+    "speak_languages": "ᱦᱤᱱᱫᱤ · ᱢᱟᱨᱟᱴᱷᱤ · ᱤᱝᱞᱤᱥ",
+    "ask_placeholder": "AI ᱜᱩᱨᱩ ᱠᱷᱚᱱ ᱠᱩᱠᱞᱤ ᱢᱮ…",
+    "speak_question": "ᱟᱢᱟᱜ ᱠᱩᱠᱞᱤ ᱜᱟᱞᱚᱜ ᱢᱮ",
+    "your_chats": "ᱟᱢᱟᱜ ᱪᱟᱴ ᱠᱚ",
+    "new_chat": "ᱱᱟᱶᱟ ᱪᱟᱴ",
+    "no_chats": "ᱱᱤᱛᱚᱜ ᱪᱟᱴ ᱵᱟᱹᱱᱩᱜᱼᱟ ᱾ AI ᱜᱩᱨᱩ ᱠᱷᱚᱱ ᱯᱩᱭᱞᱩ ᱠᱩᱠᱞᱤ ᱢᱮ ᱾",
+    "sending": "ᱞᱟᱹᱠᱛᱤᱭ ᱦᱩᱭᱩᱜ ᱠᱟᱱᱟ…",
+    "not_sent": "ᱵᱟᱝ ᱞᱟᱹᱠᱛᱤᱭ ᱦᱩᱭ ᱞᱮᱱᱟ",
+    "helpful_q": "ᱜᱚᱲᱚ ᱞᱟᱱᱟᱜ ᱠᱟᱱᱟ ᱥᱮ?",
+    "helpful": "ᱜᱚᱲᱚ ᱞᱟᱱᱟᱜ ᱞᱮᱱᱟ",
+    "not_helpful": "ᱜᱚᱲᱚ ᱵᱟᱝ ᱞᱟᱱᱟᱜ ᱞᱮᱱᱟ",
+    "change_farm": "ᱠᱷᱮᱛ ᱵᱚᱫᱚᱞ ᱢᱮ",
+    "general_farming": "ᱥᱟᱫᱷᱟᱨᱚᱬ ᱪᱟᱥ",
+    "general_farming_sub": "ᱪᱮᱫ ᱦᱚᱸ ᱯᱷᱚᱥᱚᱞ, ᱥᱟᱭᱚᱜ, ᱫᱟᱢ ᱥᱮ ᱮᱯ ᱜᱚᱲᱚ",
+    "ask_about": "AI ᱜᱩᱨᱩ ᱠᱷᱚᱱ ᱠᱩᱠᱞᱤ ᱢᱮ",
+    "pick_farm": "ᱚᱱᱟ ᱠᱷᱮᱛ ᱞᱟᱹᱜᱤᱫ ᱥᱚᱞᱦᱟ ᱞᱟᱹᱜᱤᱫ ᱢᱤᱫ ᱠᱷᱮᱛ ᱵᱟᱪᱷᱟᱣ ᱢᱮ",
+    "add_new_farm": "ᱱᱟᱶᱟ ᱠᱷᱮᱛ ᱥᱮᱞᱮᱫ ᱢᱮ",
+    "q_irrigation": "ᱤᱧᱟᱜ ᱯᱷᱚᱥᱚᱞ ᱞᱟᱹᱜᱤᱫ ᱥᱮᱪ ᱞᱟᱹᱠᱛᱤ ᱛᱟᱭᱚᱢ ᱦᱩᱭᱟ ᱥᱮ?",
+    "q_disease_risk": "ᱱᱚᱶᱟ ᱦᱟᱯᱛᱟ ᱨᱮ ᱪᱮᱫ ᱨᱚᱜ ᱨᱮᱭᱟᱜ ᱰᱚᱨ ᱢᱮᱱᱟᱜ ᱥᱮ?",
+    "q_fertilizer": "ᱤᱧ ᱪᱮᱫ ᱠᱷᱟᱫ ᱮᱢ ᱥᱮᱱᱟ?",
+    "ask_next": "ᱛᱟᱭᱚᱢ ᱠᱩᱠᱞᱤ ᱢᱮ",
+    "typing": "AI ᱜᱩᱨᱩ ᱞᱤᱠᱷᱟᱣ ᱠᱟᱱᱟ…"
+  },
+  "feedMedia": {
+    "photo": "ᱯᱷᱚᱴᱚ"
+  },
+  "createPost": {
+    "photo": "ᱯᱷᱚᱴᱚ"
+  },
+  "diseaseDetection": {
+    "photo": "ᱯᱷᱚᱴᱚ"
+  },
+  "chatMessage": {
+    "photo": "ᱯᱷᱚᱴᱚ"
+  },
+  "units": {
+    "acres": "ᱮᱠᱟᱨ",
+    "hectares": "ᱦᱮᱠᱴᱮᱨ",
+    "kmh": "ᱠᱤ.ᱢᱤ./ᱜᱷᱚᱱᱴᱟ",
+    "kmh_value": "{{n}} ᱠᱤ.ᱢᱤ./ᱜᱷᱚᱱᱴᱟ",
+    "mm_value": "{{n}} ᱢᱤ.ᱢᱤ.",
+    "km_value": "{{n}} ᱠᱤ.ᱢᱤ.",
+    "ac_value": "{{n}} ᱮᱠᱟᱨ",
+    "acres_value": "{{n}} ᱮᱠᱟᱨ",
+    "kg_per_acre": "ᱠᱤ.ᱜᱨᱟ./ᱮᱠᱟᱨ",
+    "kg_per_acre_value": "{{n}} ᱠᱤ.ᱜᱨᱟ./ᱮᱠᱟᱨ",
+    "kg_per_ha_value": "{{n}} ᱠᱤ.ᱜᱨᱟ./ᱦᱮᱠᱴᱮᱨ",
+    "kg_value": "{{n}} ᱠᱤ.ᱜᱨᱟ.",
+    "ha_value": "{{n}} ᱦᱮᱠᱴᱮᱨ",
+    "m_value": "{{n}} ᱢᱤᱴᱟᱨ"
+  },
+  "farmForm": {
+    "hectares": "ᱦᱮᱠᱴᱮᱨ",
+    "irr_sprinkler": "ᱥᱯᱨᱤᱱᱠᱞᱟᱨ",
+    "irr_rainfed": "ᱵᱟᱨᱥᱟ ᱛᱮ ᱪᱟᱥ",
+    "farm_details": "ᱠᱷᱮᱛ ᱨᱮᱭᱟᱜ ᱵᱤᱵᱨᱚᱬ",
+    "tell_us_line1": "ᱟᱞᱟᱞ ᱞᱮᱠᱟᱛᱮ ᱵᱟᱛᱟᱣ ᱢᱮ",
+    "tell_us_line2": "ᱟᱢᱟᱜ ᱠᱷᱮᱛ 🌾",
+    "tell_us_sub": "ᱟᱢᱟᱜ ᱯᱷᱚᱥᱚᱞ ᱧᱮᱞ ᱮᱛᱦᱚᱵ ᱞᱟᱹᱜᱤᱫ ᱠᱷᱮᱛ ᱨᱮᱭᱟᱜ ᱥᱟᱫᱷᱟᱨᱚᱬ ᱵᱤᱵᱨᱚᱬ ᱥᱮᱞᱮᱫ ᱢᱮ ᱾",
+    "farm_name": "ᱠᱷᱮᱛ ᱨᱮᱭᱟᱜ ᱧᱩᱛᱩᱢ",
+    "farm_name_placeholder": "ᱢᱤᱫ ᱥᱟᱠᱟᱢ: ᱯᱟᱴᱤᱞ ᱠᱷᱮᱛ",
+    "crop_type": "ᱯᱷᱚᱥᱚᱞ ᱨᱮᱭᱟᱜ ᱥᱟᱠᱟᱢ",
+    "select_crop_type": "ᱯᱷᱚᱥᱚᱞ ᱨᱮᱭᱟᱜ ᱥᱟᱠᱟᱢ ᱵᱟᱪᱷᱟᱣ ᱢᱮ",
+    "farm_area": "ᱠᱷᱮᱛ ᱨᱮᱭᱟᱜ ᱯᱟᱥᱱᱟᱣ",
+    "enter_area": "ᱯᱟᱥᱱᱟᱣ ᱞᱟᱹᱠᱛᱤᱭ ᱢᱮ",
+    "irrigation_type": "ᱥᱮᱪ ᱨᱮᱭᱟᱜ ᱥᱟᱠᱟᱢ",
+    "next_boundary": "ᱛᱟᱭᱚᱢ ᱨᱮ, ᱟᱞᱮ ᱟᱢᱟᱜ ᱠᱷᱮᱛ ᱨᱮᱭᱟᱜ ᱥᱤᱢᱟᱹ ᱱᱚᱠᱥᱟ ᱨᱮ ᱪᱤᱱᱦᱟᱹ ᱟᱠᱚᱜᱼᱟ ᱾",
+    "continue_mapping": "ᱱᱚᱠᱥᱟ ᱥᱮᱞᱮᱫ ᱞᱟᱹᱜᱤᱫ ᱞᱟᱦᱟᱜ ᱪᱟᱞᱟᱜ ᱢᱮ",
+    "err_load_crops": "ᱯᱷᱚᱥᱚᱞ ᱵᱟᱝ ᱞᱟᱫᱮ ᱫᱟᱲᱮᱭᱟᱜ ᱠᱟᱱᱟ ᱾",
+    "current_location": "ᱱᱤᱛᱚᱜ ᱨᱮᱭᱟᱜ ᱴᱷᱟᱶ",
+    "err_no_user": "ᱟᱞᱮ ᱟᱢᱟᱜ ᱮᱠᱟᱣᱱᱴ ᱵᱟᱝ ᱧᱟᱢ ᱞᱮᱱᱟ ᱾ ᱫᱟᱭᱠᱟᱛᱮ ᱫᱩᱦᱲᱟᱹ ᱞᱚᱜ ᱤᱱ ᱢᱮ ᱾",
+    "boundary_required": "ᱥᱤᱢᱟᱹ ᱞᱟᱹᱠᱛᱤ ᱠᱟᱱᱟ",
+    "boundary_required_text": "ᱫᱟᱭᱠᱟᱛᱮ ᱯᱟᱪᱷᱟ ᱪᱟᱞᱟᱜ ᱢᱮ ᱟᱨ ᱟᱢᱟᱜ ᱠᱷᱮᱛ ᱨᱮ ᱞᱟᱹᱠᱛᱤᱭ ᱛᱤᱱ ᱴᱟᱯᱟ ᱪᱤᱱᱦᱟᱹ ᱢᱮ ᱾",
+    "name_required": "ᱠᱷᱮᱛ ᱨᱮᱭᱟᱜ ᱧᱩᱛᱩᱢ ᱞᱟᱹᱠᱛᱤ ᱠᱟᱱᱟ",
+    "name_required_text": "ᱫᱟᱭᱠᱟᱛᱮ ᱟᱢᱟᱜ ᱠᱷᱮᱛ ᱞᱟᱹᱜᱤᱫ ᱢᱤᱫ ᱧᱩᱛᱩᱢ ᱞᱟᱹᱠᱛᱤᱭ ᱢᱮ ᱾",
+    "crop_required": "ᱯᱷᱚᱥᱚᱞ ᱞᱟᱹᱠᱛᱤ ᱠᱟᱱᱟ",
+    "crop_required_text": "ᱫᱟᱭᱠᱟᱛᱮ ᱢᱤᱫ ᱯᱷᱚᱥᱚᱞ ᱵᱟᱪᱷᱟᱣ ᱢᱮ ᱾",
+    "crop_image_missing": "ᱯᱷᱚᱥᱚᱞ ᱯᱷᱚᱴᱚ ᱵᱟᱹᱱᱩᱜᱼᱟ",
+    "crop_image_missing_text": "ᱵᱟᱪᱷᱟᱣ ᱟᱠᱟᱱ ᱯᱷᱚᱥᱚᱞ ᱨᱮ ᱯᱷᱚᱥᱚᱞ ᱯᱷᱚᱴᱚ ᱵᱟᱹᱱᱩᱜᱼᱟ ᱾ ᱫᱟᱭᱠᱟᱛᱮ ᱯᱷᱚᱥᱚᱞ ᱫᱩᱦᱲᱟᱹ ᱵᱟᱪᱷᱟᱣ ᱢᱮ ᱾",
+    "variety_required": "ᱵᱤᱰᱟᱹ ᱞᱟᱹᱠᱛᱤ ᱠᱟᱱᱟ",
+    "expected_date_required": "ᱟᱹᱜᱩ ᱦᱚᱪᱚ ᱵᱤᱡᱽ ᱵᱚᱱᱚᱜ ᱢᱟᱦᱟ ᱞᱟᱹᱠᱛᱤ ᱠᱟᱱᱟ",
+    "sowing_date_required": "ᱵᱤᱡᱽ ᱵᱚᱱᱚᱜ ᱢᱟᱦᱟ ᱞᱟᱹᱠᱛᱤ ᱠᱟᱱᱟ",
+    "expected_date_required_text": "ᱫᱟᱭᱠᱟᱛᱮ ᱟᱹᱜᱩ ᱦᱚᱪᱚ ᱵᱤᱡᱽ ᱵᱚᱱᱚᱜ ᱢᱟᱦᱟ ᱵᱟᱪᱷᱟᱣ ᱢᱮ ᱾",
+    "sowing_date_required_text": "ᱫᱟᱭᱠᱟᱛᱮ ᱵᱤᱡᱽ ᱵᱚᱱᱚᱜ ᱢᱟᱦᱟ ᱵᱟᱪᱷᱟᱣ ᱢᱮ ᱾",
+    "invalid_date": "ᱵᱟᱝ ᱴᱷᱤᱠ ᱢᱟᱦᱟ",
+    "invalid_date_text": "ᱫᱟᱭᱠᱟᱛᱮ ᱴᱷᱤᱠ ᱢᱟᱦᱟ ᱵᱟᱪᱷᱟᱣ ᱢᱮ ᱾",
+    "invalid_sowing": "ᱵᱟᱝ ᱴᱷᱤᱠ ᱵᱤᱡᱽ ᱵᱚᱱᱚᱜ ᱢᱟᱦᱟ",
+    "invalid_sowing_text": "ᱢᱮᱱᱟᱜ ᱯᱷᱚᱥᱚᱞ ᱞᱟᱹᱜᱤᱫ ᱵᱤᱡᱽ ᱵᱚᱱᱚᱜ ᱢᱟᱦᱟ ᱫᱚ ᱛᱟᱭᱚᱢ ᱦᱤᱡᱩᱜ ᱠᱟᱱᱟ ᱵᱟᱝ ᱦᱩᱭ ᱫᱟᱲᱮᱭᱟᱜ ᱟ ᱾",
+    "invalid_expected": "ᱵᱟᱝ ᱴᱷᱤᱠ ᱟᱹᱜᱩ ᱦᱚᱪᱚ ᱢᱟᱦᱟ",
+    "invalid_expected_text": "ᱵᱟᱨᱡᱷᱟ ᱥᱟᱱᱟᱢ ᱞᱟᱹᱜᱤᱫ ᱟᱹᱜᱩ ᱦᱚᱪᱚ ᱵᱤᱡᱽ ᱵᱚᱱᱚᱜ ᱢᱟᱦᱟ ᱫᱚ ᱯᱟᱪᱷᱞᱟ ᱵᱟᱝ ᱦᱩᱭ ᱫᱟᱲᱮᱭᱟᱜ ᱟ ᱾",
+    "invalid_area": "ᱵᱟᱝ ᱴᱷᱤᱠ ᱯᱟᱥᱱᱟᱣ",
+    "invalid_area_text": "ᱫᱟᱭᱠᱟᱛᱮ ᱮᱠᱟᱨ ᱨᱮ ᱴᱷᱤᱠ ᱠᱷᱮᱛ ᱯᱟᱥᱱᱟᱣ ᱞᱟᱹᱠᱛᱤᱭ ᱢᱮ ᱾",
+    "irrigation_required": "ᱥᱮᱪ ᱞᱟᱹᱠᱛᱤ ᱠᱟᱱᱟ",
+    "irrigation_required_text": "ᱫᱟᱭᱠᱟᱛᱮ ᱥᱮᱪ ᱨᱮᱭᱟᱜ ᱥᱟᱠᱟᱢ ᱵᱟᱪᱷᱟᱣ ᱢᱮ ᱾",
+    "farming_type_required": "ᱪᱟᱥ ᱨᱮᱭᱟᱜ ᱥᱟᱠᱟᱢ ᱞᱟᱹᱠᱛᱤ ᱠᱟᱱᱟ",
+    "farming_type_required_text": "ᱫᱟᱭᱠᱟᱛᱮ ᱟᱢᱟᱜ ᱪᱟᱥ ᱨᱮᱭᱟᱜ ᱥᱟᱠᱟᱢ ᱵᱟᱪᱷᱟᱣ ᱢᱮ ᱾",
+    "invalid_boundary": "ᱵᱟᱝ ᱴᱷᱤᱠ ᱥᱤᱢᱟᱹ",
+    "invalid_boundary_text": "ᱠᱷᱮᱛ ᱨᱮᱭᱟᱜ ᱥᱤᱢᱟᱹ ᱨᱮ ᱵᱟᱝ ᱴᱷᱤᱠ ᱠᱚᱚᱨᱰᱤᱱᱮᱴ ᱢᱮᱱᱟᱜ ᱠᱟᱱᱟ ᱾ ᱫᱟᱭᱠᱟᱛᱮ ᱠᱷᱮᱛ ᱫᱩᱦᱲᱟᱹ ᱪᱤᱱᱦᱟᱹ ᱢᱮ ᱾",
+    "crop_image_invalid_text": "ᱵᱟᱪᱷᱟᱣ ᱟᱠᱟᱱ ᱯᱷᱚᱥᱚᱞ ᱨᱮ ᱴᱷᱤᱠ CropGen ᱯᱷᱚᱴᱚ ᱵᱟᱹᱱᱩᱜᱼᱟ ᱾ ᱫᱟᱭᱠᱟᱛᱮ ᱯᱷᱚᱥᱚᱞ ᱫᱩᱦᱲᱟᱹ ᱵᱟᱪᱷᱟᱣ ᱢᱮ ᱾",
+    "err_save": "ᱟᱢᱟᱜ ᱠᱷᱮᱛ ᱥᱟᱵᱟᱛ ᱡᱚᱠᱷᱚ ᱨᱮ ᱪᱮᱫ ᱦᱚᱸ ᱵᱷᱩᱞ ᱦᱩᱭ ᱞᱮᱱᱟ ᱾",
+    "could_not_save": "ᱠᱷᱮᱛ ᱥᱟᱵᱟᱛ ᱵᱟᱝ ᱦᱩᱭ ᱞᱮᱱᱟ",
+    "tell_us_field": "ᱱᱚᱶᱟ ᱠᱷᱮᱛ ᱵᱟᱵᱚᱛ ᱟᱞᱟᱞ ᱞᱮᱠᱟᱛᱮ ᱵᱟᱛᱟᱣ ᱢᱮ",
+    "boundary_captured": "ᱠᱷᱮᱛ ᱨᱮᱭᱟᱜ ᱥᱤᱢᱟᱹ ᱧᱟᱢ ᱞᱮᱱᱟ",
+    "perimeter": "ᱪᱷᱮᱛᱟᱜ ᱥᱤᱢᱟᱹ",
+    "basic_info": "ᱢᱩᱞ ᱵᱤᱵᱨᱚᱬ",
+    "basic_info_sub": "ᱟᱢᱟᱜ ᱠᱷᱮᱛ ᱟᱨ ᱯᱷᱚᱥᱚᱞ ᱧᱩᱛᱩᱢ ᱮᱢ ᱢᱮ",
+    "crop_name": "ᱯᱷᱚᱥᱚᱞ ᱧᱩᱛᱩᱢ",
+    "select_crop": "ᱢᱤᱫ ᱯᱷᱚᱥᱚᱞ ᱵᱟᱪᱷᱟᱣ ᱢᱮ",
+    "cropgen_catalogue": "CropGen ᱯᱷᱚᱥᱚᱞ ᱢᱮᱱᱮᱛ ᱞᱤᱥᱴᱤ",
+    "cropgen_crop": "CropGen ᱯᱷᱚᱥᱚᱞ ᱢᱮᱱᱮᱛ ᱞᱤᱥᱴᱤ",
+    "variety": "ᱵᱤᱰᱟᱹ",
+    "variety_ph": "ᱢᱤᱫ ᱥᱟᱠᱟᱢ: JS 335",
+    "expected_sowing_date": "ᱟᱹᱜᱩ ᱦᱚᱪᱚ ᱵᱤᱡᱽ ᱵᱚᱱᱚᱜ ᱢᱟᱦᱟ",
+    "sowing_date": "ᱵᱤᱡᱽ ᱵᱚᱱᱚᱜ ᱢᱟᱦᱟ",
+    "select_expected_date": "ᱟᱹᱜᱩ ᱦᱚᱪᱚ ᱢᱟᱦᱟ ᱵᱟᱪᱷᱟᱣ ᱢᱮ",
+    "select_sowing_date": "ᱵᱤᱡᱽ ᱵᱚᱱᱚᱜ ᱢᱟᱦᱟ ᱵᱟᱪᱷᱟᱣ ᱢᱮ",
+    "adjust_area": "ᱟᱢ ᱜᱷᱟᱱᱚᱠ ᱟᱠᱟᱱ ᱯᱟᱥᱱᱟᱣ ᱵᱚᱫᱚᱞ ᱫᱟᱲᱮᱭᱟᱜ ᱟ",
+    "total_area": "ᱡᱷᱚᱛᱚ ᱪᱟᱥ ᱟᱠᱟᱱ ᱯᱟᱥᱱᱟᱣ",
+    "irrigation": "ᱥᱮᱪ",
+    "irrigation_sub": "ᱱᱚᱶᱟ ᱠᱷᱮᱛ ᱨᱮ ᱪᱮᱫ ᱞᱮᱠᱟᱛᱮ ᱫᱟᱜ ᱮᱢ ᱟ?",
+    "select_irrigation": "ᱥᱮᱪ ᱨᱮᱭᱟᱜ ᱥᱟᱠᱟᱢ ᱵᱟᱪᱷᱟᱣ ᱢᱮ",
+    "farming_type": "ᱪᱟᱥ ᱨᱮᱭᱟᱜ ᱥᱟᱠᱟᱢ",
+    "farming_type_sub": "ᱪᱟᱥ ᱨᱮᱭᱟᱜ ᱯᱟᱱᱛᱮ ᱵᱟᱪᱷᱟᱣ ᱢᱮ",
+    "is_barren": "ᱱᱚᱶᱟ ᱫᱚ ᱵᱟᱨᱡᱷᱟ ᱥᱟᱱᱟᱢ ᱠᱟᱱᱟ ᱥᱮ?",
+    "is_barren_sub": "ᱱᱤᱛᱚᱜ ᱨᱮ ᱪᱮᱫ ᱯᱷᱚᱥᱚᱞ ᱵᱟᱹᱱᱩᱜ ᱠᱷᱟᱱ ᱱᱚᱶᱟ ᱪᱤᱱᱦᱟᱹ ᱢᱮ ᱾",
+    "field_location": "ᱠᱷᱮᱛ ᱨᱮᱭᱟᱜ ᱴᱷᱟᱶ",
+    "gps_captured": "GPS ᱴᱷᱟᱶ ᱧᱟᱢ ᱞᱮᱱᱟ",
+    "save_farm": "ᱠᱷᱮᱛ ᱥᱟᱵᱟᱛ ᱢᱮ",
+    "save_note": "ᱟᱢᱟᱜ ᱠᱷᱮᱛ ᱨᱮᱭᱟᱜ ᱥᱤᱢᱟᱹ ᱟᱨ ᱵᱤᱵᱨᱚᱬ ᱫᱚ ᱟᱢᱟᱜ KhetiMaster ᱮᱠᱟᱣᱱᱴ ᱨᱮ ᱵᱟᱛᱟᱞ ᱞᱮᱠᱟᱛᱮ ᱥᱟᱵᱟᱛ ᱦᱩᱭᱟ ᱾",
+    "crop_catalogue": "ᱯᱷᱚᱥᱚᱞ ᱞᱤᱥᱴᱤ",
+    "select_your_crop": "ᱟᱢᱟᱜ ᱯᱷᱚᱥᱚᱞ ᱵᱟᱪᱷᱟᱣ ᱢᱮ",
+    "choose_from_catalogue": "CropGen ᱯᱷᱚᱥᱚᱞ ᱞᱤᱥᱴᱤ ᱠᱷᱚᱱ ᱵᱟᱪᱷᱟᱣ ᱢᱮ ᱾",
+    "search_crops": "ᱯᱷᱚᱥᱚᱞ ᱥᱮᱸᱫᱽᱨᱟ ᱢᱮ...",
+    "unable_load_crops": "ᱯᱷᱚᱥᱚᱞ ᱵᱟᱝ ᱞᱟᱫᱮ ᱫᱟᱲᱮᱭᱟᱜ ᱠᱟᱱᱟ",
+    "no_crops_found": "ᱯᱷᱚᱥᱚᱞ ᱵᱟᱝ ᱧᱟᱢ ᱞᱮᱱᱟ",
+    "try_another_crop": "ᱮᱴᱟᱜ ᱯᱷᱚᱥᱚᱞ ᱧᱩᱛᱩᱢ ᱠᱩᱠᱞᱤ ᱢᱮ ᱾",
+    "expected_sowing_caps": "ᱟᱹᱜᱩ ᱦᱚᱪᱚ ᱵᱤᱡᱽ ᱵᱚᱱᱚᱜ",
+    "sowing_date_caps": "ᱵᱤᱡᱽ ᱵᱚᱱᱚᱜ ᱢᱟᱦᱟ",
+    "select_a_date": "ᱢᱤᱫ ᱢᱟᱦᱟ ᱵᱟᱪᱷᱟᱣ ᱢᱮ",
+    "selected_date": "ᱵᱟᱪᱷᱟᱣ ᱟᱠᱟᱱ ᱢᱟᱦᱟ",
+    "expected_rule": "ᱟᱹᱜᱩ ᱦᱚᱪᱚ ᱵᱤᱡᱽ ᱵᱚᱱᱚᱜ ᱢᱟᱦᱟ ᱫᱚ ᱛᱤᱱᱟᱜ ᱥᱮ ᱛᱟᱭᱚᱢ ᱢᱟᱦᱟ ᱠᱟᱱᱟ ᱫᱟᱲᱮᱭᱟᱜ ᱟ ᱾",
+    "sowing_rule": "ᱵᱤᱡᱽ ᱵᱚᱱᱚᱜ ᱢᱟᱦᱟ ᱫᱚ ᱛᱤᱱᱟᱜ ᱥᱮ ᱯᱟᱪᱷᱞᱟ ᱢᱟᱦᱟ ᱠᱟᱱᱟ ᱫᱟᱲᱮᱭᱟᱜ ᱟ ᱾",
+    "irr_drip": "ᱴᱚᱯᱠᱟ",
+    "irr_flood": "ᱵᱟᱱ",
+    "irr_other": "ᱮᱴᱟᱜ"
+  },
+  "crops": {
+    "wheat": "ᱜᱷᱮᱦᱩᱸ",
+    "soybean": "ᱥᱚᱭᱟᱵᱤᱱ",
+    "cotton": "ᱠᱚᱴᱚᱱ",
+    "tomato": "ᱴᱚᱢᱟᱴᱚ",
+    "maize": "ᱢᱟᱠᱷᱟᱭ",
+    "rice": "ᱫᱟᱣᱟ",
+    "onion": "ᱯᱮᱸᱡᱟ",
+    "potato": "ᱟᱞᱩ",
+    "sugarcane": "ᱤᱠᱷᱩ"
+  },
+  "diseaseInformation": {
+    "maize": "ᱢᱟᱠᱷᱟᱭ",
+    "high": "ᱢᱟᱨᱟᱝ",
+    "moderate": "ᱢᱟᱹᱦᱮᱞ",
+    "low": "ᱠᱚᱢ"
+  },
+  "irrigation": {
+    "drip": "ᱴᱚᱯᱠᱟ ᱥᱮᱪ",
+    "drip_sub": "ᱫᱟᱜ ᱵᱟᱪᱟᱣ",
+    "sprinkler": "ᱥᱯᱨᱤᱱᱠᱞᱟᱨ",
+    "sprinkler_sub": "ᱪᱟᱞᱟ ᱥᱮᱪ",
+    "flood": "ᱵᱟᱱ ᱥᱮᱪ",
+    "flood_sub": "ᱛᱟᱞᱟ ᱨᱮ ᱵᱷᱚᱨ ᱥᱮᱪ",
+    "rainfed": "ᱵᱟᱨᱥᱟ ᱛᱮ ᱪᱟᱥ",
+    "rainfed_sub": "ᱠᱩᱫᱨᱚᱛ ᱵᱟᱨᱥᱟ"
+  },
+  "farmSuccess": {
+    "variety": "ᱵᱤᱰᱟᱹ",
+    "irrigation": "ᱥᱮᱪ"
+  },
+  "marketListingDetails": {
+    "variety": "ᱵᱤᱰᱟᱹ",
+    "organic": "ᱡᱤᱣᱤ"
+  },
+  "advisory": {
+    "tag_irrigation": "ᱥᱮᱪ",
+    "health_moderate": "ᱢᱟᱹᱦᱮᱞ",
+    "tag_weather": "ᱥᱟᱭᱚᱜ",
+    "updated": "{{when}} ᱱᱟᱣᱟ ᱦᱩᱭ ᱞᱮᱱᱟ",
+    "health_good": "ᱵᱷᱟᱞᱮ"
+  },
+  "mandiSlice": {
+    "unableToLoadCrops": "ᱯᱷᱚᱥᱚᱞ ᱵᱟᱝ ᱞᱟᱫᱮ ᱫᱟᱲᱮᱭᱟᱜ ᱠᱟᱱᱟ"
+  },
+  "bookLabour": {
+    "other": "ᱮᱴᱟᱜ"
+  },
+  "bookMachinery": {
+    "other": "ᱮᱴᱟᱜ"
+  },
+  "comingSoon": {
+    "badge": "ᱞᱟᱛᱟᱨ ᱦᱤᱡᱩᱜ ᱠᱟᱱᱟ",
+    "what_you_can_do": "ᱟᱢ ᱪᱮᱫ ᱠᱟᱹᱢᱤ ᱫᱟᱲᱮᱭᱟᱜ ᱟ",
+    "note": "ᱱᱚᱶᱟ ᱟᱞᱮ ᱱᱤᱛᱚᱜ ᱟᱢ ᱞᱟᱹᱜᱤᱫ ᱛᱮᱭᱟᱨ ᱮᱫ ᱠᱟᱱᱟᱞᱮ ᱾ ᱚᱱᱟ ᱵᱷᱟᱜᱤ ᱨᱮ AI ᱜᱩᱨᱩ ᱫᱚ ᱟᱢᱟᱜ ᱠᱩᱠᱞᱤ ᱨᱮᱭᱟᱜ ᱞᱟᱱᱟᱜ ᱮᱢ ᱫᱟᱲᱮᱭᱟᱜ ᱟ ᱾",
+    "ask_now": "ᱱᱤᱛᱚᱜ AI ᱜᱩᱨᱩ ᱠᱷᱚᱱ ᱠᱩᱠᱞᱤ ᱢᱮ",
+    "warehouse": {
+      "title": "ᱜᱚᱫᱟᱢ ᱟᱨ ᱵᱷᱟᱨᱮ",
+      "description": "ᱟᱢᱟᱜ ᱯᱷᱚᱥᱚᱞ ᱥᱟᱵᱚᱛ ᱞᱮᱠᱟᱛᱮ ᱛᱟᱦᱮᱱ ᱢᱮ ᱟᱨ ᱴᱷᱤᱠ ᱫᱟᱢ ᱨᱮ ᱵᱷᱟᱹᱱᱰᱤ ᱞᱟᱹᱜᱤᱫ ᱴᱷᱟᱶ ᱥᱮᱸᱫᱽᱨᱟ ᱞᱟᱹᱜᱤᱫ ᱪᱟᱞᱟᱜ ᱵᱟᱝ ᱞᱟᱹᱠᱛᱤ ᱾",
+      "point1": "ᱟᱢᱟᱜ ᱟᱹᱛᱩ ᱥᱟᱱᱟᱜ ᱜᱚᱫᱟᱢ ᱟᱨ ᱴᱷᱟᱸᱰᱟ ᱵᱷᱟᱨᱮ ᱧᱟᱢ ᱢᱮ",
+      "point2": "ᱵᱷᱟᱨᱮ ᱴᱷᱟᱶ ᱵᱩᱠ ᱢᱮ ᱟᱨ ᱯᱩᱭᱞᱩ ᱠᱷᱚᱱ ᱫᱟᱢ ᱧᱮᱞ ᱢᱮ",
+      "point3": "ᱟᱢᱟᱜ ᱵᱷᱟᱨᱮ ᱟᱠᱟᱱ ᱥᱟᱵᱚᱛ ᱪᱮᱛᱟᱱ ᱧᱮᱞ ᱢᱮ",
+      "question": "ᱛᱟᱭᱚᱢ ᱴᱟᱱᱟ ᱵᱷᱟᱞᱮ ᱫᱟᱢ ᱞᱟᱹᱜᱤᱫ ᱤᱧ ᱪᱮᱫ ᱞᱮᱠᱟᱛᱮ ᱯᱷᱚᱥᱚᱞ ᱵᱷᱟᱨᱮ ᱞᱟᱹᱠᱛᱤ?"
+    },
+    "delivery": {
+      "title": "ᱞᱟᱫᱮ ᱟᱨ ᱯᱟᱹᱛᱷᱟᱣ",
+      "description": "ᱟᱢᱟᱜ ᱯᱷᱚᱥᱚᱞ ᱢᱟᱸᱰᱤ ᱟᱨ ᱠᱷᱟᱛᱤᱨᱰᱟᱨ ᱥᱮᱱ ᱵᱷᱚᱨᱠᱟ ᱜᱟᱰᱤ ᱛᱮ ᱟᱢᱟᱜ ᱯᱷᱚᱱ ᱠᱷᱚᱱ ᱵᱩᱠ ᱠᱟᱛᱮ ᱪᱟᱞᱟᱜ ᱢᱮ ᱾",
+      "point1": "ᱟᱢᱟᱜ ᱯᱷᱚᱥᱚᱞ ᱞᱟᱹᱜᱤᱫ ᱴᱨᱚᱠ ᱥᱮ ᱴᱮᱢᱯᱚ ᱵᱩᱠ ᱢᱮ",
+      "point2": "ᱵᱩᱠ ᱞᱟᱹᱜᱤᱫ ᱯᱩᱭᱞᱩ ᱞᱟᱫᱮ ᱫᱟᱢ ᱯᱟᱞᱴᱟᱣ ᱢᱮ",
+      "point3": "ᱠᱷᱟᱛᱤᱨᱰᱟᱨ ᱥᱮᱱ ᱥᱮᱛᱟᱜ ᱦᱟᱹᱵᱤᱡ ᱟᱢᱟᱜ ᱟᱹᱛᱩ ᱯᱟᱹᱛᱷᱟᱣ ᱧᱮᱞ ᱢᱮ",
+      "question": "ᱤᱧ ᱪᱮᱫ ᱞᱮᱠᱟᱛᱮ ᱠᱚᱢ ᱠᱷᱚᱨᱚᱪ ᱛᱮ ᱤᱧᱟᱜ ᱯᱷᱚᱥᱚᱞ ᱢᱟᱸᱰᱤ ᱨᱮ ᱞᱟᱫᱮ ᱫᱟᱲᱮᱭᱟᱜ ᱟ?"
+    },
+    "disease": {
+      "title": "AI ᱨᱚᱜ ᱧᱟᱢ",
+      "description": "ᱨᱚᱜᱟᱱ ᱵᱟᱨᱟ ᱨᱮᱭᱟᱜ ᱯᱷᱚᱴᱚ ᱛᱩᱞ ᱢᱮ ᱟᱨ ᱠᱷᱟᱱᱤᱠ ᱨᱮ ᱨᱚᱜ ᱨᱮᱭᱟᱜ ᱧᱩᱛᱩᱢ ᱟᱨ ᱵᱟᱛᱟᱣ ᱧᱟᱢ ᱢᱮ ᱾",
+      "point1": "ᱟᱢᱟᱜ ᱠᱮᱢᱟᱨᱟ ᱛᱮ ᱯᱷᱚᱥᱚᱞ ᱵᱟᱨᱟ ᱥᱠᱮᱱ ᱢᱮ",
+      "point2": "ᱨᱚᱜ ᱨᱮᱭᱟᱜ ᱧᱩᱛᱩᱢ ᱟᱨ ᱵᱟᱛᱟᱣ ᱯᱟᱱᱛᱮ ᱧᱟᱢ ᱢᱮ",
+      "point3": "ᱴᱷᱤᱠ ᱫᱚᱣᱟ ᱟᱨ ᱚᱠᱟᱛᱮ ᱠᱷᱟᱫᱤ ᱧᱟᱢ ᱢᱮ",
+      "question": "ᱤᱧᱟᱜ ᱯᱷᱚᱥᱚᱞ ᱵᱟᱨᱟ ᱨᱮ ᱦᱟᱸᱛ ᱥᱟᱱᱟᱢ ᱢᱮᱱᱟᱜᱼᱟ ᱾ ᱪᱮᱫ ᱨᱚᱜ ᱠᱟᱱᱟ ᱪᱮᱫ ᱞᱮᱠᱟᱛᱮ ᱵᱟᱛᱟᱣ ᱧᱟᱢ ᱟ?"
+    },
+    "schemes": {
+      "title": "ᱥᱚᱨᱠᱟᱨᱤ ᱥᱠᱤᱢ",
+      "description": "ᱟᱢ ᱞᱟᱹᱜᱤᱫ ᱴᱷᱤᱠ ᱥᱠᱤᱢ ᱟᱨ ᱥᱚᱵᱥᱤᱰᱤ ᱧᱟᱢ ᱢᱮ ᱟᱨ ᱠᱟᱜᱚᱡ ᱨᱮᱭᱟᱜ ᱡᱷᱚᱜᱲᱟ ᱵᱟᱹᱱᱩᱜ ᱛᱮ ᱟᱵᱮᱫᱚᱱ ᱢᱮ ᱾",
+      "point1": "ᱟᱢᱟᱜ ᱠᱷᱮᱛ ᱟᱨ ᱯᱚᱨᱚᱥᱚ ᱥᱟᱶ ᱢᱤᱞᱟᱹᱛ ᱥᱠᱤᱢ ᱧᱮᱞ ᱢᱮ",
+      "point2": "ᱠᱷᱟᱱᱤᱠ ᱴᱟᱯ ᱛᱮ ᱟᱢᱟᱜ ᱯᱟᱹᱛᱷᱟ ᱧᱮᱞ ᱢᱮ",
+      "point3": "ᱟᱢᱟᱜ ᱟᱵᱮᱫᱚᱱ ᱨᱮᱭᱟᱜ ᱦᱟᱞ ᱪᱮᱛᱟᱱ ᱢᱮ",
+      "question": "ᱤᱧ ᱪᱟᱥᱤ ᱞᱮᱠᱟᱛᱮ ᱪᱮᱫ ᱥᱚᱨᱠᱟᱨᱤ ᱥᱠᱤᱢ ᱞᱟᱹᱜᱤᱫ ᱟᱵᱮᱫᱚᱱ ᱫᱟᱲᱮᱭᱟᱜ ᱟ?"
+    }
+  },
+  "date": {
+    "weekday_0": "ᱥᱤᱸ",
+    "weekday_long_0": "ᱥᱤᱸᱜᱮ ᱵᱟᱨ",
+    "weekday_1": "ᱚᱛᱮ",
+    "weekday_long_1": "ᱚᱛᱮ ᱵᱟᱨ",
+    "weekday_2": "ᱵᱟᱞᱮ",
+    "weekday_long_2": "ᱵᱟᱞᱮ ᱵᱟᱨ",
+    "weekday_3": "ᱥᱟᱜᱩ",
+    "weekday_long_3": "ᱥᱟᱜᱩᱱ ᱵᱟᱨ",
+    "weekday_4": "ᱥᱟᱨ",
+    "weekday_long_4": "ᱥᱟᱨᱫᱤ ᱵᱟᱨ",
+    "weekday_5": "ᱡᱟᱨ",
+    "weekday_long_5": "ᱡᱟᱨᱩᱢ ᱵᱟᱨ",
+    "weekday_6": "ᱧᱩᱦ",
+    "weekday_long_6": "ᱧᱩᱦᱩᱢ ᱵᱟᱨ",
+    "month_0": "ᱡᱟᱱ",
+    "month_long_0": "ᱡᱟᱱᱩᱣᱟᱨᱤ",
+    "month_1": "ᱯᱷᱮᱵ",
+    "month_long_1": "ᱯᱷᱮᱵᱨᱩᱣᱟᱨᱤ",
+    "month_2": "ᱢᱟᱨᱪ",
+    "month_long_2": "ᱢᱟᱨᱪ",
+    "month_3": "ᱮᱯᱨᱤ",
+    "month_long_3": "ᱮᱯᱨᱤᱞ",
+    "month_4": "ᱢᱮ",
+    "month_long_4": "ᱢᱮ",
+    "month_5": "ᱡᱩᱱ",
+    "month_long_5": "ᱡᱩᱱ",
+    "month_6": "ᱡᱩᱞᱟ",
+    "month_long_6": "ᱡᱩᱞᱟᱭ",
+    "month_7": "ᱚᱜᱚ",
+    "month_long_7": "ᱚᱜᱚᱥᱛ",
+    "month_8": "ᱥᱮᱯ",
+    "month_long_8": "ᱥᱮᱯᱴᱮᱢᱵᱚᱨ",
+    "month_9": "ᱚᱠᱴᱚ",
+    "month_long_9": "ᱚᱠᱴᱚᱵᱚᱨ",
+    "month_10": "ᱱᱚᱵᱮ",
+    "month_long_10": "ᱱᱚᱵᱮᱢᱵᱚᱨ",
+    "month_11": "ᱰᱤᱥᱮ",
+    "month_long_11": "ᱰᱤᱥᱮᱢᱵᱚᱨ",
+    "clock_night_am": "{{time}} ᱞᱟᱛᱟᱨ ᱥᱮᱛᱟᱜ",
+    "clock_morning": "{{time}} ᱞᱟᱛᱟᱨ ᱥᱮᱛᱟᱜ",
+    "clock_afternoon": "{{time}} ᱞᱟᱛᱟᱨ ᱦᱤᱸᱥᱮ",
+    "clock_evening": "{{time}} ᱞᱟᱛᱟᱨ ᱦᱤᱸᱥᱮ",
+    "clock_night_pm": "{{time}} ᱞᱟᱛᱟᱨ ᱦᱤᱸᱥᱮ"
+  },
+  "satellite": {
+    "high": "ᱢᱟᱨᱟᱝ",
+    "low": "ᱠᱚᱢ",
+    "good": "ᱵᱷᱟᱞᱮ"
+  },
+  "farmQuickActions": {
+    "weather": "ᱥᱟᱭᱚᱜ"
+  },
+  "farmWeather": {
+    "next_days": "ᱛᱟᱭᱚᱢ {{n}} ᱢᱟᱦᱟ"
+  },
+  "farmWeatherCard": {
+    "humidity": "ᱥᱮᱛᱮᱛ"
+  },
+  "marketFormat": {
+    "good": "ᱵᱷᱟᱞᱮ"
+  },
+  "warehouseHome": {
+    "yourLocation": "ᱟᱢᱟᱜ ᱴᱷᱟᱶ"
+  },
+  "voice": {
+    "status_starting": "ᱛᱮᱭᱟᱨ ᱦᱩᱭᱩᱜ ᱠᱟᱱᱟ…",
+    "status_listening": "ᱱᱟᱞᱟᱣ ᱠᱟᱱᱟ…",
+    "status_thinking": "ᱵᱩᱡᱷᱟᱹᱣ ᱠᱟᱱᱟ…",
+    "status_done": "ᱵᱩᱡᱷᱟᱹᱣ ᱞᱮᱱᱟ",
+    "status_error": "ᱵᱟᱝ ᱵᱩᱡᱷᱟᱹᱣ ᱞᱮᱱᱟ",
+    "status_idle": "ᱜᱟᱞᱚᱜ ᱞᱟᱹᱜᱤᱫ ᱢᱟᱭᱠ ᱴᱮᱯ ᱢᱮ",
+    "mic_permission": "ᱢᱟᱭᱠᱨᱚᱯᱷᱚᱱ ᱠᱷᱚᱫᱚᱨ",
+    "mic_permission_text": "KhetiMaster ᱫᱚ ᱟᱢᱟᱜ ᱥᱟᱰᱮ ᱵᱩᱡᱷᱟᱹᱣ ᱞᱟᱹᱜᱤᱫ ᱢᱟᱭᱠᱨᱚᱯᱷᱚᱱ ᱞᱟᱹᱠᱛᱤ ᱠᱟᱱᱟ ᱾",
+    "allow_mic_settings": "ᱥᱟᱰᱮ ᱵᱮᱵᱷᱟᱨ ᱞᱟᱹᱜᱤᱫ ᱟᱢᱟᱜ ᱯᱷᱚᱱ ᱥᱮᱴᱤᱝ ᱨᱮ ᱢᱟᱭᱠᱨᱚᱯᱷᱚᱱ ᱪᱷᱟᱰ ᱢᱮ ᱾",
+    "allow_mic": "ᱟᱢᱟᱜ ᱯᱷᱚᱱ ᱥᱮᱴᱤᱝ ᱨᱮ ᱢᱟᱭᱠᱨᱚᱯᱷᱚᱱ ᱪᱷᱟᱰ ᱢᱮ ᱾",
+    "not_available": "ᱱᱚᱶᱟ ᱯᱷᱚᱱ ᱨᱮ ᱥᱟᱰᱮ ᱪᱤᱱᱦᱟᱹ ᱵᱟᱹᱱᱩᱜᱼᱟ ᱾",
+    "heard_nothing": "ᱤᱧ ᱪᱮᱫ ᱦᱚᱸ ᱵᱟᱝ ᱥᱩᱱᱩᱢ ᱞᱮᱱᱟ ᱾ ᱢᱟᱭᱠ ᱴᱮᱯ ᱢᱮ ᱟᱨ ᱫᱩᱦᱲᱟᱹ ᱜᱟᱞᱚᱜ ᱢᱮ ᱾",
+    "could_not_start": "ᱥᱩᱱᱩᱢ ᱮᱛᱦᱚᱵ ᱵᱟᱝ ᱦᱩᱭ ᱞᱮᱱᱟ ᱾ ᱫᱟᱭᱠᱟᱛᱮ ᱫᱩᱦᱲᱟᱹ ᱠᱩᱠᱞᱤ ᱢᱮ ᱾",
+    "closing": "ᱴᱷᱤᱠ, ᱵᱚᱸᱫᱚ ᱠᱟᱱᱟ ᱾",
+    "opening": "ᱡᱷᱤᱡᱽ ᱠᱟᱱᱟ…",
+    "asking_ai": "AI ᱜᱩᱨᱩ ᱠᱷᱚᱱ ᱠᱩᱠᱞᱤ ᱠᱟᱱᱟ…",
+    "ai_unreachable": "AI ᱜᱩᱨᱩ ᱱᱤᱛᱚᱜ ᱵᱟᱝ ᱧᱟᱢ ᱦᱩᱭ ᱫᱟᱲᱮᱭᱟᱜ ᱠᱟᱱᱟ ᱾",
+    "no_internet": "ᱤᱱᱴᱟᱨᱱᱮᱴ ᱵᱟᱹᱱᱩᱜᱼᱟ ᱾ ᱥᱟᱰᱮ ᱞᱟᱹᱜᱤᱫ ᱠᱚᱱᱮᱠᱥᱚᱱ ᱞᱟᱹᱠᱛᱤ ᱾",
+    "didnt_catch": "ᱤᱧ ᱵᱟᱝ ᱵᱩᱡᱷᱟᱹᱣ ᱞᱮᱱᱟ ᱾ ᱢᱟᱭᱠ ᱴᱮᱯ ᱢᱮ ᱟᱨ ᱫᱩᱦᱲᱟᱹ ᱜᱟᱞᱚᱜ ᱢᱮ ᱾",
+    "go_ahead": "ᱜᱟᱞᱚᱜ ᱢᱮ, ᱤᱧ ᱥᱩᱱᱩᱜ ᱠᱟᱱᱟ",
+    "how_can_help": "ᱤᱧ ᱪᱮᱫ ᱞᱮᱠᱟᱛᱮ ᱜᱚᱲᱚ ᱮᱢ ᱥᱮᱱᱟ?",
+    "ask_ai_anything": "ᱟᱢᱟᱜ ᱠᱷᱮᱛ ᱵᱟᱵᱚᱛ ᱪᱮᱫ ᱦᱚᱸ AI ᱜᱩᱨᱩ ᱠᱷᱚᱱ ᱠᱩᱠᱞᱤ ᱢᱮ",
+    "try_examples": "“pyaz ka bhav”, “tractor chahiye” ᱥᱮ ᱪᱮᱫ ᱦᱚᱸ ᱪᱟᱥ ᱨᱮᱭᱟᱜ ᱠᱩᱠᱞᱤ ᱠᱩᱠᱞᱤ ᱢᱮ",
+    "close": "ᱥᱟᱰᱮ ᱜᱚᱲᱚᱭᱤᱡ ᱵᱚᱸᱫᱚ ᱢᱮ",
+    "stop_use": "ᱵᱚᱸᱫᱚ ᱢᱮ ᱟᱨ ᱤᱧ ᱪᱮᱫ ᱜᱟᱞᱚᱜ ᱞᱮᱱᱟ ᱚᱱᱟ ᱵᱮᱵᱷᱟᱨ ᱢᱮ",
+    "start_listening": "ᱥᱩᱱᱩᱢ ᱮᱛᱦᱚᱵ ᱢᱮ",
+    "listen_again": "ᱫᱩᱦᱲᱟᱹ ᱥᱩᱱᱩᱢ ᱢᱮ",
+    "tap_when_done": "ᱠᱷᱟᱯ ᱦᱩᱭ ᱞᱮᱱ ᱠᱷᱟᱱ ᱵᱟᱴᱚᱱ ᱴᱮᱯ ᱢᱮ",
+    "speak_to_app": "KhetiMaster ᱥᱟᱶ ᱜᱟᱞᱚᱜ ᱢᱮ",
+    "example_1": "“Pyaz ka bhav batao”",
+    "example_2": "“Mujhe labour chahiye”",
+    "example_3": "“Tractor chahiye”",
+    "example_4": "“Pashu doctor”",
+    "example_5": "“ᱤᱧᱟᱜ ᱯᱷᱚᱥᱚᱞ ᱠᱷᱟᱴᱟᱣ ᱢᱮ”",
+    "open_labour": "ᱢᱚᱩᱱᱤ ᱨᱮᱭᱟᱜ ᱠᱟᱹᱢᱤ ᱥᱮᱸᱫᱽᱨᱟ ᱡᱷᱤᱡᱽ ᱠᱟᱱᱟ…",
+    "open_mandi": "ᱢᱟᱸᱰᱤ ᱫᱟᱢ ᱡᱷᱤᱡᱽ ᱠᱟᱱᱟ…",
+    "open_machinery": "ᱴᱨᱮᱠᱴᱚᱨ ᱟᱨ ᱢᱟᱥᱤᱱ ᱡᱷᱤᱡᱽ ᱠᱟᱱᱟ…",
+    "open_vet": "ᱯᱚᱥᱩ ᱰᱟᱜᱟᱨ ᱥᱮᱣᱟ ᱡᱷᱤᱡᱽ ᱠᱟᱱᱟ…",
+    "open_farms": "ᱟᱢᱟᱜ ᱠᱷᱮᱛ ᱠᱚ ᱡᱷᱤᱡᱽ ᱠᱟᱱᱟ…",
+    "open_crop_services": "ᱯᱷᱚᱥᱚᱞ ᱥᱮᱣᱟ ᱡᱷᱤᱡᱽ ᱠᱟᱱᱟ…",
+    "open_nursery": "ᱱᱟᱨᱥᱟᱨᱤ ᱡᱷᱤᱡᱽ ᱠᱟᱱᱟ…",
+    "open_profile": "ᱟᱢᱟᱜ ᱯᱨᱚᱯᱷᱟᱭᱤᱞ ᱡᱷᱤᱡᱽ ᱠᱟᱱᱟ…",
+    "open_agri_products": "ᱪᱟᱥ ᱡᱤᱱᱤᱥ ᱡᱷᱤᱡᱽ ᱠᱟᱱᱟ…",
+    "open_schemes": "ᱥᱚᱨᱠᱟᱨᱤ ᱥᱠᱤᱢ ᱡᱷᱤᱡᱽ ᱠᱟᱱᱟ…",
+    "open_knowledge": "ᱡᱟᱱᱟᱹᱣ ᱢᱮᱱᱮᱛ ᱠᱮᱱᱫᱨᱚ ᱡᱷᱤᱡᱽ ᱠᱟᱱᱟ…",
+    "open_trade": "ᱵᱟᱡᱟᱨ ᱟᱨ ᱡᱤᱱᱤᱥ ᱡᱷᱤᱡᱽ ᱠᱟᱱᱟ…",
+    "open_crop_prices": "{{crop}} ᱫᱟᱢ ᱡᱷᱤᱡᱽ ᱠᱟᱱᱟ…",
+    "greeting": "ᱡᱚᱦᱟᱨ! ᱟᱢᱟᱜ ᱢᱟᱦᱟ ᱪᱮᱫ ᱞᱮᱠᱟᱛᱮ ᱪᱟᱞᱟᱜ ᱠᱟᱱᱟ? ᱤᱧ KhetiMaster, ᱟᱢᱟᱜ ᱪᱟᱥ ᱨᱮᱭᱟᱜ ᱜᱚᱲᱚᱭᱤᱡ ᱠᱟᱱᱟ ᱾ ᱢᱟᱸᱰᱤ, ᱴᱨᱮᱠᱴᱚᱨ, ᱢᱚᱩᱱᱤ ᱥᱮ ᱰᱟᱜᱴᱟᱨ ᱞᱮᱠᱟᱱ ᱥᱠᱨᱤᱱ ᱧᱩᱛᱩᱢ ᱜᱟᱞᱚᱜ ᱢᱮ, ᱥᱮ \"pyaz ka bhav\" ᱞᱮᱠᱟᱱ ᱯᱷᱚᱥᱚᱞ ᱫᱟᱢ ᱠᱩᱠᱞᱤ ᱢᱮ, ᱟᱨ ᱤᱧ ᱚᱱᱟ ᱡᱷᱤᱡᱽ ᱮᱢᱚᱜ ᱟ ᱾"
+  },
+  "product": {
+    "organic": "ᱡᱤᱣᱤ"
+  },
+  "marketHome": {
+    "organic": "ᱡᱤᱣᱤ"
+  },
+  "listingGridCard": {
+    "organic": "ᱡᱤᱣᱤ"
+  },
+  "farmOverviewCard": {
+    "active": "ᱥᱚᱠᱨᱤᱭ"
+  },
+  "farmInformationCard": {
+    "area": "ᱯᱟᱥᱱᱟᱣ"
+  },
+  "warehouseDetails": {
+    "area": "ᱯᱟᱥᱱᱟᱣ"
+  },
+  "voiceFlow": {
+    "button": {},
+    "labour": {},
+    "machinery": {},
+    "doctor": {},
+    "nursery": {},
+    "market": {},
+    "warehouse": {}
+  },
+  "labourHome": {},
+  "labourList": {}
 }

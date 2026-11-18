@@ -19,6 +19,7 @@ import {
   BOOKING_STATUS_META,
   isAcceptedStatus,
 } from './labourFormat';
+import i18n from 'i18next';
 
 export { AVAILABILITY_META, BOOKING_STATUS_META, isAcceptedStatus };
 
@@ -36,17 +37,33 @@ export const UNIT_LABELS = {
 };
 
 export const FUEL_LABELS = {
-  petrol: 'Petrol',
-  diesel: 'Diesel',
-  electric: 'Electric',
-  other: 'Other',
+  get petrol() {
+    return i18n.t('machineryFormat.petrol');
+  },
+  get diesel() {
+    return i18n.t('machineryFormat.diesel');
+  },
+  get electric() {
+    return i18n.t('machineryFormat.electric');
+  },
+  get other() {
+    return i18n.t('machineryFormat.other');
+  },
 };
 
 export const PAYMENT_LABELS = {
-  cod: 'Cash',
-  upi: 'UPI',
-  card: 'Card',
-  wallet: 'Wallet',
+  get cod() {
+    return i18n.t('machineryFormat.cash');
+  },
+  get upi() {
+    return i18n.t('machineryFormat.upi');
+  },
+  get card() {
+    return i18n.t('machineryFormat.card');
+  },
+  get wallet() {
+    return i18n.t('machineryFormat.wallet');
+  },
 };
 
 const DURATION_UNIT_LABELS = {
@@ -80,7 +97,7 @@ export const getRateOptions = machinery => {
     options.push({
       key: 'hourly',
       pricingType: 'hourly',
-      label: 'By the hour',
+      label: i18n.t('machineryFormat.byTheHour'),
       amount: Number(pricing.hourly),
       unit: 'hour',
     });
@@ -90,7 +107,7 @@ export const getRateOptions = machinery => {
     options.push({
       key: 'daily',
       pricingType: 'daily',
-      label: 'Full day',
+      label: i18n.t('machineryFormat.fullDay'),
       amount: Number(pricing.daily),
       unit: 'day',
     });
@@ -116,7 +133,7 @@ export const getRateOptions = machinery => {
  */
 export const startingPrice = machinery => {
   const [first] = getRateOptions(machinery);
-  return first ? formatRate(first.amount, first.unit) : 'Price on request';
+  return first ? formatRate(first.amount, first.unit) : i18n.t('machineryFormat.priceOnRequest');
 };
 
 /*
@@ -139,21 +156,21 @@ export const estimateRental = ({
   maxDays = DEFAULT_MAX_DAYS,
   maxHours = DEFAULT_MAX_HOURS,
 }) => {
-  if (!option) return { error: 'Choose how you want to rent it' };
+  if (!option) return { error: i18n.t('machineryFormat.chooseHowYouWantTo') };
 
   const amount = Number(duration);
   const kind = durationKind(option.unit);
 
   if (kind === 'hours') {
     if (!Number.isFinite(amount) || amount <= 0 || amount > maxHours) {
-      return { error: `Hours must be between 0 and ${maxHours}` };
+      return { error: i18n.t('machineryFormat.hoursMustBeBetween0', {maxHours}) };
     }
 
     const start = parseTime(startTime);
     const endMinute = start === null ? null : start + Math.round(amount * 60);
 
     if (endMinute !== null && endMinute > MINUTES_PER_DAY) {
-      return { error: 'An hourly booking must finish on the same day' };
+      return { error: i18n.t('machineryFormat.anHourlyBookingMustFinish') };
     }
 
     return { total: round2(option.amount * amount), endMinute };
@@ -161,7 +178,7 @@ export const estimateRental = ({
 
   if (kind === 'days') {
     if (!Number.isInteger(amount) || amount < 1 || amount > maxDays) {
-      return { error: `Number of days must be between 1 and ${maxDays}` };
+      return { error: i18n.t('machineryFormat.numberOfDaysMustBe', {maxDays}) };
     }
 
     return { total: round2(option.amount * amount) };
@@ -169,7 +186,7 @@ export const estimateRental = ({
 
   if (!Number.isFinite(amount) || amount <= 0 || amount > 1000) {
     return {
-      error: `Enter a valid number of ${UNIT_LABELS[option.unit] || 'unit'}s`,
+      error: i18n.t('machineryFormat.enterAValidNumberOf', {v1: UNIT_LABELS[option.unit] || 'unit'}),
     };
   }
 
@@ -188,21 +205,21 @@ export const buildRentalPayload = (
     today = todayInIndiaKey(),
   } = {},
 ) => {
-  if (!form.bookingDate) return { error: 'Choose the date' };
+  if (!form.bookingDate) return { error: i18n.t('machineryFormat.chooseTheDate') };
   if (form.bookingDate < today)
-    return { error: 'The date cannot be in the past' };
+    return { error: i18n.t('machineryFormat.theDateCannotBeIn') };
 
   const start = parseTime(form.startTime);
-  if (start === null) return { error: 'Choose a start time' };
+  if (start === null) return { error: i18n.t('machineryFormat.chooseAStartTime') };
 
   const kind = durationKind(option?.unit);
   const end =
     kind === 'quantity' && form.endTime ? parseTime(form.endTime) : null;
 
   if (kind === 'quantity' && form.endTime && end === null)
-    return { error: 'Invalid end time' };
+    return { error: i18n.t('machineryFormat.invalidEndTime') };
   if (end !== null && end <= start)
-    return { error: 'End time must be after the start time' };
+    return { error: i18n.t('machineryFormat.endTimeMustBeAfter') };
 
   const estimate = estimateRental({
     option,
@@ -214,7 +231,7 @@ export const buildRentalPayload = (
   if (estimate.error) return { error: estimate.error };
 
   if (!(form.workType || '').trim())
-    return { error: 'Choose the type of work' };
+    return { error: i18n.t('machineryFormat.chooseTheTypeOfWork') };
 
   const trim = value => (value || '').trim();
 
@@ -267,29 +284,29 @@ export const describeRentalState = (booking, today = todayInIndiaKey()) => {
   switch (booking.status) {
     case 'pending':
       return isFarmer
-        ? 'Waiting for the owner to confirm'
-        : 'New rental request - confirm or decline it';
+        ? i18n.t('machineryFormat.waitingForTheOwnerTo')
+        : i18n.t('machineryFormat.newRentalRequestConfirmOr');
     case 'confirmed':
     case 'accepted':
-      if (started) return 'Work has started. Mark it completed when it is done';
+      if (started) return i18n.t('machineryFormat.workHasStartedMarkIt');
       return isFarmer
-        ? 'Confirmed. Call the owner to share the exact field location'
-        : 'Confirmed. Reach the farm on time with the machine';
+        ? i18n.t('machineryFormat.confirmedCallTheOwnerTo')
+        : i18n.t('machineryFormat.confirmedReachTheFarmOn');
     case 'completed':
       return booking.canReview
-        ? 'Work done. Rate the machine and owner'
-        : 'Work completed';
+        ? i18n.t('machineryFormat.workDoneRateTheMachine')
+        : i18n.t('machineryFormat.workCompleted');
     case 'rejected':
       return isFarmer
-        ? booking.rejectionReason || 'The owner declined this request'
-        : 'You declined this request';
+        ? booking.rejectionReason || i18n.t('machineryFormat.theOwnerDeclinedThisRequest')
+        : i18n.t('machineryFormat.youDeclinedThisRequest');
     case 'cancelled':
       if (booking.cancelledBy === 'system') {
-        return booking.cancellationReason || 'Request expired';
+        return booking.cancellationReason || i18n.t('machineryFormat.requestExpired');
       }
       return booking.cancelledBy === booking.myRole
-        ? 'You cancelled this booking'
-        : `Cancelled by the ${booking.cancelledBy || 'other side'}`;
+        ? i18n.t('machineryFormat.youCancelledThisBooking')
+        : i18n.t('machineryFormat.cancelledByThe', {v1: booking.cancelledBy || i18n.t('machineryFormat.otherSide')});
     default:
       return '';
   }
@@ -339,13 +356,13 @@ const numberOrNull = value => {
  */
 export const buildMachineryPayload = (form, { now = new Date() } = {}) => {
   const name = (form.name || '').trim();
-  if (!name) return { error: 'Enter the machine name', field: 'name' };
+  if (!name) return { error: i18n.t('machineryFormat.enterTheMachineName'), field: 'name' };
   if (name.length > 100)
-    return { error: 'Machine name is too long', field: 'name' };
+    return { error: i18n.t('machineryFormat.machineNameIsTooLong'), field: 'name' };
 
   const category = (form.category || '').trim();
   if (!category)
-    return { error: 'Choose the type of machine', field: 'category' };
+    return { error: i18n.t('machineryFormat.chooseTheTypeOfMachine'), field: 'category' };
 
   const modelYear = numberOrNull(form.modelYear);
   const maxYear = now.getFullYear() + 1;
@@ -354,7 +371,7 @@ export const buildMachineryPayload = (form, { now = new Date() } = {}) => {
     modelYear !== null &&
     (!Number.isInteger(modelYear) || modelYear < 1900 || modelYear > maxYear)
   ) {
-    return { error: 'Enter a valid model year', field: 'modelYear' };
+    return { error: i18n.t('machineryFormat.enterAValidModelYear'), field: 'modelYear' };
   }
 
   const enginePower = numberOrNull(form.enginePowerValue);
@@ -363,7 +380,7 @@ export const buildMachineryPayload = (form, { now = new Date() } = {}) => {
     (!Number.isFinite(enginePower) || enginePower < 0)
   ) {
     return {
-      error: 'Engine power must be a positive number',
+      error: i18n.t('machineryFormat.enginePowerMustBeA'),
       field: 'enginePower',
     };
   }
@@ -373,13 +390,13 @@ export const buildMachineryPayload = (form, { now = new Date() } = {}) => {
 
   if (!Number.isFinite(hourly) || hourly < 0) {
     return {
-      error: 'Hourly price must be a positive number',
+      error: i18n.t('machineryFormat.hourlyPriceMustBeA'),
       field: 'pricing',
     };
   }
 
   if (!Number.isFinite(daily) || daily < 0) {
-    return { error: 'Daily price must be a positive number', field: 'pricing' };
+    return { error: i18n.t('machineryFormat.dailyPriceMustBeA'), field: 'pricing' };
   }
 
   const custom = [];
@@ -390,10 +407,10 @@ export const buildMachineryPayload = (form, { now = new Date() } = {}) => {
 
     if (!rateName && amount === null) continue;
     if (!rateName)
-      return { error: 'Every custom price needs a name', field: 'pricing' };
+      return { error: i18n.t('machineryFormat.everyCustomPriceNeedsA'), field: 'pricing' };
 
     if (amount === null || !Number.isFinite(amount) || amount <= 0) {
-      return { error: `Enter a price for "${rateName}"`, field: 'pricing' };
+      return { error: i18n.t('machineryFormat.enterAPriceFor', {rateName}), field: 'pricing' };
     }
 
     custom.push({
@@ -406,7 +423,7 @@ export const buildMachineryPayload = (form, { now = new Date() } = {}) => {
 
   if (hourly <= 0 && daily <= 0 && custom.length === 0) {
     return {
-      error: 'Set at least one price: hourly, daily or a custom rate',
+      error: i18n.t('machineryFormat.setAtLeastOnePrice'),
       field: 'pricing',
     };
   }
@@ -417,7 +434,7 @@ export const buildMachineryPayload = (form, { now = new Date() } = {}) => {
     form.availableUntil < form.availableFrom
   ) {
     return {
-      error: '"Available until" must be after "available from"',
+      error: i18n.t('machineryFormat.availableUntilMustBeAfter'),
       field: 'availableUntil',
     };
   }
@@ -425,7 +442,7 @@ export const buildMachineryPayload = (form, { now = new Date() } = {}) => {
   const description = (form.description || '').trim();
   if (description.length > 500) {
     return {
-      error: 'Description must be at most 500 characters',
+      error: i18n.t('machineryFormat.descriptionMustBeAtMost'),
       field: 'description',
     };
   }

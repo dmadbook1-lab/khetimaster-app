@@ -11,6 +11,7 @@ import {
   completeMachineryBookingApi,
   reviewMachineryBookingApi,
 } from '../../api/machineryBookingApi';
+import i18n from 'i18next';
 
 const errorMessage = (error, fallback) =>
   error.response?.data?.message || error.message || fallback;
@@ -32,7 +33,7 @@ export const createMachineryBooking = createAsyncThunk(
       return await createMachineryBookingApi(bookingData);
     } catch (error) {
       return rejectWithValue({
-        message: errorMessage(error, 'Unable to send the rental request'),
+        message: errorMessage(error, i18n.t('machineryBookingSlice.unableToSendTheRental')),
         bookingId: error.response?.data?.booking?._id || null,
       });
     }
@@ -55,7 +56,7 @@ export const fetchMyMachineryBookings = createAsyncThunk(
       return await getMyMachineryBookingsApi(params);
     } catch (error) {
       return rejectWithValue(
-        errorMessage(error, 'Unable to load your rentals'),
+        errorMessage(error, i18n.t('machineryBookingSlice.unableToLoadYourRentals')),
       );
     }
   },
@@ -68,7 +69,7 @@ export const fetchMachineryRequests = createAsyncThunk(
       return await getMachineryRequestsApi(params);
     } catch (error) {
       return rejectWithValue(
-        errorMessage(error, 'Unable to load rental requests'),
+        errorMessage(error, i18n.t('machineryBookingSlice.unableToLoadRentalRequests')),
       );
     }
   },
@@ -80,7 +81,7 @@ export const fetchMachineryBookingById = createAsyncThunk(
     try {
       return await getMachineryBookingByIdApi(bookingId);
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to load booking'));
+      return rejectWithValue(errorMessage(error, i18n.t('machineryBookingSlice.unableToLoadBooking')));
     }
   },
 );
@@ -108,7 +109,7 @@ export const updateMachineryBooking = createAsyncThunk(
     try {
       return await ACTION_APIS[action](bookingId, note);
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to update booking'));
+      return rejectWithValue(errorMessage(error, i18n.t('machineryBookingSlice.unableToUpdateBooking')));
     }
   },
 );
@@ -119,7 +120,7 @@ export const reviewMachineryBooking = createAsyncThunk(
     try {
       return await reviewMachineryBookingApi(bookingId, { rating, comment });
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to submit review'));
+      return rejectWithValue(errorMessage(error, i18n.t('machineryBookingSlice.unableToSubmitReview')));
     }
   },
 );

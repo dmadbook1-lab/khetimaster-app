@@ -9,6 +9,8 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { ArrowRight } from 'lucide-react-native';
+import {useTranslation} from 'react-i18next';
+import i18n from 'i18next';
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = (width - width * 0.11 - 14) / 2;
 const IMAGE_SIZE = width < 360 ? 108 : 128;
@@ -18,24 +20,36 @@ const rf = size => {
 };
 const services = [
   {
-    title: 'Labour Booking',
-    desc: 'Book skilled farm workers',
+    get title() {
+    return i18n.t('servicesGrid.labourBooking');
+  },
+    get desc() {
+    return i18n.t('servicesGrid.bookSkilledFarmWorkers');
+  },
     image: require('../../assets/bazar/labour.png'),
     bg: '#ECFDF5',
     color: '#16883E',
     route: 'LabourBooking',
   },
   {
-    title: 'Machinery Rental',
-    desc: 'Rent tractors & equipment',
+    get title() {
+    return i18n.t('servicesGrid.machineryRental');
+  },
+    get desc() {
+    return i18n.t('servicesGrid.rentTractorsEquipment');
+  },
     image: require('../../assets/bazar/tractor.png'),
     bg: '#EFF6FF',
     color: '#2563EB',
     route: 'TractorBooking',
   },
   {
-    title: 'Agri Products',
-    desc: 'Seeds, fertilizers & tools',
+    get title() {
+    return i18n.t('servicesGrid.agriProducts');
+  },
+    get desc() {
+    return i18n.t('servicesGrid.seedsFertilizersTools');
+  },
     image: require('../../assets/bazar/agri.png'),
     bg: '#FFF7ED',
     color: '#F97316',
@@ -43,16 +57,23 @@ const services = [
     route: 'AgriProducts',
   },
   {
-    title: 'Drone Services',
-    desc: 'Spraying & crop monitoring',
+    get title() {
+    return i18n.t('servicesGrid.droneServices');
+  },
+    get desc() {
+    return i18n.t('servicesGrid.sprayingCropMonitoring');
+  },
     image: require('../../assets/bazar/drone.png'),
     bg: '#FAF5FF',
     color: '#9333EA',
-    badge: 'Premium',
+    get badge() {
+    return i18n.t('servicesGrid.premium');
+  },
     route: 'DroneServices',
   },
 ];
 export default function ServicesGrid({ navigation: navigationProp }) {
+  const {t} = useTranslation();
   const hookNavigation = useNavigation();
   const navigation = navigationProp || hookNavigation;
   const handlePress = item => {
@@ -65,10 +86,10 @@ export default function ServicesGrid({ navigation: navigationProp }) {
   return (
     <View style={styles.wrapper}>
       <View style={styles.sectionRow}>
-        <Text style={styles.sectionTitle}>Services & Products</Text>
+        <Text style={styles.sectionTitle}>{t('servicesGrid.servicesProducts')}</Text>
 
         <TouchableOpacity activeOpacity={0.75} onPress={handleSeeAllPress}>
-          <Text style={styles.seeAll}>See All</Text>
+          <Text style={styles.seeAll}>{t('servicesGrid.seeAll')}</Text>
         </TouchableOpacity>
       </View>
 
@@ -135,7 +156,7 @@ export default function ServicesGrid({ navigation: navigationProp }) {
                   },
                 ]}
               >
-                Explore
+                {t('servicesGrid.explore')}
               </Text>
 
               <ArrowRight size={13} color={item.color} strokeWidth={2.7} />

@@ -56,7 +56,7 @@ import {
   fetchMandiRates,
   fetchMandiSummary,
 } from '../../redux/slices/mandiSlice';
-import { todayInIndiaKey } from '../../utils/indiaSchedule';
+import { formatDay, todayInIndiaKey } from '../../utils/indiaSchedule';
 import { timeAgo } from '../../utils/marketFormat';
 import {
   bestGain,
@@ -70,14 +70,23 @@ import {
   topMarkets,
   trendDates,
 } from '../../utils/mandiFormat';
+import {useTranslation} from 'react-i18next';
+import i18n from 'i18next';
+import {tOpt} from '../../utils/tOpt';
 
 const PAGE_SIZE = 50;
 const MAX_COMPARE = 3;
 
 const SORT_OPTIONS = [
-  { key: 'price_desc', label: 'Highest price' },
-  { key: 'price_asc', label: 'Lowest price' },
-  { key: 'market', label: 'Market name' },
+  { key: 'price_desc', get label() {
+    return i18n.t('cropPrices.highestPrice');
+  } },
+  { key: 'price_asc', get label() {
+    return i18n.t('cropPrices.lowestPrice');
+  } },
+  { key: 'market', get label() {
+    return i18n.t('cropPrices.marketName');
+  } },
 ];
 
 function Section({ icon, title, subtitle, children }) {
@@ -96,6 +105,7 @@ function Section({ icon, title, subtitle, children }) {
 }
 
 export default function CropPricesScreen({ navigation, route }) {
+  const {t} = useTranslation();
   const { cropId, cropName } = route.params;
   const dispatch = useDispatch();
   const insets = useSafeAreaInsets();
@@ -106,7 +116,7 @@ export default function CropPricesScreen({ navigation, route }) {
   const summaries = useSelector(state => state.mandi.summaries);
 
   const crop = crops.find(item => item.id === cropId);
-  const name = crop?.name || cropName || cropId;
+  const name = tOpt(crop?.name || cropName || cropId);
 
   const [scope, setScope] = useState(null);
   const [sort, setSort] = useState('price_desc');
@@ -178,11 +188,11 @@ export default function CropPricesScreen({ navigation, route }) {
         loading: !entry || entry.status === 'loading',
       };
     }),
-    ...(rates.source === 'daily'
+    ...(rates.isToday
       ? [
           {
             key: 'today',
-            label: 'Today',
+            label: t('common.today'),
             value: rates.summary?.averageModalPrice ?? null,
             loading: rates.loading,
           },
@@ -232,7 +242,7 @@ export default function CropPricesScreen({ navigation, route }) {
       ? [{ key: 'district', label: location.district }]
       : []),
     ...(location?.state ? [{ key: 'state', label: location.state }] : []),
-    { key: 'india', label: 'All India' },
+    { key: 'india', label: t('cropPrices.allIndia') },
   ];
 
   const header = (
@@ -241,7 +251,7 @@ export default function CropPricesScreen({ navigation, route }) {
         image={cropImage(cropId) || undefined}
         gradient="green"
         onBack={() => navigation.goBack()}
-        eyebrow={`Mandi price · ${placeName}`}
+        eyebrow={t('cropPrices.mandiPrice', {placeName})}
         title={name}
         right={
           <>
@@ -260,9 +270,9 @@ export default function CropPricesScreen({ navigation, route }) {
       >
         <View style={styles.priceCard}>
           <Text style={styles.priceLabel}>
-            {rates.source === 'daily'
-              ? "Today's average price"
-              : 'Latest average price'}
+            {rates.isToday
+              ? t('cropPrices.todaysAveragePrice')
+              : t('cropPrices.latestAveragePrice')}
           </Text>
           {firstLoad ? (
             <ActivityIndicator color={C.green} style={styles.priceLoader} />
@@ -270,28 +280,27 @@ export default function CropPricesScreen({ navigation, route }) {
             <>
               <View style={styles.priceRow}>
                 <Text style={styles.price}>{formatQuintal(average)}</Text>
-                <Text style={styles.priceUnit}>per quintal</Text>
+                <Text style={styles.priceUnit}>{t('cropPrices.perQuintal')}</Text>
               </View>
               <View style={styles.priceSubRow}>
                 <Text style={styles.kgPill}>{formatPerKg(average)}</Text>
                 {!!summary?.markets && (
                   <Text style={styles.marketsText}>
-                    from {summary.markets} market
-                    {summary.markets === 1 ? '' : 's'}
+                    {t('cropPrices.fromMarket', {markets: summary.markets, v2: summary.markets === 1 ? '' : 's'})}
                   </Text>
                 )}
               </View>
               {!!summary?.minPrice && !!summary?.maxPrice && (
                 <View style={styles.rangeRow}>
                   <View style={styles.rangeBox}>
-                    <Text style={styles.rangeLabel}>Lowest</Text>
+                    <Text style={styles.rangeLabel}>{t('cropPrices.lowest')}</Text>
                     <Text style={[styles.rangeValue, styles.redText]}>
                       {formatQuintal(summary.minPrice)}
                     </Text>
                   </View>
                   <View style={styles.rangeDivider} />
                   <View style={styles.rangeBox}>
-                    <Text style={styles.rangeLabel}>Highest</Text>
+                    <Text style={styles.rangeLabel}>{t('cropPrices.highest')}</Text>
                     <Text style={[styles.rangeValue, styles.greenText]}>
                       {formatQuintal(summary.maxPrice)}
                     </Text>
@@ -318,17 +327,19 @@ export default function CropPricesScreen({ navigation, route }) {
           <View style={styles.dateRow}>
             <CalendarDays size={14} color={C.muted} />
             <Text style={styles.dateText}>
-              Prices of {summary.latestArrivalDate}
+              {t('cropPrices.pricesOf', {latestArrivalDate: summary.latestArrivalDate})}
             </Text>
           </View>
         )}
 
-        {rates.source === 'historical_latest' && hasData && (
+        {!rates.isToday && !!rates.date && hasData && (
           <View style={[styles.notice, styles.noticeAmber]}>
             <History size={16} color={C.amber} />
             <Text style={[styles.noticeText, styles.noticeTextAmber]}>
-              No mandi here sold {name} today. These are the last prices from
-              the past 30 days.
+              {t('cropPrices.notReportedTodayShowingDay', {
+                name,
+                date: formatDay(rates.date, { weekday: true, year: false }),
+              })}
             </Text>
           </View>
         )}
@@ -336,7 +347,9 @@ export default function CropPricesScreen({ navigation, route }) {
           <View style={[styles.notice, styles.noticeRed]}>
             <TriangleAlert size={16} color={C.red} />
             <Text style={[styles.noticeText, styles.noticeTextRed]}>
-              Couldn't get new prices right now. Showing prices saved{' '}
+              {rates.rateLimited
+                ? t('cropPrices.mandiServiceBusy')
+                : t('cropPrices.couldntGetNewPricesRight')}{' '}
               {timeAgo(rates.fetchedAt) || 'earlier'}.
             </Text>
           </View>
@@ -347,17 +360,17 @@ export default function CropPricesScreen({ navigation, route }) {
         ) : rates.error && !hasData ? (
           <EmptyState
             icon={<TriangleAlert size={30} color={C.green} />}
-            title="Couldn't load prices"
+            title={t('cropPrices.couldntLoadPrices')}
             message={rates.error}
-            actionLabel="Try Again"
+            actionLabel={t('cropPrices.tryAgain')}
             onAction={load}
           />
         ) : !hasData ? (
           <EmptyState
             icon={<Store size={30} color={C.green} />}
-            title={`No ${name} prices in ${placeName}`}
-            message="No mandi here has sold this crop in the last 30 days."
-            actionLabel={activeScope !== 'india' ? 'See All India' : undefined}
+            title={t('cropPrices.noPricesIn', {name, placeName})}
+            message={t('cropPrices.noMandiHereHasSold')}
+            actionLabel={activeScope !== 'india' ? t('cropPrices.seeAllIndia') : undefined}
             onAction={() => setScope('india')}
           />
         ) : (
@@ -366,8 +379,8 @@ export default function CropPricesScreen({ navigation, route }) {
             {sellMarkets.length > 0 && (
               <Section
                 icon={<Trophy size={17} color={C.amber} />}
-                title="Best place to sell"
-                subtitle="Mandis paying the most"
+                title={t('cropPrices.bestPlaceToSell')}
+                subtitle={t('cropPrices.mandisPayingTheMost')}
               >
                 {!!gain?.amount && (
                   <View style={styles.tip}>
@@ -375,11 +388,11 @@ export default function CropPricesScreen({ navigation, route }) {
                       <Text style={styles.bold}>
                         {summary.highestModal.market}
                       </Text>{' '}
-                      pays{' '}
+                      {t('cropPrices.pays')}{' '}
                       <Text style={styles.bold}>
                         {formatQuintal(gain.amount)}
                       </Text>{' '}
-                      more per quintal than the average.
+                      {t('cropPrices.morePerQuintalThanThe')}
                     </Text>
                   </View>
                 )}
@@ -395,12 +408,12 @@ export default function CropPricesScreen({ navigation, route }) {
             {/* THIS WEEK */}
             <Section
               icon={<ChartColumn size={17} color={C.green} />}
-              title="Price this week"
-              subtitle={`Average price per quintal in ${placeName}`}
+              title={t('cropPrices.priceThisWeek')}
+              subtitle={t('cropPrices.averagePricePerQuintalIn', {placeName})}
             >
               <WeekColumns points={weekPoints} />
               <Text style={styles.weekNote}>
-                – means no mandi sold {name} that day.
+                {t('cropPrices.meansNoMandiSoldThat', {name})}
               </Text>
             </Section>
 
@@ -410,7 +423,7 @@ export default function CropPricesScreen({ navigation, route }) {
               style={styles.aiGuru}
               onPress={() =>
                 navigation.navigate('AIGuru', {
-                  question: `Should I sell my ${name} now or wait? Where can I get the best price near ${placeName}?`,
+                  question: t('cropPrices.shouldISellMyNow', {name, placeName}),
                   source: 'mandi',
                   newChat: true,
                 })
@@ -418,16 +431,16 @@ export default function CropPricesScreen({ navigation, route }) {
             >
               <Bot size={18} color={C.white} />
               <Text style={styles.aiGuruText}>
-                Ask AI Guru: sell now or wait?
+                {t('cropPrices.askAiGuruSellNow')}
               </Text>
             </TouchableOpacity>
 
             {/* LIST HEADER */}
             <View style={styles.listHead}>
               <View style={styles.flex}>
-                <Text style={styles.listTitle}>All mandis</Text>
+                <Text style={styles.listTitle}>{t('cropPrices.allMandis')}</Text>
                 <Text style={styles.listCount}>
-                  {rates.total} price{rates.total === 1 ? '' : 's'} in{' '}
+                  {rates.total} {t('cropPrices.price')}{rates.total === 1 ? '' : 's'} {t('cropPrices.in')}{' '}
                   {placeName}
                 </Text>
               </View>
@@ -446,13 +459,13 @@ export default function CropPricesScreen({ navigation, route }) {
                 <Text
                   style={[styles.selectText, selectMode && styles.selectTextOn]}
                 >
-                  {selectMode ? 'Cancel' : 'Compare'}
+                  {selectMode ? t('common.cancel') : t('cropPrices.compare')}
                 </Text>
               </TouchableOpacity>
             </View>
             {selectMode && (
               <Text style={styles.selectHint}>
-                Tap 2 or 3 mandis to see which pays more.
+                {t('cropPrices.tap2Or3Mandis')}
               </Text>
             )}
             <ChipRow options={SORT_OPTIONS} value={sort} onChange={setSort} />
@@ -519,7 +532,7 @@ export default function CropPricesScreen({ navigation, route }) {
           <MarketButton
             label={
               selected.length < 2
-                ? 'Pick at least 2 mandis'
+                ? t('cropPrices.pickAtLeast2Mandis')
                 : `Compare ${selected.length} mandis`
             }
             icon={<GitCompareArrows size={16} color={C.white} />}

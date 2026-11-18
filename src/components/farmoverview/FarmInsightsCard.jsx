@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { Bot, AlertTriangle } from 'lucide-react-native';
+import {useTranslation} from 'react-i18next';
 const { width } = Dimensions.get('window');
 const GREEN = '#16883E';
 const rf = size => {
@@ -8,6 +9,7 @@ const rf = size => {
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
 export default function FarmInsightsCard() {
+  const {t} = useTranslation();
   return (
     <View style={styles.card}>
       <View style={styles.headerRow}>
@@ -16,16 +18,15 @@ export default function FarmInsightsCard() {
         </View>
 
         <View style={styles.titleBox}>
-          <Text style={styles.title}>AI Farm Insights</Text>
-          <Text style={styles.subtitle}>Latest recommendation</Text>
+          <Text style={styles.title}>{t('farmInsightsCard.aiFarmInsights')}</Text>
+          <Text style={styles.subtitle}>{t('farmInsightsCard.latestRecommendation')}</Text>
         </View>
       </View>
 
       <View style={styles.alertBox}>
         <AlertTriangle size={18} color="#F97316" strokeWidth={2.4} />
         <Text style={styles.alertText}>
-          Mild leaf stress detected in one patch. Check irrigation and inspect
-          crop leaves in the north-east area.
+          {t('farmInsightsCard.mildLeafStressDetectedIn')}
         </Text>
       </View>
     </View>

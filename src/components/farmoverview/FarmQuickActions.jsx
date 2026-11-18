@@ -1,40 +1,55 @@
 import React from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { Globe2, BadgeCheck, Clock } from 'lucide-react-native';
+import {useTranslation} from 'react-i18next';
+import i18n from 'i18next';
 const actions = [
   {
-    title: 'Satellite View',
+    get title() {
+    return i18n.t('farmQuickActions.satelliteView');
+  },
     type: 'icon',
     Icon: Globe2,
     onKey: 'satellite',
   },
   {
-    title: 'Crop Health',
+    get title() {
+    return i18n.t('farmQuickActions.cropHealth');
+  },
     type: 'icon',
     Icon: BadgeCheck,
   },
   {
-    title: 'Weather',
+    get title() {
+    return i18n.t('farmQuickActions.weather');
+  },
     image: require('../../assets/homescreen/weather.png'),
   },
   {
-    title: 'Scan Crop',
+    get title() {
+    return i18n.t('farmQuickActions.scanCrop');
+  },
     image: require('../../assets/homescreen/cropscan.png'),
   },
   {
-    title: 'AI Chat',
+    get title() {
+    return i18n.t('farmQuickActions.aiChat');
+  },
     image: require('../../assets/homescreen/bot.png'),
   },
   {
-    title: 'Farm History',
+    get title() {
+    return i18n.t('farmQuickActions.farmHistory');
+  },
     type: 'icon',
     Icon: Clock,
   },
 ];
 export default function FarmQuickActions({ onSatellite }) {
+  const {t} = useTranslation();
   return (
     <View style={styles.wrapper}>
-      <Text style={styles.title}>Quick Actions</Text>
+      <Text style={styles.title}>{t('farmQuickActions.quickActions')}</Text>
 
       <View style={styles.grid}>
         {actions.map((item, index) => {

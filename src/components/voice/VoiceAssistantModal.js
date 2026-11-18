@@ -21,7 +21,7 @@ import {
 import { BlurView } from '@react-native-community/blur';
 import LinearGradient from 'react-native-linear-gradient';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import {
   addAudioMeterUpdateListener,
   addSpeechEndListener,
@@ -36,7 +36,17 @@ import Tts from 'react-native-tts';
 import { Mic, RotateCcw, Square, X } from 'lucide-react-native';
 
 import ScreenGlow from './ScreenGlow';
-import { resolveVoiceCommand } from '../../utils/voiceCommandResolver';
+import {
+  appLanguageCode,
+  currentSpeechLocale,
+  speechLocaleChain,
+} from '../../utils/speechLocale';
+import {
+  navigateCommand,
+  resolveVoiceCommand,
+} from '../../utils/voiceCommandResolver';
+import { COMMANDS } from '../../utils/voiceIntentMatcher';
+import { classifyVoiceIntentWithAi } from '../../utils/voiceAiMatch';
 import {
   sendAiGuruMessage,
   startNewAiGuruChat,
@@ -185,7 +195,18 @@ const speechText = result =>
           '',
       ).trim();
 
-const TTS_LANGUAGES = { en: 'en-IN', hi: 'hi-IN', mr: 'mr-IN' };
+
+// the app language's voice, else the closest one the phone has
+const speakInAppLanguage = async () => {
+  for (const locale of speechLocaleChain()) {
+    try {
+      await Tts.setDefaultLanguage(locale);
+      return;
+    } catch {
+      // voice not installed: try the next
+    }
+  }
+};
 
 // bullets and plan labels read badly aloud
 const toSpeech = text =>
@@ -204,7 +225,6 @@ export default function VoiceAssistantModal({
   const { t } = useTranslation();
   const insets = useSafeAreaInsets();
   const dispatch = useDispatch();
-  const aiLanguage = useSelector(state => state.aiGuru?.language || 'en');
   const aiChatStartedRef = useRef(false);
 
   const [status, setStatus] = useState(STATUS.STARTING);
@@ -333,7 +353,7 @@ export default function VoiceAssistantModal({
 
     try {
       listeningRef.current = true;
-      await start({ language: 'en-IN' });
+      await start({ language: currentSpeechLocale() });
 
       if (!visibleRef.current || closingRef.current) {
         stopListening();
@@ -381,7 +401,28 @@ export default function VoiceAssistantModal({
         return;
       }
 
-      const command = resolveVoiceCommand(spoken);
+      let command = resolveVoiceCommand(spoken);
+
+      // Not matched locally, or a long question that also names a screen:
+      // let AI decide "open a section" vs "answer the question". If AI
+      // can't be reached, keep the local guess.
+      if (
+        command.type === 'unknown' ||
+        (command.type === 'navigate' && command.confident === false)
+      ) {
+        const intent = await classifyVoiceIntentWithAi({
+          text: spoken,
+          intents: COMMANDS,
+          language: appLanguageCode(),
+        });
+        if (!visibleRef.current || closingRef.current) return;
+
+        if (intent === 'question') {
+          command = { type: 'unknown', transcript: spoken };
+        } else if (intent) {
+          command = navigateCommand(intent) || command;
+        }
+      }
 
       if (command.type === 'cancel') {
         setStatus(STATUS.DONE);
@@ -409,9 +450,7 @@ export default function VoiceAssistantModal({
 
         try {
           await Tts.getInitStatus();
-          await Tts.setDefaultLanguage(
-            TTS_LANGUAGES[String(i18n.language).split('-')[0]] || 'en-IN',
-          );
+          await speakInAppLanguage();
           await Tts.setDefaultRate(0.48);
           if (!visibleRef.current || closingRef.current) return;
           utteranceRef.current = await Tts.speak(command.response);
@@ -446,7 +485,7 @@ export default function VoiceAssistantModal({
 
       try {
         await Tts.getInitStatus();
-        await Tts.setDefaultLanguage(TTS_LANGUAGES[aiLanguage] || 'en-IN');
+        await speakInAppLanguage();
         await Tts.setDefaultRate(0.48);
         if (!visibleRef.current || closingRef.current) return;
         utteranceRef.current = await Tts.speak(toSpeech(answer));
@@ -455,7 +494,6 @@ export default function VoiceAssistantModal({
       }
     },
     [
-      aiLanguage,
       dispatch,
       fail,
       later,
@@ -912,7 +950,7 @@ export default function VoiceAssistantModal({
                 source={KHETIMASTER_LOGO}
                 resizeMode="contain"
                 style={styles.logo}
-                accessibilityLabel="KhetiMaster"
+                accessibilityLabel={t('voiceAssistantModal.khetimaster')}
               />
             </View>
           </Animated.View>

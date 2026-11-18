@@ -9,6 +9,8 @@ import {
   Dimensions,
 } from 'react-native';
 import { ChevronRight, Star } from 'lucide-react-native';
+import {useTranslation} from 'react-i18next';
+import i18n from 'i18next';
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = width * 0.34;
 const rf = size => {
@@ -17,7 +19,9 @@ const rf = size => {
 };
 const products = [
   {
-    title: 'Pioneer Soybean Seed',
+    get title() {
+    return i18n.t('featuredProducts.pioneerSoybeanSeed');
+  },
     price: '980',
     unit: '/ Kg',
     rating: '4.6',
@@ -25,7 +29,9 @@ const products = [
     image: require('../../assets/bazar/product1.jpg'),
   },
   {
-    title: 'IFFCO NPK 19:19:19',
+    get title() {
+    return i18n.t('featuredProducts.iffcoNpk191919');
+  },
     price: '1250',
     unit: '/ 50 Kg',
     rating: '4.7',
@@ -33,7 +39,9 @@ const products = [
     image: require('../../assets/bazar/product2.jpg'),
   },
   {
-    title: 'Biovita Neem Oil',
+    get title() {
+    return i18n.t('featuredProducts.biovitaNeemOil');
+  },
     price: '450',
     unit: '/ 1L',
     rating: '4.5',
@@ -42,13 +50,14 @@ const products = [
   },
 ];
 export default function FeaturedProducts() {
+  const {t} = useTranslation();
   return (
     <View style={styles.wrapper}>
       <View style={styles.sectionRow}>
-        <Text style={styles.sectionTitle}>Featured Products</Text>
+        <Text style={styles.sectionTitle}>{t('featuredProducts.featuredProducts')}</Text>
 
         <View style={styles.viewRow}>
-          <Text style={styles.viewAll}>View All</Text>
+          <Text style={styles.viewAll}>{t('common.view_all')}</Text>
           <ChevronRight size={16} color="#16883E" strokeWidth={2.6} />
         </View>
       </View>

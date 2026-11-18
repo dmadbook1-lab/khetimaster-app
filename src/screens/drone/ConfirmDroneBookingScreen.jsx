@@ -28,6 +28,8 @@ import {
   Smartphone,
   ShieldCheck,
 } from 'lucide-react-native';
+import {useTranslation} from 'react-i18next';
+import {tOpt} from '../../utils/tOpt';
 const { width } = Dimensions.get('window');
 const GREEN = '#16A34A';
 const DARK_GREEN = '#15803D';
@@ -39,6 +41,7 @@ const rf = size => {
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
 export default function ConfirmDroneBookingScreen({ navigation }) {
+  const {t} = useTranslation();
   const [payment, setPayment] = useState('cod');
   const [agree, setAgree] = useState(true);
   return (
@@ -56,8 +59,8 @@ export default function ConfirmDroneBookingScreen({ navigation }) {
             alignItems: 'center',
           }}
         >
-          <Text style={styles.headerTitle}>Confirm Drone Booking</Text>
-          <Text style={styles.headerSub}>Review your booking details</Text>
+          <Text style={styles.headerTitle}>{t('confirmDroneBooking.confirmDroneBooking')}</Text>
+          <Text style={styles.headerSub}>{t('confirmDroneBooking.reviewYourBookingDetails')}</Text>
         </View>
         <View
           style={{
@@ -79,7 +82,7 @@ export default function ConfirmDroneBookingScreen({ navigation }) {
             }}
           >
             <View style={styles.opInitial}>
-              <Text style={styles.opInitialText}>SA</Text>
+              <Text style={styles.opInitialText}>{t('confirmDroneBooking.sa')}</Text>
             </View>
             <View
               style={{
@@ -87,7 +90,7 @@ export default function ConfirmDroneBookingScreen({ navigation }) {
                 marginLeft: 12,
               }}
             >
-              <Text style={styles.opName}>SkyAgri Drone Services</Text>
+              <Text style={styles.opName}>{t('confirmDroneBooking.skyagriDroneServices')}</Text>
               <View
                 style={{
                   marginTop: 4,
@@ -107,11 +110,11 @@ export default function ConfirmDroneBookingScreen({ navigation }) {
                 </View>
                 <View style={styles.dgca}>
                   <BadgeCheck size={rf(10)} color={GREEN} strokeWidth={2.4} />
-                  <Text style={styles.dgcaText}>DGCA Certified</Text>
+                  <Text style={styles.dgcaText}>{t('confirmDroneBooking.dgcaCertified')}</Text>
                 </View>
               </View>
               <Text style={styles.opMeta}>
-                186 Reviews · 5+ Years in Service
+                {t('confirmDroneBooking.186Reviews5YearsIn')}
               </Text>
             </View>
           </View>
@@ -126,17 +129,17 @@ export default function ConfirmDroneBookingScreen({ navigation }) {
                 marginLeft: 10,
               }}
             >
-              <Text style={styles.pilotName}>Rahul Patil</Text>
-              <Text style={styles.pilotRole}>Certified Drone Pilot</Text>
+              <Text style={styles.pilotName}>{t('confirmDroneBooking.rahulPatil')}</Text>
+              <Text style={styles.pilotRole}>{t('confirmDroneBooking.certifiedDronePilot')}</Text>
             </View>
             <View style={styles.morningPill}>
-              <Text style={styles.morningText}>● Tomorrow Morning</Text>
+              <Text style={styles.morningText}>{t('confirmDroneBooking.tomorrowMorning')}</Text>
             </View>
           </View>
         </View>
 
         {}
-        <Text style={styles.sectionLabel}>FARM DETAILS</Text>
+        <Text style={styles.sectionLabel}>{t('confirmDroneBooking.farmDetails')}</Text>
         <ImageBackground
           source={require('../../assets/drone/farm-map.png')}
           style={styles.farmMap}
@@ -147,11 +150,11 @@ export default function ConfirmDroneBookingScreen({ navigation }) {
         >
           <View style={styles.gpsPill}>
             <MapPin size={rf(10)} color={DARK_GREEN} strokeWidth={2.4} />
-            <Text style={styles.gpsText}>GPS Boundary Verified</Text>
+            <Text style={styles.gpsText}>{t('confirmDroneBooking.gpsBoundaryVerified')}</Text>
           </View>
         </ImageBackground>
         <View style={styles.farmInfo}>
-          <Text style={styles.farmName}>Patil Farm</Text>
+          <Text style={styles.farmName}>{t('confirmDroneBooking.patilFarm')}</Text>
           <View
             style={{
               flexDirection: 'row',
@@ -161,7 +164,7 @@ export default function ConfirmDroneBookingScreen({ navigation }) {
             }}
           >
             <MapPin size={rf(11)} color={MUTED} strokeWidth={2.4} />
-            <Text style={styles.farmLoc}>Ahmednagar, Maharashtra</Text>
+            <Text style={styles.farmLoc}>{t('confirmDroneBooking.ahmednagarMaharashtra')}</Text>
           </View>
           <View style={styles.farmStats}>
             {[
@@ -175,11 +178,11 @@ export default function ConfirmDroneBookingScreen({ navigation }) {
               },
               {
                 v: '42 Days',
-                l: 'Crop Age',
+                l: t('confirmDroneBooking.cropAge'),
               },
             ].map(s => (
               <View key={s.l} style={styles.farmStat}>
-                <Text style={styles.farmStatVal}>{s.v}</Text>
+                <Text style={styles.farmStatVal}>{tOpt(s.v)}</Text>
                 <Text style={styles.farmStatLbl}>{s.l}</Text>
               </View>
             ))}
@@ -187,33 +190,33 @@ export default function ConfirmDroneBookingScreen({ navigation }) {
         </View>
 
         {}
-        <Text style={styles.sectionLabel}>BOOKING DETAILS</Text>
+        <Text style={styles.sectionLabel}>{t('confirmDroneBooking.bookingDetails')}</Text>
         <View style={styles.detailCard}>
           {[
             {
               Icon: Calendar,
-              label: 'DATE',
+              label: t('confirmDroneBooking.date'),
               val: 'Wednesday, 21 May 2025',
-              sub: 'AI Recommended Date',
+              sub: t('confirmDroneBooking.aiRecommendedDate'),
               pill: 'AI Pick',
             },
             {
               Icon: Clock,
-              label: 'TIME SLOT',
+              label: t('confirmDroneBooking.timeSlot'),
               val: '06:00 AM - 07:00 AM',
-              sub: 'Early morning - Best for spraying',
+              sub: t('confirmDroneBooking.earlyMorningBestForSpraying'),
             },
             {
               Icon: Zap,
-              label: 'SERVICE TYPE',
-              val: 'Pesticide Spraying',
-              sub: 'Targeted pest control · ₹750/Acre',
+              label: t('confirmDroneBooking.serviceType'),
+              val: t('confirmDroneBooking.pesticideSpraying'),
+              sub: t('confirmDroneBooking.targetedPestControl750Acre'),
             },
             {
               Icon: Zap,
-              label: 'SPRAY MATERIAL',
-              val: 'I Will Provide Material',
-              sub: 'Chlorpyrifos 20 EC · 2 L/Acre',
+              label: t('confirmDroneBooking.sprayMaterial'),
+              val: t('confirmDroneBooking.iWillProvideMaterial'),
+              sub: t('confirmDroneBooking.chlorpyrifos20Ec2L'),
             },
           ].map((d, i) => {
             const Icon = d.Icon;
@@ -254,7 +257,7 @@ export default function ConfirmDroneBookingScreen({ navigation }) {
         </View>
 
         {}
-        <Text style={styles.sectionLabel}>AI SMART SPRAY ANALYSIS</Text>
+        <Text style={styles.sectionLabel}>{t('confirmDroneBooking.aiSmartSprayAnalysis')}</Text>
         <LinearGradient colors={['#16A34A', '#15803D']} style={styles.aiCard}>
           <View
             style={{
@@ -271,13 +274,13 @@ export default function ConfirmDroneBookingScreen({ navigation }) {
                 marginLeft: 10,
               }}
             >
-              <Text style={styles.aiTitle}>AI Smart Spray{'\n'}Analysis</Text>
+              <Text style={styles.aiTitle}>{t('confirmDroneBooking.aiSmartSpray')}{'\n'}{t('confirmDroneBooking.analysis')}</Text>
               <Text style={styles.aiSub}>
-                Patil Farm · Soybean · 2.34 Acres
+                {t('confirmDroneBooking.patilFarmSoybean234')}
               </Text>
             </View>
             <View style={styles.approvedPill}>
-              <Text style={styles.approvedText}>AI{'\n'}APPROVED</Text>
+              <Text style={styles.approvedText}>{t('confirmDroneBooking.ai')}{'\n'}{t('confirmDroneBooking.approved')}</Text>
             </View>
           </View>
           <View
@@ -306,7 +309,7 @@ export default function ConfirmDroneBookingScreen({ navigation }) {
               },
             ].map(s => (
               <View key={s.l} style={styles.aiChip}>
-                <Text style={styles.aiChipVal}>{s.v}</Text>
+                <Text style={styles.aiChipVal}>{tOpt(s.v)}</Text>
                 <Text style={styles.aiChipLbl}>{s.l}</Text>
               </View>
             ))}
@@ -314,11 +317,11 @@ export default function ConfirmDroneBookingScreen({ navigation }) {
           <View style={styles.aiInfoRow}>
             {[
               {
-                l: 'GROWTH STAGE',
+                l: t('confirmDroneBooking.growthStage'),
                 v: 'Vegetative',
               },
               {
-                l: 'BEST TIME',
+                l: t('confirmDroneBooking.bestTime'),
                 v: '06:30 AM',
               },
               {
@@ -333,7 +336,7 @@ export default function ConfirmDroneBookingScreen({ navigation }) {
                   alignItems: 'center',
                 }}
               >
-                <Text style={styles.aiInfoVal}>{s.v}</Text>
+                <Text style={styles.aiInfoVal}>{tOpt(s.v)}</Text>
                 <Text style={styles.aiInfoLbl}>{s.l}</Text>
               </View>
             ))}
@@ -349,7 +352,7 @@ export default function ConfirmDroneBookingScreen({ navigation }) {
                 justifyContent: 'space-between',
               }}
             >
-              <Text style={styles.effLabel}>Spray Efficiency</Text>
+              <Text style={styles.effLabel}>{t('confirmDroneBooking.sprayEfficiency')}</Text>
               <Text style={styles.effLabel}>98%</Text>
             </View>
             <View style={styles.effBar}>
@@ -370,41 +373,41 @@ export default function ConfirmDroneBookingScreen({ navigation }) {
               },
               {
                 v: '90%',
-                l: 'WATER SAVED',
+                l: t('confirmDroneBooking.waterSaved'),
               },
               {
                 v: '35 Min',
-                l: 'EST. DURATION',
+                l: t('confirmDroneBooking.estDuration'),
               },
             ].map(s => (
               <View key={s.l} style={styles.effStat}>
-                <Text style={styles.effStatVal}>{s.v}</Text>
+                <Text style={styles.effStatVal}>{tOpt(s.v)}</Text>
                 <Text style={styles.effStatLbl}>{s.l}</Text>
               </View>
             ))}
           </View>
           <TouchableOpacity style={styles.whyBtn}>
-            <Text style={styles.whyText}>ⓘ Why this recommendation? ›</Text>
+            <Text style={styles.whyText}>{t('confirmDroneBooking.whyThisRecommendation')}</Text>
           </TouchableOpacity>
         </LinearGradient>
 
         {}
-        <Text style={styles.sectionLabel}>PRICE SUMMARY</Text>
+        <Text style={styles.sectionLabel}>{t('confirmDroneBooking.priceSummary')}</Text>
         <View style={styles.priceBox}>
           {[
             {
-              k: 'Drone Service',
+              k: t('confirmDroneBooking.droneService'),
               s: '750 × 2.34 Acres',
               v: '₹1,755',
             },
             {
-              k: 'Travel Charge',
+              k: t('confirmDroneBooking.travelCharge'),
               s: 'Within 5 km · Free',
               v: 'FREE',
               green: true,
             },
             {
-              k: 'Platform Fee',
+              k: t('confirmDroneBooking.platformFee'),
               v: '₹99',
             },
             {
@@ -431,38 +434,38 @@ export default function ConfirmDroneBookingScreen({ navigation }) {
           ))}
           <View style={styles.divider} />
           <View style={styles.priceRow}>
-            <Text style={styles.totalKey}>Grand Total</Text>
+            <Text style={styles.totalKey}>{t('confirmDroneBooking.grandTotal')}</Text>
             <Text style={styles.totalVal}>₹2,030</Text>
           </View>
         </View>
 
         {}
-        <Text style={styles.sectionLabel}>PAYMENT METHOD</Text>
+        <Text style={styles.sectionLabel}>{t('confirmDroneBooking.paymentMethod')}</Text>
         {[
           {
             id: 'cod',
             Icon: Wallet,
-            title: 'Pay After Service',
-            sub: 'Cash on delivery · Recommended',
+            title: t('confirmDroneBooking.payAfterService'),
+            sub: t('confirmDroneBooking.cashOnDeliveryRecommended'),
             pill: 'DEFAULT',
           },
           {
             id: 'upi',
             Icon: Smartphone,
-            title: 'UPI',
-            sub: 'GPay, PhonePe, Paytm',
+            title: t('confirmDroneBooking.upi'),
+            sub: t('confirmDroneBooking.gpayPhonepePaytm'),
           },
           {
             id: 'card',
             Icon: CreditCard,
-            title: 'Credit / Debit Card',
-            sub: 'Visa, Mastercard, RuPay',
+            title: t('confirmDroneBooking.creditDebitCard'),
+            sub: t('confirmDroneBooking.visaMastercardRupay'),
           },
           {
             id: 'wallet',
             Icon: Wallet,
-            title: 'KhetiMaster Wallet',
-            sub: 'Balance: ₹450',
+            title: t('confirmDroneBooking.khetimasterWallet'),
+            sub: t('confirmDroneBooking.balance450'),
           },
         ].map(p => {
           const Icon = p.Icon;
@@ -512,7 +515,7 @@ export default function ConfirmDroneBookingScreen({ navigation }) {
         })}
 
         {}
-        <Text style={styles.sectionLabel}>CANCELLATION POLICY</Text>
+        <Text style={styles.sectionLabel}>{t('confirmDroneBooking.cancellationPolicy')}</Text>
         <View style={styles.cancelCard}>
           <View
             style={{
@@ -521,7 +524,7 @@ export default function ConfirmDroneBookingScreen({ navigation }) {
             }}
           >
             <Clock size={rf(15)} color="#F97316" strokeWidth={2.4} />
-            <Text style={styles.cancelTitle}>Free Cancellation Policy</Text>
+            <Text style={styles.cancelTitle}>{t('confirmDroneBooking.freeCancellationPolicy')}</Text>
             <View
               style={{
                 flex: 1,
@@ -536,32 +539,32 @@ export default function ConfirmDroneBookingScreen({ navigation }) {
                 fontWeight: '900',
               }}
             >
-              Free cancellation
+              {t('confirmDroneBooking.freeCancellation')}
             </Text>{' '}
-            up to{' '}
+            {t('confirmDroneBooking.upTo')}{' '}
             <Text
               style={{
                 fontWeight: '900',
                 color: DARK,
               }}
             >
-              3 hours
+              {t('confirmDroneBooking.3Hours')}
             </Text>{' '}
-            before scheduled service. After that, a{' '}
+            {t('confirmDroneBooking.beforeScheduledServiceAfterThat')}{' '}
             <Text
               style={{
                 color: GREEN,
                 fontWeight: '900',
               }}
             >
-              50% cancellation fee
+              {t('confirmDroneBooking.50CancellationFee')}
             </Text>{' '}
-            applies.
+            {t('confirmDroneBooking.applies')}
           </Text>
         </View>
 
         {}
-        <Text style={styles.sectionLabel}>TERMS & SAFETY</Text>
+        <Text style={styles.sectionLabel}>{t('confirmDroneBooking.termsSafety')}</Text>
         <TouchableOpacity
           onPress={() => setAgree(!agree)}
           style={styles.termRow}
@@ -570,40 +573,40 @@ export default function ConfirmDroneBookingScreen({ navigation }) {
             {agree && <Check size={rf(11)} color="#FFFFFF" strokeWidth={3} />}
           </View>
           <Text style={styles.termText}>
-            I agree to the{' '}
+            {t('confirmDroneBooking.iAgreeToThe')}{' '}
             <Text
               style={{
                 color: GREEN,
                 fontWeight: '900',
               }}
             >
-              drone service terms
+              {t('confirmDroneBooking.droneServiceTerms')}
             </Text>{' '}
-            and{' '}
+            {t('confirmDroneBooking.and')}{' '}
             <Text
               style={{
                 color: GREEN,
                 fontWeight: '900',
               }}
             >
-              safety guidelines
+              {t('confirmDroneBooking.safetyGuidelines')}
             </Text>{' '}
-            set by KhetiMaster and the operator.
+            {t('confirmDroneBooking.setByKhetimasterAndThe')}
           </Text>
         </TouchableOpacity>
       </ScrollView>
 
       <View style={styles.bottomBar}>
         <View>
-          <Text style={styles.bottomLbl}>TOTAL AMOUNT</Text>
+          <Text style={styles.bottomLbl}>{t('confirmDroneBooking.totalAmount')}</Text>
           <Text style={styles.bottomAmt}>₹2,030</Text>
-          <Text style={styles.bottomSub}>Incl. GST & Platform Fee</Text>
+          <Text style={styles.bottomSub}>{t('confirmDroneBooking.inclGstPlatformFee')}</Text>
         </View>
         <TouchableOpacity
           onPress={() => navigation.replace('DroneBookingSuccess')}
           style={styles.confirmBtn}
         >
-          <Text style={styles.confirmText}>Confirm Booking</Text>
+          <Text style={styles.confirmText}>{t('confirmDroneBooking.confirmBooking')}</Text>
           <ShieldCheck size={rf(15)} color="#FFFFFF" strokeWidth={2.4} />
         </TouchableOpacity>
       </View>

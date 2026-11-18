@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import BottomTabBar from '../../common/BottomTabBar';
+import BottomTabBar, { useBottomTabBarInset } from '../../common/BottomTabBar';
 import AgriHeader from '../../components/agriproducts/AgriHeader';
 import AgriSearchBar from '../../components/agriproducts/AgriSearchBar';
 import AgriHeroBanner from '../../components/agriproducts/AgriHeroBanner';
@@ -13,12 +13,13 @@ import RecentlyViewed from '../../components/agriproducts/RecentlyViewed';
 import { categoryTabs } from '../../components/agriproducts/product';
 const { width } = Dimensions.get('window');
 export default function AgriProductsScreen({ navigation }) {
+  const tabBarInset = useBottomTabBarInset();
   const [activeTab, setActiveTab] = useState('fertilizers');
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[styles.scrollContent, { paddingBottom: styles.scrollContent.paddingBottom + tabBarInset }]}
       >
         <AgriHeader navigation={navigation} />
 

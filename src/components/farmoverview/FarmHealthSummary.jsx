@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { HeartPulse } from 'lucide-react-native';
+import {useTranslation} from 'react-i18next';
 const { width } = Dimensions.get('window');
 const GREEN = '#16883E';
 const rf = size => {
@@ -8,6 +9,7 @@ const rf = size => {
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
 export default function FarmHealthSummary() {
+  const {t} = useTranslation();
   return (
     <View style={styles.card}>
       <View style={styles.left}>
@@ -16,8 +18,8 @@ export default function FarmHealthSummary() {
         </View>
 
         <View>
-          <Text style={styles.title}>Farm Health Score</Text>
-          <Text style={styles.desc}>Your crop condition is stable</Text>
+          <Text style={styles.title}>{t('farmHealthSummary.farmHealthScore')}</Text>
+          <Text style={styles.desc}>{t('farmHealthSummary.yourCropConditionIsStable')}</Text>
         </View>
       </View>
 

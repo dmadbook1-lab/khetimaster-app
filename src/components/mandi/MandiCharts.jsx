@@ -8,6 +8,7 @@ import {
   isPrice,
   shortPrice,
 } from '../../utils/mandiFormat';
+import {useTranslation} from 'react-i18next';
 
 /*
  * Charts are kept simple on purpose: farmers read them on small phones,
@@ -25,6 +26,7 @@ import {
 */
 
 export function WhereToSellChart({ markets, homeDistrict }) {
+  const {t} = useTranslation();
   const top = Math.max(...markets.map(item => item.modalPrice));
 
   return (
@@ -48,7 +50,7 @@ export function WhereToSellChart({ markets, homeDistrict }) {
                 <Text style={styles.market} numberOfLines={1}>
                   {item.market}
                 </Text>
-                {near && <Text style={styles.nearTag}>Near you</Text>}
+                {near && <Text style={styles.nearTag}>{t('mandiCharts.nearYou')}</Text>}
                 <Text style={[styles.rankPrice, best && styles.bestPrice]}>
                   {formatQuintal(item.modalPrice)}
                 </Text>
@@ -89,6 +91,7 @@ export function WhereToSellChart({ markets, homeDistrict }) {
 const COLUMN_HEIGHT = 120;
 
 export function WeekColumns({ points }) {
+  const {t} = useTranslation();
   const known = points.filter(point => isPrice(point.value));
   const max = Math.max(...known.map(point => point.value), 1);
   const min = Math.min(...known.map(point => point.value), max);
@@ -162,13 +165,13 @@ export function WeekColumns({ points }) {
             ]}
           >
             {change > 0
-              ? `▲ Up by ${formatQuintal(change)} per quintal`
+              ? t('mandiCharts.upByPerQuintal', {v1: formatQuintal(change)})
               : change < 0
-              ? `▼ Down by ${formatQuintal(-change)} per quintal`
-              : 'No change in price'}
+              ? t('mandiCharts.downByPerQuintal', {v1: formatQuintal(-change)})
+              : t('mandiCharts.noChangeInPrice')}
           </Text>
           <Text style={styles.changeNote}>
-            From {first.label} to {last.label}
+            {t('mandiCharts.fromTo', {label: first.label, label2: last.label})}
           </Text>
         </View>
       )}

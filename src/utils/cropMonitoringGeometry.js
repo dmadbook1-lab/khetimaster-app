@@ -1,10 +1,11 @@
-export const farmToGeoJSON = farm => {
+
+import i18n from 'i18next';export const farmToGeoJSON = farm => {
   if (!farm?.field || !Array.isArray(farm.field)) {
-    throw new Error('Farm boundary is missing');
+    throw new Error(i18n.t('cropMonitoringGeometry.farmBoundaryIsMissing'));
   }
 
   if (farm.field.length < 3) {
-    throw new Error('Farm boundary must contain at least 3 points');
+    throw new Error(i18n.t('cropMonitoringGeometry.farmBoundaryMustContainAt'));
   }
 
   const coordinates = farm.field.map(point => [

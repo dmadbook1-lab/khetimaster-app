@@ -14,6 +14,7 @@ import {
   MapPin,
   Circle,
 } from 'lucide-react-native';
+import {useTranslation} from 'react-i18next';
 const { width } = Dimensions.get('window');
 const GREEN = '#22C55E';
 const rf = size => {
@@ -21,6 +22,7 @@ const rf = size => {
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
 export default function FarmHeroCard({ farm }) {
+  const {t} = useTranslation();
   return (
     <ImageBackground
       source={farm.image}
@@ -66,7 +68,7 @@ export default function FarmHeroCard({ farm }) {
 
         <View style={styles.activeRow}>
           <View style={styles.activeDot} />
-          <Text style={styles.activeText}>Monitoring Active</Text>
+          <Text style={styles.activeText}>{t('farmHeroCard.monitoringActive')}</Text>
         </View>
       </View>
 

@@ -8,12 +8,14 @@ import {
   Dimensions,
 } from 'react-native';
 import { ArrowRight, Circle } from 'lucide-react-native';
+import {useTranslation} from 'react-i18next';
 const { width } = Dimensions.get('window');
 const rf = size => {
   const scale = width / 390;
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
 export default function BazaarHero() {
+  const {t} = useTranslation();
   return (
     <ImageBackground
       source={require('../../assets/bazar/bazar-hero.png')}
@@ -24,14 +26,14 @@ export default function BazaarHero() {
       <View style={styles.overlay} />
 
       <View style={styles.content}>
-        <Text style={styles.title}>Monsoon{'\n'}Farming Essentials</Text>
+        <Text style={styles.title}>{t('bazaarHero.monsoon')}{'\n'}{t('bazaarHero.farmingEssentials')}</Text>
 
         <Text style={styles.subtitle}>
-          Everything you need for a bountiful harvest
+          {t('bazaarHero.everythingYouNeedForA')}
         </Text>
 
         <TouchableOpacity activeOpacity={0.9} style={styles.button}>
-          <Text style={styles.buttonText}>Explore Now</Text>
+          <Text style={styles.buttonText}>{t('bazaarHero.exploreNow')}</Text>
           <ArrowRight size={16} color="#FFFFFF" strokeWidth={2.6} />
         </TouchableOpacity>
       </View>

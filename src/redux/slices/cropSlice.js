@@ -2,6 +2,7 @@ import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import axios from 'axios';
 
 import {API_URLS, SATELLITE_API_KEY} from '../../config/api';
+import i18n from 'i18next';
 
 const SATELLITE_API = API_URLS.satellite;
 const API_KEY = SATELLITE_API_KEY;
@@ -34,21 +35,21 @@ export const fetchCropHealth = createAsyncThunk(
       if (!geometry) {
         return rejectWithValue({
           status: 400,
-          message: 'Farm geometry is required',
+          message: i18n.t('cropSlice.farmGeometryIsRequired'),
         });
       }
 
       if (!date) {
         return rejectWithValue({
           status: 400,
-          message: 'Satellite date is required',
+          message: i18n.t('cropSlice.satelliteDateIsRequired'),
         });
       }
 
       if (!sowingDate) {
         return rejectWithValue({
           status: 400,
-          message: 'Sowing date is required',
+          message: i18n.t('cropSlice.sowingDateIsRequired'),
         });
       }
 
@@ -84,7 +85,7 @@ export const fetchCropHealth = createAsyncThunk(
           error?.response?.data?.detail ||
           error?.response?.data?.message ||
           error?.message ||
-          'Failed to fetch crop health',
+          i18n.t('cropSlice.failedToFetchCropHealth'),
       });
     }
   },
@@ -128,7 +129,7 @@ const cropSlice = createSlice({
         state.error =
           action.payload?.message ||
           action.error?.message ||
-          'Unable to fetch crop health';
+          i18n.t('cropSlice.unableToFetchCropHealth');
       });
   },
 });

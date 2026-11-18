@@ -33,6 +33,9 @@ import {
   WandSparkles,
   ArrowUpRight,
 } from 'lucide-react-native';
+import {useTranslation} from 'react-i18next';
+import i18n from 'i18next';
+import {tOpt} from '../../utils/tOpt';
 const { width, height } = Dimensions.get('window');
 const GREEN = '#16883E';
 const BRIGHT_GREEN = '#1DC45B';
@@ -85,42 +88,54 @@ const INITIAL_CART_ITEMS = [
 const PAYMENT_METHODS = [
   {
     id: 'upi',
-    title: 'UPI',
+    get title() {
+    return i18n.t('cart.upi');
+  },
     Icon: Smartphone,
     color: '#FFFFFF',
     background: BRIGHT_GREEN,
   },
   {
     id: 'credit',
-    title: 'Credit Card',
+    get title() {
+    return i18n.t('cart.creditCard');
+  },
     Icon: CreditCard,
     color: '#3B82F6',
     background: '#FFFFFF',
   },
   {
     id: 'netbanking',
-    title: 'Net Banking',
+    get title() {
+    return i18n.t('cart.netBanking');
+  },
     Icon: Landmark,
     color: '#A855F7',
     background: '#FFFFFF',
   },
   {
     id: 'cod',
-    title: 'Cash on Del.',
+    get title() {
+    return i18n.t('cart.cashOnDel');
+  },
     Icon: Banknote,
     color: '#F97316',
     background: '#FFFFFF',
   },
   {
     id: 'wallet',
-    title: 'Wallet',
+    get title() {
+    return i18n.t('cart.wallet');
+  },
     Icon: Wallet,
     color: '#EC4899',
     background: '#FFFFFF',
   },
   {
     id: 'debit',
-    title: 'Debit Card',
+    get title() {
+    return i18n.t('cart.debitCard');
+  },
     Icon: Grid2X2,
     color: '#16A34A',
     background: '#FFFFFF',
@@ -128,6 +143,7 @@ const PAYMENT_METHODS = [
 ];
 const formatINR = value => Number(value || 0).toLocaleString('en-IN');
 export default function CartScreen({ navigation }) {
+  const {t} = useTranslation();
   const [cartItems, setCartItems] = useState(INITIAL_CART_ITEMS);
   const [selectedPayment, setSelectedPayment] = useState('upi');
   const itemCount = useMemo(
@@ -185,7 +201,7 @@ export default function CartScreen({ navigation }) {
           <ArrowLeft size={rf(23)} color={DARK} strokeWidth={2.4} />
         </TouchableOpacity>
 
-        <Text style={styles.headerTitle}>Shopping Cart</Text>
+        <Text style={styles.headerTitle}>{t('cart.shoppingCart')}</Text>
 
         <TouchableOpacity activeOpacity={0.8} style={styles.cartButton}>
           <ShoppingCart size={rf(22)} color={DARK} strokeWidth={2.4} />
@@ -205,10 +221,10 @@ export default function CartScreen({ navigation }) {
         <DeliveryAddressCard />
 
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Your Items</Text>
+          <Text style={styles.sectionTitle}>{t('cart.yourItems')}</Text>
 
           <Text style={styles.sectionCount}>
-            {cartItems.length} {cartItems.length === 1 ? 'item' : 'items'}
+            {cartItems.length} {cartItems.length === 1 ? t('plural.item') : t('plural.items')}
           </Text>
         </View>
 
@@ -224,11 +240,11 @@ export default function CartScreen({ navigation }) {
 
         <AIRecommendationCard />
 
-        <Text style={styles.mainSectionTitle}>Offers & Coupons</Text>
+        <Text style={styles.mainSectionTitle}>{t('cart.offersCoupons')}</Text>
 
         <CouponCard />
 
-        <Text style={styles.mainSectionTitle}>Order Summary</Text>
+        <Text style={styles.mainSectionTitle}>{t('cart.orderSummary')}</Text>
 
         <OrderSummaryCard
           subtotal={subtotal}
@@ -238,7 +254,7 @@ export default function CartScreen({ navigation }) {
           totalPayable={totalPayable}
         />
 
-        <Text style={styles.mainSectionTitle}>Pay With</Text>
+        <Text style={styles.mainSectionTitle}>{t('cart.payWith')}</Text>
 
         <View style={styles.paymentGrid}>
           {PAYMENT_METHODS.map(method => (
@@ -260,13 +276,14 @@ export default function CartScreen({ navigation }) {
         >
           <LockKeyhole size={rf(20)} color="#FFFFFF" strokeWidth={2.5} />
 
-          <Text style={styles.checkoutText}>Proceed to Checkout</Text>
+          <Text style={styles.checkoutText}>{t('cart.proceedToCheckout')}</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
 }
 function DeliveryAddressCard() {
+  const {t} = useTranslation();
   return (
     <View style={styles.addressCard}>
       <View style={styles.locationIconBox}>
@@ -274,28 +291,29 @@ function DeliveryAddressCard() {
       </View>
 
       <View style={styles.addressDetails}>
-        <Text style={styles.deliverLabel}>DELIVER TO</Text>
+        <Text style={styles.deliverLabel}>{t('cart.deliverTo')}</Text>
 
-        <Text style={styles.addressName}>Patil Farm</Text>
+        <Text style={styles.addressName}>{t('cart.patilFarm')}</Text>
 
         <Text numberOfLines={1} style={styles.addressText}>
-          Aurangabad, Maharashtra 431001
+          {t('cart.aurangabadMaharashtra431001')}
         </Text>
       </View>
 
       <TouchableOpacity
         activeOpacity={0.85}
         onPress={() =>
-          Alert.alert('Change Address', 'Address selection can be opened here.')
+          Alert.alert(t('cart.changeAddress'), t('cart.addressSelectionCanBeOpened'))
         }
         style={styles.changeButton}
       >
-        <Text style={styles.changeButtonText}>Change</Text>
+        <Text style={styles.changeButtonText}>{t('cart.change')}</Text>
       </TouchableOpacity>
     </View>
   );
 }
 function CartItemCard({ item, onIncrease, onDecrease, onRemove }) {
+  const {t} = useTranslation();
   return (
     <View style={styles.itemCard}>
       <View style={styles.itemTopRow}>
@@ -311,7 +329,7 @@ function CartItemCard({ item, onIncrease, onDecrease, onRemove }) {
           <Text style={styles.productBrand}>{item.brand}</Text>
 
           <Text numberOfLines={2} style={styles.productName}>
-            {item.name}
+            {tOpt(item.name)}
           </Text>
 
           <Text style={styles.productUnit}>{item.unit}</Text>
@@ -352,7 +370,7 @@ function CartItemCard({ item, onIncrease, onDecrease, onRemove }) {
         >
           <Trash2 size={rf(13)} color={RED} strokeWidth={2.3} />
 
-          <Text style={styles.removeText}>Remove</Text>
+          <Text style={styles.removeText}>{t('cart.remove')}</Text>
         </TouchableOpacity>
       </View>
 
@@ -360,13 +378,14 @@ function CartItemCard({ item, onIncrease, onDecrease, onRemove }) {
         <Truck size={rf(15)} color={ORANGE} fill={ORANGE} strokeWidth={2} />
 
         <Text style={styles.deliveryBadgeText}>
-          Delivery in {item.deliveryDays} Days
+          {t('cart.deliveryInDays', {deliveryDays: item.deliveryDays})}
         </Text>
       </View>
     </View>
   );
 }
 function AIRecommendationCard() {
+  const {t} = useTranslation();
   return (
     <LinearGradient
       colors={['#0E9741', '#1AC458']}
@@ -385,45 +404,45 @@ function AIRecommendationCard() {
       <View style={styles.aiBadge}>
         <WandSparkles size={rf(11)} color="#FFFFFF" strokeWidth={2.3} />
 
-        <Text style={styles.aiBadgeText}>AI Recommendation</Text>
+        <Text style={styles.aiBadgeText}>{t('cart.aiRecommendation')}</Text>
       </View>
 
-      <Text style={styles.aiTitle}>Boost Your Soybean Yield</Text>
+      <Text style={styles.aiTitle}>{t('cart.boostYourSoybeanYield')}</Text>
 
       <Text style={styles.aiDescription}>
-        “Based on your Soybean crop, adding a Micronutrient Mix may improve crop
-        health and nutrient balance significantly.”
+        {t('cart.basedOnYourSoybeanCrop')}
       </Text>
 
       <View style={styles.aiBottomRow}>
         <View style={styles.growthBadge}>
           <ArrowUpRight size={rf(12)} color="#FFFFFF" strokeWidth={2.4} />
 
-          <Text style={styles.growthBadgeText}>+8% Better Growth</Text>
+          <Text style={styles.growthBadgeText}>{t('cart.8BetterGrowth')}</Text>
         </View>
 
         <TouchableOpacity
           activeOpacity={0.87}
           onPress={() =>
             Alert.alert(
-              'Added',
-              'Recommended micronutrient product added to cart.',
+              t('cart.added'),
+              t('cart.recommendedMicronutrientProductAddedTo'),
             )
           }
           style={styles.aiAddButton}
         >
-          <Text style={styles.aiAddButtonText}>Add to Cart</Text>
+          <Text style={styles.aiAddButtonText}>{t('cart.addToCart')}</Text>
         </TouchableOpacity>
       </View>
     </LinearGradient>
   );
 }
 function CouponCard() {
+  const {t} = useTranslation();
   return (
     <TouchableOpacity
       activeOpacity={0.85}
       onPress={() =>
-        Alert.alert('Apply Coupon', 'Coupon selection can be opened here.')
+        Alert.alert(t('cart.applyCoupon'), t('cart.couponSelectionCanBeOpened'))
       }
       style={styles.couponCard}
     >
@@ -432,9 +451,9 @@ function CouponCard() {
       </View>
 
       <View style={styles.couponDetails}>
-        <Text style={styles.couponTitle}>Apply Coupon</Text>
+        <Text style={styles.couponTitle}>{t('cart.applyCoupon')}</Text>
 
-        <Text style={styles.couponSubtitle}>Save extra with promo codes</Text>
+        <Text style={styles.couponSubtitle}>{t('cart.saveExtraWithPromoCodes')}</Text>
       </View>
 
       <ChevronRight size={rf(21)} color="#C7CDD5" strokeWidth={2.3} />
@@ -448,25 +467,26 @@ function OrderSummaryCard({
   gst,
   totalPayable,
 }) {
+  const {t} = useTranslation();
   return (
     <View style={styles.summaryCard}>
       <View style={styles.summaryContent}>
-        <SummaryRow label="Subtotal (3 items)" value={formatINR(subtotal)} />
+        <SummaryRow label={t('cart.subtotal3Items')} value={formatINR(subtotal)} />
 
-        <SummaryRow label="Discount" value={`- ${formatINR(discount)}`} green />
+        <SummaryRow label={t('cart.discount')} value={`- ${formatINR(discount)}`} green />
 
         <SummaryRow
-          label="Delivery Charges"
-          value={deliveryCharge === 0 ? 'FREE' : formatINR(deliveryCharge)}
+          label={t('cart.deliveryCharges')}
+          value={deliveryCharge === 0 ? t('plural.free') : formatINR(deliveryCharge)}
           green
         />
 
-        <SummaryRow label="GST (5%)" value={formatINR(gst)} />
+        <SummaryRow label={t('cart.gst5')} value={formatINR(gst)} />
 
         <View style={styles.summaryDivider} />
 
         <View style={styles.totalRow}>
-          <Text style={styles.totalLabel}>Total Payable</Text>
+          <Text style={styles.totalLabel}>{t('cart.totalPayable')}</Text>
 
           <Text style={styles.totalValue}>₹{formatINR(totalPayable)}</Text>
         </View>
@@ -475,8 +495,7 @@ function OrderSummaryCard({
           <Sparkles size={rf(13)} color={GREEN} strokeWidth={2.4} />
 
           <Text style={styles.savingsText}>
-            You’re saving <Text style={styles.savingsAmount}>389</Text> on this
-            order 🥳
+            {t('cart.youreSaving')} <Text style={styles.savingsAmount}>389</Text> {t('cart.onThisOrder')}
           </Text>
         </View>
       </View>

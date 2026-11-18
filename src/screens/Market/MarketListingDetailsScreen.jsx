@@ -80,31 +80,52 @@ import {
   listingSubtitle,
   timeAgo,
 } from '../../utils/marketFormat';
+import {useTranslation} from 'react-i18next';
+import i18n from 'i18next';
 
 const { width } = Dimensions.get('window');
 const HERO_HEIGHT = 360;
 
 const STEPS = [
-  { title: 'Send offer', text: 'Propose your price and quantity' },
-  { title: 'Agree', text: 'Phone numbers shared on accept' },
-  { title: 'Meet & pay', text: 'Pay when you get the goods' },
+  { get title() {
+    return i18n.t('marketListingDetails.sendOffer');
+  }, get text() {
+    return i18n.t('marketListingDetails.proposeYourPriceAndQuantity');
+  } },
+  { get title() {
+    return i18n.t('marketListingDetails.agree');
+  }, get text() {
+    return i18n.t('marketListingDetails.phoneNumbersSharedOnAccept');
+  } },
+  { get title() {
+    return i18n.t('marketListingDetails.meetPay');
+  }, get text() {
+    return i18n.t('marketListingDetails.payWhenYouGetThe');
+  } },
 ];
 
 const EXPIRY_BANNER = {
   expired: {
     color: C.red,
     bg: C.lightRed,
-    text: 'This product has passed its expiry date and cannot be sold.',
+    get text() {
+    return i18n.t('marketListingDetails.thisProductHasPassedIts');
+  },
   },
   soon: {
     color: C.amber,
     bg: C.lightAmber,
-    text: 'Close to expiry. Check the seal and date before you buy.',
+    get text() {
+    return i18n.t('marketListingDetails.closeToExpiryCheckThe');
   },
-  ok: { color: C.green, bg: C.lightGreen, text: 'Within its shelf life.' },
+  },
+  ok: { color: C.green, bg: C.lightGreen, get text() {
+    return i18n.t('marketListingDetails.withinItsShelfLife');
+  } },
 };
 
 export default function MarketListingDetailsScreen({ navigation, route }) {
+  const {t} = useTranslation();
   const { listingId } = route.params;
   const dispatch = useDispatch();
   const insets = useSafeAreaInsets();
@@ -138,7 +159,7 @@ export default function MarketListingDetailsScreen({ navigation, route }) {
 
   const handleToggleSave = () => {
     dispatch(toggleSaveMarketListing({ listingId, save: !listing.isSaved }));
-    toast.show(listing.isSaved ? 'Removed from saved' : 'Saved for later');
+    toast.show(listing.isSaved ? t('marketListingDetails.removedFromSaved') : t('marketListingDetails.savedForLater'));
   };
 
   const openOffer = () => {
@@ -159,7 +180,7 @@ export default function MarketListingDetailsScreen({ navigation, route }) {
       goToDeal(result.deal._id);
     } catch (error) {
       setOfferError({
-        message: error?.message || 'Please try again.',
+        message: error?.message || t('common.please_try_again'),
         dealId: error?.dealId || null,
       });
     }
@@ -173,8 +194,8 @@ export default function MarketListingDetailsScreen({ navigation, route }) {
       dispatch(fetchMarketListingById(listingId));
       toast.show(
         status === 'PAUSED'
-          ? 'Listing paused. Buyers cannot see it.'
-          : 'Listing is live again',
+          ? t('marketListingDetails.listingPausedBuyersCannotSee')
+          : t('marketListingDetails.listingIsLiveAgain'),
       );
     } catch (error) {
       feedback.error('Unable to update listing', String(error));
@@ -183,10 +204,10 @@ export default function MarketListingDetailsScreen({ navigation, route }) {
 
   const handleDelete = () =>
     feedback.confirm({
-      title: 'Delete listing?',
+      title: t('marketListingDetails.deleteListing'),
       message:
-        'Buyers will no longer see this listing. Pending offers will be closed.',
-      confirmLabel: 'Delete',
+        t('marketListingDetails.buyersWillNoLongerSee'),
+      confirmLabel: t('common.delete'),
       destructive: true,
       onConfirm: async () => {
         try {
@@ -201,14 +222,14 @@ export default function MarketListingDetailsScreen({ navigation, route }) {
   if (!listing) {
     return (
       <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
-        <MarketHeader title="Listing" onBack={() => navigation.goBack()} />
+        <MarketHeader title={t('marketListingDetails.listing')} onBack={() => navigation.goBack()} />
         {listingLoading || !listingError ? (
           <LoadingState />
         ) : (
           <EmptyState
-            title="Listing not available"
+            title={t('marketListingDetails.listingNotAvailable')}
             message={listingError}
-            actionLabel="Go Back"
+            actionLabel={t('marketListingDetails.goBack')}
             onAction={() => navigation.goBack()}
           />
         )}
@@ -333,7 +354,7 @@ export default function MarketListingDetailsScreen({ navigation, route }) {
               {categoryLabels[listing.category] || listing.category}
             </Text>
             {listing.isOrganic && (
-              <Text style={styles.organicTag}>Organic</Text>
+              <Text style={styles.organicTag}>{t('marketListingDetails.organic')}</Text>
             )}
             {listing.status !== 'ACTIVE' && (
               <StatusPill meta={LISTING_STATUS_META[listing.status]} />
@@ -351,7 +372,7 @@ export default function MarketListingDetailsScreen({ navigation, route }) {
             <Text
               style={[styles.negotiable, !listing.isNegotiable && styles.fixed]}
             >
-              {listing.isNegotiable ? 'Negotiable' : 'Fixed price'}
+              {listing.isNegotiable ? t('marketListingDetails.negotiable') : t('marketListingDetails.fixedPrice')}
             </Text>
           </View>
 
@@ -361,21 +382,21 @@ export default function MarketListingDetailsScreen({ navigation, route }) {
               <Text style={styles.statValue} numberOfLines={1}>
                 {formatQuantity(listing.quantity, listing.unit)}
               </Text>
-              <Text style={styles.statLabel}>Available</Text>
+              <Text style={styles.statLabel}>{t('marketListingDetails.available')}</Text>
             </View>
             <View style={styles.statBox}>
               <Scale size={16} color={C.blue} />
               <Text style={styles.statValue} numberOfLines={1}>
                 {listing.minOrderQuantity
                   ? formatQuantity(listing.minOrderQuantity, listing.unit)
-                  : 'Any'}
+                  : t('marketListingDetails.any')}
               </Text>
-              <Text style={styles.statLabel}>Min. order</Text>
+              <Text style={styles.statLabel}>{t('marketListingDetails.minOrder')}</Text>
             </View>
             <View style={styles.statBox}>
               <Eye size={16} color={C.orange} />
               <Text style={styles.statValue}>{listing.views || 0}</Text>
-              <Text style={styles.statLabel}>Views</Text>
+              <Text style={styles.statLabel}>{t('marketListingDetails.views')}</Text>
             </View>
           </View>
 
@@ -403,7 +424,7 @@ export default function MarketListingDetailsScreen({ navigation, route }) {
                   ]}
                 >
                   {expiry.tone === 'ok'
-                    ? `Expires ${formatDate(listing.expiryDate)}`
+                    ? t('marketListingDetails.expires', {v1: formatDate(listing.expiryDate)})
                     : expiry.label}
                 </Text>
                 <Text style={styles.expiryText}>
@@ -415,19 +436,19 @@ export default function MarketListingDetailsScreen({ navigation, route }) {
 
           {/* DETAILS */}
           <View style={styles.card}>
-            <Text style={styles.sectionTitle}>Details</Text>
+            <Text style={styles.sectionTitle}>{t('marketListingDetails.details')}</Text>
 
             {listing.kind === 'EQUIPMENT' && (
               <>
-                <InfoRow label="Brand" value={listing.brand} />
-                <InfoRow label="Model" value={listing.model} />
-                <InfoRow label="Model year" value={listing.modelYear} />
+                <InfoRow label={t('marketListingDetails.brand')} value={listing.brand} />
+                <InfoRow label={t('marketListingDetails.model')} value={listing.model} />
+                <InfoRow label={t('marketListingDetails.modelYear')} value={listing.modelYear} />
                 <InfoRow
-                  label="Condition"
+                  label={t('marketListingDetails.condition')}
                   value={CONDITION_LABELS[listing.condition]}
                 />
                 <InfoRow
-                  label="Usage"
+                  label={t('marketListingDetails.usage')}
                   value={
                     listing.usageHours !== null &&
                     listing.usageHours !== undefined
@@ -440,45 +461,45 @@ export default function MarketListingDetailsScreen({ navigation, route }) {
 
             {listing.kind === 'INPUTS' && (
               <>
-                <InfoRow label="Brand" value={listing.brand} />
-                <InfoRow label="Composition" value={listing.composition} />
-                <InfoRow label="Pack size" value={listing.packSize} />
+                <InfoRow label={t('marketListingDetails.brand')} value={listing.brand} />
+                <InfoRow label={t('marketListingDetails.composition')} value={listing.composition} />
+                <InfoRow label={t('marketListingDetails.packSize')} value={listing.packSize} />
                 <InfoRow
-                  label="Manufactured"
+                  label={t('marketListingDetails.manufactured')}
                   value={formatDate(listing.manufacturingDate)}
                 />
                 <InfoRow
-                  label="Expiry"
+                  label={t('marketListingDetails.expiry')}
                   value={formatDate(listing.expiryDate)}
                 />
                 <InfoRow
-                  label="Packing"
-                  value={listing.isSealed ? 'Sealed, unopened' : 'Opened'}
+                  label={t('marketListingDetails.packing')}
+                  value={listing.isSealed ? t('marketListingDetails.sealedUnopened') : t('marketListingDetails.opened')}
                 />
               </>
             )}
 
             {listing.kind === 'PRODUCE' && (
               <>
-                <InfoRow label="Variety" value={listing.variety} />
-                <InfoRow label="Grade" value={GRADE_LABELS[listing.grade]} />
+                <InfoRow label={t('marketListingDetails.variety')} value={listing.variety} />
+                <InfoRow label={t('marketListingDetails.grade')} value={GRADE_LABELS[listing.grade]} />
                 <InfoRow
-                  label="Organic"
-                  value={listing.isOrganic ? 'Yes' : 'No'}
+                  label={t('marketListingDetails.organic')}
+                  value={listing.isOrganic ? t('marketListingDetails.yes') : 'No'}
                 />
                 <InfoRow
-                  label="Harvested"
+                  label={t('marketListingDetails.harvested')}
                   value={formatDate(listing.harvestDate)}
                 />
               </>
             )}
 
-            <InfoRow label="Posted" value={timeAgo(listing.createdAt)} />
+            <InfoRow label={t('marketListingDetails.posted')} value={timeAgo(listing.createdAt)} />
 
             {!!listing.description && (
               <>
                 <Text style={[styles.sectionTitle, styles.descriptionTitle]}>
-                  Description
+                  {t('marketListingDetails.description')}
                 </Text>
                 <Text style={styles.description}>{listing.description}</Text>
               </>
@@ -492,9 +513,9 @@ export default function MarketListingDetailsScreen({ navigation, route }) {
                 <MapPin size={16} color={C.green} />
               </View>
               <View style={styles.flex}>
-                <Text style={styles.cardLabel}>Pickup location</Text>
+                <Text style={styles.cardLabel}>{t('marketListingDetails.pickupLocation')}</Text>
                 <Text style={styles.locationText}>
-                  {formatLocation(listing.location) || 'Not provided'}
+                  {formatLocation(listing.location) || t('marketListingDetails.notProvided')}
                   {listing.location?.pincode
                     ? ` - ${listing.location.pincode}`
                     : ''}
@@ -523,8 +544,8 @@ export default function MarketListingDetailsScreen({ navigation, route }) {
               <View style={styles.flex}>
                 <Text style={styles.cardLabel}>
                   {listing.deliveryAvailable
-                    ? 'Seller can deliver'
-                    : 'Pickup only'}
+                    ? t('marketListingDetails.sellerCanDeliver')
+                    : t('marketListingDetails.pickupOnly')}
                 </Text>
                 {!!listing.deliveryNotes && (
                   <Text style={styles.locationText}>
@@ -558,7 +579,7 @@ export default function MarketListingDetailsScreen({ navigation, route }) {
                   <User size={22} color={C.white} />
                 </LinearGradient>
                 <View style={styles.flex}>
-                  <Text style={styles.cardLabel}>Sold by</Text>
+                  <Text style={styles.cardLabel}>{t('marketListingDetails.soldBy')}</Text>
                   <Text style={styles.sellerName}>
                     {seller.fullName || 'Farmer'}
                   </Text>
@@ -567,11 +588,11 @@ export default function MarketListingDetailsScreen({ navigation, route }) {
                     <Text style={styles.sellerStatText}>
                       {stats.totalReviews
                         ? `${stats.averageRating} (${stats.totalReviews})`
-                        : 'New seller'}
+                        : t('marketListingDetails.newSeller')}
                     </Text>
                     <BadgeCheck size={12} color={C.green} />
                     <Text style={styles.sellerStatText}>
-                      {stats.completedDeals || 0} deals
+                      {t('marketListingDetails.deals', {v1: stats.completedDeals || 0})}
                     </Text>
                   </View>
                 </View>
@@ -581,7 +602,7 @@ export default function MarketListingDetailsScreen({ navigation, route }) {
           )}
 
           {/* HOW IT WORKS */}
-          <Text style={styles.howTitle}>How buying works</Text>
+          <Text style={styles.howTitle}>{t('marketListingDetails.howBuyingWorks')}</Text>
           <View style={styles.steps}>
             {STEPS.map((step, index) => (
               <View key={step.title} style={styles.step}>
@@ -601,8 +622,7 @@ export default function MarketListingDetailsScreen({ navigation, route }) {
             <View style={styles.safetyCard}>
               <AlertTriangle size={16} color="#725C19" />
               <Text style={styles.safetyText}>
-                Use crop-protection chemicals only as per the label. Wear gloves
-                and a mask, and keep them away from children and animals.
+                {t('marketListingDetails.useCropProtectionChemicalsOnly')}
               </Text>
             </View>
           )}
@@ -621,7 +641,7 @@ export default function MarketListingDetailsScreen({ navigation, route }) {
             {listing.status !== 'SOLD' && (
               <MarketButton
                 variant="outline"
-                label={listing.status === 'ACTIVE' ? 'Pause' : 'Resume'}
+                label={listing.status === 'ACTIVE' ? t('marketListingDetails.pause') : t('marketListingDetails.resume')}
                 icon={
                   listing.status === 'ACTIVE' ? (
                     <Pause size={16} color={C.green} />
@@ -636,7 +656,7 @@ export default function MarketListingDetailsScreen({ navigation, route }) {
             )}
             <MarketButton
               variant="outline"
-              label="Edit"
+              label={t('marketListingDetails.edit')}
               icon={<Pencil size={16} color={C.green} />}
               onPress={() =>
                 navigation.navigate(MARKET_ROUTES.SELL, { listing })
@@ -644,7 +664,7 @@ export default function MarketListingDetailsScreen({ navigation, route }) {
               style={styles.flex}
             />
             <MarketButton
-              label="Offers"
+              label={t('marketListingDetails.offers')}
               icon={<Handshake size={16} color={C.white} />}
               disabled={deleting}
               onPress={() =>
@@ -661,12 +681,12 @@ export default function MarketListingDetailsScreen({ navigation, route }) {
             <View style={styles.openDealRow}>
               <StatusPill meta={DEAL_STATUS_META[myOpenDeal.status]} />
               <Text style={styles.openDealText} numberOfLines={1}>
-                Your offer: {formatQuantity(myOpenDeal.quantity, listing.unit)}{' '}
-                at {formatPricePerUnit(myOpenDeal.pricePerUnit, listing.unit)}
+                {t('marketListingDetails.yourOffer')} {formatQuantity(myOpenDeal.quantity, listing.unit)}{' '}
+                {t('marketListingDetails.at')} {formatPricePerUnit(myOpenDeal.pricePerUnit, listing.unit)}
               </Text>
             </View>
             <MarketButton
-              label="View Your Deal"
+              label={t('marketListingDetails.viewYourDeal')}
               icon={<Handshake size={17} color={C.white} />}
               onPress={() =>
                 navigation.navigate(MARKET_ROUTES.DEAL_DETAILS, {
@@ -678,7 +698,7 @@ export default function MarketListingDetailsScreen({ navigation, route }) {
         ) : (
           <>
             <View style={styles.bottomPrice}>
-              <Text style={styles.bottomPriceLabel}>Price</Text>
+              <Text style={styles.bottomPriceLabel}>{t('marketListingDetails.price')}</Text>
               <Text style={styles.bottomPriceValue} numberOfLines={1}>
                 {formatPricePerUnit(listing.pricePerUnit, listing.unit)}
               </Text>
@@ -686,10 +706,10 @@ export default function MarketListingDetailsScreen({ navigation, route }) {
             <MarketButton
               label={
                 isExpired
-                  ? 'Expired'
+                  ? t('marketListingDetails.expired')
                   : listing.status === 'ACTIVE'
-                  ? 'Make an Offer'
-                  : 'Not available'
+                  ? t('marketListingDetails.makeAnOffer')
+                  : t('marketListingDetails.notAvailable')
               }
               icon={canBuy ? <Handshake size={17} color={C.white} /> : null}
               disabled={!canBuy}
@@ -722,7 +742,7 @@ export default function MarketListingDetailsScreen({ navigation, route }) {
         errorAction={
           offerError?.dealId
             ? {
-                label: 'View your existing offer',
+                label: t('marketListingDetails.viewYourExistingOffer'),
                 onPress: () => goToDeal(offerError.dealId),
               }
             : null

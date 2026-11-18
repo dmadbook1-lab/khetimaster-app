@@ -7,30 +7,44 @@ import {
   TouchableOpacity,
 } from 'react-native';
 import { COLORS, rf, PAGE_PADDING } from './theme';
+import i18n from 'i18next';
+import {useTranslation} from 'react-i18next';
 const TABS = [
   {
     id: 'Community',
-    label: 'For You',
+    get label() {
+    return i18n.t('communityTabs.forYou');
+  },
   },
   {
     id: 'Following',
-    label: 'Following',
+    get label() {
+    return i18n.t('communityTabs.following');
+  },
   },
   {
     id: 'Reels',
-    label: 'Reels',
+    get label() {
+    return i18n.t('communityTabs.reels');
+  },
   },
   {
     id: 'Questions',
-    label: 'Questions',
+    get label() {
+    return i18n.t('communityTabs.questions');
+  },
   },
   {
     id: 'Experts',
-    label: 'Experts',
+    get label() {
+    return i18n.t('communityTabs.experts');
+  },
   },
   {
     id: 'Disease',
-    label: 'Disease',
+    get label() {
+    return i18n.t('communityTabs.disease');
+  },
   },
 ];
 export default function CommunityTabs({
@@ -38,6 +52,7 @@ export default function CommunityTabs({
   activeRoute,
   onTabChange,
 }) {
+  useTranslation();
   const handleTabPress = routeName => {
     if (routeName === activeRoute) return;
     if (onTabChange) {

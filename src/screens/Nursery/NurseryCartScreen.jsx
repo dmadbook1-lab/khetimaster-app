@@ -52,8 +52,10 @@ import {
 } from '../../redux/slices/nurseryCartSlice';
 import { formatRupees } from '../../utils/marketFormat';
 import { freeDeliveryGap } from '../../utils/nurseryFormat';
+import {useTranslation} from 'react-i18next';
 
 export default function NurseryCartScreen({ navigation }) {
+  const {t} = useTranslation();
   const dispatch = useDispatch();
   const insets = useSafeAreaInsets();
   const feedback = useFeedbackModal();
@@ -85,14 +87,14 @@ export default function NurseryCartScreen({ navigation }) {
 
   const removeItem = (item, name) =>
     feedback.confirm({
-      title: 'Remove from cart?',
-      message: `${name} will be removed from your cart.`,
-      confirmLabel: 'Remove',
+      title: t('nurseryCart.removeFromCart'),
+      message: t('nurseryCart.willBeRemovedFromYour', {name}),
+      confirmLabel: t('nurseryCart.remove'),
       destructive: true,
       onConfirm: async () => {
         try {
           await dispatch(removeNurseryCartItem(item._id)).unwrap();
-          toast.show('Removed from cart');
+          toast.show(t('nurseryCart.removedFromCart'));
         } catch (failure) {
           feedback.error('Could not remove', String(failure));
         }
@@ -101,14 +103,14 @@ export default function NurseryCartScreen({ navigation }) {
 
   const clearAll = () =>
     feedback.confirm({
-      title: 'Empty your cart?',
-      message: 'All plants will be removed from your cart.',
-      confirmLabel: 'Empty Cart',
+      title: t('nurseryCart.emptyYourCart'),
+      message: t('nurseryCart.allPlantsWillBeRemoved'),
+      confirmLabel: t('nurseryCart.emptyCart'),
       destructive: true,
       onConfirm: async () => {
         try {
           await dispatch(clearNurseryCart()).unwrap();
-          toast.show('Cart emptied');
+          toast.show(t('nurseryCart.cartEmptied'));
         } catch (failure) {
           feedback.error('Could not empty cart', String(failure));
         }
@@ -141,18 +143,19 @@ export default function NurseryCartScreen({ navigation }) {
           compact
           gradient="forest"
           onBack={() => navigation.goBack()}
-          eyebrow="Your cart"
+          eyebrow={t('nurseryCart.yourCart')}
           title={
             items.length
-              ? `${cart.totalItems} ${
-                  cart.totalItems === 1 ? 'plant' : 'plants'
-                } ready`
-              : 'Your cart'
+              ? t('plural.plantsReady', {
+                  count: cart.totalItems,
+                  label: cart.totalItems === 1 ? t('plural.plant') : t('plural.plants'),
+                })
+              : t('nurseryCart.yourCart')
           }
           subtitle={
             items.length
-              ? 'Check quantities, then continue to delivery details.'
-              : 'Plants you add will show up here.'
+              ? t('nurseryCart.checkQuantitiesThenContinueTo')
+              : t('nurseryCart.plantsYouAddWillShow')
           }
           right={
             items.length || unavailable.length ? (
@@ -168,8 +171,8 @@ export default function NurseryCartScreen({ navigation }) {
                 <Truck size={15} color={C.white} />
                 <Text style={styles.freeText}>
                   {gap > 0
-                    ? `Add ${formatRupees(gap)} more for free delivery`
-                    : 'You get free delivery!'}
+                    ? t('nurseryCart.addMoreForFreeDelivery', {v1: formatRupees(gap)})
+                    : t('nurseryCart.youGetFreeDelivery')}
                 </Text>
               </View>
               <View style={styles.freeTrack}>
@@ -185,9 +188,9 @@ export default function NurseryCartScreen({ navigation }) {
           {!loaded ? (
             error ? (
               <EmptyState
-                title="Couldn't load your cart"
+                title={t('nurseryCart.couldntLoadYourCart')}
                 message={error}
-                actionLabel="Try Again"
+                actionLabel={t('nurseryCart.tryAgain')}
                 onAction={load}
               />
             ) : (
@@ -196,9 +199,9 @@ export default function NurseryCartScreen({ navigation }) {
           ) : isEmpty ? (
             <EmptyState
               icon={<ShoppingCart size={30} color={C.green} />}
-              title="Your cart is empty"
-              message="Browse fruit plants, seedlings, flowers and more from nurseries near you."
-              actionLabel="Browse Plants"
+              title={t('nurseryCart.yourCartIsEmpty')}
+              message={t('nurseryCart.browseFruitPlantsSeedlingsFlowers')}
+              actionLabel={t('nurseryCart.browsePlants')}
               onAction={() => navigation.navigate(NURSERY_ROUTES.HOME)}
             />
           ) : (
@@ -207,8 +210,7 @@ export default function NurseryCartScreen({ navigation }) {
                 <View style={[styles.notice, styles.noticeAmber]}>
                   <Info size={16} color={C.amber} />
                   <Text style={[styles.noticeText, styles.noticeTextAmber]}>
-                    Some plants have less stock left. We lowered their quantity
-                    to what is available.
+                    {t('nurseryCart.somePlantsHaveLessStock')}
                   </Text>
                 </View>
               )}
@@ -244,12 +246,12 @@ export default function NurseryCartScreen({ navigation }) {
                         </TouchableOpacity>
                       </View>
                       <Text style={styles.itemMeta} numberOfLines={1}>
-                        {formatRupees(plant.price)} each ·{' '}
+                        {formatRupees(plant.price)} {t('nurseryCart.each')}{' '}
                         {plant.seller?.name || 'Nursery'}
                       </Text>
                       {item.quantityAdjusted && (
                         <Text style={styles.adjusted}>
-                          Only {plant.quantity} left
+                          {t('nurseryCart.onlyLeft', {quantity: plant.quantity})}
                         </Text>
                       )}
 
@@ -272,7 +274,7 @@ export default function NurseryCartScreen({ navigation }) {
               {/* NO LONGER AVAILABLE */}
               {unavailable.length > 0 && (
                 <>
-                  <Text style={styles.blockTitle}>Not available any more</Text>
+                  <Text style={styles.blockTitle}>{t('nurseryCart.notAvailableAnyMore')}</Text>
                   {unavailable.map(item => (
                     <View
                       key={item._id}
@@ -286,7 +288,7 @@ export default function NurseryCartScreen({ navigation }) {
                           {item.name}
                         </Text>
                         <Text style={styles.unavailableReason}>
-                          {item.reason}. It won't be ordered.
+                          {t('nurseryCart.itWontBeOrdered', {reason: item.reason})}
                         </Text>
                       </View>
                       <TouchableOpacity
@@ -295,7 +297,7 @@ export default function NurseryCartScreen({ navigation }) {
                         disabled={busyItemId === item._id}
                         onPress={() => removeItem(item, item.name)}
                       >
-                        <Text style={styles.removeText}>Remove</Text>
+                        <Text style={styles.removeText}>{t('nurseryCart.remove')}</Text>
                       </TouchableOpacity>
                     </View>
                   ))}
@@ -305,19 +307,19 @@ export default function NurseryCartScreen({ navigation }) {
               {/* BILL */}
               {items.length > 0 && (
                 <View style={styles.card}>
-                  <Text style={styles.cardTitle}>Bill summary</Text>
+                  <Text style={styles.cardTitle}>{t('nurseryCart.billSummary')}</Text>
                   <InfoRow
-                    label={`Plants (${cart.totalItems})`}
+                    label={t('nurseryCart.plants', {totalItems: cart.totalItems})}
                     value={formatRupees(cart.subtotal)}
                   />
                   <InfoRow
-                    label="Delivery"
+                    label={t('nurseryCart.delivery')}
                     value={
                       cart.deliveryFee ? formatRupees(cart.deliveryFee) : 'FREE'
                     }
                   />
                   <View style={styles.totalRow}>
-                    <Text style={styles.totalLabel}>To pay on delivery</Text>
+                    <Text style={styles.totalLabel}>{t('nurseryCart.toPayOnDelivery')}</Text>
                     <Text style={styles.totalValue}>
                       {formatRupees(cart.total)}
                     </Text>
@@ -331,7 +333,7 @@ export default function NurseryCartScreen({ navigation }) {
                 onPress={() => navigation.navigate(NURSERY_ROUTES.HOME)}
               >
                 <Sprout size={18} color={C.green} />
-                <Text style={styles.addMoreText}>Add more plants</Text>
+                <Text style={styles.addMoreText}>{t('nurseryCart.addMorePlants')}</Text>
               </TouchableOpacity>
             </>
           )}
@@ -346,11 +348,11 @@ export default function NurseryCartScreen({ navigation }) {
           ]}
         >
           <View style={styles.flex}>
-            <Text style={styles.bottomLabel}>Total</Text>
+            <Text style={styles.bottomLabel}>{t('nurseryCart.total')}</Text>
             <Text style={styles.bottomPrice}>{formatRupees(cart.total)}</Text>
           </View>
           <MarketButton
-            label="Checkout"
+            label={t('nurseryCart.checkout')}
             icon={<ArrowRight size={17} color={C.white} />}
             disabled={!!busyItemId}
             onPress={() => navigation.navigate(NURSERY_ROUTES.CHECKOUT)}

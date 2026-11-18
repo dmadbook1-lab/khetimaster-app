@@ -17,9 +17,11 @@ import { useFocusEffect } from '@react-navigation/native';
 import {
   ArrowRight,
   ArrowUpDown,
+  BookUser,
   CalendarCheck,
   Inbox,
   LayoutGrid,
+  MapPin,
   Phone,
   Search,
   Star,
@@ -42,6 +44,9 @@ import {
   MARKET_SHADOW_STRONG,
 } from '../../components/market/theme';
 import LabourerCard from '../../components/labour/LabourerCard';
+import VoiceActionButton from '../../components/voice/VoiceActionButton';
+import VoiceFlowOverlay from '../../components/voice/VoiceFlowOverlay';
+import useLabourVoiceFlow from '../../components/voice/flows/useLabourVoiceFlow';
 import useLabourMeta from '../../components/labour/useLabourMeta';
 import {
   LABOUR_BANNER,
@@ -52,23 +57,40 @@ import {
   fetchLabourers,
   fetchMyLabourerProfile,
 } from '../../redux/slices/labourerSlice';
+import {useTranslation} from 'react-i18next';
+import i18n from 'i18next';
 
 const SORTS = [
-  { key: 'rating', label: 'Top rated' },
-  { key: 'wage_asc', label: 'Lowest wage' },
-  { key: 'experience', label: 'Most experienced' },
-  { key: 'newest', label: 'Newest' },
+  { key: 'rating', get label() {
+    return i18n.t('labourHome.topRated');
+  } },
+  { key: 'wage_asc', get label() {
+    return i18n.t('labourHome.lowestWage');
+  } },
+  { key: 'experience', get label() {
+    return i18n.t('labourHome.mostExperienced');
+  } },
+  { key: 'newest', get label() {
+    return i18n.t('labourHome.newest');
+  } },
 ];
 
 const TRUST_POINTS = [
-  { icon: Wallet, label: 'Pay after work' },
-  { icon: Phone, label: 'Number shared on confirm' },
-  { icon: Star, label: 'Rated by farmers' },
+  { icon: Wallet, get label() {
+    return i18n.t('labourHome.payAfterWork');
+  } },
+  { icon: Phone, get label() {
+    return i18n.t('labourHome.numberSharedOnConfirm');
+  } },
+  { icon: Star, get label() {
+    return i18n.t('labourHome.ratedByFarmers');
+  } },
 ];
 
 const PAGE_SIZE = 20;
 
 export default function LabourHomeScreen({ navigation }) {
+  const {t} = useTranslation();
   const dispatch = useDispatch();
   const { labourTypes } = useLabourMeta();
 
@@ -91,6 +113,8 @@ export default function LabourHomeScreen({ navigation }) {
   const [sortIndex, setSortIndex] = useState(0);
   const [nearMe, setNearMe] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [voiceOpen, setVoiceOpen] = useState(false);
+  const voiceFlow = useLabourVoiceFlow(navigation);
 
   const sort = SORTS[sortIndex];
 
@@ -122,9 +146,11 @@ export default function LabourHomeScreen({ navigation }) {
     [dispatch, params],
   );
 
-  useEffect(() => {
-    loadFirstPage();
-  }, [loadFirstPage]);
+  useFocusEffect(
+    useCallback(() => {
+      loadFirstPage();
+    }, [loadFirstPage]),
+  );
 
   const handleRefresh = useCallback(async () => {
     setRefreshing(true);
@@ -176,9 +202,9 @@ export default function LabourHomeScreen({ navigation }) {
       <MarketHero
         banner={LABOUR_BANNER}
         onBack={() => navigation.goBack()}
-        eyebrow="Farm workers near you"
-        title="Hire Labour"
-        subtitle="Book skilled workers for harvesting, sowing, spraying and more."
+        eyebrow={t('labourHome.farmWorkersNearYou')}
+        title={t('labourHome.hireLabour')}
+        subtitle={t('labourHome.bookSkilledWorkersForHarvesting')}
         right={
           <>
             <GlassButton
@@ -211,7 +237,7 @@ export default function LabourHomeScreen({ navigation }) {
           <TextInput
             value={searchText}
             onChangeText={setSearchText}
-            placeholder="Search by name, skill or work..."
+            placeholder={t('labourHome.searchByNameSkillOr')}
             placeholderTextColor={C.placeholder}
             style={styles.searchInput}
             returnKeyType="search"
@@ -225,8 +251,22 @@ export default function LabourHomeScreen({ navigation }) {
       </View>
 
       <View style={styles.section}>
-        {/* SHORTCUTS */}
-        <View style={styles.ctaRow}>
+        {/* QUICK ACTIONS */}
+        <View style={styles.ctaGrid}>
+          <TouchableOpacity
+            activeOpacity={0.88}
+            style={styles.shortcut}
+            onPress={() => navigation.navigate(LABOUR_ROUTES.ALL)}
+          >
+            <View
+              style={[styles.shortcutIcon, { backgroundColor: C.lightGreen }]}
+            >
+              <BookUser size={19} color={C.green} />
+            </View>
+            <Text style={styles.shortcutTitle}>{t('labourHome.bookLabour')}</Text>
+            <Text style={styles.shortcutText}>{t('labourHome.browseAllWorkers')}</Text>
+          </TouchableOpacity>
+
           <TouchableOpacity
             activeOpacity={0.88}
             style={styles.shortcut}
@@ -237,8 +277,26 @@ export default function LabourHomeScreen({ navigation }) {
             >
               <CalendarCheck size={19} color={C.blue} />
             </View>
-            <Text style={styles.shortcutTitle}>My Bookings</Text>
-            <Text style={styles.shortcutText}>Workers you hired</Text>
+            <Text style={styles.shortcutTitle}>{t('labourHome.myBookings')}</Text>
+            <Text style={styles.shortcutText}>{t('labourHome.workersYouHired')}</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            activeOpacity={0.88}
+            style={styles.shortcut}
+            onPress={() => navigation.navigate(LABOUR_ROUTES.NEARBY)}
+          >
+            <View
+              style={[styles.shortcutIcon, { backgroundColor: '#FDECEC' }]}
+            >
+              <MapPin size={19} color="#DC2626" />
+            </View>
+            <Text style={styles.shortcutTitle}>{t('labourHome.findNearbyLabour')}</Text>
+            <Text style={styles.shortcutText}>
+              {nearDistrict
+                ? t('labourHome.inYourDistrict', { nearDistrict })
+                : t('labourHome.inYourDistrictGeneric')}
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -266,15 +324,15 @@ export default function LabourHomeScreen({ navigation }) {
                 )}
               </View>
               <Text style={styles.workTitle}>
-                {hasWorkerProfile ? 'Work Requests' : 'Looking for work?'}
+                {hasWorkerProfile ? t('labourHome.workRequests') : t('labourHome.lookingForWork')}
               </Text>
               <View style={styles.workLink}>
                 <Text style={styles.workLinkText}>
                   {hasWorkerProfile
                     ? pendingRequests
-                      ? `${pendingRequests} new`
-                      : 'View all'
-                    : 'Register free'}
+                      ? t('labourHome.new', {pendingRequests})
+                      : t('labourHome.viewAll')
+                    : t('labourHome.registerFree')}
                 </Text>
                 <ArrowRight size={13} color="#3A2400" strokeWidth={2.8} />
               </View>
@@ -282,8 +340,13 @@ export default function LabourHomeScreen({ navigation }) {
           </TouchableOpacity>
         </View>
 
+        <VoiceActionButton
+          label={t('labourHome.useVoiceToBook')}
+          onPress={() => setVoiceOpen(true)}
+        />
+
         {/* WORK TYPES */}
-        <Text style={styles.sectionTitle}>What work do you need?</Text>
+        <Text style={styles.sectionTitle}>{t('labourHome.whatWorkDoYouNeed')}</Text>
       </View>
 
       <ScrollView
@@ -302,7 +365,7 @@ export default function LabourHomeScreen({ navigation }) {
           <Text
             style={[styles.typeLabel, !labourType && styles.typeLabelSelected]}
           >
-            All work
+            {t('labourHome.allWork')}
           </Text>
         </TouchableOpacity>
 
@@ -335,10 +398,10 @@ export default function LabourHomeScreen({ navigation }) {
         <View style={styles.resultsHeader}>
           <View style={styles.flex}>
             <Text style={styles.sectionTitleFlat}>
-              {labourType || 'Available workers'}
+              {labourType || t('labourHome.availableWorkers')}
             </Text>
             <Text style={styles.resultCount}>
-              {listLoading ? 'Searching…' : `${pagination.total} workers found`}
+              {listLoading ? t('labourHome.searching') : t('labourHome.workersFound', {total: pagination.total})}
             </Text>
           </View>
 
@@ -361,7 +424,7 @@ export default function LabourHomeScreen({ navigation }) {
             <Text
               style={[styles.toggleText, nearMe && styles.toggleTextActive]}
             >
-              Only near {nearDistrict}
+              {t('labourHome.onlyNear', {nearDistrict})}
             </Text>
           </TouchableOpacity>
         )}
@@ -397,16 +460,16 @@ export default function LabourHomeScreen({ navigation }) {
           ) : listError ? (
             <EmptyState
               icon={<Users size={30} color={C.green} />}
-              title="Couldn't load workers"
+              title={t('labourHome.couldntLoadWorkers')}
               message={listError}
-              actionLabel="Try Again"
+              actionLabel={t('labourHome.tryAgain')}
               onAction={loadFirstPage}
             />
           ) : (
             <EmptyState
               icon={<Users size={30} color={C.green} />}
-              title="No workers found"
-              message="Try another type of work, or turn off the location filter."
+              title={t('labourHome.noWorkersFound')}
+              message={t('labourHome.tryAnotherTypeOfWork')}
             />
           )
         }
@@ -415,6 +478,12 @@ export default function LabourHomeScreen({ navigation }) {
             <ActivityIndicator color={C.green} style={styles.footerLoader} />
           ) : null
         }
+      />
+
+      <VoiceFlowOverlay
+        visible={voiceOpen}
+        flow={voiceFlow}
+        onClose={() => setVoiceOpen(false)}
       />
     </SafeAreaView>
   );
@@ -461,13 +530,19 @@ const styles = StyleSheet.create({
   },
   trustText: { color: C.white, fontSize: 10.5, fontWeight: '800' },
 
-  ctaRow: { flexDirection: 'row', gap: 12, marginTop: 18 },
+  ctaGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: 12,
+    marginTop: 18,
+  },
   shortcut: {
-    flex: 1,
+    width: '47.8%',
+    flexGrow: 1,
     borderRadius: 22,
     backgroundColor: C.white,
     padding: 15,
-    minHeight: 132,
+    minHeight: 124,
     ...MARKET_SHADOW,
   },
   shortcutIcon: {
@@ -489,8 +564,13 @@ const styles = StyleSheet.create({
     color: C.muted,
     marginTop: 2,
   },
-  workCtaWrap: { flex: 1, borderRadius: 22, ...MARKET_SHADOW },
-  workCta: { flex: 1, borderRadius: 22, padding: 15, minHeight: 132 },
+  workCtaWrap: {
+    width: '47.8%',
+    flexGrow: 1,
+    borderRadius: 22,
+    ...MARKET_SHADOW,
+  },
+  workCta: { flex: 1, borderRadius: 22, padding: 15, minHeight: 124 },
   workIcon: {
     width: 40,
     height: 40,

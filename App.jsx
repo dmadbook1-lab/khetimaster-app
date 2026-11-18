@@ -16,7 +16,7 @@ export default function App() {
   useEffect(() => {
     i18nInitPromise
       .then(() => {
-        // AI Guru replies in the saved app language until the user picks another
+        // AI Guru and every voice assistant use the app language, always
         store.dispatch(
           setAiGuruLanguage(normalizeLanguageCode(i18next.language)),
         );
@@ -26,6 +26,14 @@ export default function App() {
         console.error('[i18n] bootstrap failed', err);
         setI18nReady(true);
       });
+  }, []);
+
+  // one language for the whole app: AI Guru follows every change
+  useEffect(() => {
+    const sync = code =>
+      store.dispatch(setAiGuruLanguage(normalizeLanguageCode(code)));
+    i18next.on('languageChanged', sync);
+    return () => i18next.off('languageChanged', sync);
   }, []);
 
   return (

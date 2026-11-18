@@ -40,6 +40,7 @@ import {
   validateCommunityAsset,
 } from '../../utils/communityMedia';
 import { formatDuration } from '../../utils/communityFormat';
+import {useTranslation} from 'react-i18next';
 
 const { width: SCREEN_WIDTH } = Dimensions.get('window');
 
@@ -66,6 +67,7 @@ const SUGGESTED_TAGS = [
  * params: type 'post' | 'reel'
  */
 export default function CreatePostScreen({ navigation, route }) {
+  const {t} = useTranslation();
   const dispatch = useDispatch();
   const me = useSelector(state => state.auth.user);
 
@@ -107,7 +109,7 @@ export default function CreatePostScreen({ navigation, route }) {
     });
 
     if (errors.length) {
-      Alert.alert('Some media was skipped', [...new Set(errors)].join('\n'));
+      Alert.alert(t('createPost.someMediaWasSkipped'), [...new Set(errors)].join('\n'));
     }
 
     if (!valid.length) return;
@@ -131,7 +133,7 @@ export default function CreatePostScreen({ navigation, route }) {
         }),
       );
     } catch (error) {
-      Alert.alert('Gallery', error.message);
+      Alert.alert(t('common.gallery'), error.message);
     }
   };
 
@@ -139,7 +141,7 @@ export default function CreatePostScreen({ navigation, route }) {
     try {
       addAssets(await captureCommunityMedia({ kind }));
     } catch (error) {
-      Alert.alert('Camera', error.message);
+      Alert.alert(t('common.camera'), error.message);
     }
   };
 
@@ -187,8 +189,8 @@ export default function CreatePostScreen({ navigation, route }) {
     } catch (error) {
       setProgress(null);
       Alert.alert(
-        'Could not share',
-        error.message || 'Something went wrong. Please try again.',
+        t('createPost.couldNotShare'),
+        error.message || t('createPost.somethingWentWrongPleaseTry'),
       );
     }
   };
@@ -201,9 +203,9 @@ export default function CreatePostScreen({ navigation, route }) {
       return;
     }
 
-    Alert.alert('Discard this?', 'Your photos, video and caption will be lost.', [
-      { text: 'Keep editing', style: 'cancel' },
-      { text: 'Discard', style: 'destructive', onPress: () => navigation.goBack() },
+    Alert.alert(t('createPost.discardThis'), t('createPost.yourPhotosVideoAndCaption'), [
+      { text: t('createPost.keepEditing'), style: 'cancel' },
+      { text: t('createPost.discard'), style: 'destructive', onPress: () => navigation.goBack() },
     ]);
   };
 
@@ -219,30 +221,30 @@ export default function CreatePostScreen({ navigation, route }) {
         )}
       </View>
       <Text style={styles.pickerTitle}>
-        {type === 'reel' ? 'Add a reel video' : 'Add photos or videos'}
+        {type === 'reel' ? t('createPost.addAReelVideo') : t('createPost.addPhotosOrVideos')}
       </Text>
       <Text style={styles.pickerText}>
         {type === 'reel'
-          ? `Vertical videos up to ${MAX_REEL_SECONDS} seconds look best`
-          : `Share up to ${MAX_POST_MEDIA} photos or videos from your farm`}
+          ? t('createPost.verticalVideosUpToSeconds', {MAX_REEL_SECONDS})
+          : t('createPost.shareUpToPhotosOr', {MAX_POST_MEDIA})}
       </Text>
 
       <View style={styles.pickerButtons}>
         <Pressable style={[styles.pickerButton, styles.pickerButtonPrimary]} onPress={openGallery}>
           <Images size={18} color="#FFFFFF" strokeWidth={2.2} />
-          <Text style={styles.pickerButtonTextPrimary}>Gallery</Text>
+          <Text style={styles.pickerButtonTextPrimary}>{t('common.gallery')}</Text>
         </Pressable>
 
         {type === 'post' ? (
           <Pressable style={styles.pickerButton} onPress={() => openCamera('photo')}>
             <Camera size={18} color={COLORS.DARK_GREEN} strokeWidth={2.2} />
-            <Text style={styles.pickerButtonText}>Photo</Text>
+            <Text style={styles.pickerButtonText}>{t('createPost.photo')}</Text>
           </Pressable>
         ) : null}
 
         <Pressable style={styles.pickerButton} onPress={() => openCamera('video')}>
           <VideoIcon size={18} color={COLORS.DARK_GREEN} strokeWidth={2.2} />
-          <Text style={styles.pickerButtonText}>Record</Text>
+          <Text style={styles.pickerButtonText}>{t('createPost.record')}</Text>
         </Pressable>
       </View>
     </View>
@@ -274,11 +276,11 @@ export default function CreatePostScreen({ navigation, route }) {
         <View style={styles.replaceRow}>
           <Pressable style={styles.replaceButton} onPress={openGallery}>
             <RefreshCw size={15} color={COLORS.DARK} strokeWidth={2.3} />
-            <Text style={styles.replaceText}>Replace</Text>
+            <Text style={styles.replaceText}>{t('createPost.replace')}</Text>
           </Pressable>
           <Pressable style={styles.replaceButton} onPress={() => openCamera('video')}>
             <VideoIcon size={15} color={COLORS.DARK} strokeWidth={2.3} />
-            <Text style={styles.replaceText}>Record</Text>
+            <Text style={styles.replaceText}>{t('createPost.record')}</Text>
           </Pressable>
         </View>
       </View>
@@ -361,11 +363,11 @@ export default function CreatePostScreen({ navigation, route }) {
           <X size={rf(24)} color={COLORS.DARK} strokeWidth={2.3} />
         </Pressable>
         <Text style={styles.headerTitle}>
-          {type === 'reel' ? 'New reel' : 'New post'}
+          {type === 'reel' ? t('createPost.newReel') : t('createPost.newPost')}
         </Text>
         <Pressable hitSlop={10} onPress={share} disabled={!assets.length || busy}>
           <Text style={[styles.shareText, (!assets.length || busy) && styles.shareDisabled]}>
-            Share
+            {t('createPost.share')}
           </Text>
         </Pressable>
       </View>
@@ -382,8 +384,8 @@ export default function CreatePostScreen({ navigation, route }) {
           {/* TYPE SWITCH */}
           <View style={styles.segment}>
             {[
-              { key: 'post', label: 'Post', Icon: Images },
-              { key: 'reel', label: 'Reel', Icon: Clapperboard },
+              { key: 'post', label: t('createPost.post'), Icon: Images },
+              { key: 'reel', label: t('createPost.reel'), Icon: Clapperboard },
             ].map(({ key, label, Icon }) => {
               const active = type === key;
 
@@ -419,7 +421,7 @@ export default function CreatePostScreen({ navigation, route }) {
             <TextInput
               value={caption}
               onChangeText={value => setCaption(value.slice(0, MAX_CAPTION))}
-              placeholder="Write a caption… add #hashtags so farmers can find it"
+              placeholder={t('createPost.writeACaptionAddHashtags')}
               placeholderTextColor={COLORS.MUTED}
               multiline
               style={styles.captionInput}
@@ -448,7 +450,7 @@ export default function CreatePostScreen({ navigation, route }) {
             <TextInput
               value={location}
               onChangeText={setLocation}
-              placeholder="Add location"
+              placeholder={t('createPost.addLocation')}
               placeholderTextColor={COLORS.MUTED}
               maxLength={100}
               style={styles.locationInput}
@@ -463,7 +465,7 @@ export default function CreatePostScreen({ navigation, route }) {
           <View style={styles.progressCard}>
             <Text style={styles.progressTitle}>
               {stage === 'Sharing'
-                ? 'Almost done…'
+                ? t('createPost.almostDone')
                 : `${stage} ${Math.round((progress || 0) * 100)}%`}
             </Text>
             <View style={styles.progressTrack}>
@@ -475,7 +477,7 @@ export default function CreatePostScreen({ navigation, route }) {
               />
             </View>
             <Text style={styles.progressHint}>
-              Keep the app open until your {type} is shared.
+              {t('createPost.keepTheAppOpenUntil', {type})}
             </Text>
           </View>
         </View>
@@ -557,8 +559,8 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     borderWidth: 1.5,
     borderStyle: 'dashed',
-    borderColor: '#B7D8C2',
-    backgroundColor: '#F4FBF6',
+    borderColor: '#BCD3E6',
+    backgroundColor: '#F3F8FC',
     alignItems: 'center',
     justifyContent: 'center',
     paddingHorizontal: 20,
@@ -573,7 +575,7 @@ const styles = StyleSheet.create({
     width: 72,
     height: 72,
     borderRadius: 36,
-    backgroundColor: '#E2F5E8',
+    backgroundColor: '#E6F0F8',
     alignItems: 'center',
     justifyContent: 'center',
   },
@@ -716,8 +718,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderStyle: 'dashed',
-    borderColor: '#B7D8C2',
-    backgroundColor: '#F4FBF6',
+    borderColor: '#BCD3E6',
+    backgroundColor: '#F3F8FC',
   },
   captionRow: {
     flexDirection: 'row',
@@ -749,7 +751,7 @@ const styles = StyleSheet.create({
     height: 32,
     paddingHorizontal: 12,
     borderRadius: 16,
-    backgroundColor: '#EEF8F1',
+    backgroundColor: '#E6F0F8',
     justifyContent: 'center',
   },
   tagText: {

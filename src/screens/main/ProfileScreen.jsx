@@ -18,11 +18,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 
 import { logout, selectProfileCompleted } from '../../redux/slices/authSlice';
-import {
-  selectAiGuru,
-  setAiGuruLanguage,
-} from '../../redux/slices/aiGuruSlice';
-import BottomTabBar from '../../common/BottomTabBar';
+import BottomTabBar, { useBottomTabBarInset } from '../../common/BottomTabBar';
 import useAccountSummary from '../../common/useAccountSummary';
 import { getLanguageLabel } from '../../utils/languageUtils';
 import { DOCTOR_ROUTES } from '../../constants/doctorRoutes';
@@ -48,7 +44,6 @@ import {
   Pencil,
   UserRound,
   MapPin,
-  Languages,
   Bell,
   Package,
   Settings,
@@ -83,13 +78,6 @@ const rf = size => {
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
 
-// Languages AI Guru can reply in (besides the app language)
-const REPLY_LANGUAGES = [
-  { id: 'en', label: 'English' },
-  { id: 'hi', label: 'हिन्दी (Hindi)' },
-  { id: 'mr', label: 'मराठी (Marathi)' },
-];
-
 const countBadge = (label, count) => (count > 0 ? label : null);
 
 /*
@@ -99,11 +87,11 @@ const countBadge = (label, count) => (count > 0 ? label : null);
 */
 
 export default function ProfileScreen({ navigation }) {
+  const tabBarInset = useBottomTabBarInset();
   const { t, i18n } = useTranslation();
   const dispatch = useDispatch();
 
   const profileCompleted = useSelector(selectProfileCompleted);
-  const { language: replyLanguage } = useSelector(selectAiGuru);
   const {
     user,
     farmCount,
@@ -143,10 +131,6 @@ export default function ProfileScreen({ navigation }) {
     .join(', ');
 
   const openBookings = activeMachinery + activeLabour + activeConsultations;
-  const replyLanguageLabel =
-    REPLY_LANGUAGES.find(item => item.id === replyLanguage)?.label ||
-    getLanguageLabel(replyLanguage).native;
-
   /*
   |--------------------------------------------------------------------------
   | ACTIONS
@@ -155,15 +139,6 @@ export default function ProfileScreen({ navigation }) {
 
   const editProfile = () =>
     navigation.navigate('ProfileSetup', { mode: 'edit' });
-
-  const chooseReplyLanguage = () =>
-    Alert.alert(t('profile.ai_language_title'), t('profile.ai_language_question'), [
-      ...REPLY_LANGUAGES.map(item => ({
-        text: item.id === replyLanguage ? `✓ ${item.label}` : item.label,
-        onPress: () => dispatch(setAiGuruLanguage(item.id)),
-      })),
-      { text: t('common.cancel'), style: 'cancel' },
-    ]);
 
   const openAppLanguage = () =>
     navigation.navigate('language', { fromSettings: true });
@@ -206,15 +181,6 @@ export default function ProfileScreen({ navigation }) {
       iconColor: '#D89200',
       iconBackground: '#FFF7D9',
       onPress: editProfile,
-    },
-    {
-      id: 'language',
-      title: t('profile.ai_guru_language'),
-      subtitle: t('profile.replies_in', { language: replyLanguageLabel }),
-      Icon: Languages,
-      iconColor: '#9333EA',
-      iconBackground: '#F5E8FF',
-      onPress: chooseReplyLanguage,
     },
   ];
 
@@ -398,7 +364,7 @@ export default function ProfileScreen({ navigation }) {
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[styles.scrollContent, { paddingBottom: styles.scrollContent.paddingBottom + tabBarInset }]}
         refreshControl={
           <RefreshControl
             refreshing={refreshing}

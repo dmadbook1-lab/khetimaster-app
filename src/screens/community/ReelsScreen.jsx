@@ -19,6 +19,7 @@ import usePostInteractions from '../../components/community/social/usePostIntera
 import { COLORS, rf } from '../../components/community/theme';
 import { COMMUNITY_ROUTES } from '../../constants/communityRoutes';
 import { fetchCommunityList } from '../../redux/slices/communitySlice';
+import {useTranslation} from 'react-i18next';
 
 /*
  * Full-screen vertical reels player.
@@ -29,6 +30,7 @@ import { fetchCommunityList } from '../../redux/slices/communitySlice';
  *   title    header text (default "Reels")
  */
 export default function ReelsScreen({ navigation, route }) {
+  const {t} = useTranslation();
   const { ids: fixedIds, startId, title = 'Reels' } = route.params || {};
 
   const dispatch = useDispatch();
@@ -174,16 +176,16 @@ export default function ReelsScreen({ navigation, route }) {
         <View style={styles.centerFill}>
           <Clapperboard size={54} color="#FFFFFF" strokeWidth={1.5} />
           <Text style={styles.emptyTitle}>
-            {reels.error && isFeed ? 'Could not load reels' : 'No reels yet'}
+            {reels.error && isFeed ? t('reels.couldNotLoadReels') : t('reels.noReelsYet')}
           </Text>
           <Text style={styles.emptyText}>
             {reels.error && isFeed
               ? reels.error
-              : 'Share a short video from your farm and inspire other farmers.'}
+              : t('reels.shareAShortVideoFrom')}
           </Text>
           <Pressable style={styles.emptyButton} onPress={openCreate}>
             <Camera size={18} color="#FFFFFF" strokeWidth={2.3} />
-            <Text style={styles.emptyButtonText}>Create a reel</Text>
+            <Text style={styles.emptyButtonText}>{t('reels.createAReel')}</Text>
           </Pressable>
         </View>
       ) : null}

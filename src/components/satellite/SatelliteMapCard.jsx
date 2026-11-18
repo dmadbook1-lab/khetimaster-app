@@ -13,7 +13,7 @@ export default function SatelliteMapCard({ farm }) {
 
       <View style={styles.liveBadge}>
         <View style={styles.liveDot} />
-        <Text style={styles.liveText}>{t('satellite.live')} • NDVI</Text>
+        <Text style={styles.liveText}>{t('satelliteMapCard.ndvi', {v1: t('satellite.live')})}</Text>
       </View>
 
       <View style={styles.compass}>

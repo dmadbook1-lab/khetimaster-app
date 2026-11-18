@@ -25,20 +25,37 @@ import { MARKET_COLORS as C } from '../../components/market/theme';
 import NurseryOrderCard from '../../components/nursery/NurseryOrderCard';
 import { NURSERY_ROUTES } from '../../constants/nurseryRoutes';
 import { fetchMyNurseryOrders } from '../../redux/slices/nurseryOrderSlice';
+import {useTranslation} from 'react-i18next';
+import i18n from 'i18next';
 
 const STATUS_FILTERS = [
-  { key: 'active', label: 'Ongoing' },
-  { key: 'PENDING', label: 'Placed' },
-  { key: 'CONFIRMED', label: 'Confirmed' },
-  { key: 'DISPATCHED', label: 'Dispatched' },
-  { key: 'DELIVERED', label: 'Delivered' },
-  { key: 'CANCELLED', label: 'Cancelled' },
-  { key: 'all', label: 'All' },
+  { key: 'active', get label() {
+    return i18n.t('nurseryOrders.ongoing');
+  } },
+  { key: 'PENDING', get label() {
+    return i18n.t('nurseryOrders.placed');
+  } },
+  { key: 'CONFIRMED', get label() {
+    return i18n.t('nurseryOrders.confirmed');
+  } },
+  { key: 'DISPATCHED', get label() {
+    return i18n.t('nurseryOrders.dispatched');
+  } },
+  { key: 'DELIVERED', get label() {
+    return i18n.t('nurseryOrders.delivered');
+  } },
+  { key: 'CANCELLED', get label() {
+    return i18n.t('nurseryOrders.cancelled');
+  } },
+  { key: 'all', get label() {
+    return i18n.t('nurseryOrders.all');
+  } },
 ];
 
 const PAGE_SIZE = 20;
 
 export default function NurseryOrdersScreen({ navigation }) {
+  const {t} = useTranslation();
   const dispatch = useDispatch();
   const { items, page, totalPages, total, loading, loadingMore, error } =
     useSelector(state => state.nurseryOrder.myOrders);
@@ -103,9 +120,9 @@ export default function NurseryOrdersScreen({ navigation }) {
               compact
               gradient="forest"
               onBack={() => navigation.goBack()}
-              eyebrow="Nursery"
-              title="My Orders"
-              subtitle="Track the plants you ordered"
+              eyebrow={t('nurseryOrders.nursery')}
+              title={t('nurseryOrders.myOrders')}
+              subtitle={t('nurseryOrders.trackThePlantsYouOrdered')}
               right={
                 <GlassButton
                   onPress={() => navigation.navigate(NURSERY_ROUTES.HOME)}
@@ -115,11 +132,11 @@ export default function NurseryOrdersScreen({ navigation }) {
               }
             >
               <View style={styles.statsRow}>
-                <HeroStat value={total} label="Showing" />
-                <HeroStat value={onTheWay} label="On the way" />
+                <HeroStat value={total} label={t('nurseryOrders.showing')} />
+                <HeroStat value={onTheWay} label={t('nurseryOrders.onTheWay')} />
                 <HeroStat
                   value={toRate}
-                  label="To rate"
+                  label={t('nurseryOrders.toRate')}
                   highlight={toRate > 0}
                 />
               </View>
@@ -147,17 +164,17 @@ export default function NurseryOrdersScreen({ navigation }) {
             <LoadingState />
           ) : error ? (
             <EmptyState
-              title="Couldn't load your orders"
+              title={t('nurseryOrders.couldntLoadYourOrders')}
               message={error}
-              actionLabel="Try Again"
+              actionLabel={t('nurseryOrders.tryAgain')}
               onAction={load}
             />
           ) : (
             <EmptyState
               icon={<Package size={30} color={C.green} />}
-              title="No orders here"
-              message="Order saplings, seedlings and flowering plants from nurseries near you."
-              actionLabel="Browse Plants"
+              title={t('nurseryOrders.noOrdersHere')}
+              message={t('nurseryOrders.orderSaplingsSeedlingsAndFlowering')}
+              actionLabel={t('nurseryOrders.browsePlants')}
               onAction={() => navigation.navigate(NURSERY_ROUTES.HOME)}
             />
           )

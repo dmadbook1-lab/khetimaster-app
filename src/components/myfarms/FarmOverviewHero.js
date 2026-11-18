@@ -78,7 +78,7 @@ export default function FarmOverviewHero({
 
         <View style={styles.heroText}>
           <Text style={styles.heroEyebrow}>
-            FARM MONITORING
+            {t('farmOverviewHero.farmMonitoring')}
           </Text>
 
           <Text
@@ -166,8 +166,8 @@ export default function FarmOverviewHero({
           label={t('farms.satellite')}
           value={
             selectedSatellite === 's1'
-              ? 'Sentinel-1'
-              : 'Sentinel-2'
+              ? t('farmOverviewHero.sentinel1')
+              : t('farmOverviewHero.sentinel2')
           }
         />
       </View>

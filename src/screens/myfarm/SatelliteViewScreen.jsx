@@ -2,7 +2,7 @@ import { useTranslation } from 'react-i18next';
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import BottomTabBar from '../../common/BottomTabBar';
+import BottomTabBar, { useBottomTabBarInset } from '../../common/BottomTabBar';
 import SatelliteHeader from '../../components/satellite/SatelliteHeader';
 import SatelliteMapCard from '../../components/satellite/SatelliteMapCard';
 import SatelliteIndexTabs from '../../components/satellite/SatelliteIndexTabs';
@@ -13,6 +13,7 @@ import HistoricalViewCard from '../../components/satellite/HistoricalViewCard';
 import SatelliteQuickActions from '../../components/satellite/SatelliteQuickActions';
 const { width } = Dimensions.get('window');
 export default function SatelliteViewScreen({ navigation, route }) {
+  const tabBarInset = useBottomTabBarInset();
   const { t } = useTranslation();
   const [activeIndex, setActiveIndex] = useState('NDVI');
   const farm = route?.params?.farm || {
@@ -24,7 +25,7 @@ export default function SatelliteViewScreen({ navigation, route }) {
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[styles.scrollContent, { paddingBottom: styles.scrollContent.paddingBottom + tabBarInset }]}
       >
         <SatelliteHeader
           title={farm.title}

@@ -27,15 +27,31 @@ import {
   fetchLatestArticles,
   setSelectedCategory,
 } from '../../redux/slices/articleSlice';
+import {useTranslation} from 'react-i18next';
+import i18n from 'i18next';
 
 const CATEGORIES = [
-  {label: 'All', value: null},
-  {label: 'Crops', value: 'crops'},
-  {label: 'Technology', value: 'technology'},
-  {label: 'Markets', value: 'markets'},
-  {label: 'Weather', value: 'weather'},
-  {label: 'Fisheries', value: 'fisheries'},
-  {label: 'Livestock', value: 'livestock'},
+  {get label() {
+    return i18n.t('agricultureNews.all');
+  }, value: null},
+  {get label() {
+    return i18n.t('agricultureNews.crops');
+  }, value: 'crops'},
+  {get label() {
+    return i18n.t('agricultureNews.technology');
+  }, value: 'technology'},
+  {get label() {
+    return i18n.t('agricultureNews.markets');
+  }, value: 'markets'},
+  {get label() {
+    return i18n.t('agricultureNews.weather');
+  }, value: 'weather'},
+  {get label() {
+    return i18n.t('agricultureNews.fisheries');
+  }, value: 'fisheries'},
+  {get label() {
+    return i18n.t('agricultureNews.livestock');
+  }, value: 'livestock'},
 ];
 
 const SOURCE_COLORS = {
@@ -73,6 +89,7 @@ function formatDate(dateString) {
 --------------------------------------------------------- */
 
 function ArticleImage({uri, featured = false}) {
+  const {t} = useTranslation();
   const [imageError, setImageError] = useState(false);
 
   if (!uri || imageError) {
@@ -88,7 +105,7 @@ function ArticleImage({uri, featured = false}) {
         </Text>
 
         <Text style={styles.imageFallbackText}>
-          KhetiMaster
+          {t('agricultureNews.khetimaster')}
         </Text>
 
       </View>
@@ -146,6 +163,7 @@ function ArticleCard({
   article,
   onPress,
 }) {
+  const {t} = useTranslation();
   const sourceColor =
     SOURCE_COLORS[article?.source] ||
     FALLBACK_COLOR;
@@ -202,7 +220,7 @@ function ArticleCard({
         <Text
           numberOfLines={2}
           style={styles.articleTitle}>
-          {article?.title || 'Agriculture Update'}
+          {article?.title || t('agricultureNews.agricultureUpdate')}
         </Text>
 
         {!!article?.description && (
@@ -216,7 +234,7 @@ function ArticleCard({
         <View style={styles.readMoreRow}>
 
           <Text style={styles.readMoreText}>
-            Read More
+            {t('agricultureNews.readMore')}
           </Text>
 
           <Text style={styles.readMoreArrow}>
@@ -239,6 +257,7 @@ function FeaturedArticle({
   article,
   onPress,
 }) {
+  const {t} = useTranslation();
   if (!article) {
     return null;
   }
@@ -258,7 +277,7 @@ function FeaturedArticle({
 
         <View style={styles.featuredBadge}>
           <Text style={styles.featuredBadgeText}>
-            LATEST
+            {t('agricultureNews.latest')}
           </Text>
         </View>
 
@@ -287,7 +306,7 @@ function FeaturedArticle({
           <View style={styles.featuredReadMore}>
 
             <Text style={styles.featuredReadMoreText}>
-              Read Article
+              {t('agricultureNews.readArticle')}
             </Text>
 
             <Text style={styles.featuredArrow}>
@@ -343,6 +362,7 @@ function NewsHeader({
   loading,
   onArticlePress,
 }) {
+  const {t} = useTranslation();
   return (
     <>
       {/* HEADER */}
@@ -363,11 +383,11 @@ function NewsHeader({
         <View style={styles.headerTextContainer}>
 
           <Text style={styles.headerTitle}>
-            Agriculture News
+            {t('agricultureNews.agricultureNews')}
           </Text>
 
           <Text style={styles.headerSubtitle}>
-            Latest updates for Indian farmers
+            {t('agricultureNews.latestUpdatesForIndianFarmers')}
           </Text>
 
         </View>
@@ -417,7 +437,7 @@ function NewsHeader({
         <View style={styles.featuredSection}>
 
           <Text style={styles.sectionTitle}>
-            Latest Update
+            {t('agricultureNews.latestUpdate')}
           </Text>
 
           <FeaturedArticle
@@ -437,11 +457,11 @@ function NewsHeader({
           <View style={styles.latestHeader}>
 
             <Text style={styles.sectionTitle}>
-              More Updates
+              {t('agricultureNews.moreUpdates')}
             </Text>
 
             <Text style={styles.articleCount}>
-              {remainingArticles.length} articles
+              {t('agricultureNews.articles', {length: remainingArticles.length})}
             </Text>
 
           </View>
@@ -457,6 +477,7 @@ function NewsHeader({
 export default function AgricultureNewsScreen({
   navigation,
 }) {
+  const {t} = useTranslation();
   const dispatch = useDispatch();
 
   const {
@@ -604,14 +625,14 @@ export default function AgricultureNewsScreen({
 
             <Text
               style={styles.headerTitle}>
-              Agriculture News
+              {t('agricultureNews.agricultureNews')}
             </Text>
 
             <Text
               style={
                 styles.headerSubtitle
               }>
-              Latest updates for Indian farmers
+              {t('agricultureNews.latestUpdatesForIndianFarmers')}
             </Text>
 
           </View>
@@ -715,14 +736,14 @@ export default function AgricultureNewsScreen({
 
             <Text
               style={styles.headerTitle}>
-              Agriculture News
+              {t('agricultureNews.agricultureNews')}
             </Text>
 
             <Text
               style={
                 styles.headerSubtitle
               }>
-              Latest updates for Indian farmers
+              {t('agricultureNews.latestUpdatesForIndianFarmers')}
             </Text>
 
           </View>
@@ -757,15 +778,14 @@ export default function AgricultureNewsScreen({
           </View>
 
           <Text style={styles.emptyTitle}>
-            Couldn't load news
+            {t('agricultureNews.couldntLoadNews')}
           </Text>
 
           <Text
             style={
               styles.emptyDescription
             }>
-            Please check your internet connection
-            and try again.
+            {t('agricultureNews.pleaseCheckYourInternetConnection')}
           </Text>
 
           <TouchableOpacity
@@ -777,7 +797,7 @@ export default function AgricultureNewsScreen({
               style={
                 styles.retryButtonText
               }>
-              Try Again
+              {t('agricultureNews.tryAgain')}
             </Text>
 
           </TouchableOpacity>
@@ -828,14 +848,14 @@ export default function AgricultureNewsScreen({
 
             <Text
               style={styles.headerTitle}>
-              Agriculture News
+              {t('agricultureNews.agricultureNews')}
             </Text>
 
             <Text
               style={
                 styles.headerSubtitle
               }>
-              Latest updates for Indian farmers
+              {t('agricultureNews.latestUpdatesForIndianFarmers')}
             </Text>
 
           </View>
@@ -903,15 +923,14 @@ export default function AgricultureNewsScreen({
           </View>
 
           <Text style={styles.emptyTitle}>
-            No updates available
+            {t('agricultureNews.noUpdatesAvailable')}
           </Text>
 
           <Text
             style={
               styles.emptyDescription
             }>
-            There are no agriculture updates in
-            this category right now.
+            {t('agricultureNews.thereAreNoAgricultureUpdates')}
           </Text>
 
         </View>

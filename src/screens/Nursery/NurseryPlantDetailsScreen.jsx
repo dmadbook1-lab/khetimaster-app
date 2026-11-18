@@ -59,6 +59,8 @@ import {
 } from '../../redux/slices/nurseryCartSlice';
 import { formatRupees, timeAgo } from '../../utils/marketFormat';
 import { plantLocation, stockInfo } from '../../utils/nurseryFormat';
+import {useTranslation} from 'react-i18next';
+import {tOpt} from '../../utils/tOpt';
 
 const { width } = Dimensions.get('window');
 const HERO_HEIGHT = 340;
@@ -66,6 +68,7 @@ const HERO_HEIGHT = 340;
 const userIdOf = user => user?._id || user?.id || user?.userId;
 
 export default function NurseryPlantDetailsScreen({ navigation, route }) {
+  const {t} = useTranslation();
   const { plantId } = route.params;
   const dispatch = useDispatch();
   const insets = useSafeAreaInsets();
@@ -110,12 +113,12 @@ export default function NurseryPlantDetailsScreen({ navigation, route }) {
   if (!plant) {
     return (
       <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
-        <MarketHeader title="Plant" onBack={() => navigation.goBack()} />
+        <MarketHeader title={t('nurseryPlantDetails.plant')} onBack={() => navigation.goBack()} />
         {selectedError && !selectedLoading ? (
           <EmptyState
-            title="Plant not available"
+            title={t('nurseryPlantDetails.plantNotAvailable')}
             message={selectedError}
-            actionLabel="Go Back"
+            actionLabel={t('nurseryPlantDetails.goBack')}
             onAction={() => navigation.goBack()}
           />
         ) : (
@@ -138,7 +141,7 @@ export default function NurseryPlantDetailsScreen({ navigation, route }) {
   const handleAdd = async () => {
     try {
       await dispatch(addToNurseryCart({ plantId, quantity })).unwrap();
-      toast.show(`${quantity} × ${plant.name} added to cart`);
+      toast.show(t('nurseryPlantDetails.addedToCart', {quantity, name: plant.name}));
       setQuantity(1);
     } catch (error) {
       feedback.error('Could not add to cart', String(error));
@@ -150,16 +153,16 @@ export default function NurseryPlantDetailsScreen({ navigation, route }) {
     const active = plant.isActive === false;
 
     feedback.confirm({
-      title: active ? 'Show this plant again?' : 'Pause this listing?',
+      title: active ? t('nurseryPlantDetails.showThisPlantAgain') : t('nurseryPlantDetails.pauseThisListing'),
       message: active
-        ? 'Buyers will be able to find and order it again.'
-        : 'Buyers will not see it. Orders already placed are not affected.',
-      confirmLabel: active ? 'Show Again' : 'Pause',
+        ? t('nurseryPlantDetails.buyersWillBeAbleTo')
+        : t('nurseryPlantDetails.buyersWillNotSeeIt'),
+      confirmLabel: active ? t('nurseryPlantDetails.showAgain') : t('nurseryPlantDetails.pause'),
       destructive: !active,
       onConfirm: async () => {
         try {
           await dispatch(setNurseryPlantActive({ plantId, active })).unwrap();
-          toast.show(active ? 'Plant is live again' : 'Listing paused');
+          toast.show(active ? t('nurseryPlantDetails.plantIsLiveAgain') : t('nurseryPlantDetails.listingPaused'));
           if (!active) navigation.goBack();
         } catch (error) {
           feedback.error('Could not update', String(error));
@@ -248,7 +251,7 @@ export default function NurseryPlantDetailsScreen({ navigation, route }) {
               { color: visual.color, backgroundColor: visual.bg },
             ]}
           >
-            {plant.category}
+            {tOpt(plant.category)}
           </Text>
           <Text style={styles.title}>{plant.name}</Text>
 
@@ -256,13 +259,13 @@ export default function NurseryPlantDetailsScreen({ navigation, route }) {
             <Star size={14} color={C.gold} fill={C.gold} />
             <Text style={styles.ratingText}>
               {plant.totalReviews
-                ? `${plant.rating} · ${plant.totalReviews} reviews`
-                : 'No reviews yet'}
+                ? t('nurseryPlantDetails.reviews', {rating: plant.rating, totalReviews: plant.totalReviews})
+                : t('nurseryPlantDetails.noReviewsYet')}
             </Text>
             {!!plant.totalSold && (
               <>
                 <BadgeCheck size={14} color={C.green} />
-                <Text style={styles.ratingText}>{plant.totalSold} sold</Text>
+                <Text style={styles.ratingText}>{t('nurseryPlantDetails.sold', {totalSold: plant.totalSold})}</Text>
               </>
             )}
           </View>
@@ -270,7 +273,7 @@ export default function NurseryPlantDetailsScreen({ navigation, route }) {
           <View style={styles.priceRow}>
             <View>
               <Text style={styles.price}>{formatRupees(plant.price)}</Text>
-              <Text style={styles.priceUnit}>per plant</Text>
+              <Text style={styles.priceUnit}>{t('nurseryPlantDetails.perPlant')}</Text>
             </View>
             <Text
               style={[
@@ -287,9 +290,7 @@ export default function NurseryPlantDetailsScreen({ navigation, route }) {
             <View style={[styles.card, styles.ownerNotice]}>
               <Package size={18} color={C.blue} />
               <Text style={styles.ownerNoticeText}>
-                This is your listing
-                {plant.isActive === false ? ' (paused)' : ''}. Buyers see it
-                like this.
+                {t('nurseryPlantDetails.thisIsYourListingBuyers', {v1: plant.isActive === false ? ' (paused)' : ''})}
               </Text>
             </View>
           )}
@@ -298,7 +299,7 @@ export default function NurseryPlantDetailsScreen({ navigation, route }) {
             <View style={[styles.card, styles.ownerNotice]}>
               <ShoppingCart size={18} color={C.green} />
               <Text style={styles.ownerNoticeText}>
-                {inCart.quantity} already in your cart
+                {t('nurseryPlantDetails.alreadyInYourCart', {quantity: inCart.quantity})}
               </Text>
             </View>
           )}
@@ -308,27 +309,27 @@ export default function NurseryPlantDetailsScreen({ navigation, route }) {
             <View style={styles.perk}>
               <Truck size={17} color={C.green} />
               <Text style={styles.perkTitle}>
-                {formatRupees(delivery.fee)} delivery
+                {t('nurseryPlantDetails.delivery', {v1: formatRupees(delivery.fee)})}
               </Text>
               <Text style={styles.perkText}>
-                Free above {formatRupees(delivery.freeAbove)}
+                {t('nurseryPlantDetails.freeAbove', {v1: formatRupees(delivery.freeAbove)})}
               </Text>
             </View>
             <View style={styles.perk}>
               <Banknote size={17} color={C.blue} />
-              <Text style={styles.perkTitle}>Cash on delivery</Text>
-              <Text style={styles.perkText}>Pay when it arrives</Text>
+              <Text style={styles.perkTitle}>{t('nurseryPlantDetails.cashOnDelivery')}</Text>
+              <Text style={styles.perkText}>{t('nurseryPlantDetails.payWhenItArrives')}</Text>
             </View>
             <View style={styles.perk}>
               <RotateCcw size={17} color={C.orange} />
-              <Text style={styles.perkTitle}>Free cancel</Text>
-              <Text style={styles.perkText}>Until dispatched</Text>
+              <Text style={styles.perkTitle}>{t('nurseryPlantDetails.freeCancel')}</Text>
+              <Text style={styles.perkText}>{t('nurseryPlantDetails.untilDispatched')}</Text>
             </View>
           </View>
 
           {!!plant.description && (
             <>
-              <Text style={styles.blockTitle}>About this plant</Text>
+              <Text style={styles.blockTitle}>{t('nurseryPlantDetails.aboutThisPlant')}</Text>
               <View style={styles.card}>
                 <Text style={styles.paragraph}>{plant.description}</Text>
               </View>
@@ -336,7 +337,7 @@ export default function NurseryPlantDetailsScreen({ navigation, route }) {
           )}
 
           {/* SELLER */}
-          <Text style={styles.blockTitle}>Sold by</Text>
+          <Text style={styles.blockTitle}>{t('nurseryPlantDetails.soldBy')}</Text>
           <View style={[styles.card, styles.sellerRow]}>
             <PersonAvatar name={sellerName} size={50} />
             <View style={styles.flex}>
@@ -350,7 +351,7 @@ export default function NurseryPlantDetailsScreen({ navigation, route }) {
                 </View>
               )}
               <Text style={styles.cardText}>
-                Phone number shared once they confirm your order
+                {t('nurseryPlantDetails.phoneNumberSharedOnceThey')}
               </Text>
             </View>
           </View>
@@ -358,7 +359,7 @@ export default function NurseryPlantDetailsScreen({ navigation, route }) {
           {/* REVIEWS */}
           {reviews.length > 0 && (
             <>
-              <Text style={styles.blockTitle}>What buyers say</Text>
+              <Text style={styles.blockTitle}>{t('nurseryPlantDetails.whatBuyersSay')}</Text>
               {reviews.map((review, index) => (
                 <View
                   key={`${review.createdAt}-${index}`}
@@ -404,7 +405,7 @@ export default function NurseryPlantDetailsScreen({ navigation, route }) {
           <>
             <MarketButton
               variant={plant.isActive === false ? 'outline' : 'danger'}
-              label={plant.isActive === false ? 'Show Again' : 'Pause'}
+              label={plant.isActive === false ? t('nurseryPlantDetails.showAgain') : t('nurseryPlantDetails.pause')}
               icon={
                 <Power
                   size={16}
@@ -416,7 +417,7 @@ export default function NurseryPlantDetailsScreen({ navigation, route }) {
               style={styles.flex}
             />
             <MarketButton
-              label="Edit Listing"
+              label={t('nurseryPlantDetails.editListing')}
               icon={<Pencil size={16} color={C.white} />}
               onPress={() =>
                 navigation.navigate(NURSERY_ROUTES.FORM, { plant })
@@ -426,7 +427,7 @@ export default function NurseryPlantDetailsScreen({ navigation, route }) {
           </>
         ) : outOfStock || available <= 0 ? (
           <MarketButton
-            label={outOfStock ? 'Out of Stock' : 'Go to Cart'}
+            label={outOfStock ? t('nurseryPlantDetails.outOfStock') : t('nurseryPlantDetails.goToCart')}
             icon={
               outOfStock ? null : <ShoppingCart size={17} color={C.white} />
             }
@@ -447,7 +448,7 @@ export default function NurseryPlantDetailsScreen({ navigation, route }) {
               </Text>
             </View>
             <MarketButton
-              label="Add to Cart"
+              label={t('nurseryPlantDetails.addToCart')}
               icon={<ShoppingCart size={17} color={C.white} />}
               loading={adding}
               onPress={handleAdd}

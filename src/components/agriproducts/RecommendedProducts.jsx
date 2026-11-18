@@ -3,6 +3,7 @@ import { View, Text, ScrollView, StyleSheet, Dimensions } from 'react-native';
 import { Leaf } from 'lucide-react-native';
 import ProductCard from './ProductCard';
 import { recommendedProducts } from './product';
+import {useTranslation} from 'react-i18next';
 const { width } = Dimensions.get('window');
 const GREEN = '#16883E';
 const rf = size => {
@@ -10,6 +11,7 @@ const rf = size => {
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
 export default function RecommendedProducts({ navigation }) {
+  const {t} = useTranslation();
   return (
     <View style={styles.wrapper}>
       <View style={styles.sectionRow}>
@@ -19,12 +21,12 @@ export default function RecommendedProducts({ navigation }) {
           </View>
 
           <View>
-            <Text style={styles.title}>Recommended For Your Crop</Text>
-            <Text style={styles.subtitle}>AI picks for Soybean farmers</Text>
+            <Text style={styles.title}>{t('recommendedProducts.recommendedForYourCrop')}</Text>
+            <Text style={styles.subtitle}>{t('recommendedProducts.aiPicksForSoybeanFarmers')}</Text>
           </View>
         </View>
 
-        <Text style={styles.seeAll}>See All</Text>
+        <Text style={styles.seeAll}>{t('recommendedProducts.seeAll')}</Text>
       </View>
 
       <ScrollView

@@ -246,8 +246,8 @@ export default function SplashScreen({ navigation }) {
             </Animated.View>
 
             <Text style={styles.brandText} numberOfLines={1}>
-              Kheti
-              <Text style={styles.orange}>Master</Text>
+              {t('splash.kheti')}
+              <Text style={styles.orange}>{t('splash.master')}</Text>
             </Text>
           </View>
 

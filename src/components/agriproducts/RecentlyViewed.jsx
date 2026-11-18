@@ -9,17 +9,20 @@ import {
 } from 'react-native';
 import { Star } from 'lucide-react-native';
 import { recentlyViewed } from './product';
+import {useTranslation} from 'react-i18next';
+import {tOpt} from '../../utils/tOpt';
 const { width } = Dimensions.get('window');
 const rf = size => {
   const scale = width / 390;
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
 export default function RecentlyViewed() {
+  const {t} = useTranslation();
   return (
     <View style={styles.wrapper}>
       <View style={styles.sectionRow}>
-        <Text style={styles.title}>Recently Viewed</Text>
-        <Text style={styles.seeAll}>See All</Text>
+        <Text style={styles.title}>{t('recentlyViewed.recentlyViewed')}</Text>
+        <Text style={styles.seeAll}>{t('recentlyViewed.seeAll')}</Text>
       </View>
 
       <ScrollView
@@ -36,7 +39,7 @@ export default function RecentlyViewed() {
             />
 
             <Text numberOfLines={2} style={styles.name}>
-              {item.name}
+              {tOpt(item.name)}
             </Text>
 
             <View style={styles.bottomRow}>

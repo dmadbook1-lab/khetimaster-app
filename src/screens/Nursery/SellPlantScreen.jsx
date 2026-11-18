@@ -49,11 +49,25 @@ import { pickNurseryImages } from '../../utils/nurseryImagePicker';
 import { uploadNurseryImages } from '../../utils/nurseryCloudinary';
 import { formatRupees } from '../../utils/marketFormat';
 import { MAX_PLANT_IMAGES, buildPlantPayload } from '../../utils/nurseryFormat';
+import {useTranslation} from 'react-i18next';
+import i18n from 'i18next';
 
 const STEPS = [
-  { title: 'Your plant', text: 'Name, category and photos' },
-  { title: 'Price & stock', text: 'What you charge and how many you have' },
-  { title: 'Location & details', text: 'Where buyers get it from' },
+  { get title() {
+    return i18n.t('sellPlant.yourPlant');
+  }, get text() {
+    return i18n.t('sellPlant.nameCategoryAndPhotos');
+  } },
+  { get title() {
+    return i18n.t('sellPlant.priceStock');
+  }, get text() {
+    return i18n.t('sellPlant.whatYouChargeAndHow');
+  } },
+  { get title() {
+    return i18n.t('sellPlant.locationDetails');
+  }, get text() {
+    return i18n.t('sellPlant.whereBuyersGetItFrom');
+  } },
 ];
 
 // page each validated field lives on (fields from buildPlantPayload)
@@ -82,6 +96,7 @@ const initialForm = (plant, user) => ({
 });
 
 export default function SellPlantScreen({ navigation, route }) {
+  const {t} = useTranslation();
   const editing = route.params?.plant || null;
   const isCreate = !editing;
 
@@ -144,8 +159,8 @@ export default function SellPlantScreen({ navigation, route }) {
 
     if (remaining <= 0) {
       feedback.info(
-        'Maximum reached',
-        `You can add up to ${MAX_PLANT_IMAGES} photos.`,
+        t('sellPlant.maximumReached'),
+        t('sellPlant.youCanAddUpTo', {MAX_PLANT_IMAGES}),
       );
       return;
     }
@@ -192,11 +207,11 @@ export default function SellPlantScreen({ navigation, route }) {
 
       if (isCreate) {
         feedback.success(
-          'Your plant is listed!',
-          'Buyers can now find it and order with cash on delivery.',
+          t('sellPlant.yourPlantIsListed'),
+          t('sellPlant.buyersCanNowFindIt'),
           {
-            primaryLabel: 'View Listing',
-            secondaryLabel: 'My Nursery',
+            primaryLabel: t('sellPlant.viewListing'),
+            secondaryLabel: t('sellPlant.myNursery'),
             dismissable: false,
             onPrimary: () =>
               navigation.replace(NURSERY_ROUTES.PLANT, {
@@ -207,10 +222,10 @@ export default function SellPlantScreen({ navigation, route }) {
         );
       } else {
         feedback.success(
-          'Plant updated',
-          'New prices apply to new orders. Orders already placed keep their price.',
+          t('sellPlant.plantUpdated'),
+          t('sellPlant.newPricesApplyToNew'),
           {
-            primaryLabel: 'Done',
+            primaryLabel: t('sellPlant.done'),
             dismissable: false,
             onPrimary: () => navigation.goBack(),
           },
@@ -234,7 +249,7 @@ export default function SellPlantScreen({ navigation, route }) {
 
   const preview = {
     _id: 'preview',
-    name: form.name || 'Your plant name',
+    name: form.name || t('sellPlant.yourPlantName'),
     category: form.category || 'Category',
     price: Number(form.price) || 0,
     quantity: Number(form.quantity) || 0,
@@ -259,18 +274,18 @@ export default function SellPlantScreen({ navigation, route }) {
             compact
             gradient={isCreate ? 'amber' : 'forest'}
             onBack={handleBack}
-            eyebrow={isCreate ? 'Sell a plant' : 'Edit listing'}
-            title={isCreate ? 'List your plant' : editing.name}
+            eyebrow={isCreate ? t('sellPlant.sellAPlant') : t('sellPlant.editListing')}
+            title={isCreate ? t('sellPlant.listYourPlant') : editing.name}
             subtitle={
               isCreate
                 ? STEPS[step].text
-                : 'Price changes only apply to new orders.'
+                : t('sellPlant.priceChangesOnlyApplyTo')
             }
           >
             {isCreate && (
               <View style={styles.progress}>
                 <Text style={styles.progressLabel}>
-                  Step {step + 1} of {STEPS.length} · {STEPS[step].title}
+                  {t('sellPlant.stepOf', {v1: step + 1, length: STEPS.length, title: STEPS[step].title})}
                 </Text>
                 <View style={styles.progressBar}>
                   {STEPS.map((item, index) => (
@@ -292,12 +307,12 @@ export default function SellPlantScreen({ navigation, route }) {
               <>
                 <SectionHeading
                   icon={<Sprout size={16} color={C.green} />}
-                  title="Your plant"
+                  title={t('sellPlant.yourPlant')}
                 />
                 <FormCard>
                   <Field
-                    label="Photos"
-                    hint={`Real photos of your plants sell faster. Up to ${MAX_PLANT_IMAGES}.`}
+                    label={t('sellPlant.photos')}
+                    hint={t('sellPlant.realPhotosOfYourPlants', {MAX_PLANT_IMAGES})}
                   >
                     <ScrollView
                       horizontal
@@ -351,22 +366,22 @@ export default function SellPlantScreen({ navigation, route }) {
                           onPress={choosePhotos}
                         >
                           <ImagePlus size={24} color={C.green} />
-                          <Text style={styles.addImageText}>Add Photos</Text>
+                          <Text style={styles.addImageText}>{t('sellPlant.addPhotos')}</Text>
                         </TouchableOpacity>
                       )}
                     </ScrollView>
                   </Field>
 
-                  <Field label="Plant name *">
+                  <Field label={t('sellPlant.plantName')}>
                     <FormInput
                       value={form.name}
                       onChangeText={value => setField('name', value)}
-                      placeholder="e.g. Alphonso Mango grafted sapling"
+                      placeholder={t('sellPlant.eGAlphonsoMangoGrafted')}
                       maxLength={100}
                     />
                   </Field>
 
-                  <Field label="Category *">
+                  <Field label={t('sellPlant.category')}>
                     <SelectChips
                       options={suggested}
                       value={isCustomCategory ? null : form.category}
@@ -374,13 +389,13 @@ export default function SellPlantScreen({ navigation, route }) {
                     />
                   </Field>
                   <Field
-                    label="Or type your own category"
-                    hint="Use this if none of the above fits."
+                    label={t('sellPlant.orTypeYourOwnCategory')}
+                    hint={t('sellPlant.useThisIfNoneOf')}
                   >
                     <FormInput
                       value={isCustomCategory ? form.category : ''}
                       onChangeText={value => setField('category', value)}
-                      placeholder="e.g. Bonsai"
+                      placeholder={t('sellPlant.eGBonsai')}
                       maxLength={100}
                     />
                   </Field>
@@ -393,12 +408,12 @@ export default function SellPlantScreen({ navigation, route }) {
                 <SectionHeading
                   icon={<Boxes size={16} color={C.blue} />}
                   color={C.blue}
-                  title="Price & stock"
+                  title={t('sellPlant.priceStock')}
                 />
                 <FormCard>
                   <View style={styles.row}>
                     <View style={styles.flex}>
-                      <Field label="Price per plant *">
+                      <Field label={t('sellPlant.pricePerPlant')}>
                         <View style={styles.moneyBox}>
                           <Text style={styles.rupee}>₹</Text>
                           <FormInput
@@ -414,7 +429,7 @@ export default function SellPlantScreen({ navigation, route }) {
                       </Field>
                     </View>
                     <View style={styles.flex}>
-                      <Field label="Plants in stock *">
+                      <Field label={t('sellPlant.plantsInStock')}>
                         <FormInput
                           value={form.quantity}
                           onChangeText={value =>
@@ -430,10 +445,7 @@ export default function SellPlantScreen({ navigation, route }) {
 
                   <View style={styles.deliveryNote}>
                     <Text style={styles.deliveryNoteText}>
-                      Buyers pay {formatRupees(meta.delivery.fee)} delivery on
-                      orders below {formatRupees(meta.delivery.freeAbove)}.
-                      Stock goes down automatically when someone orders, and
-                      comes back if the order is cancelled.
+                      {t('sellPlant.buyersPayDeliveryOnOrders', {v1: formatRupees(meta.delivery.fee), v2: formatRupees(meta.delivery.freeAbove)})}
                     </Text>
                   </View>
                 </FormCard>
@@ -441,7 +453,7 @@ export default function SellPlantScreen({ navigation, route }) {
                 {isCreate && (
                   <>
                     <Text style={styles.previewTitle}>
-                      How buyers will see it
+                      {t('sellPlant.howBuyersWillSeeIt')}
                     </Text>
                     <View style={styles.preview}>
                       <PlantGridCard plant={preview} width={180} />
@@ -456,37 +468,37 @@ export default function SellPlantScreen({ navigation, route }) {
                 <SectionHeading
                   icon={<MapPin size={16} color={C.orange} />}
                   color={C.orange}
-                  title="Location & details"
+                  title={t('sellPlant.locationDetails')}
                 />
                 <FormCard>
                   <View style={styles.row}>
                     <View style={styles.flex}>
-                      <Field label="District">
+                      <Field label={t('sellPlant.district')}>
                         <FormInput
                           value={form.district}
                           onChangeText={value => setField('district', value)}
-                          placeholder="District"
+                          placeholder={t('sellPlant.district')}
                         />
                       </Field>
                     </View>
                     <View style={styles.flex}>
-                      <Field label="State">
+                      <Field label={t('sellPlant.state')}>
                         <FormInput
                           value={form.state}
                           onChangeText={value => setField('state', value)}
-                          placeholder="State"
+                          placeholder={t('sellPlant.state')}
                         />
                       </Field>
                     </View>
                   </View>
                   <Field
-                    label="About this plant"
-                    hint="Age, height, variety, care tips, pot or bag size..."
+                    label={t('sellPlant.aboutThisPlant')}
+                    hint={t('sellPlant.ageHeightVarietyCareTips')}
                   >
                     <FormInput
                       value={form.description}
                       onChangeText={value => setField('description', value)}
-                      placeholder="e.g. 2 year old grafted sapling, 2-3 ft tall, in 8 inch bag"
+                      placeholder={t('sellPlant.eG2YearOld')}
                       maxLength={1000}
                       multiline
                       textAlignVertical="top"
@@ -497,9 +509,9 @@ export default function SellPlantScreen({ navigation, route }) {
                   {!isCreate && (
                     <View style={styles.switchRow}>
                       <View style={styles.flex}>
-                        <Text style={styles.switchLabel}>Show to buyers</Text>
+                        <Text style={styles.switchLabel}>{t('sellPlant.showToBuyers')}</Text>
                         <Text style={styles.switchText}>
-                          Turn off to pause this listing
+                          {t('sellPlant.turnOffToPauseThis')}
                         </Text>
                       </View>
                       <Switch
@@ -526,7 +538,7 @@ export default function SellPlantScreen({ navigation, route }) {
         {isCreate && step > 0 && (
           <MarketButton
             variant="outline"
-            label="Back"
+            label={t('common.back')}
             icon={<ArrowLeft size={16} color={C.green} />}
             disabled={saving || uploading}
             onPress={handleBack}
@@ -537,10 +549,10 @@ export default function SellPlantScreen({ navigation, route }) {
           <MarketButton
             label={
               uploading
-                ? 'Uploading photos…'
+                ? t('sellPlant.uploadingPhotos')
                 : isCreate
-                ? 'List Plant'
-                : 'Save Changes'
+                ? t('sellPlant.listPlant')
+                : t('sellPlant.saveChanges')
             }
             icon={<Save size={17} color={C.white} />}
             loading={saving || uploading}
@@ -549,7 +561,7 @@ export default function SellPlantScreen({ navigation, route }) {
           />
         ) : (
           <MarketButton
-            label="Next"
+            label={t('sellPlant.next')}
             icon={<ArrowRight size={17} color={C.white} />}
             onPress={handleNext}
             style={styles.flexWide}

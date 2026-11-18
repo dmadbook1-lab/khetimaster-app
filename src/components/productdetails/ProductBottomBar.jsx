@@ -7,13 +7,15 @@ import {
   Dimensions,
 } from 'react-native';
 import { ShoppingCart, Zap } from 'lucide-react-native';
+import {useTranslation} from 'react-i18next';
 const { width } = Dimensions.get('window');
 export default function ProductDetailsScreen({ navigation }) {
+  const {t} = useTranslation();
   return (
     <View style={styles.bar}>
       <TouchableOpacity activeOpacity={0.9} style={styles.cartBtn}>
         <ShoppingCart size={18} color="#16883E" />
-        <Text style={styles.cartText}>Add to Cart</Text>
+        <Text style={styles.cartText}>{t('productBottomBar.addToCart')}</Text>
       </TouchableOpacity>
 
       <TouchableOpacity
@@ -22,7 +24,7 @@ export default function ProductDetailsScreen({ navigation }) {
         onPress={() => navigation.navigate('Checkout')}
       >
         <Zap size={18} color="#FFFFFF" />
-        <Text style={styles.buyText}>Buy Now</Text>
+        <Text style={styles.buyText}>{t('productBottomBar.buyNow')}</Text>
       </TouchableOpacity>
     </View>
   );

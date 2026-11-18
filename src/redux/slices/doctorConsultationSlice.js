@@ -12,6 +12,7 @@ import {
   updateConsultationNotesApi,
   reviewDoctorConsultationApi,
 } from '../../api/doctorConsultationApi';
+import i18n from 'i18next';
 
 const errorMessage = (error, fallback) =>
   error.response?.data?.message || error.message || fallback;
@@ -33,7 +34,7 @@ export const createConsultation = createAsyncThunk(
       return await createDoctorConsultationApi(consultationData);
     } catch (error) {
       return rejectWithValue({
-        message: errorMessage(error, 'Unable to send the request'),
+        message: errorMessage(error, i18n.t('doctorConsultationSlice.unableToSendTheRequest')),
         consultationId: error.response?.data?.consultation?._id || null,
       });
     }
@@ -56,7 +57,7 @@ export const fetchMyConsultations = createAsyncThunk(
       return await getMyConsultationsApi(params);
     } catch (error) {
       return rejectWithValue(
-        errorMessage(error, 'Unable to load your consultations'),
+        errorMessage(error, i18n.t('doctorConsultationSlice.unableToLoadYourConsultations')),
       );
     }
   },
@@ -68,7 +69,7 @@ export const fetchDoctorRequests = createAsyncThunk(
     try {
       return await getDoctorRequestsApi(params);
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to load requests'));
+      return rejectWithValue(errorMessage(error, i18n.t('doctorConsultationSlice.unableToLoadRequests')));
     }
   },
 );
@@ -80,7 +81,7 @@ export const fetchConsultationById = createAsyncThunk(
       return await getDoctorConsultationByIdApi(consultationId);
     } catch (error) {
       return rejectWithValue(
-        errorMessage(error, 'Unable to load consultation'),
+        errorMessage(error, i18n.t('doctorConsultationSlice.unableToLoadConsultation')),
       );
     }
   },
@@ -116,7 +117,7 @@ export const updateConsultation = createAsyncThunk(
       return await ACTION_APIS[arg.action](arg);
     } catch (error) {
       return rejectWithValue(
-        errorMessage(error, 'Unable to update consultation'),
+        errorMessage(error, i18n.t('doctorConsultationSlice.unableToUpdateConsultation')),
       );
     }
   },
@@ -131,7 +132,7 @@ export const reviewConsultation = createAsyncThunk(
         comment,
       });
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to submit review'));
+      return rejectWithValue(errorMessage(error, i18n.t('doctorConsultationSlice.unableToSubmitReview')));
     }
   },
 );

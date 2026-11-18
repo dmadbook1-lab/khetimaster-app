@@ -10,14 +10,33 @@ import API_ENDPOINTS from './endpoints';
 */
 
 export const sendOtpApi = async email => {
-  const response = await apiClient.post(
-    API_ENDPOINTS.SEND_OTP,
-    {
-      email,
-    },
-  );
+  try {
+    console.log(
+      'LOGIN URL HIT:',
+      apiClient.getUri({ url: API_ENDPOINTS.SEND_OTP }),
+    );
+    console.log('OTP REQUEST BODY:', { email });
+    console.log('OTP REQUEST HEADERS:', {
+      'Content-Type': 'application/json',
+    });
 
-  return response.data;
+    const response = await apiClient.post(
+      API_ENDPOINTS.SEND_OTP,
+      {
+        email,
+      },
+    );
+
+    console.log('OTP RESPONSE:', response.data);
+
+    return response.data;
+  } catch (error) {
+    console.log('OTP ERROR STATUS:', error.response?.status);
+    console.log('OTP ERROR DATA:', error.response?.data);
+    console.log('OTP ERROR MESSAGE:', error.message);
+
+    throw error;
+  }
 };
 
 /*
@@ -127,4 +146,3 @@ export const logoutApi =
 
     return response.data;
   };
-

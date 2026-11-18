@@ -56,6 +56,7 @@ import {
 } from '../../redux/slices/satelliteSlice';
 
 import {farmToGeoJSON} from '../../utils/cropMonitoringGeometry';
+import i18n from 'i18next';
 
 const {width} = Dimensions.get('window');
 
@@ -67,33 +68,81 @@ const BACKGROUND = '#F5F8F6';
 const DEFAULT_CLOUD_THRESHOLD = 60;
 
 const S2_INDEX_OPTIONS = [
-  {label: 'NDVI', value: 'NDVI'},
-  {label: 'EVI', value: 'EVI'},
-  {label: 'EVI2', value: 'EVI2'},
-  {label: 'SAVI', value: 'SAVI'},
-  {label: 'MSAVI', value: 'MSAVI'},
-  {label: 'NDMI', value: 'NDMI'},
-  {label: 'NDWI', value: 'NDWI'},
-  {label: 'SMI', value: 'SMI'},
-  {label: 'CCC', value: 'CCC'},
-  {label: 'NITROGEN', value: 'NITROGEN'},
-  {label: 'SOC', value: 'SOC'},
-  {label: 'NDRE', value: 'NDRE'},
-  {label: 'RECI', value: 'RECI'},
-  {label: 'TRUE COLOR', value: 'TRUE_COLOR'},
+  {get label() {
+    return i18n.t('farmOverview.ndvi');
+  }, value: 'NDVI'},
+  {get label() {
+    return i18n.t('farmOverview.evi');
+  }, value: 'EVI'},
+  {get label() {
+    return i18n.t('farmOverview.evi2');
+  }, value: 'EVI2'},
+  {get label() {
+    return i18n.t('farmOverview.savi');
+  }, value: 'SAVI'},
+  {get label() {
+    return i18n.t('farmOverview.msavi');
+  }, value: 'MSAVI'},
+  {get label() {
+    return i18n.t('farmOverview.ndmi');
+  }, value: 'NDMI'},
+  {get label() {
+    return i18n.t('farmOverview.ndwi');
+  }, value: 'NDWI'},
+  {get label() {
+    return i18n.t('farmOverview.smi');
+  }, value: 'SMI'},
+  {get label() {
+    return i18n.t('farmOverview.ccc');
+  }, value: 'CCC'},
+  {get label() {
+    return i18n.t('farmOverview.nitrogen');
+  }, value: 'NITROGEN'},
+  {get label() {
+    return i18n.t('farmOverview.soc');
+  }, value: 'SOC'},
+  {get label() {
+    return i18n.t('farmOverview.ndre');
+  }, value: 'NDRE'},
+  {get label() {
+    return i18n.t('farmOverview.reci');
+  }, value: 'RECI'},
+  {get label() {
+    return i18n.t('farmOverview.trueColor');
+  }, value: 'TRUE_COLOR'},
 ];
 
 const S1_INDEX_OPTIONS = [
-  {label: 'VV', value: 'VV'},
-  {label: 'VH', value: 'VH'},
-  {label: 'VV / VH', value: 'VV_VH'},
-  {label: 'VH / VV', value: 'VH_VV'},
-  {label: 'RVI', value: 'RVI'},
-  {label: 'SDWI', value: 'SDWI'},
-  {label: 'Sigma 0 VV', value: 'SIGMA0_VV'},
-  {label: 'Sigma 0 VH', value: 'SIGMA0_VH'},
-  {label: 'Gamma 0 VV', value: 'GAMMA0_VV'},
-  {label: 'Gamma 0 VH', value: 'GAMMA0_VH'},
+  {get label() {
+    return i18n.t('farmOverview.vv');
+  }, value: 'VV'},
+  {get label() {
+    return i18n.t('farmOverview.vh');
+  }, value: 'VH'},
+  {get label() {
+    return i18n.t('farmOverview.vvVh');
+  }, value: 'VV_VH'},
+  {get label() {
+    return i18n.t('farmOverview.vhVv');
+  }, value: 'VH_VV'},
+  {get label() {
+    return i18n.t('farmOverview.rvi');
+  }, value: 'RVI'},
+  {get label() {
+    return i18n.t('farmOverview.sdwi');
+  }, value: 'SDWI'},
+  {get label() {
+    return i18n.t('farmOverview.sigma0Vv');
+  }, value: 'SIGMA0_VV'},
+  {get label() {
+    return i18n.t('farmOverview.sigma0Vh');
+  }, value: 'SIGMA0_VH'},
+  {get label() {
+    return i18n.t('farmOverview.gamma0Vv');
+  }, value: 'GAMMA0_VV'},
+  {get label() {
+    return i18n.t('farmOverview.gamma0Vh');
+  }, value: 'GAMMA0_VH'},
 ];
 
 const getIndexOptions = satellite => {

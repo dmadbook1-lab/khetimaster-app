@@ -1,4 +1,5 @@
-/*
+
+import i18n from 'i18next';/*
 |--------------------------------------------------------------------------
 | MARKETPLACE FORMATTING / PAYLOAD HELPERS
 |--------------------------------------------------------------------------
@@ -10,33 +11,69 @@ export const DISCRETE_UNITS = ['piece', 'dozen', 'crate', 'bag', 'packet', 'bott
 export const isDiscreteUnit = unit => DISCRETE_UNITS.includes(unit);
 
 export const CONDITION_LABELS = {
-  new: 'New',
-  like_new: 'Like New',
-  good: 'Good',
-  fair: 'Fair',
-  needs_repair: 'Needs Repair',
+  get new() {
+    return i18n.t('marketFormat.new');
+  },
+  get like_new() {
+    return i18n.t('marketFormat.likeNew');
+  },
+  get good() {
+    return i18n.t('marketFormat.good');
+  },
+  get fair() {
+    return i18n.t('marketFormat.fair');
+  },
+  get needs_repair() {
+    return i18n.t('marketFormat.needsRepair');
+  },
 };
 
 export const GRADE_LABELS = {
-  A: 'Grade A',
-  B: 'Grade B',
-  C: 'Grade C',
-  ungraded: 'Ungraded',
+  get A() {
+    return i18n.t('marketFormat.gradeA');
+  },
+  get B() {
+    return i18n.t('marketFormat.gradeB');
+  },
+  get C() {
+    return i18n.t('marketFormat.gradeC');
+  },
+  get ungraded() {
+    return i18n.t('marketFormat.ungraded');
+  },
 };
 
 export const LISTING_STATUS_META = {
-  ACTIVE: {label: 'Active', color: '#159447', bg: '#EAF7EF'},
-  PAUSED: {label: 'Paused', color: '#B7791F', bg: '#FFF6E0'},
-  SOLD: {label: 'Sold Out', color: '#475467', bg: '#EEF0F2'},
-  DELETED: {label: 'Removed', color: '#B42318', bg: '#FDECEA'},
+  ACTIVE: {get label() {
+    return i18n.t('common.active');
+  }, color: '#159447', bg: '#EAF7EF'},
+  PAUSED: {get label() {
+    return i18n.t('marketFormat.paused');
+  }, color: '#B7791F', bg: '#FFF6E0'},
+  SOLD: {get label() {
+    return i18n.t('marketFormat.soldOut');
+  }, color: '#475467', bg: '#EEF0F2'},
+  DELETED: {get label() {
+    return i18n.t('marketFormat.removed');
+  }, color: '#B42318', bg: '#FDECEA'},
 };
 
 export const DEAL_STATUS_META = {
-  PENDING: {label: 'Negotiating', color: '#B7791F', bg: '#FFF6E0'},
-  ACCEPTED: {label: 'Accepted', color: '#2563EB', bg: '#EAF1FF'},
-  COMPLETED: {label: 'Completed', color: '#159447', bg: '#EAF7EF'},
-  REJECTED: {label: 'Rejected', color: '#B42318', bg: '#FDECEA'},
-  CANCELLED: {label: 'Cancelled', color: '#475467', bg: '#EEF0F2'},
+  PENDING: {get label() {
+    return i18n.t('marketFormat.negotiating');
+  }, color: '#B7791F', bg: '#FFF6E0'},
+  ACCEPTED: {get label() {
+    return i18n.t('marketFormat.accepted');
+  }, color: '#2563EB', bg: '#EAF1FF'},
+  COMPLETED: {get label() {
+    return i18n.t('marketFormat.completed');
+  }, color: '#159447', bg: '#EAF7EF'},
+  REJECTED: {get label() {
+    return i18n.t('marketFormat.rejected');
+  }, color: '#B42318', bg: '#FDECEA'},
+  CANCELLED: {get label() {
+    return i18n.t('marketFormat.cancelled');
+  }, color: '#475467', bg: '#EEF0F2'},
 };
 
 /*
@@ -121,7 +158,7 @@ export const getExpiryInfo = (expiryDate, now = Date.now()) => {
   }
 
   if (time <= now) {
-    return {tone: 'expired', label: 'Expired'};
+    return {tone: 'expired', label: i18n.t('marketFormat.expired')};
   }
 
   const days = Math.ceil((time - now) / DAY_MS);
@@ -129,11 +166,11 @@ export const getExpiryInfo = (expiryDate, now = Date.now()) => {
   if (days <= 30) {
     return {
       tone: 'soon',
-      label: days === 1 ? 'Expires tomorrow' : `Expires in ${days} days`,
+      label: days === 1 ? i18n.t('marketFormat.expiresTomorrow') : i18n.t('marketFormat.expiresInDays', {days}),
     };
   }
 
-  return {tone: 'ok', label: `Exp. ${formatDate(time, {withDay: false})}`};
+  return {tone: 'ok', label: i18n.t('marketFormat.exp', {v1: formatDate(time, {withDay: false})})};
 };
 
 /*
@@ -164,7 +201,7 @@ export const timeAgo = (date, now = Date.now()) => {
 
   const seconds = Math.max(0, Math.floor((now - time) / 1000));
 
-  if (seconds < 60) return 'just now';
+  if (seconds < 60) return i18n.t('common.just_now');
 
   const minutes = Math.floor(seconds / 60);
   if (minutes < 60) return `${minutes}m ago`;
@@ -195,20 +232,20 @@ export const describeDealState = deal => {
   switch (deal.status) {
     case 'PENDING':
       return deal.isMyTurn
-        ? 'Your response is needed'
-        : `Waiting for the ${otherSide} to respond`;
+        ? i18n.t('marketFormat.yourResponseIsNeeded')
+        : i18n.t('marketFormat.waitingForTheToRespond', {otherSide});
     case 'ACCEPTED':
       return deal.myRole === 'SELLER'
-        ? 'Hand over the goods, then mark the deal completed'
-        : 'Contact the seller to arrange pickup / delivery';
+        ? i18n.t('marketFormat.handOverTheGoodsThen')
+        : i18n.t('marketFormat.contactTheSellerToArrange');
     case 'COMPLETED':
-      return 'Deal completed';
+      return i18n.t('marketFormat.dealCompleted');
     case 'REJECTED':
-      return 'Offer was rejected';
+      return i18n.t('marketFormat.offerWasRejected');
     case 'CANCELLED':
       return deal.cancelledBy === 'SYSTEM'
-        ? deal.closingReason || 'Closed automatically'
-        : 'Deal was cancelled';
+        ? deal.closingReason || i18n.t('marketFormat.closedAutomatically')
+        : i18n.t('marketFormat.dealWasCancelled');
     default:
       return '';
   }
@@ -302,8 +339,8 @@ export const validateListingForm = (
   form,
   {isCreate = true, category = null, now = Date.now()} = {},
 ) => {
-  if (!form.category) return 'Please choose a category';
-  if (!(form.title || '').trim()) return 'Please enter a title';
+  if (!form.category) return i18n.t('marketFormat.pleaseChooseACategory');
+  if (!(form.title || '').trim()) return i18n.t('marketFormat.pleaseEnterATitle');
 
   // on update 0 is allowed: the backend marks the listing sold out
   const quantity = toNumber(form.quantity);
@@ -313,31 +350,31 @@ export const validateListingForm = (
     quantity < 0 ||
     (isCreate && quantity === 0)
   ) {
-    return 'Please enter the quantity available';
+    return i18n.t('marketFormat.pleaseEnterTheQuantityAvailable');
   }
 
   if (isDiscreteUnit(form.unit) && !Number.isInteger(quantity)) {
-    return `Quantity must be a whole number of ${form.unit}`;
+    return i18n.t('marketFormat.quantityMustBeAWhole', {unit: form.unit});
   }
 
   const price = toNumber(form.pricePerUnit);
   if (price === null || !Number.isFinite(price) || price <= 0) {
-    return 'Please enter a valid price';
+    return i18n.t('marketFormat.pleaseEnterAValidPrice');
   }
 
   const minOrder = toNumber(form.minOrderQuantity);
   if (minOrder !== null && (!Number.isFinite(minOrder) || minOrder < 0)) {
-    return 'Minimum order must be a positive number';
+    return i18n.t('marketFormat.minimumOrderMustBeA');
   }
 
   if (form.kind === 'EQUIPMENT') {
-    if (!form.condition) return 'Please choose the equipment condition';
+    if (!form.condition) return i18n.t('marketFormat.pleaseChooseTheEquipmentCondition');
 
     const year = toNumber(form.modelYear);
     const maxYear = new Date().getFullYear() + 1;
 
     if (year !== null && (!Number.isInteger(year) || year < 1900 || year > maxYear)) {
-      return 'Please enter a valid model year';
+      return i18n.t('marketFormat.pleaseEnterAValidModel');
     }
   }
 
@@ -348,19 +385,19 @@ export const validateListingForm = (
       : null;
 
     if (category?.requiresExpiry && !expiry) {
-      return `Expiry date is required for ${category.label.toLowerCase()}`;
+      return i18n.t('marketFormat.expiryDateIsRequiredFor', {v1: category.label.toLowerCase()});
     }
 
     if (expiry !== null && expiry <= now) {
-      return 'Expired products cannot be listed';
+      return i18n.t('marketFormat.expiredProductsCannotBeListed');
     }
 
     if (manufacturing !== null && manufacturing > now) {
-      return 'Manufacturing date cannot be in the future';
+      return i18n.t('marketFormat.manufacturingDateCannotBeIn');
     }
 
     if (expiry !== null && manufacturing !== null && expiry <= manufacturing) {
-      return 'Expiry date must be after the manufacturing date';
+      return i18n.t('marketFormat.expiryDateMustBeAfter');
     }
   }
 
@@ -374,21 +411,21 @@ export const validateOfferQuantity = (quantity, listing) => {
   const value = Number(quantity);
 
   if (!String(quantity ?? '').trim() || !Number.isFinite(value) || value <= 0) {
-    return 'Enter a valid quantity';
+    return i18n.t('marketFormat.enterAValidQuantity');
   }
 
   if (isDiscreteUnit(listing.unit) && !Number.isInteger(value)) {
-    return `Quantity must be a whole number of ${listing.unit}`;
+    return i18n.t('marketFormat.quantityMustBeAWhole', {unit: listing.unit});
   }
 
   if (listing.available !== undefined && value > listing.available + 0.0005) {
-    return `Only ${formatQuantity(listing.available, listing.unit)} available`;
+    return i18n.t('marketFormat.onlyAvailable', {v1: formatQuantity(listing.available, listing.unit)});
   }
 
   const minimum = Math.min(listing.minOrderQuantity || 0, listing.available ?? Infinity);
 
   if (value + 0.0005 < minimum) {
-    return `Minimum order is ${formatQuantity(minimum, listing.unit)}`;
+    return i18n.t('marketFormat.minimumOrderIs', {v1: formatQuantity(minimum, listing.unit)});
   }
 
   return null;

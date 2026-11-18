@@ -275,7 +275,7 @@ export default function FarmWeatherCard({
               name:
                 farmData?.fieldName ||
                 farmData?.name ||
-                'KhetiMaster Farm',
+                t('farmWeatherCard.khetimasterFarm'),
 
               geometry,
             }),
@@ -288,7 +288,7 @@ export default function FarmWeatherCard({
 
           if (!currentAoiId) {
             throw new Error(
-              'ObserveEarth did not return an AOI ID',
+              t('farmWeatherCard.observeearthDidNotReturnAn'),
             );
           }
         }
@@ -320,7 +320,7 @@ export default function FarmWeatherCard({
       geometry,
       aoiId,
       farmData?.fieldName,
-      farmData?.name,
+      farmData?.name, t,
     ],
   );
 
@@ -400,7 +400,7 @@ export default function FarmWeatherCard({
           />
 
           <Text style={styles.loadingText}>
-            Getting farm weather...
+            {t('farmWeatherCard.gettingFarmWeather')}
           </Text>
         </View>
       </View>

@@ -54,6 +54,7 @@ import {
   formatAddress,
   groupItemsBySeller,
 } from '../../utils/nurseryFormat';
+import {useTranslation} from 'react-i18next';
 
 const heroGradientFor = status =>
   ({
@@ -66,6 +67,7 @@ const heroGradientFor = status =>
   }[status] || 'forest');
 
 export default function NurseryOrderDetailsScreen({ navigation, route }) {
+  const {t} = useTranslation();
   const { orderId } = route.params;
   const dispatch = useDispatch();
   const insets = useSafeAreaInsets();
@@ -94,12 +96,12 @@ export default function NurseryOrderDetailsScreen({ navigation, route }) {
   if (!order) {
     return (
       <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
-        <MarketHeader title="Order" onBack={() => navigation.goBack()} />
+        <MarketHeader title={t('nurseryOrderDetails.order')} onBack={() => navigation.goBack()} />
         {orderError && !orderLoading ? (
           <EmptyState
-            title="Order not available"
+            title={t('nurseryOrderDetails.orderNotAvailable')}
             message={orderError}
-            actionLabel="Go Back"
+            actionLabel={t('nurseryOrderDetails.goBack')}
             onAction={() => navigation.goBack()}
           />
         ) : (
@@ -125,7 +127,7 @@ export default function NurseryOrderDetailsScreen({ navigation, route }) {
       if (sheet === 'cancel') {
         await dispatch(cancelNurseryOrder({ orderId, reason: text })).unwrap();
         setSheet(null);
-        toast.show('Order cancelled');
+        toast.show(t('nurseryOrderDetails.orderCancelled'));
       } else {
         await dispatch(
           reviewNurseryOrderItem({
@@ -136,7 +138,7 @@ export default function NurseryOrderDetailsScreen({ navigation, route }) {
           }),
         ).unwrap();
         setSheet(null);
-        toast.show('Thanks for your review');
+        toast.show(t('nurseryOrderDetails.thanksForYourReview'));
       }
     } catch (error) {
       setSheetError(String(error));
@@ -165,24 +167,24 @@ export default function NurseryOrderDetailsScreen({ navigation, route }) {
           compact
           gradient={heroGradientFor(status)}
           onBack={() => navigation.goBack()}
-          eyebrow={`Order #${String(order._id).slice(-6).toUpperCase()}`}
+          eyebrow={t('nurseryOrderDetails.order2', {v1: String(order._id).slice(-6).toUpperCase()})}
           title={ORDER_STATUS_META[status]?.label || 'Order'}
           right={
             <StatusPill
               meta={
                 order.paymentStatus === 'PAID'
-                  ? { label: 'Paid', color: C.green, bg: C.white }
-                  : { label: 'Cash on delivery', color: C.dark, bg: C.white }
+                  ? { label: t('nurseryOrderDetails.paid'), color: C.green, bg: C.white }
+                  : { label: t('nurseryOrderDetails.cashOnDelivery'), color: C.dark, bg: C.white }
               }
             />
           }
         >
           <Text style={styles.heroLabel}>
-            {order.paymentStatus === 'PAID' ? 'Paid' : 'To pay on delivery'}
+            {order.paymentStatus === 'PAID' ? t('nurseryOrderDetails.paid') : t('nurseryOrderDetails.toPayOnDelivery')}
           </Text>
           <Text style={styles.heroAmount}>{formatRupees(order.total)}</Text>
           <Text style={styles.heroTerms}>
-            Ordered {formatDay(order.createdAt)}
+            {t('nurseryOrderDetails.ordered', {v1: formatDay(order.createdAt)})}
           </Text>
 
           {!cancelled && (
@@ -197,7 +199,7 @@ export default function NurseryOrderDetailsScreen({ navigation, route }) {
             </Text>
             {cancelled && !!order.cancellationReason && (
               <Text style={styles.heroReason}>
-                Reason: {order.cancellationReason}
+                {t('nurseryOrderDetails.reason', {cancellationReason: order.cancellationReason})}
               </Text>
             )}
           </View>
@@ -212,7 +214,7 @@ export default function NurseryOrderDetailsScreen({ navigation, route }) {
                   <Store size={17} color={C.orange} />
                 </View>
                 <View style={styles.flex}>
-                  <Text style={styles.sellerLabel}>Sold by</Text>
+                  <Text style={styles.sellerLabel}>{t('nurseryOrderDetails.soldBy')}</Text>
                   <Text style={styles.sellerName} numberOfLines={1}>
                     {group.sellerName}
                   </Text>
@@ -249,17 +251,16 @@ export default function NurseryOrderDetailsScreen({ navigation, route }) {
                     </Text>
                     {item.status === 'CANCELLED' && (
                       <Text style={styles.itemCancelled}>
-                        Cancelled
-                        {item.cancellationReason
+                        {t('nurseryOrderDetails.cancelled', {v1: item.cancellationReason
                           ? ` · ${item.cancellationReason}`
-                          : ''}
+                          : ''})}
                       </Text>
                     )}
                     {!!item.review?.rating && (
                       <View style={styles.reviewed}>
                         <Star size={11} color={C.gold} fill={C.gold} />
                         <Text style={styles.reviewedText}>
-                          You rated {item.review.rating}/5
+                          {t('nurseryOrderDetails.youRated5', {rating: item.review.rating})}
                         </Text>
                       </View>
                     )}
@@ -280,7 +281,7 @@ export default function NurseryOrderDetailsScreen({ navigation, route }) {
                         onPress={() => openSheet({ item })}
                       >
                         <Star size={12} color={C.amber} />
-                        <Text style={styles.rateText}>Rate</Text>
+                        <Text style={styles.rateText}>{t('nurseryOrderDetails.rate')}</Text>
                       </TouchableOpacity>
                     )}
                   </View>
@@ -296,14 +297,14 @@ export default function NurseryOrderDetailsScreen({ navigation, route }) {
                   >
                     <Phone size={15} color={C.white} />
                     <Text style={styles.callText}>
-                      Call seller · {group.phoneNumber}
+                      {t('nurseryOrderDetails.callSeller', {phoneNumber: group.phoneNumber})}
                     </Text>
                   </TouchableOpacity>
                 ) : (
                   <View style={styles.lockedRow}>
                     <Lock size={13} color={C.muted} />
                     <Text style={styles.lockedText}>
-                      Seller's phone number appears once they confirm
+                      {t('nurseryOrderDetails.sellersPhoneNumberAppearsOnce')}
                     </Text>
                   </View>
                 ))}
@@ -314,7 +315,7 @@ export default function NurseryOrderDetailsScreen({ navigation, route }) {
           <View style={styles.card}>
             <View style={styles.cardTitleRow}>
               <MapPin size={17} color={C.green} />
-              <Text style={styles.cardTitle}>Delivering to</Text>
+              <Text style={styles.cardTitle}>{t('nurseryOrderDetails.deliveringTo')}</Text>
             </View>
             <Text style={styles.addressName}>
               {order.deliveryAddress?.fullName} ·{' '}
@@ -329,29 +330,28 @@ export default function NurseryOrderDetailsScreen({ navigation, route }) {
           <View style={styles.card}>
             <View style={styles.cardTitleRow}>
               <Banknote size={17} color={C.blue} />
-              <Text style={styles.cardTitle}>Bill</Text>
+              <Text style={styles.cardTitle}>{t('nurseryOrderDetails.bill')}</Text>
             </View>
-            <InfoRow label="Plants" value={formatRupees(order.subtotal)} />
+            <InfoRow label={t('nurseryOrderDetails.plants')} value={formatRupees(order.subtotal)} />
             <InfoRow
-              label="Delivery"
+              label={t('nurseryOrderDetails.delivery')}
               value={
                 order.deliveryFee ? formatRupees(order.deliveryFee) : 'FREE'
               }
             />
             <InfoRow
-              label="Payment"
+              label={t('nurseryOrderDetails.payment')}
               value={
-                order.paymentStatus === 'PAID' ? 'Paid' : 'Cash on delivery'
+                order.paymentStatus === 'PAID' ? t('nurseryOrderDetails.paid') : t('nurseryOrderDetails.cashOnDelivery')
               }
             />
             <View style={styles.totalRow}>
-              <Text style={styles.totalLabel}>Order total</Text>
+              <Text style={styles.totalLabel}>{t('nurseryOrderDetails.orderTotal')}</Text>
               <Text style={styles.totalValue}>{formatRupees(order.total)}</Text>
             </View>
             {multiSeller && order.items.some(i => i.status === 'CANCELLED') && (
               <Text style={styles.payNote}>
-                Cancelled plants are not charged. Pay each seller only for the
-                plants they deliver.
+                {t('nurseryOrderDetails.cancelledPlantsAreNotCharged')}
               </Text>
             )}
           </View>
@@ -367,7 +367,7 @@ export default function NurseryOrderDetailsScreen({ navigation, route }) {
         >
           <MarketButton
             variant="danger"
-            label="Cancel Order"
+            label={t('nurseryOrderDetails.cancelOrder')}
             icon={<CircleX size={16} color={C.red} />}
             disabled={!!actionInProgress}
             onPress={() => openSheet('cancel')}
@@ -380,19 +380,19 @@ export default function NurseryOrderDetailsScreen({ navigation, route }) {
         visible={!!sheet}
         {...(sheet === 'cancel'
           ? {
-              title: 'Cancel this order?',
+              title: t('nurseryOrderDetails.cancelThisOrder'),
               description:
-                'All plants in this order will be cancelled. You pay nothing.',
-              placeholder: 'Reason (optional), e.g. Ordered by mistake',
-              submitLabel: 'Cancel Order',
+                t('nurseryOrderDetails.allPlantsInThisOrder'),
+              placeholder: t('nurseryOrderDetails.reasonOptionalEGOrdered'),
+              submitLabel: t('nurseryOrderDetails.cancelOrder'),
               variant: 'danger',
             }
           : {
-              title: `Rate ${reviewItem?.name || 'this plant'}`,
+              title: t('nurseryOrderDetails.rate2', {v1: reviewItem?.name || t('nurseryOrderDetails.thisPlant')}),
               description:
-                'How healthy was the plant when it arrived? Your review helps other farmers.',
-              placeholder: 'Share your experience (optional)',
-              submitLabel: 'Submit Review',
+                t('nurseryOrderDetails.howHealthyWasThePlant'),
+              placeholder: t('nurseryOrderDetails.shareYourExperienceOptional'),
+              submitLabel: t('nurseryOrderDetails.submitReview'),
               withRating: true,
             })}
         loading={!!actionInProgress}

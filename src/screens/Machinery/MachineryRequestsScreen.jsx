@@ -38,20 +38,37 @@ import { fetchMyMachinery } from '../../redux/slices/machinerySlice';
 import { isAcceptedStatus } from '../../utils/machineryFormat';
 import { formatDay } from '../../utils/indiaSchedule';
 import { formatRupees } from '../../utils/marketFormat';
+import {useTranslation} from 'react-i18next';
+import i18n from 'i18next';
 
 const STATUS_FILTERS = [
-  { key: 'active', label: 'Open' },
-  { key: 'pending', label: 'New' },
-  { key: 'confirmed', label: 'Confirmed' },
-  { key: 'completed', label: 'Completed' },
-  { key: 'cancelled', label: 'Cancelled' },
-  { key: 'rejected', label: 'Declined' },
-  { key: 'all', label: 'All' },
+  { key: 'active', get label() {
+    return i18n.t('machineryRequests.open');
+  } },
+  { key: 'pending', get label() {
+    return i18n.t('machineryRequests.new');
+  } },
+  { key: 'confirmed', get label() {
+    return i18n.t('machineryRequests.confirmed');
+  } },
+  { key: 'completed', get label() {
+    return i18n.t('machineryRequests.completed');
+  } },
+  { key: 'cancelled', get label() {
+    return i18n.t('machineryRequests.cancelled');
+  } },
+  { key: 'rejected', get label() {
+    return i18n.t('machineryRequests.declined');
+  } },
+  { key: 'all', get label() {
+    return i18n.t('machineryRequests.all');
+  } },
 ];
 
 const PAGE_SIZE = 20;
 
 export default function MachineryRequestsScreen({ navigation, route }) {
+  const {t} = useTranslation();
   const dispatch = useDispatch();
   const feedback = useFeedbackModal();
   const toast = useToast();
@@ -100,13 +117,11 @@ export default function MachineryRequestsScreen({ navigation, route }) {
 
   const accept = booking =>
     feedback.confirm({
-      title: 'Confirm this rental?',
-      message: `${booking.machinery?.name} for ${
-        booking.farmer?.fullName || 'the farmer'
-      } on ${formatDay(booking.bookingDate, { year: false })}, ${formatRupees(
+      title: t('machineryRequests.confirmThisRental'),
+      message: t('machineryRequests.forOnOtherRequestsFor', {v1: booking.machinery?.name, v2: booking.farmer?.fullName || t('machineryRequests.theFarmer'), v3: formatDay(booking.bookingDate, { year: false }), v4: formatRupees(
         booking.totalAmount,
-      )}. Other requests for the same time will be declined.`,
-      confirmLabel: 'Confirm Rental',
+      )}),
+      confirmLabel: t('machineryRequests.confirmRental'),
       onConfirm: async () => {
         try {
           await dispatch(
@@ -115,7 +130,7 @@ export default function MachineryRequestsScreen({ navigation, route }) {
               action: 'accept',
             }),
           ).unwrap();
-          toast.show('Confirmed. The farmer can now call you.');
+          toast.show(t('machineryRequests.confirmedTheFarmerCanNow'));
           // overlapping requests were declined automatically
           load();
         } catch (failure) {
@@ -135,7 +150,7 @@ export default function MachineryRequestsScreen({ navigation, route }) {
         }),
       ).unwrap();
       setDeclining(null);
-      toast.show('Request declined');
+      toast.show(t('machineryRequests.requestDeclined'));
     } catch (failure) {
       setSheetError(String(failure));
     }
@@ -143,10 +158,10 @@ export default function MachineryRequestsScreen({ navigation, route }) {
 
   const machineOptions = useMemo(
     () => [
-      { key: '', label: 'All machines' },
+      { key: '', label: t('machineryRequests.allMachines') },
       ...mine.map(machine => ({ key: machine._id, label: machine.name })),
     ],
-    [mine],
+    [mine, t],
   );
 
   const newCount = items.filter(item => item.status === 'pending').length;
@@ -175,7 +190,7 @@ export default function MachineryRequestsScreen({ navigation, route }) {
                   <View style={styles.quickActions}>
                     <MarketButton
                       variant="danger"
-                      label="Decline"
+                      label={t('machineryRequests.decline')}
                       icon={<CircleX size={15} color={C.red} />}
                       disabled={!!actionInProgress}
                       onPress={() => {
@@ -185,7 +200,7 @@ export default function MachineryRequestsScreen({ navigation, route }) {
                       style={styles.quickButton}
                     />
                     <MarketButton
-                      label="Confirm"
+                      label={t('common.confirm')}
                       icon={<CircleCheck size={15} color={C.white} />}
                       disabled={!!actionInProgress}
                       onPress={() => accept(item)}
@@ -207,14 +222,12 @@ export default function MachineryRequestsScreen({ navigation, route }) {
               compact
               gradient="amber"
               onBack={() => navigation.goBack()}
-              eyebrow="Machine owner"
-              title="Rental Requests"
+              eyebrow={t('machineryRequests.machineOwner')}
+              title={t('machineryRequests.rentalRequests')}
               subtitle={
                 newCount
-                  ? `${newCount} ${
-                      newCount === 1 ? 'farmer wants' : 'farmers want'
-                    } to rent your machines`
-                  : 'Farmers who want to rent your machines'
+                  ? t('machineryRequests.toRentYourMachines', {newCount, v2: newCount === 1 ? t('machineryRequests.farmerWants') : t('machineryRequests.farmersWant')})
+                  : t('machineryRequests.farmersWhoWantToRent')
               }
               right={
                 <GlassButton
@@ -229,11 +242,11 @@ export default function MachineryRequestsScreen({ navigation, route }) {
               <View style={styles.statsRow}>
                 <HeroStat
                   value={newCount}
-                  label="New"
+                  label={t('machineryRequests.new')}
                   highlight={newCount > 0}
                 />
-                <HeroStat value={confirmedCount} label="Confirmed" />
-                <HeroStat value={total} label="Showing" />
+                <HeroStat value={confirmedCount} label={t('machineryRequests.confirmed')} />
+                <HeroStat value={total} label={t('machineryRequests.showing')} />
               </View>
             </MarketHero>
 
@@ -271,26 +284,26 @@ export default function MachineryRequestsScreen({ navigation, route }) {
           noMachines ? (
             <EmptyState
               icon={<Warehouse size={30} color={C.green} />}
-              title="List your first machine"
-              message="Farmers can send you rental requests once your machine is listed."
-              actionLabel="Add Machine"
+              title={t('machineryRequests.listYourFirstMachine')}
+              message={t('machineryRequests.farmersCanSendYouRental')}
+              actionLabel={t('machineryRequests.addMachine')}
               onAction={() => navigation.navigate(MACHINERY_ROUTES.FORM)}
             />
           ) : loading ? (
             <LoadingState />
           ) : error ? (
             <EmptyState
-              title="Couldn't load requests"
+              title={t('machineryRequests.couldntLoadRequests')}
               message={error}
-              actionLabel="Try Again"
+              actionLabel={t('machineryRequests.tryAgain')}
               onAction={load}
             />
           ) : (
             <EmptyState
               icon={<Inbox size={30} color={C.green} />}
-              title="No requests here"
-              message="Keep your machines available so farmers nearby can book them."
-              actionLabel="Add Another Machine"
+              title={t('machineryRequests.noRequestsHere')}
+              message={t('machineryRequests.keepYourMachinesAvailableSo')}
+              actionLabel={t('machineryRequests.addAnotherMachine')}
               onAction={() => navigation.navigate(MACHINERY_ROUTES.FORM)}
             />
           )
@@ -304,10 +317,10 @@ export default function MachineryRequestsScreen({ navigation, route }) {
 
       <NoteSheet
         visible={!!declining}
-        title="Decline this request?"
-        description="The farmer will see that you declined. Add a reason if you like."
-        placeholder="Reason (optional), e.g. Machine under repair"
-        submitLabel="Decline Request"
+        title={t('machineryRequests.declineThisRequest')}
+        description={t('machineryRequests.theFarmerWillSeeThat')}
+        placeholder={t('machineryRequests.reasonOptionalEGMachine')}
+        submitLabel={t('machineryRequests.declineRequest')}
         variant="danger"
         loading={actionInProgress === 'reject'}
         serverError={sheetError}

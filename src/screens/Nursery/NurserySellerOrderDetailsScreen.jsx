@@ -56,6 +56,7 @@ import {
   isCancellable,
   itemCount,
 } from '../../utils/nurseryFormat';
+import {useTranslation} from 'react-i18next';
 
 const heroGradientFor = status =>
   ({
@@ -73,6 +74,7 @@ const heroGradientFor = status =>
  * all of the seller's orders into the cache.
  */
 export default function NurserySellerOrderDetailsScreen({ navigation, route }) {
+  const {t} = useTranslation();
   const { orderId } = route.params;
   const dispatch = useDispatch();
   const insets = useSafeAreaInsets();
@@ -101,11 +103,11 @@ export default function NurserySellerOrderDetailsScreen({ navigation, route }) {
   if (!order) {
     return (
       <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
-        <MarketHeader title="Order" onBack={() => navigation.goBack()} />
+        <MarketHeader title={t('nurserySellerOrderDetails.order')} onBack={() => navigation.goBack()} />
         <EmptyState
-          title="Order not found"
-          message="Go back to orders received and open it again."
-          actionLabel="Go Back"
+          title={t('nurserySellerOrderDetails.orderNotFound')}
+          message={t('nurserySellerOrderDetails.goBackToOrdersReceived')}
+          actionLabel={t('nurserySellerOrderDetails.goBack')}
           onAction={() => navigation.goBack()}
         />
       </SafeAreaView>
@@ -125,7 +127,7 @@ export default function NurserySellerOrderDetailsScreen({ navigation, route }) {
     ).unwrap();
     toast.show(
       newStatus === 'CANCELLED'
-        ? 'Order cancelled. Stock was put back.'
+        ? t('nurserySellerOrderDetails.orderCancelledStockWasPut')
         : `Marked ${ORDER_STATUS_META[newStatus].label}`,
     );
   };
@@ -140,8 +142,8 @@ export default function NurserySellerOrderDetailsScreen({ navigation, route }) {
           await updateStatus(newStatus);
         } catch (failure) {
           feedback.error('Could not update order', String(failure), {
-            primaryLabel: 'Refresh',
-            secondaryLabel: 'Close',
+            primaryLabel: t('common.refresh'),
+            secondaryLabel: t('common.close'),
             onPrimary: refresh,
           });
         }
@@ -176,24 +178,24 @@ export default function NurserySellerOrderDetailsScreen({ navigation, route }) {
           compact
           gradient={heroGradientFor(status)}
           onBack={() => navigation.goBack()}
-          eyebrow={`Order #${String(order._id).slice(-6).toUpperCase()}`}
+          eyebrow={t('nurserySellerOrderDetails.order2', {v1: String(order._id).slice(-6).toUpperCase()})}
           title={ORDER_STATUS_META[status]?.label || 'Order'}
           right={
             <StatusPill
               meta={
                 order.paymentStatus === 'PAID'
-                  ? { label: 'Paid', color: C.green, bg: C.white }
-                  : { label: 'Collect cash', color: C.dark, bg: C.white }
+                  ? { label: t('nurserySellerOrderDetails.paid'), color: C.green, bg: C.white }
+                  : { label: t('nurserySellerOrderDetails.collectCash'), color: C.dark, bg: C.white }
               }
             />
           }
         >
-          <Text style={styles.heroLabel}>Your earning from this order</Text>
+          <Text style={styles.heroLabel}>{t('nurserySellerOrderDetails.yourEarningFromThisOrder')}</Text>
           <Text style={styles.heroAmount}>
             {formatRupees(order.sellerSubtotal)}
           </Text>
           <Text style={styles.heroTerms}>
-            {itemCount(order.items)} plants · ordered{' '}
+            {itemCount(order.items)} {t('nurserySellerOrderDetails.plantsOrdered')}{' '}
             {formatDay(order.createdAt, { weekday: false })}
           </Text>
 
@@ -223,7 +225,7 @@ export default function NurserySellerOrderDetailsScreen({ navigation, route }) {
         <View style={styles.body}>
           {/* BUYER */}
           <View style={styles.card}>
-            <Text style={styles.cardLabel}>Deliver to</Text>
+            <Text style={styles.cardLabel}>{t('nurserySellerOrderDetails.deliverTo')}</Text>
             <View style={styles.buyerRow}>
               <PersonAvatar name={buyer.fullName} gradient="blue" size={50} />
               <View style={styles.flex}>
@@ -254,7 +256,7 @@ export default function NurserySellerOrderDetailsScreen({ navigation, route }) {
           <View style={styles.card}>
             <View style={styles.cardTitleRow}>
               <Sprout size={17} color={C.green} />
-              <Text style={styles.cardTitle}>Your plants in this order</Text>
+              <Text style={styles.cardTitle}>{t('nurserySellerOrderDetails.yourPlantsInThisOrder')}</Text>
             </View>
             {order.items.map(item => (
               <View key={item._id} style={styles.itemRow}>
@@ -268,7 +270,7 @@ export default function NurserySellerOrderDetailsScreen({ navigation, route }) {
                   </Text>
                   {item.status === 'CANCELLED' && !!item.cancellationReason && (
                     <Text style={styles.itemCancelled}>
-                      Cancelled · {item.cancellationReason}
+                      {t('nurserySellerOrderDetails.cancelled', {cancellationReason: item.cancellationReason})}
                     </Text>
                   )}
                 </View>
@@ -288,24 +290,23 @@ export default function NurserySellerOrderDetailsScreen({ navigation, route }) {
           <View style={styles.card}>
             <View style={styles.cardTitleRow}>
               <Banknote size={17} color={C.blue} />
-              <Text style={styles.cardTitle}>Payment</Text>
+              <Text style={styles.cardTitle}>{t('nurserySellerOrderDetails.payment')}</Text>
             </View>
-            <InfoRow label="Method" value="Cash on delivery" />
+            <InfoRow label={t('nurserySellerOrderDetails.method')} value={t('nurserySellerOrderDetails.cashOnDelivery')} />
             <InfoRow
-              label="Status"
+              label={t('nurserySellerOrderDetails.status')}
               value={
-                order.paymentStatus === 'PAID' ? 'Paid' : 'Collect on delivery'
+                order.paymentStatus === 'PAID' ? t('nurserySellerOrderDetails.paid') : t('nurserySellerOrderDetails.collectOnDelivery')
               }
             />
             <View style={styles.totalRow}>
-              <Text style={styles.totalLabel}>Collect for your plants</Text>
+              <Text style={styles.totalLabel}>{t('nurserySellerOrderDetails.collectForYourPlants')}</Text>
               <Text style={styles.totalValue}>
                 {formatRupees(order.sellerSubtotal)}
               </Text>
             </View>
             <Text style={styles.payNote}>
-              If the buyer ordered from other nurseries too, they pay each
-              seller for their own plants. Delivery fee is settled by the buyer.
+              {t('nurserySellerOrderDetails.ifTheBuyerOrderedFrom')}
             </Text>
           </View>
         </View>
@@ -326,14 +327,14 @@ export default function NurserySellerOrderDetailsScreen({ navigation, route }) {
               onPress={() =>
                 confirmStatus(
                   'DELIVERED',
-                  'Mark Delivered',
-                  'Use this if the buyer picked up the plants or you handed them over directly.',
+                  t('nurserySellerOrderDetails.markDelivered'),
+                  t('nurserySellerOrderDetails.useThisIfTheBuyer'),
                 )
               }
             >
               <CircleCheck size={14} color={C.green} />
               <Text style={styles.skipText}>
-                Handed over directly? Mark delivered
+                {t('nurserySellerOrderDetails.handedOverDirectlyMarkDelivered')}
               </Text>
             </TouchableOpacity>
           )}
@@ -341,7 +342,7 @@ export default function NurserySellerOrderDetailsScreen({ navigation, route }) {
             {canCancel && (
               <MarketButton
                 variant="danger"
-                label="Cancel"
+                label={t('common.cancel')}
                 icon={<CircleX size={16} color={C.red} />}
                 disabled={!!actionInProgress}
                 onPress={() => {
@@ -361,9 +362,7 @@ export default function NurserySellerOrderDetailsScreen({ navigation, route }) {
                   confirmStatus(
                     next.status,
                     next.label,
-                    `The buyer will see this order as "${
-                      ORDER_STATUS_META[next.status].label
-                    }".`,
+                    t('nurserySellerOrderDetails.theBuyerWillSeeThis', {label: ORDER_STATUS_META[next.status].label}),
                   )
                 }
                 style={styles.flexWide}
@@ -375,10 +374,10 @@ export default function NurserySellerOrderDetailsScreen({ navigation, route }) {
 
       <NoteSheet
         visible={cancelOpen}
-        title="Cancel your plants in this order?"
-        description="The buyer will be told and the stock goes back to your listing."
-        placeholder="Reason (optional), e.g. Plants damaged"
-        submitLabel="Cancel Order"
+        title={t('nurserySellerOrderDetails.cancelYourPlantsInThis')}
+        description={t('nurserySellerOrderDetails.theBuyerWillBeTold')}
+        placeholder={t('nurserySellerOrderDetails.reasonOptionalEGPlants')}
+        submitLabel={t('nurserySellerOrderDetails.cancelOrder')}
         variant="danger"
         loading={actionInProgress === 'CANCELLED'}
         serverError={sheetError}

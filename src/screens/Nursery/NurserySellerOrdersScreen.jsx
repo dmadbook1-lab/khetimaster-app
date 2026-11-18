@@ -34,21 +34,40 @@ import {
   updateSellerNurseryOrder,
 } from '../../redux/slices/nurseryOrderSlice';
 import { ORDER_STATUS_META, SELLER_NEXT_STEP } from '../../utils/nurseryFormat';
+import {useTranslation} from 'react-i18next';
+import i18n from 'i18next';
 
 const STATUS_FILTERS = [
-  { key: 'active', label: 'To handle' },
-  { key: 'PENDING', label: 'New' },
-  { key: 'CONFIRMED', label: 'Confirmed' },
-  { key: 'DISPATCHED', label: 'Dispatched' },
-  { key: 'OUT_FOR_DELIVERY', label: 'On the way' },
-  { key: 'DELIVERED', label: 'Delivered' },
-  { key: 'CANCELLED', label: 'Cancelled' },
-  { key: 'all', label: 'All' },
+  { key: 'active', get label() {
+    return i18n.t('nurserySellerOrders.toHandle');
+  } },
+  { key: 'PENDING', get label() {
+    return i18n.t('nurserySellerOrders.new');
+  } },
+  { key: 'CONFIRMED', get label() {
+    return i18n.t('nurserySellerOrders.confirmed');
+  } },
+  { key: 'DISPATCHED', get label() {
+    return i18n.t('nurserySellerOrders.dispatched');
+  } },
+  { key: 'OUT_FOR_DELIVERY', get label() {
+    return i18n.t('nurserySellerOrders.onTheWay');
+  } },
+  { key: 'DELIVERED', get label() {
+    return i18n.t('nurserySellerOrders.delivered');
+  } },
+  { key: 'CANCELLED', get label() {
+    return i18n.t('nurserySellerOrders.cancelled');
+  } },
+  { key: 'all', get label() {
+    return i18n.t('nurserySellerOrders.all');
+  } },
 ];
 
 const PAGE_SIZE = 20;
 
 export default function NurserySellerOrdersScreen({ navigation }) {
+  const {t} = useTranslation();
   const dispatch = useDispatch();
   const feedback = useFeedbackModal();
   const toast = useToast();
@@ -91,9 +110,7 @@ export default function NurserySellerOrdersScreen({ navigation }) {
 
     feedback.confirm({
       title: `${next.label}?`,
-      message: `The buyer will see this order as "${
-        ORDER_STATUS_META[next.status].label
-      }".`,
+      message: t('nurserySellerOrders.theBuyerWillSeeThis', {label: ORDER_STATUS_META[next.status].label}),
       confirmLabel: next.label,
       onConfirm: async () => {
         setBusyOrderId(order._id);
@@ -104,7 +121,7 @@ export default function NurserySellerOrdersScreen({ navigation }) {
               status: next.status,
             }),
           ).unwrap();
-          toast.show(`Marked ${ORDER_STATUS_META[next.status].label}`);
+          toast.show(t('nurserySellerOrders.marked', {label: ORDER_STATUS_META[next.status].label}));
         } catch (failure) {
           feedback.error('Could not update order', String(failure));
           load();
@@ -167,9 +184,9 @@ export default function NurserySellerOrdersScreen({ navigation }) {
               compact
               gradient="amber"
               onBack={() => navigation.goBack()}
-              eyebrow="My Nursery"
-              title="Orders received"
-              subtitle="Confirm new orders, then move them to delivered"
+              eyebrow={t('nurserySellerOrders.myNursery')}
+              title={t('nurserySellerOrders.ordersReceived')}
+              subtitle={t('nurserySellerOrders.confirmNewOrdersThenMove')}
               right={
                 <GlassButton
                   onPress={() =>
@@ -183,11 +200,11 @@ export default function NurserySellerOrdersScreen({ navigation }) {
               <View style={styles.statsRow}>
                 <HeroStat
                   value={newOrders}
-                  label="New"
+                  label={t('nurserySellerOrders.new')}
                   highlight={newOrders > 0}
                 />
-                <HeroStat value={toShip} label="To deliver" />
-                <HeroStat value={total} label="Showing" />
+                <HeroStat value={toShip} label={t('nurserySellerOrders.toDeliver')} />
+                <HeroStat value={total} label={t('nurserySellerOrders.showing')} />
               </View>
             </MarketHero>
 
@@ -213,19 +230,19 @@ export default function NurserySellerOrdersScreen({ navigation }) {
             <LoadingState />
           ) : error ? (
             <EmptyState
-              title="Couldn't load orders"
+              title={t('nurserySellerOrders.couldntLoadOrders')}
               message={error}
-              actionLabel="Try Again"
+              actionLabel={t('nurserySellerOrders.tryAgain')}
               onAction={load}
             />
           ) : (
             <EmptyState
               icon={<Inbox size={30} color={C.green} />}
-              title={status === 'active' ? 'All caught up' : 'No orders here'}
+              title={status === 'active' ? t('nurserySellerOrders.allCaughtUp') : t('nurserySellerOrders.noOrdersHere')}
               message={
                 status === 'active'
-                  ? 'New orders for your plants will show up here.'
-                  : 'Try another filter.'
+                  ? t('nurserySellerOrders.newOrdersForYourPlants')
+                  : t('nurserySellerOrders.tryAnotherFilter')
               }
             />
           )

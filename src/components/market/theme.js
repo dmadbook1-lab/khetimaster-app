@@ -30,6 +30,7 @@ export const MARKET_COLORS = {
  */
 export const MARKET_GRADIENTS = {
   green: ['#073F20', '#0E6B35', '#18A251'],
+  steel: ['#0F2A43', '#1B4F76', '#2F7FA8'],
   forest: ['#0A2E1A', '#114A2A', '#1C7A44'],
   amber: ['#5A2E00', '#A25200', '#E8890C'],
   blue: ['#0B2350', '#1D4DB0', '#3B7BF0'],

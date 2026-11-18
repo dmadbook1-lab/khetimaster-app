@@ -37,20 +37,37 @@ import {
 import { fetchMyLabourerProfile } from '../../redux/slices/labourerSlice';
 import { formatDateRange, isAcceptedStatus } from '../../utils/labourFormat';
 import { formatRupees } from '../../utils/marketFormat';
+import {useTranslation} from 'react-i18next';
+import i18n from 'i18next';
 
 const STATUS_FILTERS = [
-  { key: 'active', label: 'Open' },
-  { key: 'pending', label: 'New' },
-  { key: 'accepted', label: 'Accepted' },
-  { key: 'completed', label: 'Completed' },
-  { key: 'cancelled', label: 'Cancelled' },
-  { key: 'rejected', label: 'Declined' },
-  { key: 'all', label: 'All' },
+  { key: 'active', get label() {
+    return i18n.t('labourRequests.open');
+  } },
+  { key: 'pending', get label() {
+    return i18n.t('labourRequests.new');
+  } },
+  { key: 'accepted', get label() {
+    return i18n.t('labourRequests.accepted');
+  } },
+  { key: 'completed', get label() {
+    return i18n.t('labourRequests.completed');
+  } },
+  { key: 'cancelled', get label() {
+    return i18n.t('labourRequests.cancelled');
+  } },
+  { key: 'rejected', get label() {
+    return i18n.t('labourRequests.declined');
+  } },
+  { key: 'all', get label() {
+    return i18n.t('labourRequests.all');
+  } },
 ];
 
 const PAGE_SIZE = 20;
 
 export default function LabourRequestsScreen({ navigation }) {
+  const {t} = useTranslation();
   const dispatch = useDispatch();
   const feedback = useFeedbackModal();
   const toast = useToast();
@@ -93,22 +110,20 @@ export default function LabourRequestsScreen({ navigation }) {
 
   const accept = booking =>
     feedback.confirm({
-      title: 'Accept this work?',
-      message: `${booking.workType} for ${
-        booking.farmer?.fullName || 'the farmer'
-      } on ${formatDateRange(
+      title: t('labourRequests.acceptThisWork'),
+      message: t('labourRequests.forOnOtherRequestsFor', {workType: booking.workType, v2: booking.farmer?.fullName || t('labourRequests.theFarmer'), v3: formatDateRange(
         booking.bookingDate,
         booking.numberOfDays,
-      )}, ${formatRupees(
+      ), v4: formatRupees(
         booking.totalAmount,
-      )}. Other requests for these dates will be declined.`,
-      confirmLabel: 'Accept Work',
+      )}),
+      confirmLabel: t('labourRequests.acceptWork'),
       onConfirm: async () => {
         try {
           await dispatch(
             updateLabourBooking({ bookingId: booking._id, action: 'accept' }),
           ).unwrap();
-          toast.show('Accepted. The farmer can now call you.');
+          toast.show(t('labourRequests.acceptedTheFarmerCanNow'));
           // other requests on the same dates were auto-declined
           load();
         } catch (failure) {
@@ -128,7 +143,7 @@ export default function LabourRequestsScreen({ navigation }) {
         }),
       ).unwrap();
       setDeclining(null);
-      toast.show('Request declined');
+      toast.show(t('labourRequests.requestDeclined'));
     } catch (failure) {
       setSheetError(String(failure));
     }
@@ -160,7 +175,7 @@ export default function LabourRequestsScreen({ navigation }) {
                   <View style={styles.quickActions}>
                     <MarketButton
                       variant="danger"
-                      label="Decline"
+                      label={t('labourRequests.decline')}
                       icon={<CircleX size={15} color={C.red} />}
                       disabled={!!actionInProgress}
                       onPress={() => {
@@ -170,7 +185,7 @@ export default function LabourRequestsScreen({ navigation }) {
                       style={styles.quickButton}
                     />
                     <MarketButton
-                      label="Accept"
+                      label={t('labourRequests.accept')}
                       icon={<CircleCheck size={15} color={C.white} />}
                       disabled={!!actionInProgress}
                       onPress={() => accept(item)}
@@ -192,14 +207,12 @@ export default function LabourRequestsScreen({ navigation }) {
               compact
               gradient="amber"
               onBack={() => navigation.goBack()}
-              eyebrow="Find work"
-              title="Work Requests"
+              eyebrow={t('labourRequests.findWork')}
+              title={t('labourRequests.workRequests')}
               subtitle={
                 newCount
-                  ? `${newCount} ${
-                      newCount === 1 ? 'farmer wants' : 'farmers want'
-                    } to hire you`
-                  : 'Farmers who want to hire you'
+                  ? t('labourRequests.toHireYou', {newCount, v2: newCount === 1 ? t('labourRequests.farmerWants') : t('labourRequests.farmersWant')})
+                  : t('labourRequests.farmersWhoWantToHire')
               }
               right={
                 <GlassButton
@@ -212,11 +225,11 @@ export default function LabourRequestsScreen({ navigation }) {
               <View style={styles.statsRow}>
                 <HeroStat
                   value={newCount}
-                  label="New"
+                  label={t('labourRequests.new')}
                   highlight={newCount > 0}
                 />
-                <HeroStat value={acceptedCount} label="Accepted" />
-                <HeroStat value={total} label="Showing" />
+                <HeroStat value={acceptedCount} label={t('labourRequests.accepted')} />
+                <HeroStat value={total} label={t('labourRequests.showing')} />
               </View>
             </MarketHero>
 
@@ -243,25 +256,25 @@ export default function LabourRequestsScreen({ navigation }) {
           notRegistered ? (
             <EmptyState
               icon={<UserRound size={30} color={C.green} />}
-              title="Create your worker profile"
-              message="Farmers can only send you work once you have a worker profile."
-              actionLabel="Create Profile"
+              title={t('labourRequests.createYourWorkerProfile')}
+              message={t('labourRequests.farmersCanOnlySendYou')}
+              actionLabel={t('labourRequests.createProfile')}
               onAction={() => navigation.navigate(LABOUR_ROUTES.PROFILE_FORM)}
             />
           ) : loading ? (
             <LoadingState />
           ) : error ? (
             <EmptyState
-              title="Couldn't load requests"
+              title={t('labourRequests.couldntLoadRequests')}
               message={error}
-              actionLabel="Try Again"
+              actionLabel={t('labourRequests.tryAgain')}
               onAction={load}
             />
           ) : (
             <EmptyState
               icon={<Inbox size={30} color={C.green} />}
-              title="No requests here"
-              message="Keep your availability on so farmers nearby can book you."
+              title={t('labourRequests.noRequestsHere')}
+              message={t('labourRequests.keepYourAvailabilityOnSo')}
             />
           )
         }
@@ -274,10 +287,10 @@ export default function LabourRequestsScreen({ navigation }) {
 
       <NoteSheet
         visible={!!declining}
-        title="Decline this request?"
-        description="The farmer will see that you declined. Add a reason if you like."
-        placeholder="Reason (optional), e.g. Already working that day"
-        submitLabel="Decline Request"
+        title={t('labourRequests.declineThisRequest')}
+        description={t('labourRequests.theFarmerWillSeeThat')}
+        placeholder={t('labourRequests.reasonOptionalEGAlready')}
+        submitLabel={t('labourRequests.declineRequest')}
         variant="danger"
         loading={actionInProgress === 'reject'}
         serverError={sheetError}

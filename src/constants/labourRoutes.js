@@ -11,4 +11,6 @@ export const LABOUR_ROUTES = {
   REQUESTS: 'LabourRequests',
   MY_PROFILE: 'LabourProfile',
   PROFILE_FORM: 'LabourProfileForm',
+  ALL: 'AllLabour',
+  NEARBY: 'NearbyLabour',
 };

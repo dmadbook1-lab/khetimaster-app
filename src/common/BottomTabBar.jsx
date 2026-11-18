@@ -14,6 +14,7 @@ import {
 } from '@react-navigation/native';
 import { Home, Sprout, Bot, Clapperboard, User } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { COMMUNITY_ROUTES } from '../constants/communityRoutes';
 const { width } = Dimensions.get('window');
 const GREEN = '#16883E';
@@ -24,6 +25,20 @@ const rf = size => {
   const scale = width / 390;
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
+/*
+ * Extra space under the bar for the phone's own navigation bar.
+ * Android 15+ draws the app behind the system bar (edge-to-edge), so with
+ * 3-button navigation the back/home/recent buttons covered the tab icons.
+ * iOS keeps its original look (the bar already clears the home indicator).
+ *
+ * Screens that show the bar add this to their bottom padding so their
+ * last item is not hidden behind the taller bar.
+ */
+export const useBottomTabBarInset = () => {
+  const insets = useSafeAreaInsets();
+  return Platform.OS === 'android' ? Math.max(0, Math.round(insets.bottom)) : 0;
+};
+
 const tabs = [
   {
     key: 'home',
@@ -66,6 +81,7 @@ export default function BottomTabBar({ navigation: navigationProp, active }) {
   const currentRoute = useRoute();
   const navigation = navigationProp || hookNavigation;
   const activeRoute = active || currentRoute?.name || 'Home';
+  const bottomInset = useBottomTabBarInset();
   const handleNavigate = (routeName, params) => {
     if (!navigation || routeName === activeRoute) {
       return;
@@ -79,7 +95,15 @@ export default function BottomTabBar({ navigation: navigationProp, active }) {
   };
   return (
     <View pointerEvents="box-none" style={styles.container}>
-      <View style={styles.bar}>
+      <View
+        style={[
+          styles.bar,
+          bottomInset > 0 && {
+            height: styles.bar.height + bottomInset,
+            paddingBottom: styles.bar.paddingBottom + bottomInset,
+          },
+        ]}
+      >
         {tabs.map(tab => {
           const Icon = tab.Icon;
           const activeTab = activeRoute === tab.route;

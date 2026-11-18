@@ -7,6 +7,7 @@ import {
   Dimensions,
 } from 'react-native';
 import { Search, Mic, SlidersHorizontal } from 'lucide-react-native';
+import {useTranslation} from 'react-i18next';
 const { width } = Dimensions.get('window');
 const GREEN = '#16883E';
 const rf = size => {
@@ -14,13 +15,14 @@ const rf = size => {
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
 export default function AgriSearchBar() {
+  const {t} = useTranslation();
   return (
     <View style={styles.row}>
       <View style={styles.searchBox}>
         <Search size={20} color="#94A3B8" strokeWidth={2.3} />
 
         <TextInput
-          placeholder="Search seeds, fertilizers, pesticides..."
+          placeholder={t('agriSearchBar.searchSeedsFertilizersPesticides')}
           placeholderTextColor="#94A3B8"
           style={styles.input}
         />

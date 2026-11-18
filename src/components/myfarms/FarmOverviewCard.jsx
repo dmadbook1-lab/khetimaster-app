@@ -107,7 +107,7 @@ export default function FarmOverviewCard({
           value={
             stats.totalFarms
           }
-          label="FARMS"
+          label={t('farmOverviewCard.farms')}
         />
 
         <OverviewItem
@@ -115,7 +115,7 @@ export default function FarmOverviewCard({
           value={stats.totalAcres.toFixed(
             1,
           )}
-          label="ACRES"
+          label={t('farmOverviewCard.acres')}
         />
 
         <OverviewItem
@@ -123,7 +123,7 @@ export default function FarmOverviewCard({
           value={
             stats.activeFarms
           }
-          label="ACTIVE"
+          label={t('farmOverviewCard.active')}
         />
 
         <OverviewItem
@@ -131,7 +131,7 @@ export default function FarmOverviewCard({
           value={
             stats.barrenFarms
           }
-          label="BARREN"
+          label={t('farmOverviewCard.barren')}
         />
       </View>
     </View>

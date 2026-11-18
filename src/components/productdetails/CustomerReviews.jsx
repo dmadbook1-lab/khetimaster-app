@@ -1,19 +1,21 @@
 import React from 'react';
 import { View, Text, StyleSheet, Image } from 'react-native';
 import { Star } from 'lucide-react-native';
+import {useTranslation} from 'react-i18next';
 export default function CustomerReviews() {
+  const {t} = useTranslation();
   return (
     <View style={styles.wrapper}>
       <View style={styles.sectionRow}>
-        <Text style={styles.sectionTitle}>Customer Reviews</Text>
-        <Text style={styles.seeAll}>See All</Text>
+        <Text style={styles.sectionTitle}>{t('customerReviews.customerReviews')}</Text>
+        <Text style={styles.seeAll}>{t('customerReviews.seeAll')}</Text>
       </View>
 
       <View style={styles.ratingBlock}>
         <View>
           <Text style={styles.bigRating}>4.8</Text>
           <Text style={styles.stars}>★★★★★</Text>
-          <Text style={styles.reviewCount}>1,240 Reviews</Text>
+          <Text style={styles.reviewCount}>{t('customerReviews.1240Reviews')}</Text>
         </View>
 
         <View style={styles.bars}>
@@ -40,19 +42,20 @@ export default function CustomerReviews() {
         name="Ramesh Patel"
         location="Maharashtra"
         time="2 weeks ago"
-        text="Excellent product! My soybean yield increased by 20% after using this. Delivery was on time and packaging was perfect. Highly recommend to all farmers."
+        text={t('customerReviews.excellentProductMySoybeanYield')}
       />
 
       <ReviewCard
         name="Sukhdev Singh"
         location="Punjab"
         time="1 month ago"
-        text="Good quality fertilizer. The AI recommendation was accurate for my wheat crop. Quick delivery and reasonable price compared to local market."
+        text={t('customerReviews.goodQualityFertilizerTheAi')}
       />
     </View>
   );
 }
 function ReviewCard({ name, location, time, text }) {
+  const {t} = useTranslation();
   return (
     <View style={styles.reviewCard}>
       <View style={styles.userRow}>
@@ -78,7 +81,7 @@ function ReviewCard({ name, location, time, text }) {
       <Text style={styles.reviewText}>“{text}”</Text>
 
       <View style={styles.verified}>
-        <Text style={styles.verifiedText}>● Verified Purchase</Text>
+        <Text style={styles.verifiedText}>{t('customerReviews.verifiedPurchase')}</Text>
       </View>
     </View>
   );

@@ -2,12 +2,13 @@ import {
   CLOUDINARY_CLOUD_NAME,
   CLOUDINARY_UPLOAD_PRESET,
 } from '@env';
+import i18n from 'i18next';
 
 export const uploadNurseryImage =
   async asset => {
     if (!asset?.uri) {
       throw new Error(
-        'Invalid image',
+        i18n.t('nurseryCloudinary.invalidImage'),
       );
     }
 
@@ -16,7 +17,7 @@ export const uploadNurseryImage =
       !CLOUDINARY_UPLOAD_PRESET
     ) {
       throw new Error(
-        'Cloudinary configuration is missing',
+        i18n.t('nurseryCloudinary.cloudinaryConfigurationIsMissing'),
       );
     }
 
@@ -53,7 +54,7 @@ export const uploadNurseryImage =
     if (!response.ok) {
       throw new Error(
         data?.error?.message ||
-          'Image upload failed',
+          i18n.t('nurseryCloudinary.imageUploadFailed'),
       );
     }
 

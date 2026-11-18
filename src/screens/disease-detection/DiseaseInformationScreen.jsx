@@ -26,6 +26,9 @@ import {
   ShieldCheck,
   Upload,
 } from 'lucide-react-native';
+import {useTranslation} from 'react-i18next';
+import i18n from 'i18next';
+import {tOpt} from '../../utils/tOpt';
 const { width } = Dimensions.get('window');
 const GREEN = '#16A34A';
 const DARK_GREEN = '#16883E';
@@ -45,28 +48,36 @@ const CROP_PHOTO = require('../../assets/gov/crop-photo.png');
 const SYMPTOMS = [
   {
     id: 'brown',
-    title: 'Brown Spots',
+    get title() {
+    return i18n.t('diseaseInformation.brownSpots');
+  },
     Icon: Circle,
     color: ORANGE,
     bg: '#FFF7ED',
   },
   {
     id: 'yellow',
-    title: 'Yellow Leaves',
+    get title() {
+    return i18n.t('diseaseInformation.yellowLeaves');
+  },
     Icon: Users,
     color: DARK_GREEN,
     bg: '#EAFBF0',
   },
   {
     id: 'dry',
-    title: 'Dry Leaf Edges',
+    get title() {
+    return i18n.t('diseaseInformation.dryLeafEdges');
+  },
     Icon: AlignLeft,
     color: DARK_GREEN,
     bg: '#EAFBF0',
   },
   {
     id: 'growth',
-    title: 'Reduced Growth',
+    get title() {
+    return i18n.t('diseaseInformation.reducedGrowth');
+  },
     Icon: TrendingUp,
     color: DARK_GREEN,
     bg: '#EAFBF0',
@@ -75,28 +86,36 @@ const SYMPTOMS = [
 const CAUSES = [
   {
     id: 'humidity',
-    title: 'High Humidity',
+    get title() {
+    return i18n.t('diseaseInformation.highHumidity');
+  },
     Icon: Droplet,
     color: BLUE,
     bg: '#EFF6FF',
   },
   {
     id: 'irrigation',
-    title: 'Excess Irrigation',
+    get title() {
+    return i18n.t('diseaseInformation.excessIrrigation');
+  },
     Icon: Navigation,
     color: DARK_GREEN,
     bg: '#EAFBF0',
   },
   {
     id: 'fungal',
-    title: 'Fungal Infection',
+    get title() {
+    return i18n.t('diseaseInformation.fungalInfection');
+  },
     Icon: Circle,
     color: ORANGE,
     bg: '#FFF7ED',
   },
   {
     id: 'residues',
-    title: 'Infected Residues',
+    get title() {
+    return i18n.t('diseaseInformation.infectedResidues');
+  },
     Icon: Trash2,
     color: '#64748B',
     bg: '#F1F5F9',
@@ -110,13 +129,9 @@ const AFFECTED_CROPS = [
   'Chilli',
   'Wheat',
 ];
-const PREVENTION_TIPS = [
-  'Remove infected leaves and plant waste immediately.',
-  'Avoid overhead irrigation; use drip irrigation instead.',
-  'Ensure proper spacing between plants for air circulation.',
-  'Rotate crops every season to break disease cycles.',
-];
+const PREVENTION_TIPS = [1, 2, 3, 4];
 export default function DiseaseInformationScreen({ navigation, route }) {
+  const {t} = useTranslation();
   const [selectedCrop, setSelectedCrop] = useState('Maize');
   const diseaseSource = route?.params?.diseaseImage
     ? {
@@ -127,7 +142,7 @@ export default function DiseaseInformationScreen({ navigation, route }) {
     if (navigation?.canGoBack()) navigation.goBack();
   };
   const handleViewTreatment = () => {
-    Alert.alert('View Treatment', 'Opening treatment details...');
+    Alert.alert(t('diseaseInformation.viewTreatment'), t('diseaseInformation.openingTreatmentDetails'));
   };
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
@@ -143,7 +158,7 @@ export default function DiseaseInformationScreen({ navigation, route }) {
         </TouchableOpacity>
 
         <View style={styles.headerTextBox}>
-          <Text style={styles.headerTitle}>Disease Information</Text>
+          <Text style={styles.headerTitle}>{t('diseaseInformation.diseaseInformation')}</Text>
         </View>
 
         <TouchableOpacity activeOpacity={0.8} style={styles.iconButton}>
@@ -159,11 +174,11 @@ export default function DiseaseInformationScreen({ navigation, route }) {
         <View style={styles.headerCard}>
           <View style={styles.headerCardLeft}>
             <View style={styles.fungalPill}>
-              <Text style={styles.fungalPillText}>Fungal Disease</Text>
+              <Text style={styles.fungalPillText}>{t('diseaseInformation.fungalDisease')}</Text>
             </View>
 
-            <Text style={styles.diseaseName}>Leaf Spot</Text>
-            <Text style={styles.diseaseSubname}>Alternaria alternata</Text>
+            <Text style={styles.diseaseName}>{t('diseaseInformation.leafSpot')}</Text>
+            <Text style={styles.diseaseSubname}>{t('diseaseInformation.alternariaAlternata')}</Text>
 
             <View style={styles.tagsRow}>
               <View
@@ -190,7 +205,7 @@ export default function DiseaseInformationScreen({ navigation, route }) {
                     },
                   ]}
                 >
-                  Moderate
+                  {t('diseaseInformation.moderate')}
                 </Text>
               </View>
 
@@ -220,7 +235,7 @@ export default function DiseaseInformationScreen({ navigation, route }) {
                     },
                   ]}
                 >
-                  Maize
+                  {t('diseaseInformation.maize')}
                 </Text>
               </View>
             </View>
@@ -239,29 +254,25 @@ export default function DiseaseInformationScreen({ navigation, route }) {
             <View style={styles.aboutIconCircle}>
               <Info size={rf(15)} color={DARK_GREEN} strokeWidth={2.3} />
             </View>
-            <Text style={styles.aboutTitle}>About This Disease</Text>
+            <Text style={styles.aboutTitle}>{t('diseaseInformation.aboutThisDisease')}</Text>
           </View>
 
           <Text style={styles.aboutParagraph}>
-            Leaf Spot disease is caused by the fungus{' '}
-            <Text style={styles.italicText}>Alternaria alternata</Text>. It
-            commonly attacks the leaves of crops and weakens the plant over
-            time.
+            {t('diseaseInformation.leafSpotDiseaseIsCaused')}{' '}
+            <Text style={styles.italicText}>{t('diseaseInformation.alternariaAlternata')}</Text>{t('diseaseInformation.itCommonlyAttacksTheLeaves')}
           </Text>
 
           <Text style={styles.aboutParagraph}>
-            The disease spreads through water droplets, wind, and infected plant
-            material. Warm and humid conditions make it grow faster.
+            {t('diseaseInformation.theDiseaseSpreadsThroughWater')}
           </Text>
 
           <Text style={styles.aboutParagraph}>
-            If left untreated, it can reduce crop yield by up to 40%. Early
-            detection and timely action can save your harvest.
+            {t('diseaseInformation.ifLeftUntreatedItCan')}
           </Text>
         </View>
 
         {}
-        <Text style={styles.sectionTitle}>Symptoms</Text>
+        <Text style={styles.sectionTitle}>{t('diseaseInformation.symptoms')}</Text>
 
         <View style={styles.gridRow}>
           {SYMPTOMS.map(item => {
@@ -285,7 +296,7 @@ export default function DiseaseInformationScreen({ navigation, route }) {
         </View>
 
         {}
-        <Text style={styles.sectionTitle}>Causes</Text>
+        <Text style={styles.sectionTitle}>{t('diseaseInformation.causes')}</Text>
 
         <View style={styles.causesRow}>
           {CAUSES.map(item => {
@@ -309,7 +320,7 @@ export default function DiseaseInformationScreen({ navigation, route }) {
         </View>
 
         {}
-        <Text style={styles.sectionTitle}>Affected Crops</Text>
+        <Text style={styles.sectionTitle}>{t('diseaseInformation.affectedCrops')}</Text>
 
         <View style={styles.cropsRow}>
           {AFFECTED_CROPS.map(crop => {
@@ -327,7 +338,7 @@ export default function DiseaseInformationScreen({ navigation, route }) {
                     isSelected && styles.selectedCropText,
                   ]}
                 >
-                  {crop}
+                  {tOpt(crop)}
                 </Text>
               </TouchableOpacity>
             );
@@ -340,7 +351,7 @@ export default function DiseaseInformationScreen({ navigation, route }) {
             <View style={styles.spreadIconCircle}>
               <AlertCircle size={rf(15)} color={ORANGE} strokeWidth={2.4} />
             </View>
-            <Text style={styles.spreadTitle}>Disease Spread</Text>
+            <Text style={styles.spreadTitle}>{t('diseaseInformation.diseaseSpread')}</Text>
           </View>
 
           <View style={styles.spreadBarRow}>
@@ -371,12 +382,12 @@ export default function DiseaseInformationScreen({ navigation, route }) {
           </View>
 
           <View style={styles.spreadLabelsRow}>
-            <Text style={styles.spreadLabel}>Low</Text>
+            <Text style={styles.spreadLabel}>{t('diseaseInformation.low')}</Text>
             <View style={styles.spreadMediumBox}>
-              <Text style={styles.spreadMediumLabel}>Medium</Text>
+              <Text style={styles.spreadMediumLabel}>{t('diseaseInformation.medium')}</Text>
               <View style={styles.spreadDot} />
             </View>
-            <Text style={styles.spreadLabel}>High</Text>
+            <Text style={styles.spreadLabel}>{t('diseaseInformation.high')}</Text>
           </View>
         </View>
 
@@ -386,14 +397,14 @@ export default function DiseaseInformationScreen({ navigation, route }) {
             <View style={styles.preventionIconCircle}>
               <ShieldCheck size={rf(15)} color={DARK_GREEN} strokeWidth={2.4} />
             </View>
-            <Text style={styles.preventionTitle}>Prevention Tips</Text>
+            <Text style={styles.preventionTitle}>{t('diseaseInformation.preventionTips')}</Text>
           </View>
 
           <View style={styles.tipsList}>
             {PREVENTION_TIPS.map((tip, index) => (
               <View key={index} style={styles.tipRow}>
                 <View style={styles.tipBullet} />
-                <Text style={styles.tipText}>{tip}</Text>
+                <Text style={styles.tipText}>{t(`diseaseInformation.tip${index + 1}`)}</Text>
               </View>
             ))}
           </View>
@@ -408,7 +419,7 @@ export default function DiseaseInformationScreen({ navigation, route }) {
           style={styles.primaryButton}
         >
           <Upload size={rf(15)} color="#FFFFFF" strokeWidth={2.4} />
-          <Text style={styles.primaryButtonText}>View Treatment</Text>
+          <Text style={styles.primaryButtonText}>{t('diseaseInformation.viewTreatment')}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -417,7 +428,7 @@ export default function DiseaseInformationScreen({ navigation, route }) {
           style={styles.secondaryButton}
         >
           <ArrowLeft size={rf(15)} color={DARK_GREEN} strokeWidth={2.4} />
-          <Text style={styles.secondaryButtonText}>Back to Result</Text>
+          <Text style={styles.secondaryButtonText}>{t('diseaseInformation.backToResult')}</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

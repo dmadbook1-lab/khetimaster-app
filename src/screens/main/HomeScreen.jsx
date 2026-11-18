@@ -28,7 +28,7 @@ import SectionHeader from '../../components/home/SectionHeader';
 import FarmCard from '../../components/home/FarmCard';
 import QuickAction from '../../components/home/QuickAction';
 import UpdateCard from '../../components/home/UpdateCard';
-import BottomTabBar from '../../common/BottomTabBar';
+import BottomTabBar, { useBottomTabBarInset } from '../../common/BottomTabBar';
 import AddFarmCard from '../../components/home/AddFarmCard';
 import VoiceAssistantCard from '../../components/home/VoiceAssistantCard';
 import VoiceAssistantModal from '../../components/voice/VoiceAssistantModal';
@@ -71,6 +71,7 @@ const greetingFor = (date = new Date()) => {
 };
 
 export default function HomeScreen({navigation}) {
+  const tabBarInset = useBottomTabBarInset();
   const {t} = useTranslation();
   const dispatch = useDispatch();
   const [voiceAssistantVisible, setVoiceAssistantVisible] = useState(false);
@@ -216,12 +217,13 @@ export default function HomeScreen({navigation}) {
       onPress: () => navigation.navigate('AgricultureNews'),
     },
 
-    // Not built yet: each opens the Coming Soon screen for that feature
     {
       title: t('home.qa_warehouse'),
       image: require('../../assets/homescreen/warehousee.png'),
-      onPress: () => navigation.navigate('ComingSoon', { feature: 'warehouse' }),
+      onPress: () => navigation.navigate('WarehouseHome'),
     },
+
+    // Not built yet: each opens the Coming Soon screen for that feature
     {
       title: t('home.qa_delivery'),
       image: require('../../assets/homescreen/Deliveryy.png'),
@@ -267,7 +269,7 @@ export default function HomeScreen({navigation}) {
 
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}>
+        contentContainerStyle={[styles.scrollContent, { paddingBottom: styles.scrollContent.paddingBottom + tabBarInset }]}>
 
         {/* HEADER */}
 

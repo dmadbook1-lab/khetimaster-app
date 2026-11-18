@@ -25,7 +25,6 @@ import Avatar from './Avatar';
 import CaptionText from './CaptionText';
 import FollowButton from './FollowButton';
 import LikeBurst from './LikeBurst';
-import useMediaRatio from './useMediaRatio';
 import { COLORS, rf } from '../theme';
 import {
   bumpPostViews,
@@ -33,6 +32,7 @@ import {
 } from '../../../redux/slices/communitySlice';
 import { bumpPostCounterApi } from '../../../api/communityApi';
 import { formatCount, shortTimeAgo } from '../../../utils/communityFormat';
+import {useTranslation} from 'react-i18next';
 
 const DOUBLE_TAP_MS = 260;
 
@@ -70,6 +70,7 @@ function ReelItem({
   onToggleMute,
   actions,
 }) {
+  const {t} = useTranslation();
   const dispatch = useDispatch();
   const post = useSelector(state => selectCommunityPost(state, postId));
 
@@ -95,15 +96,11 @@ function ReelItem({
     }
   }, [isActive, post, dispatch]);
 
-  // Vertical videos fill the screen; landscape ones play whole, letterboxed
-  const videoRatio = useMediaRatio(post?.media?.[0], 16 / 9);
-
   if (!post) {
     return <View style={[styles.container, { height }]} />;
   }
 
   const video = post.media?.[0];
-  const fit = videoRatio < 1 ? 'contain' : 'cover';
 
   const flashMuteIcon = () => {
     muteIconOpacity.setValue(1);
@@ -149,7 +146,7 @@ function ReelItem({
           <Image
             source={{ uri: video.thumbnailUrl }}
             style={StyleSheet.absoluteFill}
-            resizeMode={fit}
+            resizeMode="contain"
           />
         ) : null}
 
@@ -157,7 +154,7 @@ function ReelItem({
           <Video
             source={{ uri: video.url }}
             style={StyleSheet.absoluteFill}
-            resizeMode={fit}
+            resizeMode="contain"
             repeat
             paused={isPaused}
             muted={muted}
@@ -194,7 +191,7 @@ function ReelItem({
       {/* center overlays */}
       <View pointerEvents="none" style={styles.center}>
         {failed ? (
-          <Text style={styles.errorText}>This reel could not be played</Text>
+          <Text style={styles.errorText}>{t('reelItem.thisReelCouldNotBe')}</Text>
         ) : (isActive && buffering) || (isActive && !ready && shouldLoad) ? (
           <ActivityIndicator size="large" color="rgba(255,255,255,0.9)" />
         ) : null}
@@ -216,7 +213,7 @@ function ReelItem({
           Icon={Sprout}
           label={formatCount(post.likesCount)}
           active={post.isLiked}
-          activeColor="#7EE08F"
+          activeColor="#FBBF24"
           onPress={() => actions.like(post)}
         />
         <SideAction
@@ -226,7 +223,7 @@ function ReelItem({
         />
         <SideAction
           Icon={Send}
-          label={post.sharesCount ? formatCount(post.sharesCount) : 'Share'}
+          label={post.sharesCount ? formatCount(post.sharesCount) : t('reelItem.share')}
           onPress={() => actions.share(post)}
         />
         <SideAction
@@ -280,10 +277,10 @@ function ReelItem({
         <View style={styles.audioRow}>
           <Music2 size={12} color="#FFFFFF" strokeWidth={2.4} />
           <Text numberOfLines={1} style={styles.audioText}>
-            Original audio · {post.author.fullName}
+            {t('reelItem.originalAudio', {fullName: post.author.fullName})}
           </Text>
           <Text style={styles.audioText}>
-            · {formatCount(post.viewsCount)} views ·{' '}
+            · {formatCount(post.viewsCount)} {t('reelItem.views')}{' '}
             {shortTimeAgo(post.createdAt)}
           </Text>
         </View>

@@ -66,21 +66,28 @@ import {
   feeLabel,
   isFreeDoctor,
 } from '../../utils/doctorFormat';
-
-const WEEKDAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+import {useTranslation} from 'react-i18next';
+import i18n from 'i18next';
+import {weekdayName} from '../../utils/dateFormat';
 
 const SLOT_GROUPS = [
-  { key: 'morning', label: 'Morning', icon: Sunrise, from: 0, to: 12 * 60 },
+  { key: 'morning', get label() {
+    return i18n.t('bookConsultation.morning');
+  }, icon: Sunrise, from: 0, to: 12 * 60 },
   {
     key: 'afternoon',
-    label: 'Afternoon',
+    get label() {
+    return i18n.t('bookConsultation.afternoon');
+  },
     icon: Sun,
     from: 12 * 60,
     to: 16 * 60,
   },
   {
     key: 'evening',
-    label: 'Evening',
+    get label() {
+    return i18n.t('bookConsultation.evening');
+  },
     icon: Sunset,
     from: 16 * 60,
     to: 24 * 60,
@@ -112,6 +119,7 @@ function StepHeading({ number, title, subtitle }) {
 }
 
 export default function BookConsultationScreen({ navigation, route }) {
+  const {t} = useTranslation();
   const { doctorId } = route.params;
   const dispatch = useDispatch();
   const feedback = useFeedbackModal();
@@ -194,14 +202,14 @@ export default function BookConsultationScreen({ navigation, route }) {
     return (
       <SafeAreaView style={styles.container} edges={['left', 'right']}>
         <CareTopBar
-          title="Book consultation"
+          title={t('bookConsultation.bookConsultation')}
           onBack={() => navigation.goBack()}
         />
         {selectedError && !selectedLoading ? (
           <CareEmpty
-            title="Doctor not available"
+            title={t('bookConsultation.doctorNotAvailable')}
             message={selectedError}
-            actionLabel="Go Back"
+            actionLabel={t('bookConsultation.goBack')}
             onAction={() => navigation.goBack()}
           />
         ) : (
@@ -230,8 +238,8 @@ export default function BookConsultationScreen({ navigation, route }) {
 
     if (remaining <= 0) {
       feedback.info(
-        'Maximum reached',
-        `You can add up to ${maxImages} photos.`,
+        t('bookConsultation.maximumReached'),
+        t('bookConsultation.youCanAddUpTo', {maxImages}),
       );
       return;
     }
@@ -266,10 +274,10 @@ export default function BookConsultationScreen({ navigation, route }) {
       const consultationId = result?.consultation?._id;
 
       feedback.success(
-        'Request sent!',
-        `${doctor.fullName} will accept or decline soon. You'll see their phone number once they accept.`,
+        t('bookConsultation.requestSent'),
+        t('bookConsultation.willAcceptOrDeclineSoon', {fullName: doctor.fullName}),
         {
-          primaryLabel: 'View Request',
+          primaryLabel: t('bookConsultation.viewRequest'),
           dismissable: false,
           onPrimary: () =>
             navigation.replace(DOCTOR_ROUTES.CONSULTATION, { consultationId }),
@@ -281,8 +289,8 @@ export default function BookConsultationScreen({ navigation, route }) {
 
       if (failure?.consultationId) {
         feedback.error('Already booked', message, {
-          primaryLabel: 'View Consultation',
-          secondaryLabel: 'Close',
+          primaryLabel: t('bookConsultation.viewConsultation'),
+          secondaryLabel: t('common.close'),
           onPrimary: () =>
             navigation.replace(DOCTOR_ROUTES.CONSULTATION, {
               consultationId: failure.consultationId,
@@ -306,15 +314,13 @@ export default function BookConsultationScreen({ navigation, route }) {
     }
 
     feedback.confirm({
-      title: 'Send consultation request?',
-      message: `${formatDay(form.consultationDate)} at ${formatTime(
+      title: t('bookConsultation.sendConsultationRequest'),
+      message: t('bookConsultation.atWithFee', {v1: formatDay(form.consultationDate), v2: formatTime(
         form.startTime,
-      )} with ${doctor.fullName}. Fee: ${feeLabel(doctor)}${
-        isFreeDoctor(doctor)
+      ), fullName: doctor.fullName, v4: feeLabel(doctor), v5: isFreeDoctor(doctor)
           ? '.'
-          : `, paid by ${PAYMENT_LABELS[form.paymentMethod] || 'cash'}.`
-      }`,
-      confirmLabel: 'Send Request',
+          : t('bookConsultation.paidBy', {v1: PAYMENT_LABELS[form.paymentMethod] || 'cash'})}),
+      confirmLabel: t('bookConsultation.sendRequest'),
       onConfirm: send,
     });
   };
@@ -325,7 +331,7 @@ export default function BookConsultationScreen({ navigation, route }) {
   return (
     <SafeAreaView style={styles.container} edges={['left', 'right']}>
       <CareTopBar
-        title="Book consultation"
+        title={t('bookConsultation.bookConsultation')}
         subtitle={type?.label}
         onBack={() => navigation.goBack()}
       />
@@ -364,15 +370,13 @@ export default function BookConsultationScreen({ navigation, route }) {
           {/* 1. WHEN */}
           <StepHeading
             number="1"
-            title="When?"
-            subtitle={`${
-              meta.defaultSlotMinutes || 30
-            } minute slots. Grey times are taken.`}
+            title={t('bookConsultation.when')}
+            subtitle={t('bookConsultation.minuteSlotsGreyTimesAre', {v1: meta.defaultSlotMinutes || 30})}
           />
           {days.length === 0 ? (
             <CareCard>
               <Text style={styles.noDays}>
-                This doctor is not taking consultations in the next two weeks.
+                {t('bookConsultation.thisDoctorIsNotTaking')}
               </Text>
             </CareCard>
           ) : (
@@ -401,8 +405,8 @@ export default function BookConsultationScreen({ navigation, route }) {
                         ]}
                       >
                         {key === todayKey
-                          ? 'Today'
-                          : WEEKDAYS[date.getUTCDay()]}
+                          ? t('common.today')
+                          : weekdayName(date.getUTCDay())}
                       </Text>
                       <Text
                         style={[
@@ -474,7 +478,7 @@ export default function BookConsultationScreen({ navigation, route }) {
                 })}
                 {slots.every(slot => slot.booked || slot.past) && (
                   <Text style={styles.noDays}>
-                    No free times left this day. Please pick another day.
+                    {t('bookConsultation.noFreeTimesLeftThis')}
                   </Text>
                 )}
               </CareCard>
@@ -487,11 +491,11 @@ export default function BookConsultationScreen({ navigation, route }) {
           {/* 2. PROBLEM */}
           <StepHeading
             number="2"
-            title="What's the problem?"
-            subtitle="The more you tell, the better the doctor can prepare"
+            title={t('bookConsultation.whatsTheProblem')}
+            subtitle={t('bookConsultation.theMoreYouTellThe')}
           />
           <CareCard>
-            <CareField label="Problem *">
+            <CareField label={t('bookConsultation.problem')}>
               <CareChips
                 options={problemOptions}
                 value={form.problemType}
@@ -501,7 +505,7 @@ export default function BookConsultationScreen({ navigation, route }) {
 
             {isVet ? (
               <>
-                <CareField label="Animal">
+                <CareField label={t('bookConsultation.animal')}>
                   <CareChips
                     options={meta.animalTypes || []}
                     value={form.animalType}
@@ -510,7 +514,7 @@ export default function BookConsultationScreen({ navigation, route }) {
                 </CareField>
                 <View style={styles.row}>
                   <View style={styles.flex}>
-                    <CareField label="How many">
+                    <CareField label={t('bookConsultation.howMany')}>
                       <CareInput
                         value={form.animalCount}
                         onChangeText={value =>
@@ -523,11 +527,11 @@ export default function BookConsultationScreen({ navigation, route }) {
                     </CareField>
                   </View>
                   <View style={styles.flex}>
-                    <CareField label="Age">
+                    <CareField label={t('bookConsultation.age')}>
                       <CareInput
                         value={form.animalAge}
                         onChangeText={value => setField('animalAge', value)}
-                        placeholder="e.g. 4 years"
+                        placeholder={t('bookConsultation.eG4Years')}
                         maxLength={50}
                       />
                     </CareField>
@@ -535,45 +539,43 @@ export default function BookConsultationScreen({ navigation, route }) {
                 </View>
               </>
             ) : (
-              <CareField label="Crop">
+              <CareField label={t('common.crop')}>
                 <CareInput
                   value={form.cropName}
                   onChangeText={value => setField('cropName', value)}
-                  placeholder="e.g. Tomato, Soybean, Grapes"
+                  placeholder={t('bookConsultation.eGTomatoSoybeanGrapes')}
                   maxLength={100}
                 />
               </CareField>
             )}
 
-            <CareField label="What do you see? *">
+            <CareField label={t('bookConsultation.whatDoYouSee')}>
               <CareInput
                 value={form.symptoms}
                 onChangeText={value => setField('symptoms', value)}
                 placeholder={
                   isVet
-                    ? 'e.g. High fever, not eating since 2 days, less milk'
-                    : 'e.g. Yellow spots on leaves, white insects under leaves'
+                    ? t('bookConsultation.eGHighFeverNot')
+                    : t('bookConsultation.eGYellowSpotsOn')
                 }
                 multiline
                 maxLength={2000}
                 invalid={errorField === 'symptoms'}
               />
             </CareField>
-            <CareField label="Anything else? (optional)">
+            <CareField label={t('bookConsultation.anythingElseOptional')}>
               <CareInput
                 value={form.description}
                 onChangeText={value => setField('description', value)}
-                placeholder="Medicines already given, since when, how many affected..."
+                placeholder={t('bookConsultation.medicinesAlreadyGivenSinceWhen')}
                 multiline
                 maxLength={2000}
               />
             </CareField>
 
             <CareField
-              label="Photos"
-              hint={`Add up to ${maxImages} clear photos of the ${
-                isVet ? 'animal' : 'affected plants'
-              }.`}
+              label={t('bookConsultation.photos')}
+              hint={t('bookConsultation.addUpToClearPhotos', {maxImages, v2: isVet ? 'animal' : t('bookConsultation.affectedPlants')})}
             >
               <ScrollView
                 horizontal
@@ -605,7 +607,7 @@ export default function BookConsultationScreen({ navigation, route }) {
                     onPress={choosePhotos}
                   >
                     <ImagePlus size={22} color={C.teal} />
-                    <Text style={styles.addPhotoText}>Add photo</Text>
+                    <Text style={styles.addPhotoText}>{t('bookConsultation.addPhoto')}</Text>
                   </TouchableOpacity>
                 )}
               </ScrollView>
@@ -618,59 +620,59 @@ export default function BookConsultationScreen({ navigation, route }) {
           {/* 3. WHERE */}
           <StepHeading
             number="3"
-            title="Where?"
-            subtitle="Where the doctor can visit or reach you"
+            title={t('bookConsultation.where')}
+            subtitle={t('bookConsultation.whereTheDoctorCanVisit')}
           />
           <CareCard>
             <View style={styles.row}>
               <View style={styles.flex}>
-                <CareField label="Village">
+                <CareField label={t('bookConsultation.village')}>
                   <CareInput
                     value={form.village}
                     onChangeText={value => setField('village', value)}
-                    placeholder="Village"
+                    placeholder={t('bookConsultation.village')}
                   />
                 </CareField>
               </View>
               <View style={styles.flex}>
-                <CareField label="District">
+                <CareField label={t('bookConsultation.district')}>
                   <CareInput
                     value={form.district}
                     onChangeText={value => setField('district', value)}
-                    placeholder="District"
+                    placeholder={t('bookConsultation.district')}
                   />
                 </CareField>
               </View>
             </View>
-            <CareField label="State">
+            <CareField label={t('bookConsultation.state')}>
               <CareInput
                 value={form.state}
                 onChangeText={value => setField('state', value)}
-                placeholder="State"
+                placeholder={t('bookConsultation.state')}
               />
             </CareField>
-            <CareField label="Address / landmark">
+            <CareField label={t('bookConsultation.addressLandmark')}>
               <CareInput
                 value={form.address}
                 onChangeText={value => setField('address', value)}
-                placeholder="e.g. Behind the school, Patil wasti"
+                placeholder={t('bookConsultation.eGBehindTheSchool')}
                 maxLength={300}
               />
             </CareField>
           </CareCard>
 
           {/* 4. PAYMENT */}
-          <StepHeading number="4" title="Payment" />
+          <StepHeading number="4" title={t('bookConsultation.payment')} />
           <CareCard>
             <View style={styles.feeRow}>
               <Wallet size={18} color={C.teal} />
-              <Text style={styles.feeLabel}>Consultation fee</Text>
+              <Text style={styles.feeLabel}>{t('bookConsultation.consultationFee')}</Text>
               <Text style={styles.feeValue}>{feeLabel(doctor)}</Text>
             </View>
             {!isFreeDoctor(doctor) && (
               <CareField
-                label="I'll pay by"
-                hint="Pay the doctor directly after the consultation."
+                label={t('bookConsultation.illPayBy')}
+                hint={t('bookConsultation.payTheDoctorDirectlyAfter')}
               >
                 <CareChips
                   options={(meta.paymentMethods || ['cod']).map(key => ({
@@ -682,11 +684,11 @@ export default function BookConsultationScreen({ navigation, route }) {
                 />
               </CareField>
             )}
-            <CareField label="Note for the doctor (optional)">
+            <CareField label={t('bookConsultation.noteForTheDoctorOptional')}>
               <CareInput
                 value={form.farmerNotes}
                 onChangeText={value => setField('farmerNotes', value)}
-                placeholder="e.g. Please call before coming"
+                placeholder={t('bookConsultation.eGPleaseCallBefore')}
                 maxLength={1000}
               />
             </CareField>
@@ -703,7 +705,7 @@ export default function BookConsultationScreen({ navigation, route }) {
                 ? `${formatDay(form.consultationDate)} · ${formatTime(
                     form.startTime,
                   )}`
-                : 'Choose a day and time above'}
+                : t('bookConsultation.chooseADayAndTime')}
             </Text>
             <MapPin size={14} color={C.muted} />
             <Text style={styles.summaryText} numberOfLines={1}>
@@ -720,12 +722,12 @@ export default function BookConsultationScreen({ navigation, route }) {
               ? `${formatDay(form.consultationDate, {
                   year: false,
                 })} · ${formatTime(form.startTime)}`
-              : 'Fee'}
+              : t('bookConsultation.fee')}
           </Text>
           <Text style={styles.bottomPrice}>{feeLabel(doctor)}</Text>
         </View>
         <CareButton
-          label={uploading ? 'Uploading photos…' : 'Send Request'}
+          label={uploading ? t('bookConsultation.uploadingPhotos') : t('bookConsultation.sendRequest')}
           icon={<Send size={16} color={C.white} />}
           loading={creating || uploading}
           disabled={!days.length}

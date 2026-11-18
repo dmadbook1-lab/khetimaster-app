@@ -1,7 +1,10 @@
 import {Droplets, ThermometerSun, Leaf, Activity} from 'lucide-react-native';
+import i18n from 'i18next';
 
 export const defaultFarm = {
-  title: 'Patil Farm',
+  get title() {
+    return i18n.t('data.patilFarm');
+  },
   crop: 'Soybean',
   area: '2.34 Acres',
   location: 'Yavatmal, Maharashtra',
@@ -12,7 +15,9 @@ export const defaultFarm = {
 
 export const stats = [
   {
-    label: 'Moisture',
+    get label() {
+    return i18n.t('data.moisture');
+  },
     value: '68%',
     status: 'Normal',
     Icon: Droplets,
@@ -20,7 +25,9 @@ export const stats = [
     bg: '#EFF6FF',
   },
   {
-    label: 'Temperature',
+    get label() {
+    return i18n.t('data.temperature');
+  },
     value: '29°C',
     status: 'Good',
     Icon: ThermometerSun,
@@ -28,7 +35,9 @@ export const stats = [
     bg: '#FFF7ED',
   },
   {
-    label: 'NDVI',
+    get label() {
+    return i18n.t('data.ndvi');
+  },
     value: '0.78',
     status: 'Healthy',
     Icon: Leaf,
@@ -36,7 +45,9 @@ export const stats = [
     bg: '#ECFDF5',
   },
   {
-    label: 'Growth',
+    get label() {
+    return i18n.t('data.growth');
+  },
     value: '64%',
     status: 'On Track',
     Icon: Activity,

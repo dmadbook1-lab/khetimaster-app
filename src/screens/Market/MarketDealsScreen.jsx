@@ -26,24 +26,43 @@ import {
 import { MARKET_COLORS as C } from '../../components/market/theme';
 import { MARKET_ROUTES } from '../../constants/marketRoutes';
 import { fetchMyMarketDeals } from '../../redux/slices/marketDealSlice';
+import {useTranslation} from 'react-i18next';
+import i18n from 'i18next';
 
 const ROLE_TABS = [
-  { key: '', label: 'All' },
-  { key: 'buying', label: 'Buying' },
-  { key: 'selling', label: 'Selling' },
+  { key: '', get label() {
+    return i18n.t('marketDeals.all');
+  } },
+  { key: 'buying', get label() {
+    return i18n.t('marketDeals.buying');
+  } },
+  { key: 'selling', get label() {
+    return i18n.t('marketDeals.selling');
+  } },
 ];
 
 const STATUS_FILTERS = [
-  { key: 'open', label: 'Active' },
-  { key: 'COMPLETED', label: 'Completed' },
-  { key: 'REJECTED', label: 'Rejected' },
-  { key: 'CANCELLED', label: 'Cancelled' },
-  { key: 'all', label: 'All' },
+  { key: 'open', get label() {
+    return i18n.t('common.active');
+  } },
+  { key: 'COMPLETED', get label() {
+    return i18n.t('marketDeals.completed');
+  } },
+  { key: 'REJECTED', get label() {
+    return i18n.t('marketDeals.rejected');
+  } },
+  { key: 'CANCELLED', get label() {
+    return i18n.t('marketDeals.cancelled');
+  } },
+  { key: 'all', get label() {
+    return i18n.t('marketDeals.all');
+  } },
 ];
 
 const PAGE_SIZE = 20;
 
 export default function MarketDealsScreen({ navigation, route }) {
+  const {t} = useTranslation();
   const dispatch = useDispatch();
   const { deals, pagination, dealsLoading, dealsLoadingMore, dealsError } =
     useSelector(state => state.marketDeal);
@@ -126,28 +145,26 @@ export default function MarketDealsScreen({ navigation, route }) {
               compact
               gradient="blue"
               onBack={() => navigation.goBack()}
-              eyebrow={listingFilter ? 'Offers received' : 'Negotiations'}
+              eyebrow={listingFilter ? t('marketDeals.offersReceived') : t('marketDeals.negotiations')}
               title={
                 listingFilter
-                  ? listingFilter.title || 'This listing'
-                  : 'My Deals'
+                  ? listingFilter.title || t('marketDeals.thisListing')
+                  : t('marketDeals.myDeals')
               }
               subtitle={
                 myTurnCount
-                  ? `${myTurnCount} ${
-                      myTurnCount === 1 ? 'deal is' : 'deals are'
-                    } waiting for your reply`
-                  : 'Track every offer you send and receive'
+                  ? t('marketDeals.waitingForYourReply', {myTurnCount, v2: myTurnCount === 1 ? t('marketDeals.dealIs') : t('marketDeals.dealsAre')})
+                  : t('marketDeals.trackEveryOfferYouSend')
               }
             >
               <View style={styles.statsRow}>
                 <HeroStat
                   value={myTurnCount}
-                  label="Your turn"
+                  label={t('marketDeals.yourTurn')}
                   highlight={myTurnCount > 0}
                 />
-                <HeroStat value={acceptedCount} label="Accepted" />
-                <HeroStat value={pagination.total} label="Showing" />
+                <HeroStat value={acceptedCount} label={t('marketDeals.accepted')} />
+                <HeroStat value={pagination.total} label={t('marketDeals.showing')} />
               </View>
 
               {listingFilter ? (
@@ -159,7 +176,7 @@ export default function MarketDealsScreen({ navigation, route }) {
                     setRole('');
                   }}
                 >
-                  <Text style={styles.clearFilterText}>Show all my deals</Text>
+                  <Text style={styles.clearFilterText}>{t('marketDeals.showAllMyDeals')}</Text>
                   <X size={14} color={C.white} />
                 </TouchableOpacity>
               ) : (
@@ -213,19 +230,19 @@ export default function MarketDealsScreen({ navigation, route }) {
             <LoadingState />
           ) : dealsError ? (
             <EmptyState
-              title="Couldn't load deals"
+              title={t('marketDeals.couldntLoadDeals')}
               message={dealsError}
-              actionLabel="Try Again"
+              actionLabel={t('marketDeals.tryAgain')}
               onAction={load}
             />
           ) : (
             <EmptyState
               icon={<Handshake size={30} color={C.green} />}
-              title="No deals here"
+              title={t('marketDeals.noDealsHere')}
               message={
                 listingFilter
-                  ? 'No offers on this listing yet.'
-                  : 'Offers you send or receive on Kheti Market will show up here.'
+                  ? t('marketDeals.noOffersOnThisListing')
+                  : t('marketDeals.offersYouSendOrReceive')
               }
             />
           )

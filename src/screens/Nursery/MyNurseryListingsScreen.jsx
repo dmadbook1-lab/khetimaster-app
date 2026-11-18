@@ -54,40 +54,80 @@ import {
   setNurseryPlantActive,
 } from '../../redux/slices/nurserySlice';
 import { formatRupees } from '../../utils/marketFormat';
+import {useTranslation} from 'react-i18next';
+import i18n from 'i18next';
 
 const SELL_STEPS = [
-  { title: 'Add your plant', text: 'Name, category and a few photos' },
-  { title: 'Set price & stock', text: 'Price per plant and how many you have' },
-  { title: 'Get orders', text: 'Buyers order with cash on delivery' },
-  { title: 'Confirm & deliver', text: 'Collect cash when you hand over' },
+  { get title() {
+    return i18n.t('myNurseryListings.addYourPlant');
+  }, get text() {
+    return i18n.t('myNurseryListings.nameCategoryAndAFew');
+  } },
+  { get title() {
+    return i18n.t('myNurseryListings.setPriceStock');
+  }, get text() {
+    return i18n.t('myNurseryListings.pricePerPlantAndHow');
+  } },
+  { get title() {
+    return i18n.t('myNurseryListings.getOrders');
+  }, get text() {
+    return i18n.t('myNurseryListings.buyersOrderWithCashOn');
+  } },
+  { get title() {
+    return i18n.t('myNurseryListings.confirmDeliver');
+  }, get text() {
+    return i18n.t('myNurseryListings.collectCashWhenYouHand');
+  } },
 ];
 
 const BENEFITS = [
   {
     icon: IndianRupee,
-    title: 'Free to list',
-    text: 'No fee to list or sell plants',
+    get title() {
+    return i18n.t('myNurseryListings.freeToList');
+  },
+    get text() {
+    return i18n.t('myNurseryListings.noFeeToListOr');
+  },
   },
   {
     icon: BellRing,
-    title: 'Orders come to you',
-    text: 'Buyers nearby find your nursery',
+    get title() {
+    return i18n.t('myNurseryListings.ordersComeToYou');
+  },
+    get text() {
+    return i18n.t('myNurseryListings.buyersNearbyFindYourNursery');
+  },
   },
   {
     icon: ShieldCheck,
-    title: 'Stock stays right',
-    text: 'Sold plants are taken off stock',
+    get title() {
+    return i18n.t('myNurseryListings.stockStaysRight');
+  },
+    get text() {
+    return i18n.t('myNurseryListings.soldPlantsAreTakenOff');
+  },
   },
   {
     icon: Star,
-    title: 'Build your rating',
-    text: 'Good plants bring repeat buyers',
+    get title() {
+    return i18n.t('myNurseryListings.buildYourRating');
+  },
+    get text() {
+    return i18n.t('myNurseryListings.goodPlantsBringRepeatBuyers');
+  },
   },
 ];
 
-const PAUSED_META = { label: 'Paused', color: C.text, bg: '#EEF0F2' };
-const SOLD_OUT_META = { label: 'Sold out', color: C.red, bg: C.lightRed };
-const LIVE_META = { label: 'Live', color: C.green, bg: C.lightGreen };
+const PAUSED_META = { get label() {
+    return i18n.t('myNurseryListings.paused');
+  }, color: C.text, bg: '#EEF0F2' };
+const SOLD_OUT_META = { get label() {
+    return i18n.t('myNurseryListings.soldOut');
+  }, color: C.red, bg: C.lightRed };
+const LIVE_META = { get label() {
+    return i18n.t('myNurseryListings.live');
+  }, color: C.green, bg: C.lightGreen };
 
 const statusMetaFor = plant => {
   if (plant.isActive === false) return PAUSED_META;
@@ -96,6 +136,7 @@ const statusMetaFor = plant => {
 };
 
 export default function MyNurseryListingsScreen({ navigation }) {
+  const {t} = useTranslation();
   const dispatch = useDispatch();
   const insets = useSafeAreaInsets();
   const feedback = useFeedbackModal();
@@ -122,18 +163,18 @@ export default function MyNurseryListingsScreen({ navigation }) {
     const active = plant.isActive === false;
 
     feedback.confirm({
-      title: active ? 'Show this plant again?' : 'Pause this listing?',
+      title: active ? t('myNurseryListings.showThisPlantAgain') : t('myNurseryListings.pauseThisListing'),
       message: active
-        ? 'Buyers will be able to find and order it again.'
-        : 'Buyers will not see it. Orders already placed still need to be delivered.',
-      confirmLabel: active ? 'Show Again' : 'Pause',
+        ? t('myNurseryListings.buyersWillBeAbleTo')
+        : t('myNurseryListings.buyersWillNotSeeIt'),
+      confirmLabel: active ? t('myNurseryListings.showAgain') : t('myNurseryListings.pause'),
       destructive: !active,
       onConfirm: async () => {
         try {
           await dispatch(
             setNurseryPlantActive({ plantId: plant._id, active }),
           ).unwrap();
-          toast.show(active ? 'Plant is live again' : 'Listing paused');
+          toast.show(active ? t('myNurseryListings.plantIsLiveAgain') : t('myNurseryListings.listingPaused'));
         } catch (error) {
           feedback.error('Could not update', String(error));
         }
@@ -156,9 +197,9 @@ export default function MyNurseryListingsScreen({ navigation }) {
           <MarketHero
             banner={NURSERY_BANNER}
             onBack={() => navigation.goBack()}
-            eyebrow="For nurseries & growers"
-            title={'Sell your plants\nto farmers nearby'}
-            subtitle="List saplings, seedlings and grafted plants for free. Buyers pay cash on delivery."
+            eyebrow={t('myNurseryListings.forNurseriesGrowers')}
+            title={t('myNurseryListings.sellYourPlantsToFarmers')}
+            subtitle={t('myNurseryListings.listSaplingsSeedlingsAndGrafted')}
           >
             <TouchableOpacity
               activeOpacity={0.88}
@@ -166,25 +207,25 @@ export default function MyNurseryListingsScreen({ navigation }) {
               onPress={addPlant}
             >
               <Plus size={18} color="#3A2400" strokeWidth={2.8} />
-              <Text style={styles.heroCtaText}>List your first plant</Text>
+              <Text style={styles.heroCtaText}>{t('myNurseryListings.listYourFirstPlant')}</Text>
               <ArrowRight size={17} color="#3A2400" strokeWidth={2.6} />
             </TouchableOpacity>
-            <Text style={styles.heroCtaNote}>Free · takes about 2 minutes</Text>
+            <Text style={styles.heroCtaNote}>{t('myNurseryListings.freeTakesAbout2Minutes')}</Text>
           </MarketHero>
 
           <View style={styles.body}>
             {mineStatus === 'error' ? (
               <EmptyState
-                title="Couldn't load your plants"
+                title={t('myNurseryListings.couldntLoadYourPlants')}
                 message={mineError}
-                actionLabel="Try Again"
+                actionLabel={t('myNurseryListings.tryAgain')}
                 onAction={load}
               />
             ) : !empty ? (
               <LoadingState />
             ) : (
               <>
-                <Text style={styles.blockTitle}>How selling works</Text>
+                <Text style={styles.blockTitle}>{t('myNurseryListings.howSellingWorks')}</Text>
                 <View style={styles.card}>
                   {SELL_STEPS.map((item, index) => (
                     <View key={item.title} style={styles.regStep}>
@@ -204,7 +245,7 @@ export default function MyNurseryListingsScreen({ navigation }) {
                   ))}
                 </View>
 
-                <Text style={styles.blockTitle}>Why sell on KhetiMaster</Text>
+                <Text style={styles.blockTitle}>{t('myNurseryListings.whySellOnKhetimaster')}</Text>
                 <View style={styles.benefits}>
                   {BENEFITS.map(({ icon: Icon, title, text }) => (
                     <View key={title} style={styles.benefit}>
@@ -226,10 +267,10 @@ export default function MyNurseryListingsScreen({ navigation }) {
                   >
                     <View style={styles.flex}>
                       <Text style={styles.finalCtaTitle}>
-                        Ready to start selling?
+                        {t('myNurseryListings.readyToStartSelling')}
                       </Text>
                       <Text style={styles.finalCtaText}>
-                        Add your first plant and start getting orders.
+                        {t('myNurseryListings.addYourFirstPlantAnd')}
                       </Text>
                     </View>
                     <View style={styles.finalCtaButton}>
@@ -252,9 +293,9 @@ export default function MyNurseryListingsScreen({ navigation }) {
                     <Inbox size={20} color={C.blue} />
                   </View>
                   <View style={styles.flex}>
-                    <Text style={styles.actionTitle}>Orders received</Text>
+                    <Text style={styles.actionTitle}>{t('myNurseryListings.ordersReceived')}</Text>
                     <Text style={styles.actionText}>
-                      Orders for plants you sold before
+                      {t('myNurseryListings.ordersForPlantsYouSold')}
                     </Text>
                   </View>
                   <ChevronRight size={19} color={C.muted} />
@@ -272,7 +313,7 @@ export default function MyNurseryListingsScreen({ navigation }) {
             ]}
           >
             <MarketButton
-              label="Start Selling"
+              label={t('myNurseryListings.startSelling')}
               icon={<Plus size={17} color={C.white} />}
               onPress={addPlant}
               style={styles.flex}
@@ -313,9 +354,9 @@ export default function MyNurseryListingsScreen({ navigation }) {
           compact
           gradient="forest"
           onBack={() => navigation.goBack()}
-          eyebrow="Seller"
-          title="My Nursery"
-          subtitle={`${live} of ${mine.length} plants live for buyers`}
+          eyebrow={t('myNurseryListings.seller')}
+          title={t('myNurseryListings.myNursery')}
+          subtitle={t('myNurseryListings.ofPlantsLiveForBuyers', {live, length: mine.length})}
           right={
             <GlassButton onPress={addPlant}>
               <Plus size={20} color={C.white} />
@@ -325,11 +366,11 @@ export default function MyNurseryListingsScreen({ navigation }) {
           <View style={styles.statsRow}>
             <HeroStat
               value={toSend}
-              label="Plants to send"
+              label={t('myNurseryListings.plantsToSend')}
               highlight={toSend > 0}
             />
-            <HeroStat value={mine.length} label="Listings" />
-            <HeroStat value={sold} label="Sold" />
+            <HeroStat value={mine.length} label={t('myNurseryListings.listings')} />
+            <HeroStat value={sold} label={t('myNurseryListings.sold')} />
           </View>
         </MarketHero>
 
@@ -345,17 +386,17 @@ export default function MyNurseryListingsScreen({ navigation }) {
               <Inbox size={20} color={C.amber} />
             </View>
             <View style={styles.flex}>
-              <Text style={styles.actionTitle}>Orders received</Text>
+              <Text style={styles.actionTitle}>{t('myNurseryListings.ordersReceived')}</Text>
               <Text style={styles.actionText}>
                 {toSend
-                  ? `${toSend} plants waiting to be confirmed or sent`
-                  : 'Confirm, dispatch and deliver orders'}
+                  ? t('myNurseryListings.plantsWaitingToBeConfirmed', {toSend})
+                  : t('myNurseryListings.confirmDispatchAndDeliverOrders')}
               </Text>
             </View>
             <ChevronRight size={19} color={C.muted} />
           </TouchableOpacity>
 
-          <Text style={styles.blockTitle}>Your plants</Text>
+          <Text style={styles.blockTitle}>{t('myNurseryListings.yourPlants')}</Text>
 
           {mine.map(plant => {
             const paused = plant.isActive === false;
@@ -380,11 +421,11 @@ export default function MyNurseryListingsScreen({ navigation }) {
                       {plant.name}
                     </Text>
                     <Text style={styles.plantMeta} numberOfLines={1}>
-                      {plant.category} · {plant.quantity} in stock
+                      {t('myNurseryListings.inStock', {category: plant.category, quantity: plant.quantity})}
                     </Text>
                     <Text style={styles.plantPrice}>
                       {formatRupees(plant.price)}
-                      <Text style={styles.plantPer}> /plant</Text>
+                      <Text style={styles.plantPer}> {t('myNurseryListings.plant')}</Text>
                     </Text>
                   </View>
                   <StatusPill meta={statusMetaFor(plant)} />
@@ -398,7 +439,7 @@ export default function MyNurseryListingsScreen({ navigation }) {
                   >
                     <Inbox size={15} color={C.amber} />
                     <Text style={styles.pendingText}>
-                      {plant.pendingOrders} ordered · waiting for you
+                      {t('myNurseryListings.orderedWaitingForYou', {pendingOrders: plant.pendingOrders})}
                     </Text>
                     <ChevronRight size={16} color={C.amber} />
                   </TouchableOpacity>
@@ -414,7 +455,7 @@ export default function MyNurseryListingsScreen({ navigation }) {
                   >
                     <Pencil size={14} color={C.green} />
                     <Text style={styles.plantActionText}>
-                      {plant.quantity <= 0 ? 'Add stock' : 'Edit'}
+                      {plant.quantity <= 0 ? t('myNurseryListings.addStock') : t('myNurseryListings.edit')}
                     </Text>
                   </TouchableOpacity>
                   <View style={styles.actionDivider} />
@@ -431,10 +472,10 @@ export default function MyNurseryListingsScreen({ navigation }) {
                       ]}
                     >
                       {togglingId === plant._id
-                        ? 'Saving…'
+                        ? t('myNurseryListings.saving')
                         : paused
-                        ? 'Show again'
-                        : 'Pause'}
+                        ? t('myNurseryListings.showAgain2')
+                        : t('myNurseryListings.pause')}
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -448,7 +489,7 @@ export default function MyNurseryListingsScreen({ navigation }) {
             onPress={addPlant}
           >
             <Sprout size={22} color={C.green} />
-            <Text style={styles.addText}>Add another plant</Text>
+            <Text style={styles.addText}>{t('myNurseryListings.addAnotherPlant')}</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

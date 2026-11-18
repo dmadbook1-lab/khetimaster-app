@@ -1,6 +1,9 @@
 import React from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { Users, Tractor, ShoppingBag, ChevronRight } from 'lucide-react-native';
+import {useTranslation} from 'react-i18next';
+import i18n from 'i18next';
+import {tOpt} from '../../utils/tOpt';
 const { width } = Dimensions.get('window');
 const rf = size => {
   const scale = width / 390;
@@ -9,8 +12,12 @@ const rf = size => {
 const activities = [
   {
     Icon: Users,
-    title: 'Labour Booking',
-    desc: '2 Workers booked for tomorrow',
+    get title() {
+    return i18n.t('bazaarRecentActivity.labourBooking');
+  },
+    get desc() {
+    return i18n.t('bazaarRecentActivity.2WorkersBookedForTomorrow');
+  },
     time: 'Today, 10:30 AM',
     status: 'Confirmed',
     color: '#16A34A',
@@ -18,8 +25,12 @@ const activities = [
   },
   {
     Icon: Tractor,
-    title: 'Tractor Booking',
-    desc: 'Sonalika DI 745 for 2 days',
+    get title() {
+    return i18n.t('bazaarRecentActivity.tractorBooking');
+  },
+    get desc() {
+    return i18n.t('bazaarRecentActivity.sonalikaDi745For2');
+  },
     time: 'Tomorrow, 08:00 AM',
     status: 'Upcoming',
     color: '#F97316',
@@ -27,8 +38,12 @@ const activities = [
   },
   {
     Icon: ShoppingBag,
-    title: 'Product Order',
-    desc: 'Order delivered successfully',
+    get title() {
+    return i18n.t('bazaarRecentActivity.productOrder');
+  },
+    get desc() {
+    return i18n.t('bazaarRecentActivity.orderDeliveredSuccessfully');
+  },
     time: '14 Jun 2026',
     status: 'Delivered',
     color: '#16A34A',
@@ -36,13 +51,14 @@ const activities = [
   },
 ];
 export default function BazaarRecentActivity() {
+  const {t} = useTranslation();
   return (
     <View style={styles.wrapper}>
       <View style={styles.sectionRow}>
-        <Text style={styles.sectionTitle}>Recent Activity</Text>
+        <Text style={styles.sectionTitle}>{t('bazaarRecentActivity.recentActivity')}</Text>
 
         <View style={styles.viewRow}>
-          <Text style={styles.viewAll}>View All</Text>
+          <Text style={styles.viewAll}>{t('common.view_all')}</Text>
           <ChevronRight size={16} color="#16883E" strokeWidth={2.6} />
         </View>
       </View>
@@ -85,7 +101,7 @@ export default function BazaarRecentActivity() {
                         },
                       ]}
                     >
-                      {item.status}
+                      {tOpt(item.status)}
                     </Text>
                   </View>
                 </View>

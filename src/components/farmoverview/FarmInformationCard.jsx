@@ -1,29 +1,31 @@
 import React from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { defaultFarm } from './data';
+import {useTranslation} from 'react-i18next';
 const { width } = Dimensions.get('window');
 const rf = size => {
   const scale = width / 390;
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
 export default function FarmInformationCard({ farm }) {
+  const {t} = useTranslation();
   const item = farm || defaultFarm;
   return (
     <View style={styles.card}>
-      <Text style={styles.title}>Farm Information</Text>
+      <Text style={styles.title}>{t('farmInformationCard.farmInformation')}</Text>
 
-      <InfoRow label="Crop" value={item.crop || defaultFarm.crop} />
-      <InfoRow label="Area" value={item.area || defaultFarm.area} />
+      <InfoRow label={t('common.crop')} value={item.crop || defaultFarm.crop} />
+      <InfoRow label={t('farmInformationCard.area')} value={item.area || defaultFarm.area} />
       <InfoRow
-        label="Sowing Date"
+        label={t('farmInformationCard.sowingDate')}
         value={item.sowingDate || defaultFarm.sowingDate}
       />
       <InfoRow
-        label="Soil Type"
+        label={t('farmInformationCard.soilType')}
         value={item.soilType || defaultFarm.soilType}
       />
       <InfoRow
-        label="Location"
+        label={t('farmInformationCard.location')}
         value={item.location || defaultFarm.location}
         last
       />

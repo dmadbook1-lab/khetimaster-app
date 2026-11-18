@@ -26,20 +26,37 @@ import RentalCard from '../../components/machinery/RentalCard';
 import { MACHINERY_ROUTES } from '../../constants/machineryRoutes';
 import { fetchMyMachineryBookings } from '../../redux/slices/machineryBookingSlice';
 import { isAcceptedStatus } from '../../utils/machineryFormat';
+import {useTranslation} from 'react-i18next';
+import i18n from 'i18next';
 
 const STATUS_FILTERS = [
-  { key: 'active', label: 'Upcoming' },
-  { key: 'pending', label: 'Requested' },
-  { key: 'confirmed', label: 'Confirmed' },
-  { key: 'completed', label: 'Completed' },
-  { key: 'cancelled', label: 'Cancelled' },
-  { key: 'rejected', label: 'Declined' },
-  { key: 'all', label: 'All' },
+  { key: 'active', get label() {
+    return i18n.t('myMachineryBookings.upcoming');
+  } },
+  { key: 'pending', get label() {
+    return i18n.t('myMachineryBookings.requested');
+  } },
+  { key: 'confirmed', get label() {
+    return i18n.t('myMachineryBookings.confirmed');
+  } },
+  { key: 'completed', get label() {
+    return i18n.t('myMachineryBookings.completed');
+  } },
+  { key: 'cancelled', get label() {
+    return i18n.t('myMachineryBookings.cancelled');
+  } },
+  { key: 'rejected', get label() {
+    return i18n.t('myMachineryBookings.declined');
+  } },
+  { key: 'all', get label() {
+    return i18n.t('myMachineryBookings.all');
+  } },
 ];
 
 const PAGE_SIZE = 20;
 
 export default function MyMachineryBookingsScreen({ navigation }) {
+  const {t} = useTranslation();
   const dispatch = useDispatch();
   const { items, page, totalPages, total, loading, loadingMore, error } =
     useSelector(state => state.machineryBooking.myBookings);
@@ -102,9 +119,9 @@ export default function MyMachineryBookingsScreen({ navigation }) {
               compact
               gradient="blue"
               onBack={() => navigation.goBack()}
-              eyebrow="Machinery"
-              title="My Rentals"
-              subtitle="Machines you've booked for your farm"
+              eyebrow={t('myMachineryBookings.machinery')}
+              title={t('myMachineryBookings.myRentals')}
+              subtitle={t('myMachineryBookings.machinesYouveBookedForYour')}
               right={
                 <GlassButton
                   onPress={() => navigation.navigate(MACHINERY_ROUTES.HOME)}
@@ -114,11 +131,11 @@ export default function MyMachineryBookingsScreen({ navigation }) {
               }
             >
               <View style={styles.statsRow}>
-                <HeroStat value={waiting} label="Waiting" />
-                <HeroStat value={confirmed} label="Confirmed" />
+                <HeroStat value={waiting} label={t('myMachineryBookings.waiting')} />
+                <HeroStat value={confirmed} label={t('myMachineryBookings.confirmed')} />
                 <HeroStat
                   value={toRate || total}
-                  label={toRate ? 'To rate' : 'Showing'}
+                  label={toRate ? t('myMachineryBookings.toRate') : t('myMachineryBookings.showing')}
                   highlight={toRate > 0}
                 />
               </View>
@@ -146,17 +163,17 @@ export default function MyMachineryBookingsScreen({ navigation }) {
             <LoadingState />
           ) : error ? (
             <EmptyState
-              title="Couldn't load your rentals"
+              title={t('myMachineryBookings.couldntLoadYourRentals')}
               message={error}
-              actionLabel="Try Again"
+              actionLabel={t('myMachineryBookings.tryAgain')}
               onAction={load}
             />
           ) : (
             <EmptyState
               icon={<CalendarCheck size={30} color={C.green} />}
-              title="No rentals here"
-              message="Rent a tractor, rotavator or harvester from owners near you."
-              actionLabel="Find Machinery"
+              title={t('myMachineryBookings.noRentalsHere')}
+              message={t('myMachineryBookings.rentATractorRotavatorOr')}
+              actionLabel={t('myMachineryBookings.findMachinery')}
               onAction={() => navigation.navigate(MACHINERY_ROUTES.HOME)}
             />
           )

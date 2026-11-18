@@ -64,6 +64,8 @@ import {
   formatDay,
   toDayKey,
 } from '../../utils/labourFormat';
+import {useTranslation} from 'react-i18next';
+import i18n from 'i18next';
 
 const GENDER_LABELS = { male: 'Male', female: 'Female', other: 'Other' };
 const EXPERIENCE_LABELS = { years: 'Years', months: 'Months' };
@@ -101,13 +103,29 @@ const initialForm = (profile, user) => ({
  * Pages of the "create profile" wizard. Editing shows them all at once.
  */
 const STEPS = [
-  { title: 'About you', text: 'Your name, phone and photo' },
-  { title: 'Your work', text: 'What work you do and your experience' },
+  { get title() {
+    return i18n.t('labourProfileForm.aboutYou');
+  }, get text() {
+    return i18n.t('labourProfileForm.yourNamePhoneAndPhoto');
+  } },
+  { get title() {
+    return i18n.t('labourProfileForm.yourWork');
+  }, get text() {
+    return i18n.t('labourProfileForm.whatWorkYouDoAnd');
+  } },
   {
-    title: 'Wage & availability',
-    text: 'What you charge and when you are free',
+    get title() {
+    return i18n.t('labourProfileForm.wageAvailability');
   },
-  { title: 'Where you live', text: 'So farmers nearby can find you' },
+    get text() {
+    return i18n.t('labourProfileForm.whatYouChargeAndWhen');
+  },
+  },
+  { get title() {
+    return i18n.t('labourProfileForm.whereYouLive');
+  }, get text() {
+    return i18n.t('labourProfileForm.soFarmersNearbyCanFind');
+  } },
 ];
 
 // page each validated field lives on (fields from buildLabourerPayload)
@@ -132,6 +150,7 @@ const keyToLocalDate = key => {
  * creating a new profile or editing one.
  */
 export default function LabourProfileFormScreen({ navigation }) {
+  const {t} = useTranslation();
   const dispatch = useDispatch();
   const { myProfileStatus, myProfileError } = useSelector(
     state => state.labourer,
@@ -154,13 +173,13 @@ export default function LabourProfileFormScreen({ navigation }) {
         <MarketHero
           compact
           onBack={() => navigation.goBack()}
-          title="Worker profile"
+          title={t('labourProfileForm.workerProfile')}
         />
         {myProfileStatus === 'error' ? (
           <EmptyState
-            title="Couldn't load your profile"
+            title={t('labourProfileForm.couldntLoadYourProfile')}
             message={myProfileError}
-            actionLabel="Try Again"
+            actionLabel={t('labourProfileForm.tryAgain')}
             onAction={() => dispatch(fetchMyLabourerProfile())}
           />
         ) : (
@@ -174,6 +193,7 @@ export default function LabourProfileFormScreen({ navigation }) {
 }
 
 function ProfileForm({ navigation }) {
+  const {t} = useTranslation();
   const dispatch = useDispatch();
   const insets = useSafeAreaInsets();
   const feedback = useFeedbackModal();
@@ -279,20 +299,20 @@ function ProfileForm({ navigation }) {
 
       if (isCreate) {
         feedback.success(
-          'You are ready to get work!',
-          'Farmers near you can now find and book you. We will show their requests in Work Requests.',
+          t('labourProfileForm.youAreReadyToGet'),
+          t('labourProfileForm.farmersNearYouCanNow'),
           {
-            primaryLabel: 'Go to My Profile',
+            primaryLabel: t('labourProfileForm.goToMyProfile'),
             dismissable: false,
             onPrimary: () => navigation.replace(LABOUR_ROUTES.MY_PROFILE),
           },
         );
       } else {
         feedback.success(
-          'Profile updated',
-          'Farmers will see your new details.',
+          t('labourProfileForm.profileUpdated'),
+          t('labourProfileForm.farmersWillSeeYourNew'),
           {
-            primaryLabel: 'Done',
+            primaryLabel: t('labourProfileForm.done'),
             dismissable: false,
             onPrimary: () => navigation.goBack(),
           },
@@ -326,20 +346,20 @@ function ProfileForm({ navigation }) {
             compact
             gradient={isCreate ? 'amber' : 'forest'}
             onBack={handleBack}
-            eyebrow={isCreate ? 'Join as a worker' : 'Worker profile'}
+            eyebrow={isCreate ? t('labourProfileForm.joinAsAWorker') : t('labourProfileForm.workerProfile')}
             title={
-              isCreate ? 'Create your\nworker profile' : 'Edit your profile'
+              isCreate ? t('labourProfileForm.createYourWorkerProfile') : t('labourProfileForm.editYourProfile')
             }
             subtitle={
               isCreate
                 ? STEPS[step].text
-                : 'A complete profile with a photo gets more bookings.'
+                : t('labourProfileForm.aCompleteProfileWithA')
             }
           >
             {isCreate && (
               <View style={styles.progress}>
                 <Text style={styles.progressLabel}>
-                  Step {step + 1} of {STEPS.length} · {STEPS[step].title}
+                  {t('labourProfileForm.stepOf', {v1: step + 1, length: STEPS.length, title: STEPS[step].title})}
                 </Text>
                 <View style={styles.progressBar}>
                   {STEPS.map((item, index) => (
@@ -373,11 +393,10 @@ function ProfileForm({ navigation }) {
                 </TouchableOpacity>
                 <View style={styles.flex}>
                   <Text style={styles.photoTitle}>
-                    {photoUri ? 'Looking good!' : 'Add your photo'}
+                    {photoUri ? t('labourProfileForm.lookingGood') : t('labourProfileForm.addYourPhoto')}
                   </Text>
                   <Text style={styles.photoText}>
-                    Farmers trust workers they can see. Tap the photo to change
-                    it.
+                    {t('labourProfileForm.farmersTrustWorkersTheyCan')}
                   </Text>
                 </View>
               </View>
@@ -390,32 +409,32 @@ function ProfileForm({ navigation }) {
                 {/* ABOUT */}
                 <SectionHeading
                   icon={<UserRound size={16} color={C.green} />}
-                  title="About you"
+                  title={t('labourProfileForm.aboutYou')}
                 />
                 <FormCard>
-                  <Field label="Full name *">
+                  <Field label={t('labourProfileForm.fullName')}>
                     <FormInput
                       value={form.fullName}
                       onChangeText={value => setField('fullName', value)}
-                      placeholder="Your name"
+                      placeholder={t('labourProfileForm.yourName')}
                       maxLength={100}
                     />
                   </Field>
                   <Field
-                    label="Phone number"
-                    hint="Shared with a farmer only after you accept their booking."
+                    label={t('labourProfileForm.phoneNumber')}
+                    hint={t('labourProfileForm.sharedWithAFarmerOnly')}
                   >
                     <FormInput
                       value={form.phoneNumber}
                       onChangeText={value => setField('phoneNumber', value)}
-                      placeholder="10 digit mobile number"
+                      placeholder={t('labourProfileForm.10DigitMobileNumber')}
                       keyboardType="phone-pad"
                       maxLength={15}
                     />
                   </Field>
                   <View style={styles.row}>
                     <View style={styles.flexWide}>
-                      <Field label="Gender">
+                      <Field label={t('labourProfileForm.gender')}>
                         <SelectChips
                           options={
                             meta.genders.length
@@ -429,7 +448,7 @@ function ProfileForm({ navigation }) {
                       </Field>
                     </View>
                     <View style={styles.flex}>
-                      <Field label="Age">
+                      <Field label={t('labourProfileForm.age')}>
                         <FormInput
                           value={form.age}
                           onChangeText={value => setField('age', value)}
@@ -450,10 +469,10 @@ function ProfileForm({ navigation }) {
                 <SectionHeading
                   icon={<Briefcase size={16} color={C.orange} />}
                   color={C.orange}
-                  title="Your work"
+                  title={t('labourProfileForm.yourWork')}
                 />
                 <FormCard>
-                  <Field label="Main work you do *">
+                  <Field label={t('labourProfileForm.mainWorkYouDo')}>
                     <SelectChips
                       options={labourTypeOptions}
                       value={form.labourType}
@@ -461,8 +480,8 @@ function ProfileForm({ navigation }) {
                     />
                   </Field>
                   <Field
-                    label="Other work you can do"
-                    hint="Pick everything that applies."
+                    label={t('labourProfileForm.otherWorkYouCanDo')}
+                    hint={t('labourProfileForm.pickEverythingThatApplies')}
                   >
                     <SelectChips
                       multiple
@@ -471,16 +490,16 @@ function ProfileForm({ navigation }) {
                       onChange={value => setField('preferredWork', value)}
                     />
                   </Field>
-                  <Field label="Skills">
+                  <Field label={t('labourProfileForm.skills')}>
                     <TagInput
                       value={form.skills}
                       onChange={value => setField('skills', value)}
-                      placeholder="e.g. Drip fitting, Grafting"
+                      placeholder={t('labourProfileForm.eGDripFittingGrafting')}
                     />
                   </Field>
                   <View style={styles.row}>
                     <View style={styles.flex}>
-                      <Field label="Experience">
+                      <Field label={t('labourProfileForm.experience')}>
                         <FormInput
                           value={form.experience}
                           onChangeText={value => setField('experience', value)}
@@ -491,7 +510,7 @@ function ProfileForm({ navigation }) {
                       </Field>
                     </View>
                     <View style={styles.flexWide}>
-                      <Field label="In">
+                      <Field label={t('labourProfileForm.in')}>
                         <SelectChips
                           options={
                             meta.experienceUnits.length
@@ -505,7 +524,7 @@ function ProfileForm({ navigation }) {
                       </Field>
                     </View>
                   </View>
-                  <Field label="Languages you speak">
+                  <Field label={t('labourProfileForm.languagesYouSpeak')}>
                     <SelectChips
                       multiple
                       options={meta.languages}
@@ -522,10 +541,10 @@ function ProfileForm({ navigation }) {
                 {/* WAGE */}
                 <SectionHeading
                   icon={<IndianRupee size={16} color={C.green} />}
-                  title="Wage & availability"
+                  title={t('labourProfileForm.wageAvailability')}
                 />
                 <FormCard>
-                  <Field label="Wage you expect *">
+                  <Field label={t('labourProfileForm.wageYouExpect')}>
                     <View style={styles.wageBox}>
                       <Text style={styles.rupee}>₹</Text>
                       <FormInput
@@ -537,7 +556,7 @@ function ProfileForm({ navigation }) {
                       />
                     </View>
                   </Field>
-                  <Field label="Paid">
+                  <Field label={t('labourProfileForm.paid')}>
                     <SelectChips
                       options={
                         meta.wageTypes.length
@@ -549,7 +568,7 @@ function ProfileForm({ navigation }) {
                       onChange={value => setField('wageType', value)}
                     />
                   </Field>
-                  <Field label="Right now I am">
+                  <Field label={t('labourProfileForm.rightNowIAm')}>
                     <SelectChips
                       options={
                         meta.availabilityOptions.length
@@ -563,7 +582,7 @@ function ProfileForm({ navigation }) {
                   </Field>
                   <View style={styles.row}>
                     <View style={styles.flex}>
-                      <Field label="Available from">
+                      <Field label={t('labourProfileForm.availableFrom')}>
                         <PickerField
                           icon={<Calendar size={16} color={C.green} />}
                           value={
@@ -573,14 +592,14 @@ function ProfileForm({ navigation }) {
                                 })
                               : ''
                           }
-                          placeholder="Any time"
+                          placeholder={t('labourProfileForm.anyTime')}
                           onPress={() => setDateField('availableFrom')}
                           onClear={() => setField('availableFrom', null)}
                         />
                       </Field>
                     </View>
                     <View style={styles.flex}>
-                      <Field label="Until">
+                      <Field label={t('labourProfileForm.until')}>
                         <PickerField
                           icon={<Calendar size={16} color={C.green} />}
                           value={
@@ -590,7 +609,7 @@ function ProfileForm({ navigation }) {
                                 })
                               : ''
                           }
-                          placeholder="No end"
+                          placeholder={t('labourProfileForm.noEnd')}
                           onPress={() => setDateField('availableUntil')}
                           onClear={() => setField('availableUntil', null)}
                         />
@@ -607,46 +626,46 @@ function ProfileForm({ navigation }) {
                 <SectionHeading
                   icon={<MapPin size={16} color={C.blue} />}
                   color={C.blue}
-                  title="Where you live"
-                  subtitle="Farmers search for workers near them"
+                  title={t('labourProfileForm.whereYouLive')}
+                  subtitle={t('labourProfileForm.farmersSearchForWorkersNear')}
                 />
                 <FormCard>
                   <View style={styles.row}>
                     <View style={styles.flex}>
-                      <Field label="Village">
+                      <Field label={t('labourProfileForm.village')}>
                         <FormInput
                           value={form.village}
                           onChangeText={value => setField('village', value)}
-                          placeholder="Village"
+                          placeholder={t('labourProfileForm.village')}
                         />
                       </Field>
                     </View>
                     <View style={styles.flex}>
-                      <Field label="Taluka">
+                      <Field label={t('labourProfileForm.taluka')}>
                         <FormInput
                           value={form.taluka}
                           onChangeText={value => setField('taluka', value)}
-                          placeholder="Taluka"
+                          placeholder={t('labourProfileForm.taluka')}
                         />
                       </Field>
                     </View>
                   </View>
                   <View style={styles.row}>
                     <View style={styles.flex}>
-                      <Field label="District">
+                      <Field label={t('labourProfileForm.district')}>
                         <FormInput
                           value={form.district}
                           onChangeText={value => setField('district', value)}
-                          placeholder="District"
+                          placeholder={t('labourProfileForm.district')}
                         />
                       </Field>
                     </View>
                     <View style={styles.flex}>
-                      <Field label="State">
+                      <Field label={t('labourProfileForm.state')}>
                         <FormInput
                           value={form.state}
                           onChangeText={value => setField('state', value)}
-                          placeholder="State"
+                          placeholder={t('labourProfileForm.state')}
                         />
                       </Field>
                     </View>
@@ -667,7 +686,7 @@ function ProfileForm({ navigation }) {
         {isCreate && step > 0 && (
           <MarketButton
             variant="outline"
-            label="Back"
+            label={t('common.back')}
             icon={<ArrowLeft size={16} color={C.green} />}
             disabled={saving || uploading}
             onPress={handleBack}
@@ -678,10 +697,10 @@ function ProfileForm({ navigation }) {
           <MarketButton
             label={
               uploading
-                ? 'Uploading photo…'
+                ? t('labourProfileForm.uploadingPhoto')
                 : isCreate
-                ? 'Create Profile'
-                : 'Save Changes'
+                ? t('labourProfileForm.createProfile')
+                : t('labourProfileForm.saveChanges')
             }
             icon={<Save size={17} color={C.white} />}
             loading={saving || uploading}
@@ -690,7 +709,7 @@ function ProfileForm({ navigation }) {
           />
         ) : (
           <MarketButton
-            label="Next"
+            label={t('labourProfileForm.next')}
             icon={<ArrowRight size={17} color={C.white} />}
             onPress={handleNext}
             style={styles.flexWide}

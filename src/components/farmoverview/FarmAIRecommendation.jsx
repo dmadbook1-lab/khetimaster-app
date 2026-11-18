@@ -7,7 +7,9 @@ import {
   StyleSheet,
 } from 'react-native';
 import { Info, ChevronRight } from 'lucide-react-native';
+import {useTranslation} from 'react-i18next';
 export default function FarmAIRecommendation() {
+  const {t} = useTranslation();
   return (
     <ImageBackground
       source={require('../../assets/images/advisory.png')}
@@ -22,16 +24,15 @@ export default function FarmAIRecommendation() {
             <Info size={17} color="#16883E" strokeWidth={3} />
           </View>
 
-          <Text style={styles.title}>Today’s AI{'\n'}Recommendation</Text>
+          <Text style={styles.title}>{t('farmAIRecommendation.todaysAi')}{'\n'}{t('farmAIRecommendation.recommendation')}</Text>
         </View>
 
         <Text style={styles.desc}>
-          Irrigation may be required within the next 2 days due to decreasing
-          soil moisture.
+          {t('farmAIRecommendation.irrigationMayBeRequiredWithin')}
         </Text>
 
         <TouchableOpacity activeOpacity={0.85} style={styles.button}>
-          <Text style={styles.buttonText}>View Advisory</Text>
+          <Text style={styles.buttonText}>{t('farmAIRecommendation.viewAdvisory')}</Text>
           <ChevronRight size={17} color="#166534" strokeWidth={2.6} />
         </TouchableOpacity>
       </View>

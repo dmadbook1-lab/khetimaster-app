@@ -10,11 +10,13 @@ import {
   isFreeDoctor,
   listText,
 } from '../../utils/doctorFormat';
+import {useTranslation} from 'react-i18next';
 
 /*
  * Doctor row in search results and on the home screen.
  */
 function DoctorCard({ doctor, onPress, style }) {
+  const {t} = useTranslation();
   const type = DOCTOR_TYPE_META[doctor.doctorType];
   const isCrop = doctor.doctorType === 'agriculturalDoctor';
   const place = [doctor.district, doctor.state].filter(Boolean).join(', ');
@@ -57,11 +59,11 @@ function DoctorCard({ doctor, onPress, style }) {
             <Text style={styles.meta}>
               {doctor.totalReviews
                 ? `${doctor.rating} (${doctor.totalReviews})`
-                : 'New'}
+                : t('doctorCard.new')}
             </Text>
             <View style={styles.metaDot} />
             <Text style={styles.meta}>
-              {doctor.totalConsultations || 0} consultations
+              {t('doctorCard.consultations', {v1: doctor.totalConsultations || 0})}
             </Text>
           </View>
         </View>

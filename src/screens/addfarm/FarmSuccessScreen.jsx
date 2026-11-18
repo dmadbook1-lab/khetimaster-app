@@ -277,8 +277,7 @@ export default function FarmSuccessScreen() {
             styles.subtitle
           }
         >
-          {t('farmSuccess.ready_sub')}
-          KhetiMaster.
+          {t('farmSuccess.khetimaster', {v1: t('farmSuccess.ready_sub')})}
         </Text>
 
         {/* ============================================================ */}
@@ -348,7 +347,7 @@ export default function FarmSuccessScreen() {
                   styles.activeText
                 }
               >
-                Saved
+                {t('farmSuccess.saved2')}
               </Text>
             </View>
           </View>
@@ -412,7 +411,7 @@ export default function FarmSuccessScreen() {
                     styles.infoLabel
                   }
                 >
-                  Variety
+                  {t('farmSuccess.variety')}
                 </Text>
 
                 <Text
@@ -489,7 +488,7 @@ export default function FarmSuccessScreen() {
                     styles.infoLabel
                   }
                 >
-                  Irrigation
+                  {t('farmSuccess.irrigation')}
                 </Text>
 
                 <Text
@@ -528,7 +527,7 @@ export default function FarmSuccessScreen() {
                     styles.infoLabel
                   }
                 >
-                  Location
+                  {t('farmSuccess.location')}
                 </Text>
 
                 <Text
@@ -651,8 +650,7 @@ export default function FarmSuccessScreen() {
                   styles.barrenText
                 }
               >
-                This field is marked as barren
-                land.
+                {t('farmSuccess.thisFieldIsMarkedAs')}
               </Text>
             </View>
           ) : null}
@@ -667,7 +665,7 @@ export default function FarmSuccessScreen() {
             styles.nextTitle
           }
         >
-          What's Next?
+          {t('farmSuccess.whatsNext')}
         </Text>
 
         {/* ============================================================ */}

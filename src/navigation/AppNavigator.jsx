@@ -71,6 +71,9 @@ import DoctorRequestsScreen from '../screens/Doctor/DoctorRequestsScreen';
 import DoctorDashboardScreen from '../screens/Doctor/DoctorDashboardScreen';
 import DoctorProfileFormScreen from '../screens/Doctor/DoctorProfileFormScreen';
 import { DOCTOR_ROUTES } from '../constants/doctorRoutes';
+import WarehouseHomeScreen from '../screens/Warehouse/WarehouseHomeScreen';
+import WarehouseDetailsScreen from '../screens/Warehouse/WarehouseDetailsScreen';
+import { WAREHOUSE_ROUTES } from '../constants/warehouseRoutes';
 import NurseryHomeScreen from '../screens/Nursery/NurseryHomeScreen';
 import NurseryPlantDetailsScreen from '../screens/Nursery/NurseryPlantDetailsScreen';
 import NurseryCartScreen from '../screens/Nursery/NurseryCartScreen';
@@ -98,6 +101,7 @@ import MyLabourBookingsScreen from '../screens/Labour/MyLabourBookingsScreen';
 import LabourRequestsScreen from '../screens/Labour/LabourRequestsScreen';
 import MyLabourProfileScreen from '../screens/Labour/MyLabourProfileScreen';
 import LabourProfileFormScreen from '../screens/Labour/LabourProfileFormScreen';
+import LabourListScreen from '../screens/Labour/LabourListScreen';
 import { LABOUR_ROUTES } from '../constants/labourRoutes';
 import MachineryHomeScreen from '../screens/Machinery/MachineryHomeScreen';
 import MachineryDetailsScreen from '../screens/Machinery/MachineryDetailsScreen';
@@ -361,6 +365,14 @@ export default function AppNavigator() {
           component={GovernmentSchemesScreen}
         />
         <Stack.Screen name="LatestSchemes" component={LatestSchemesScreen} />
+        <Stack.Screen
+          name={WAREHOUSE_ROUTES.HOME}
+          component={WarehouseHomeScreen}
+        />
+        <Stack.Screen
+          name={WAREHOUSE_ROUTES.DETAILS}
+          component={WarehouseDetailsScreen}
+        />
         <Stack.Screen name={DOCTOR_ROUTES.HOME} component={DoctorHomeScreen} />
         <Stack.Screen name={DOCTOR_ROUTES.LIST} component={DoctorListScreen} />
         <Stack.Screen
@@ -462,6 +474,16 @@ export default function AppNavigator() {
 
         {/* Route names: LabourBooking, WorkerDetails, BookLabour, LabourBookingDetails, MyBookings, LabourRequests, LabourProfile, LabourProfileForm */}
         <Stack.Screen name={LABOUR_ROUTES.HOME} component={LabourHomeScreen} />
+        <Stack.Screen
+          name={LABOUR_ROUTES.ALL}
+          component={LabourListScreen}
+          initialParams={{ mode: 'all' }}
+        />
+        <Stack.Screen
+          name={LABOUR_ROUTES.NEARBY}
+          component={LabourListScreen}
+          initialParams={{ mode: 'nearby' }}
+        />
         <Stack.Screen
           name={LABOUR_ROUTES.LABOURER_DETAILS}
           component={LabourerDetailsScreen}

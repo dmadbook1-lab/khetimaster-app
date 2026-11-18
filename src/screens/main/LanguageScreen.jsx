@@ -15,8 +15,6 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
 import { ArrowLeft, Check, Search, ShieldCheck } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
-import { useDispatch } from 'react-redux';
-import { setAiGuruLanguage } from '../../redux/slices/aiGuruSlice';
 import {
   changeLanguageFast,
   getAppLanguagePickerRows,
@@ -35,7 +33,6 @@ const DARK = '#171B20';
  */
 const LanguageScreen = ({ navigation, route }) => {
   const { t, i18n } = useTranslation();
-  const dispatch = useDispatch();
   const fromSettings = route?.params?.fromSettings === true;
   const redirectTo = route?.params?.redirectTo || 'Login';
 
@@ -69,8 +66,6 @@ const LanguageScreen = ({ navigation, route }) => {
       try {
         const resolved = await changeLanguageFast(code);
         await persistLanguageOnly(resolved);
-        // AI Guru and farm advisory reply in the app language by default
-        dispatch(setAiGuruLanguage(resolved));
         if (fromSettings) {
           navigation.goBack();
         } else {
@@ -82,7 +77,7 @@ const LanguageScreen = ({ navigation, route }) => {
         setApplying(false);
       }
     },
-    [dispatch, fromSettings, navigation, redirectTo],
+    [fromSettings, navigation, redirectTo],
   );
 
   const onSelectLanguage = useCallback(

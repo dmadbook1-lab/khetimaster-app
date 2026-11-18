@@ -26,20 +26,37 @@ import LabourBookingCard from '../../components/labour/LabourBookingCard';
 import { LABOUR_ROUTES } from '../../constants/labourRoutes';
 import { fetchMyLabourBookings } from '../../redux/slices/labourBookingSlice';
 import { isAcceptedStatus } from '../../utils/labourFormat';
+import {useTranslation} from 'react-i18next';
+import i18n from 'i18next';
 
 const STATUS_FILTERS = [
-  { key: 'active', label: 'Upcoming' },
-  { key: 'pending', label: 'Requested' },
-  { key: 'accepted', label: 'Confirmed' },
-  { key: 'completed', label: 'Completed' },
-  { key: 'cancelled', label: 'Cancelled' },
-  { key: 'rejected', label: 'Declined' },
-  { key: 'all', label: 'All' },
+  { key: 'active', get label() {
+    return i18n.t('myLabourBookings.upcoming');
+  } },
+  { key: 'pending', get label() {
+    return i18n.t('myLabourBookings.requested');
+  } },
+  { key: 'accepted', get label() {
+    return i18n.t('myLabourBookings.confirmed');
+  } },
+  { key: 'completed', get label() {
+    return i18n.t('myLabourBookings.completed');
+  } },
+  { key: 'cancelled', get label() {
+    return i18n.t('myLabourBookings.cancelled');
+  } },
+  { key: 'rejected', get label() {
+    return i18n.t('myLabourBookings.declined');
+  } },
+  { key: 'all', get label() {
+    return i18n.t('myLabourBookings.all');
+  } },
 ];
 
 const PAGE_SIZE = 20;
 
 export default function MyLabourBookingsScreen({ navigation }) {
+  const {t} = useTranslation();
   const dispatch = useDispatch();
   const { items, page, totalPages, total, loading, loadingMore, error } =
     useSelector(state => state.labourBooking.myBookings);
@@ -101,9 +118,9 @@ export default function MyLabourBookingsScreen({ navigation }) {
               compact
               gradient="blue"
               onBack={() => navigation.goBack()}
-              eyebrow="Hired workers"
-              title="My Bookings"
-              subtitle="Workers you've booked for your farm"
+              eyebrow={t('myLabourBookings.hiredWorkers')}
+              title={t('myLabourBookings.myBookings')}
+              subtitle={t('myLabourBookings.workersYouveBookedForYour')}
               right={
                 <GlassButton
                   onPress={() => navigation.navigate(LABOUR_ROUTES.HOME)}
@@ -113,11 +130,11 @@ export default function MyLabourBookingsScreen({ navigation }) {
               }
             >
               <View style={styles.statsRow}>
-                <HeroStat value={waiting} label="Waiting" />
-                <HeroStat value={confirmed} label="Confirmed" />
+                <HeroStat value={waiting} label={t('myLabourBookings.waiting')} />
+                <HeroStat value={confirmed} label={t('myLabourBookings.confirmed')} />
                 <HeroStat
                   value={toRate || total}
-                  label={toRate ? 'To rate' : 'Showing'}
+                  label={toRate ? t('myLabourBookings.toRate') : t('myLabourBookings.showing')}
                   highlight={toRate > 0}
                 />
               </View>
@@ -145,17 +162,17 @@ export default function MyLabourBookingsScreen({ navigation }) {
             <LoadingState />
           ) : error ? (
             <EmptyState
-              title="Couldn't load your bookings"
+              title={t('myLabourBookings.couldntLoadYourBookings')}
               message={error}
-              actionLabel="Try Again"
+              actionLabel={t('myLabourBookings.tryAgain')}
               onAction={load}
             />
           ) : (
             <EmptyState
               icon={<CalendarCheck size={30} color={C.green} />}
-              title="No bookings here"
-              message="Book a worker for harvesting, sowing, spraying and more."
-              actionLabel="Find Workers"
+              title={t('myLabourBookings.noBookingsHere')}
+              message={t('myLabourBookings.bookAWorkerForHarvesting')}
+              actionLabel={t('myLabourBookings.findWorkers')}
               onAction={() => navigation.navigate(LABOUR_ROUTES.HOME)}
             />
           )

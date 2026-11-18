@@ -21,7 +21,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { X, Trash2 } from 'lucide-react-native';
-import BottomTabBar from '../../common/BottomTabBar';
+import BottomTabBar, { useBottomTabBarInset } from '../../common/BottomTabBar';
 import AIGuruHeader, {
   HEADER_HEIGHT,
 } from '../../components/aiguru/AIGuruHeader';
@@ -54,7 +54,6 @@ import {
   sendAiGuruMessage,
   startNewAiGuruChat,
   setAiGuruFarm,
-  setAiGuruLanguage,
   fetchAiGuruSessions,
   openAiGuruSession,
   deleteAiGuruSession,
@@ -72,6 +71,7 @@ import { pickAiGuruPhoto } from '../../utils/aiGuruPhoto';
  *   newChat   start a fresh conversation
  */
 export default function AIGuruScreen({ navigation, route }) {
+  const tabBarInset = useBottomTabBarInset();
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const scrollRef = useRef(null);
@@ -83,7 +83,6 @@ export default function AIGuruScreen({ navigation, route }) {
     sessionId,
     messages,
     activeFieldId,
-    language,
     sending,
     loadingSession,
     sessions,
@@ -355,8 +354,6 @@ export default function AIGuruScreen({ navigation, route }) {
         >
           <AIGuruHeader
             navigation={navigation}
-            language={language}
-            onLanguageChange={code => dispatch(setAiGuruLanguage(code))}
             onHistoryPress={handleOpenHistory}
           />
 
@@ -474,7 +471,7 @@ export default function AIGuruScreen({ navigation, route }) {
             />
           </View>
 
-          <View style={styles.tabBarSpace} />
+          <View style={[styles.tabBarSpace, { height: styles.tabBarSpace.height + tabBarInset }]} />
 
           <BottomTabBar navigation={navigation} active="AIGuru" />
         </KeyboardAvoidingView>

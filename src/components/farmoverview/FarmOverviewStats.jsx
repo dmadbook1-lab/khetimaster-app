@@ -1,6 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { stats } from './data';
+import {tOpt} from '../../utils/tOpt';
+import {useTranslation} from 'react-i18next';
 const { width } = Dimensions.get('window');
 const CARD_WIDTH = (width - width * 0.11 - 14) / 2;
 const rf = size => {
@@ -8,6 +10,7 @@ const rf = size => {
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
 export default function FarmOverviewStats() {
+  useTranslation();
   return (
     <View style={styles.wrapper}>
       {stats.map((item, index) => {
@@ -35,7 +38,7 @@ export default function FarmOverviewStats() {
                 },
               ]}
             >
-              {item.status}
+              {tOpt(item.status)}
             </Text>
           </View>
         );

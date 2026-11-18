@@ -21,6 +21,7 @@ import {
   fetchMarketSellerProfile,
 } from '../../redux/slices/marketSlice';
 import { formatLocation, timeAgo } from '../../utils/marketFormat';
+import {useTranslation} from 'react-i18next';
 
 function Stars({ rating, size = 12 }) {
   return (
@@ -38,6 +39,7 @@ function Stars({ rating, size = 12 }) {
 }
 
 export default function MarketSellerProfileScreen({ navigation, route }) {
+  const {t} = useTranslation();
   const { sellerId } = route.params;
   const dispatch = useDispatch();
   const { sellerProfile, sellerLoading, sellerError } = useSelector(
@@ -60,12 +62,12 @@ export default function MarketSellerProfileScreen({ navigation, route }) {
   if (!seller) {
     return (
       <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
-        <MarketHeader title="Seller" onBack={() => navigation.goBack()} />
+        <MarketHeader title={t('marketSellerProfile.seller')} onBack={() => navigation.goBack()} />
         {sellerError ? (
           <EmptyState
-            title="Seller not available"
+            title={t('marketSellerProfile.sellerNotAvailable')}
             message={sellerError}
-            actionLabel="Go Back"
+            actionLabel={t('marketSellerProfile.goBack')}
             onAction={() => navigation.goBack()}
           />
         ) : (
@@ -96,7 +98,7 @@ export default function MarketSellerProfileScreen({ navigation, route }) {
             )}
             {!!seller.createdAt && (
               <Text style={styles.memberSince}>
-                On KhetiMaster since{' '}
+                {t('marketSellerProfile.onKhetimasterSince')}{' '}
                 {new Date(seller.createdAt).toLocaleDateString('en-IN', {
                   month: 'short',
                   year: 'numeric',
@@ -108,19 +110,19 @@ export default function MarketSellerProfileScreen({ navigation, route }) {
 
         <View style={styles.statsRow}>
           <HeroStat
-            value={stats.totalReviews ? `★ ${stats.averageRating}` : 'New'}
-            label={`${stats.totalReviews || 0} reviews`}
+            value={stats.totalReviews ? `★ ${stats.averageRating}` : t('marketSellerProfile.new')}
+            label={t('marketSellerProfile.reviews', {v1: stats.totalReviews || 0})}
             highlight={stats.totalReviews > 0}
           />
-          <HeroStat value={stats.completedDeals || 0} label="Deals done" />
-          <HeroStat value={listings.length} label="Listings" />
+          <HeroStat value={stats.completedDeals || 0} label={t('marketSellerProfile.dealsDone')} />
+          <HeroStat value={listings.length} label={t('marketSellerProfile.listings')} />
         </View>
       </MarketHero>
 
       <View style={styles.body}>
         {reviews.length > 0 && (
           <>
-            <Text style={styles.sectionTitle}>Recent Reviews</Text>
+            <Text style={styles.sectionTitle}>{t('marketSellerProfile.recentReviews')}</Text>
             {reviews.slice(0, 5).map((review, index) => (
               <View
                 key={`${review.createdAt}-${index}`}
@@ -133,7 +135,7 @@ export default function MarketSellerProfileScreen({ navigation, route }) {
                   <Stars rating={review.rating} />
                 </View>
                 <Text style={styles.reviewItem}>
-                  Bought {review.item} · {timeAgo(review.createdAt)}
+                  {t('marketSellerProfile.bought', {item: review.item, v2: timeAgo(review.createdAt)})}
                 </Text>
                 {!!review.comment && (
                   <Text style={styles.reviewComment}>{review.comment}</Text>
@@ -145,7 +147,7 @@ export default function MarketSellerProfileScreen({ navigation, route }) {
 
         <View style={styles.inline}>
           <BadgeCheck size={17} color={C.green} />
-          <Text style={styles.sectionTitle}>Listings from this seller</Text>
+          <Text style={styles.sectionTitle}>{t('marketSellerProfile.listingsFromThisSeller')}</Text>
         </View>
       </View>
     </View>
@@ -181,7 +183,7 @@ export default function MarketSellerProfileScreen({ navigation, route }) {
           />
         }
         ListEmptyComponent={
-          <Text style={styles.emptyText}>No active listings right now.</Text>
+          <Text style={styles.emptyText}>{t('marketSellerProfile.noActiveListingsRightNow')}</Text>
         }
       />
     </SafeAreaView>

@@ -10,11 +10,13 @@ import {
   WAGE_TYPE_LABELS,
   formatExperience,
 } from '../../utils/labourFormat';
+import {useTranslation} from 'react-i18next';
 
 /*
  * Worker row on the labour browse screen.
  */
 function LabourerCard({ labourer, onPress, onBook }) {
+  const {t} = useTranslation();
   const skills = [
     ...(labourer.skills || []),
     ...(labourer.preferredWork || []),
@@ -53,7 +55,7 @@ function LabourerCard({ labourer, onPress, onBook }) {
               <Text style={styles.statText}>
                 {labourer.totalReviews
                   ? `${labourer.rating} (${labourer.totalReviews})`
-                  : 'New'}
+                  : t('labourerCard.new')}
               </Text>
             </View>
             <View style={styles.stat}>
@@ -66,7 +68,7 @@ function LabourerCard({ labourer, onPress, onBook }) {
               <View style={styles.stat}>
                 <BadgeCheck size={12} color={C.green} />
                 <Text style={styles.statText}>
-                  {labourer.totalJobsCompleted} jobs
+                  {t('labourerCard.jobs', {totalJobsCompleted: labourer.totalJobsCompleted})}
                 </Text>
               </View>
             )}
@@ -109,7 +111,7 @@ function LabourerCard({ labourer, onPress, onBook }) {
             style={styles.bookButton}
             onPress={onBook}
           >
-            <Text style={styles.bookText}>Book</Text>
+            <Text style={styles.bookText}>{t('labourerCard.book')}</Text>
           </TouchableOpacity>
         )}
       </View>

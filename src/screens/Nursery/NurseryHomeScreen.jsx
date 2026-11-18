@@ -57,6 +57,12 @@ import {
 } from '../../redux/slices/nurserySlice';
 import { fetchNurseryCart } from '../../redux/slices/nurseryCartSlice';
 import { formatRupees } from '../../utils/marketFormat';
+import {useTranslation} from 'react-i18next';
+import i18n from 'i18next';
+import {tOpt} from '../../utils/tOpt';
+import VoiceActionButton from '../../components/voice/VoiceActionButton';
+import VoiceFlowOverlay from '../../components/voice/VoiceFlowOverlay';
+import { useNurseryVoiceFlow } from '../../components/voice/flows/useFindVoiceFlows';
 
 const { width } = Dimensions.get('window');
 const GUTTER = 16;
@@ -64,11 +70,21 @@ const CARD_WIDTH = (width - GUTTER * 2 - 12) / 2;
 const PAGE_SIZE = 20;
 
 const SORTS = [
-  { key: 'newest', label: 'Newest' },
-  { key: 'popular', label: 'Best selling' },
-  { key: 'rating', label: 'Top rated' },
-  { key: 'price_asc', label: 'Price: low to high' },
-  { key: 'price_desc', label: 'Price: high to low' },
+  { key: 'newest', get label() {
+    return i18n.t('nurseryHome.newest');
+  } },
+  { key: 'popular', get label() {
+    return i18n.t('nurseryHome.bestSelling');
+  } },
+  { key: 'rating', get label() {
+    return i18n.t('nurseryHome.topRated');
+  } },
+  { key: 'price_asc', get label() {
+    return i18n.t('nurseryHome.priceLowToHigh');
+  } },
+  { key: 'price_desc', get label() {
+    return i18n.t('nurseryHome.priceHighToLow');
+  } },
 ];
 
 /*
@@ -89,6 +105,9 @@ const mergeCategories = (live, suggested) => {
 };
 
 export default function NurseryHomeScreen({ navigation }) {
+  const {t} = useTranslation();
+  const [voiceOpen, setVoiceOpen] = useState(false);
+  const voiceFlow = useNurseryVoiceFlow(navigation);
   const dispatch = useDispatch();
   const insets = useSafeAreaInsets();
   const meta = useNurseryMeta();
@@ -198,9 +217,9 @@ export default function NurseryHomeScreen({ navigation }) {
       <MarketHero
         banner={NURSERY_BANNER}
         onBack={() => navigation.goBack()}
-        eyebrow="Plant nursery"
-        title={'Healthy plants,\ndelivered home'}
-        subtitle="Saplings, seedlings and grafted plants from nurseries near you."
+        eyebrow={t('nurseryHome.plantNursery')}
+        title={t('nurseryHome.healthyPlantsDeliveredHome')}
+        subtitle={t('nurseryHome.saplingsSeedlingsAndGraftedPlants')}
         right={
           <>
             <GlassButton
@@ -221,12 +240,12 @@ export default function NurseryHomeScreen({ navigation }) {
           <View style={styles.trustPill}>
             <Truck size={12} color="#BFF0D2" />
             <Text style={styles.trustText}>
-              Free delivery above {formatRupees(meta.delivery.freeAbove)}
+              {t('nurseryHome.freeDeliveryAbove', {v1: formatRupees(meta.delivery.freeAbove)})}
             </Text>
           </View>
           <View style={styles.trustPill}>
             <Banknote size={12} color="#BFF0D2" />
-            <Text style={styles.trustText}>Cash on delivery</Text>
+            <Text style={styles.trustText}>{t('nurseryHome.cashOnDelivery')}</Text>
           </View>
         </View>
       </MarketHero>
@@ -237,7 +256,7 @@ export default function NurseryHomeScreen({ navigation }) {
           <TextInput
             value={searchText}
             onChangeText={setSearchText}
-            placeholder="Search mango, tulsi, rose..."
+            placeholder={t('nurseryHome.searchMangoTulsiRose')}
             placeholderTextColor={C.placeholder}
             style={styles.searchInput}
             returnKeyType="search"
@@ -262,8 +281,8 @@ export default function NurseryHomeScreen({ navigation }) {
             >
               <Package size={19} color={C.blue} />
             </View>
-            <Text style={styles.shortcutTitle}>My Orders</Text>
-            <Text style={styles.shortcutText}>Track your plants</Text>
+            <Text style={styles.shortcutTitle}>{t('nurseryHome.myOrders')}</Text>
+            <Text style={styles.shortcutText}>{t('nurseryHome.trackYourPlants')}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -281,15 +300,15 @@ export default function NurseryHomeScreen({ navigation }) {
                 <Store size={19} color="#A25200" />
               </View>
               <Text style={styles.sellTitle}>
-                {isSeller ? 'My Nursery' : 'Sell plants'}
+                {isSeller ? t('nurseryHome.myNursery') : t('nurseryHome.sellPlants')}
               </Text>
               <View style={styles.sellLink}>
                 <Text style={styles.sellLinkText}>
                   {isSeller
                     ? pendingOrders
-                      ? `${pendingOrders} plants to send`
-                      : `${mine.length} listed`
-                    : 'List for free'}
+                      ? t('nurseryHome.plantsToSend', {pendingOrders})
+                      : t('nurseryHome.listed', {length: mine.length})
+                    : t('nurseryHome.listForFree')}
                 </Text>
                 <ArrowRight size={13} color="#3A2400" strokeWidth={2.8} />
               </View>
@@ -297,7 +316,12 @@ export default function NurseryHomeScreen({ navigation }) {
           </TouchableOpacity>
         </View>
 
-        <Text style={styles.sectionTitle}>Shop by category</Text>
+        <VoiceActionButton
+          label={t('voiceFlow.button.nursery')}
+          onPress={() => setVoiceOpen(true)}
+        />
+
+        <Text style={styles.sectionTitle}>{t('nurseryHome.shopByCategory')}</Text>
       </View>
 
       <ScrollView
@@ -316,7 +340,7 @@ export default function NurseryHomeScreen({ navigation }) {
           <Text
             style={[styles.typeLabel, !category && styles.typeLabelSelected]}
           >
-            All plants
+            {t('nurseryHome.allPlants')}
           </Text>
         </TouchableOpacity>
 
@@ -339,7 +363,7 @@ export default function NurseryHomeScreen({ navigation }) {
                 style={[styles.typeLabel, selected && styles.typeLabelSelected]}
                 numberOfLines={2}
               >
-                {item}
+                {tOpt(item)}
               </Text>
             </TouchableOpacity>
           );
@@ -350,10 +374,10 @@ export default function NurseryHomeScreen({ navigation }) {
         <View style={styles.resultsHeader}>
           <View style={styles.flex}>
             <Text style={styles.sectionTitleFlat}>
-              {category || (search ? 'Search results' : 'Fresh from nurseries')}
+              {tOpt(category) || (search ? t('nurseryHome.searchResults') : t('nurseryHome.freshFromNurseries'))}
             </Text>
             <Text style={styles.resultCount}>
-              {listLoading ? 'Searching…' : `${pagination.total} plants found`}
+              {listLoading ? t('nurseryHome.searching') : t('nurseryHome.plantsFound', {total: pagination.total})}
             </Text>
           </View>
 
@@ -376,7 +400,7 @@ export default function NurseryHomeScreen({ navigation }) {
             <Text
               style={[styles.toggleText, nearMe && styles.toggleTextActive]}
             >
-              Only near {nearDistrict}
+              {t('nurseryHome.onlyNear', {nearDistrict})}
             </Text>
           </TouchableOpacity>
         )}
@@ -417,16 +441,16 @@ export default function NurseryHomeScreen({ navigation }) {
           ) : listError ? (
             <EmptyState
               icon={<Sprout size={30} color={C.green} />}
-              title="Couldn't load plants"
+              title={t('nurseryHome.couldntLoadPlants')}
               message={listError}
-              actionLabel="Try Again"
+              actionLabel={t('nurseryHome.tryAgain')}
               onAction={loadFirstPage}
             />
           ) : (
             <EmptyState
               icon={<Sprout size={30} color={C.green} />}
-              title="No plants found"
-              message="Try another category or search, or turn off the location filter."
+              title={t('nurseryHome.noPlantsFound')}
+              message={t('nurseryHome.tryAnotherCategoryOrSearch')}
             />
           )
         }
@@ -448,17 +472,23 @@ export default function NurseryHomeScreen({ navigation }) {
           </View>
           <View style={styles.flex}>
             <Text style={styles.cartTitle}>
-              {cartCount} {cartCount === 1 ? 'plant' : 'plants'} in cart
+              {t('nurseryHome.inCart', {cartCount, v2: cartCount === 1 ? 'plant' : 'plants'})}
             </Text>
             <Text style={styles.cartSub}>
               {formatRupees(cart.total)}
-              {cart.deliveryFee ? ' incl. delivery' : ' · free delivery'}
+              {cart.deliveryFee ? t('nurseryHome.inclDelivery') : t('nurseryHome.freeDelivery')}
             </Text>
           </View>
-          <Text style={styles.cartAction}>View Cart</Text>
+          <Text style={styles.cartAction}>{t('nurseryHome.viewCart')}</Text>
           <ArrowRight size={17} color={C.white} strokeWidth={2.6} />
         </TouchableOpacity>
       )}
+
+      <VoiceFlowOverlay
+        visible={voiceOpen}
+        flow={voiceFlow}
+        onClose={() => setVoiceOpen(false)}
+      />
     </SafeAreaView>
   );
 }

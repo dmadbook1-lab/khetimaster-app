@@ -21,6 +21,7 @@ import {
   isDiscreteUnit,
   validateOfferQuantity,
 } from '../../utils/marketFormat';
+import {useTranslation} from 'react-i18next';
 
 /*
  * Make an offer (buyer) or a counter offer (either side).
@@ -43,6 +44,7 @@ export default function OfferSheet({
   onClose,
   onSubmit,
 }) {
+  const {t} = useTranslation();
   const isOffer = mode === 'offer';
 
   const [quantity, setQuantity] = useState('');
@@ -79,12 +81,12 @@ export default function OfferSheet({
     const priceValue = Number(price);
 
     if (!String(price).trim() || !Number.isFinite(priceValue) || priceValue <= 0) {
-      setError('Enter a valid price per unit');
+      setError(t('offerSheet.enterAValidPricePer'));
       return;
     }
 
     if (isOffer && fulfilment === 'DELIVERY' && !deliveryAddress.trim()) {
-      setError('Enter the delivery address');
+      setError(t('offerSheet.enterTheDeliveryAddress'));
       return;
     }
 
@@ -93,7 +95,7 @@ export default function OfferSheet({
       Number(quantity) === Number(initialQuantity) &&
       priceValue === Number(initialPrice)
     ) {
-      setError('Change the price or quantity, or accept the current offer instead');
+      setError(t('offerSheet.changeThePriceOrQuantity'));
       return;
     }
 
@@ -123,24 +125,24 @@ export default function OfferSheet({
           <View style={styles.handle} />
 
           <View style={styles.headerRow}>
-            <Text style={styles.title}>{isOffer ? 'Make an Offer' : 'Counter Offer'}</Text>
+            <Text style={styles.title}>{isOffer ? t('offerSheet.makeAnOffer') : t('offerSheet.counterOffer')}</Text>
             <Pressable hitSlop={10} onPress={onClose}>
               <X size={20} color={C.muted} />
             </Pressable>
           </View>
 
           <Text style={styles.hint}>
-            Listed at {formatPricePerUnit(terms?.listedPrice, unit)} ·{' '}
-            {formatQuantity(terms?.available, unit)} available
+            {t('offerSheet.listedAt')} {formatPricePerUnit(terms?.listedPrice, unit)} ·{' '}
+            {formatQuantity(terms?.available, unit)} {t('offerSheet.available')}
             {terms?.minOrderQuantity
-              ? ` · Min order ${formatQuantity(terms.minOrderQuantity, unit)}`
+              ? t('offerSheet.minOrder', {v1: formatQuantity(terms.minOrderQuantity, unit)})
               : ''}
           </Text>
 
           <ScrollView keyboardShouldPersistTaps="handled" showsVerticalScrollIndicator={false}>
             <View style={styles.row}>
               <View style={styles.half}>
-                <Text style={styles.label}>Quantity ({unit})</Text>
+                <Text style={styles.label}>{t('offerSheet.quantity', {unit})}</Text>
                 <TextInput
                   value={quantity}
                   onChangeText={setQuantity}
@@ -152,7 +154,7 @@ export default function OfferSheet({
               </View>
 
               <View style={styles.half}>
-                <Text style={styles.label}>Price per {unit}</Text>
+                <Text style={styles.label}>{t('offerSheet.pricePer', {unit})}</Text>
                 <View style={[styles.input, styles.priceBox, priceLocked && styles.locked]}>
                   <Text style={styles.rupee}>₹</Text>
                   <TextInput
@@ -169,20 +171,20 @@ export default function OfferSheet({
             </View>
 
             {priceLocked && (
-              <Text style={styles.note}>The seller has fixed the price of this listing.</Text>
+              <Text style={styles.note}>{t('offerSheet.theSellerHasFixedThe')}</Text>
             )}
 
             {isOffer && (
               <>
-                <Text style={styles.label}>Pickup or delivery</Text>
+                <Text style={styles.label}>{t('offerSheet.pickupOrDelivery')}</Text>
                 <ChipRow
                   scroll={false}
                   value={fulfilment}
                   onChange={setFulfilment}
                   options={[
-                    {key: 'PICKUP', label: 'I will pick up'},
+                    {key: 'PICKUP', label: t('offerSheet.iWillPickUp')},
                     ...(terms?.deliveryAvailable
-                      ? [{key: 'DELIVERY', label: 'Deliver to me'}]
+                      ? [{key: 'DELIVERY', label: t('offerSheet.deliverToMe')}]
                       : []),
                   ]}
                 />
@@ -191,7 +193,7 @@ export default function OfferSheet({
                   <TextInput
                     value={deliveryAddress}
                     onChangeText={setDeliveryAddress}
-                    placeholder="Village, taluka, district, landmark"
+                    placeholder={t('offerSheet.villageTalukaDistrictLandmark')}
                     placeholderTextColor={C.placeholder}
                     style={[styles.input, styles.textArea, styles.addressInput]}
                     multiline
@@ -201,11 +203,11 @@ export default function OfferSheet({
               </>
             )}
 
-            <Text style={styles.label}>Message (optional)</Text>
+            <Text style={styles.label}>{t('offerSheet.messageOptional')}</Text>
             <TextInput
               value={message}
               onChangeText={setMessage}
-              placeholder={isOffer ? 'e.g. I can pick up on Sunday' : 'Add a note'}
+              placeholder={isOffer ? t('offerSheet.eGICanPick') : t('offerSheet.addANote')}
               placeholderTextColor={C.placeholder}
               style={[styles.input, styles.textArea]}
               maxLength={500}
@@ -214,7 +216,7 @@ export default function OfferSheet({
             />
 
             <View style={styles.totalRow}>
-              <Text style={styles.totalLabel}>Total amount</Text>
+              <Text style={styles.totalLabel}>{t('offerSheet.totalAmount')}</Text>
               <Text style={styles.totalValue}>{formatRupees(total)}</Text>
             </View>
 
@@ -230,7 +232,7 @@ export default function OfferSheet({
             )}
 
             <MarketButton
-              label={isOffer ? 'Send Offer' : 'Send Counter Offer'}
+              label={isOffer ? t('offerSheet.sendOffer') : t('offerSheet.sendCounterOffer')}
               icon={<Send size={17} color={C.white} />}
               loading={loading}
               onPress={handleSubmit}

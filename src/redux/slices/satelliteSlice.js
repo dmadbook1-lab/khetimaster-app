@@ -2,6 +2,7 @@ import {createAsyncThunk, createSlice} from '@reduxjs/toolkit';
 import axios from 'axios';
 
 import {API_URLS, SATELLITE_API_KEY} from '../../config/api';
+import i18n from 'i18next';
 
 const SATELLITE_API = `${API_URLS.satellite}/v4/api`;
 
@@ -94,7 +95,7 @@ export const fetchDatesData = createAsyncThunk(
     try {
       if (!geometry) {
         return rejectWithValue({
-          message: 'Farm geometry is missing',
+          message: i18n.t('satelliteSlice.farmGeometryIsMissing'),
         });
       }
 
@@ -125,7 +126,7 @@ export const fetchDatesData = createAsyncThunk(
           error?.response?.data?.detail ||
           error?.response?.data?.message ||
           error?.message ||
-          'Unable to fetch satellite dates',
+          i18n.t('satelliteSlice.unableToFetchSatelliteDates'),
       });
     }
   },
@@ -150,13 +151,13 @@ export const fetchIndexData = createAsyncThunk(
     try {
       if (!geometry) {
         return rejectWithValue({
-          message: 'Farm geometry is missing',
+          message: i18n.t('satelliteSlice.farmGeometryIsMissing'),
         });
       }
 
       if (!endDate) {
         return rejectWithValue({
-          message: 'Satellite date is missing',
+          message: i18n.t('satelliteSlice.satelliteDateIsMissing'),
         });
       }
 
@@ -195,7 +196,7 @@ export const fetchIndexData = createAsyncThunk(
           error?.response?.data?.detail ||
           error?.response?.data?.message ||
           error?.message ||
-          'Unable to calculate satellite index',
+          i18n.t('satelliteSlice.unableToCalculateSatelliteIndex'),
 
         data: error?.response?.data,
       });
@@ -292,7 +293,7 @@ const satelliteSlice = createSlice({
         state.datesError =
           action.payload?.message ||
           action.error?.message ||
-          'Unable to load satellite dates';
+          i18n.t('satelliteSlice.unableToLoadSatelliteDates');
       })
 
       /* ---------------- INDEX ---------------- */
@@ -317,7 +318,7 @@ const satelliteSlice = createSlice({
           message:
             action.payload?.message ||
             action.error?.message ||
-            'Unable to calculate satellite index',
+            i18n.t('satelliteSlice.unableToCalculateSatelliteIndex'),
         };
       });
   },

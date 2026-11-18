@@ -138,7 +138,7 @@ export default function AIReadySection({ name, onVoicePress }) {
       </View>
 
       <FadeInUp delay={100}>
-        <Text style={styles.greeting}>Namaste{name ? `, ${name}` : ''} 👋</Text>
+        <Text style={styles.greeting}>{t('aIReadySection.namaste', {v1: name ? `, ${name}` : ''})}</Text>
       </FadeInUp>
 
       <FadeInUp delay={180}>

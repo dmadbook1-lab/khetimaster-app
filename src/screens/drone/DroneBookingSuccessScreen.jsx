@@ -29,6 +29,8 @@ import {
   FileText,
   Home,
 } from 'lucide-react-native';
+import {useTranslation} from 'react-i18next';
+import {tOpt} from '../../utils/tOpt';
 const { width } = Dimensions.get('window');
 const GREEN = '#16A34A';
 const DARK_GREEN = '#15803D';
@@ -40,6 +42,7 @@ const rf = size => {
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
 export default function DroneBookingSuccessScreen({ navigation }) {
+  const {t} = useTranslation();
   return (
     <SafeAreaView style={styles.safeArea} edges={['bottom']}>
       <StatusBar barStyle="light-content" backgroundColor="#000" />
@@ -64,20 +67,19 @@ export default function DroneBookingSuccessScreen({ navigation }) {
         </View>
 
         <View style={styles.content}>
-          <Text style={styles.title}>Drone Service</Text>
-          <Text style={styles.titleGreen}>Booked Successfully!</Text>
+          <Text style={styles.title}>{t('droneBookingSuccess.droneService')}</Text>
+          <Text style={styles.titleGreen}>{t('droneBookingSuccess.bookedSuccessfully')}</Text>
           <Text style={styles.desc}>
-            Your booking has been confirmed.{'\n'}The drone operator has
-            accepted your request.
+            {t('droneBookingSuccess.yourBookingHasBeenConfirmed')}{'\n'}{t('droneBookingSuccess.theDroneOperatorHasAccepted')}
           </Text>
           <View style={styles.bookingIdPill}>
             <Text style={styles.bookingIdText}>
-              🎯 Booking ID KM-DRN-2028-00847
+              {t('droneBookingSuccess.bookingIdKmDrn2028')}
             </Text>
           </View>
 
           {}
-          <Text style={styles.sectionLabel}>DRONE OPERATOR</Text>
+          <Text style={styles.sectionLabel}>{t('droneBookingSuccess.droneOperator')}</Text>
           <View style={styles.opCard}>
             <View
               style={{
@@ -86,7 +88,7 @@ export default function DroneBookingSuccessScreen({ navigation }) {
               }}
             >
               <View style={styles.opInitial}>
-                <Text style={styles.opInitialText}>SA</Text>
+                <Text style={styles.opInitialText}>{t('droneBookingSuccess.sa')}</Text>
               </View>
               <View
                 style={{
@@ -94,7 +96,7 @@ export default function DroneBookingSuccessScreen({ navigation }) {
                   marginLeft: 12,
                 }}
               >
-                <Text style={styles.opName}>SkyAgri Drone{'\n'}Services</Text>
+                <Text style={styles.opName}>{t('droneBookingSuccess.skyagriDrone')}{'\n'}{t('droneBookingSuccess.services')}</Text>
                 <View
                   style={{
                     flexDirection: 'row',
@@ -113,13 +115,13 @@ export default function DroneBookingSuccessScreen({ navigation }) {
                   </View>
                   <View style={styles.dgca}>
                     <BadgeCheck size={rf(10)} color={GREEN} strokeWidth={2.4} />
-                    <Text style={styles.dgcaText}>DGCA Certified</Text>
+                    <Text style={styles.dgcaText}>{t('droneBookingSuccess.dgcaCertified')}</Text>
                   </View>
                 </View>
               </View>
               <View style={styles.confirmedPill}>
                 <View style={styles.confirmedDot} />
-                <Text style={styles.confirmedText}>Confirmed</Text>
+                <Text style={styles.confirmedText}>{t('droneBookingSuccess.confirmed')}</Text>
               </View>
             </View>
 
@@ -140,12 +142,12 @@ export default function DroneBookingSuccessScreen({ navigation }) {
                   marginLeft: 10,
                 }}
               >
-                <Text style={styles.pilotName}>Rahul Patil</Text>
-                <Text style={styles.pilotRole}>DGCA Certified Drone Pilot</Text>
+                <Text style={styles.pilotName}>{t('droneBookingSuccess.rahulPatil')}</Text>
+                <Text style={styles.pilotRole}>{t('droneBookingSuccess.dgcaCertifiedDronePilot')}</Text>
               </View>
               <View style={styles.verifiedPill}>
                 <Check size={rf(10)} color={GREEN} strokeWidth={3} />
-                <Text style={styles.verifiedText}>Verified</Text>
+                <Text style={styles.verifiedText}>{t('droneBookingSuccess.verified')}</Text>
               </View>
             </View>
 
@@ -172,14 +174,14 @@ export default function DroneBookingSuccessScreen({ navigation }) {
                   }}
                 >
                   <Text style={styles.statLbl}>{s.l}</Text>
-                  <Text style={styles.statVal}>{s.v}</Text>
+                  <Text style={styles.statVal}>{tOpt(s.v)}</Text>
                 </View>
               ))}
             </View>
           </View>
 
           {}
-          <Text style={styles.sectionLabel}>SERVICE SCHEDULE</Text>
+          <Text style={styles.sectionLabel}>{t('droneBookingSuccess.serviceSchedule')}</Text>
           <View style={styles.scheduleCard}>
             <View style={styles.scheduleHeader}>
               <Calendar size={rf(15)} color="#FFFFFF" strokeWidth={2.4} />
@@ -188,28 +190,28 @@ export default function DroneBookingSuccessScreen({ navigation }) {
                   marginLeft: 8,
                 }}
               >
-                <Text style={styles.scheduleTitle}>Service Scheduled</Text>
+                <Text style={styles.scheduleTitle}>{t('droneBookingSuccess.serviceScheduled')}</Text>
                 <Text style={styles.scheduleSub}>
-                  Confirmed · Tomorrow Morning
+                  {t('droneBookingSuccess.confirmedTomorrowMorning')}
                 </Text>
               </View>
             </View>
             {[
               {
                 Icon: Calendar,
-                label: 'SERVICE DATE',
+                label: t('droneBookingSuccess.serviceDate'),
                 val: '30 June 2026',
                 pill: 'Tuesday',
               },
               {
                 Icon: Clock,
-                label: 'SCHEDULED TIME',
+                label: t('droneBookingSuccess.scheduledTime'),
                 val: '06:30 AM',
                 pill: 'AI Pick',
               },
               {
                 Icon: Zap,
-                label: 'ESTIMATED DURATION',
+                label: t('droneBookingSuccess.estimatedDuration'),
                 val: '35 Minutes',
               },
             ].map((d, i) => {
@@ -237,7 +239,7 @@ export default function DroneBookingSuccessScreen({ navigation }) {
           </View>
 
           {}
-          <Text style={styles.sectionLabel}>FARM DETAILS</Text>
+          <Text style={styles.sectionLabel}>{t('droneBookingSuccess.farmDetails')}</Text>
           <ImageBackground
             source={require('../../assets/drone/farm-map.png')}
             style={styles.farmMap}
@@ -248,26 +250,26 @@ export default function DroneBookingSuccessScreen({ navigation }) {
           >
             <View style={styles.gpsPill}>
               <MapPin size={rf(10)} color={DARK_GREEN} strokeWidth={2.4} />
-              <Text style={styles.gpsText}>GPS Verified</Text>
+              <Text style={styles.gpsText}>{t('droneBookingSuccess.gpsVerified')}</Text>
             </View>
           </ImageBackground>
           <View style={styles.farmInfo}>
-            <Text style={styles.farmName}>Patil Farm</Text>
+            <Text style={styles.farmName}>{t('droneBookingSuccess.patilFarm')}</Text>
             <View style={styles.farmTags}>
               <View style={styles.farmTag}>
-                <Text style={styles.farmTagText}>🌱 Soybean</Text>
+                <Text style={styles.farmTagText}>{t('droneBookingSuccess.soybean')}</Text>
               </View>
               <View style={styles.farmTag}>
-                <Text style={styles.farmTagText}>📏 2.34 Acres</Text>
+                <Text style={styles.farmTagText}>{t('droneBookingSuccess.234Acres')}</Text>
               </View>
               <View style={styles.farmTag}>
-                <Text style={styles.farmTagText}>📍 Ahmednagar</Text>
+                <Text style={styles.farmTagText}>{t('droneBookingSuccess.ahmednagar')}</Text>
               </View>
             </View>
           </View>
 
           {}
-          <Text style={styles.sectionLabel}>AI REMINDER</Text>
+          <Text style={styles.sectionLabel}>{t('droneBookingSuccess.aiReminder')}</Text>
           <LinearGradient colors={['#16A34A', '#15803D']} style={styles.aiCard}>
             <View
               style={{
@@ -284,69 +286,68 @@ export default function DroneBookingSuccessScreen({ navigation }) {
                   marginLeft: 10,
                 }}
               >
-                <Text style={styles.aiTitle}>AI Reminder</Text>
-                <Text style={styles.aiSub}>Tomorrow Morning · Patil Farm</Text>
+                <Text style={styles.aiTitle}>{t('droneBookingSuccess.aiReminder2')}</Text>
+                <Text style={styles.aiSub}>{t('droneBookingSuccess.tomorrowMorningPatilFarm')}</Text>
               </View>
               <View style={styles.optimalPill}>
-                <Text style={styles.optimalText}>Optimal</Text>
+                <Text style={styles.optimalText}>{t('droneBookingSuccess.optimal')}</Text>
               </View>
             </View>
             <Text style={styles.aiHead}>
-              Tomorrow morning has ideal spraying conditions.
+              {t('droneBookingSuccess.tomorrowMorningHasIdealSpraying')}
             </Text>
             <Text style={styles.aiDesc}>
-              AI analysis confirms perfect weather, low wind, and optimal
-              humidity for maximum spray efficiency.
+              {t('droneBookingSuccess.aiAnalysisConfirmsPerfectWeather')}
             </Text>
             <View style={styles.aiGrid}>
               <View style={styles.aiCell}>
                 <Droplet size={rf(15)} color="#FFFFFF" strokeWidth={2.4} />
                 <Text style={styles.aiCellVal}>96%</Text>
-                <Text style={styles.aiCellLbl}>SPRAY EFFICIENCY</Text>
+                <Text style={styles.aiCellLbl}>{t('droneBookingSuccess.sprayEfficiency')}</Text>
               </View>
               <View style={styles.aiCell}>
                 <Droplet size={rf(15)} color="#FFFFFF" strokeWidth={2.4} />
                 <Text style={styles.aiCellVal}>90%</Text>
-                <Text style={styles.aiCellLbl}>WATER SAVING</Text>
+                <Text style={styles.aiCellLbl}>{t('droneBookingSuccess.waterSaving')}</Text>
               </View>
             </View>
             <View style={styles.aiGrid}>
               <View style={styles.aiCell}>
                 <CloudRain size={rf(15)} color="#FFFFFF" strokeWidth={2.4} />
-                <Text style={styles.aiCellVal}>Very Low</Text>
-                <Text style={styles.aiCellLbl}>RAIN PROBABILITY</Text>
+                <Text style={styles.aiCellVal}>{t('droneBookingSuccess.veryLow')}</Text>
+                <Text style={styles.aiCellLbl}>{t('droneBookingSuccess.rainProbability')}</Text>
               </View>
               <View style={styles.aiCell}>
                 <FlaskConical size={rf(15)} color="#FFFFFF" strokeWidth={2.4} />
                 <Text style={styles.aiCellVal}>4.8 L</Text>
-                <Text style={styles.aiCellLbl}>CHEMICAL</Text>
+                <Text style={styles.aiCellLbl}>{t('droneBookingSuccess.chemical')}</Text>
               </View>
             </View>
           </LinearGradient>
 
           {}
-          <Text style={styles.sectionLabel}>BOOKING SUMMARY</Text>
+          <Text style={styles.sectionLabel}>{t('droneBookingSuccess.bookingSummary')}</Text>
           <View style={styles.detailCard}>
             {[
               {
                 Icon: Hash,
-                label: 'BOOKING ID',
+                label: t('droneBookingSuccess.bookingId'),
                 val: 'KM-DRN-2028-00847',
               },
               {
                 Icon: Zap,
-                label: 'SERVICE TYPE',
-                val: 'Pesticide Spraying',
+                label: t('droneBookingSuccess.serviceType'),
+                val: t('droneBookingSuccess.pesticideSpraying'),
               },
               {
                 Icon: BadgeCheck,
-                label: 'OPERATOR',
-                val: 'Rahul Patil - SkyAgri',
+                label: t('droneBookingSuccess.operator'),
+                val: t('droneBookingSuccess.rahulPatilSkyagri'),
               },
               {
                 Icon: FileText,
-                label: 'PAYMENT METHOD',
-                val: 'Pay After Service',
+                label: t('droneBookingSuccess.paymentMethod'),
+                val: t('droneBookingSuccess.payAfterService'),
                 amt: '₹2,030',
               },
             ].map((d, i) => {
@@ -383,35 +384,35 @@ export default function DroneBookingSuccessScreen({ navigation }) {
           </View>
 
           {}
-          <Text style={styles.sectionLabel}>SERVICE TIMELINE</Text>
+          <Text style={styles.sectionLabel}>{t('droneBookingSuccess.serviceTimeline')}</Text>
           <View style={styles.timelineCard}>
             {[
               {
                 Icon: Check,
-                label: 'Booking Confirmed',
-                time: 'Just now · 10:24 AM',
-                pill: 'You are here',
+                label: t('droneBookingSuccess.bookingConfirmed'),
+                time: t('droneBookingSuccess.justNow1024Am'),
+                pill: t('droneBookingSuccess.youAreHere'),
                 active: true,
               },
               {
                 Icon: Zap,
-                label: 'Operator Preparing',
-                time: 'Equipment check & calibration',
+                label: t('droneBookingSuccess.operatorPreparing'),
+                time: t('droneBookingSuccess.equipmentCheckCalibration'),
               },
               {
                 Icon: MapPin,
-                label: 'Travel to Farm',
-                time: 'En route to Patil Farm · 3.5 km',
+                label: t('droneBookingSuccess.travelToFarm'),
+                time: t('droneBookingSuccess.enRouteToPatilFarm'),
               },
               {
                 Icon: Clock,
-                label: 'Service Starts',
-                time: '06:30 AM · Tomorrow morning',
+                label: t('droneBookingSuccess.serviceStarts'),
+                time: t('droneBookingSuccess.0630AmTomorrowMorning'),
               },
               {
                 Icon: Check,
-                label: 'Spray Completed',
-                time: '~07:05 AM · Spray report delivered',
+                label: t('droneBookingSuccess.sprayCompleted'),
+                time: t('droneBookingSuccess.0705AmSprayReport'),
               },
             ].map((t, i) => {
               const Icon = t.Icon;
@@ -455,7 +456,7 @@ export default function DroneBookingSuccessScreen({ navigation }) {
           </View>
 
           {}
-          <Text style={styles.sectionLabel}>QUICK ACTIONS</Text>
+          <Text style={styles.sectionLabel}>{t('droneBookingSuccess.quickActions')}</Text>
           <View
             style={{
               flexDirection: 'row',
@@ -473,8 +474,8 @@ export default function DroneBookingSuccessScreen({ navigation }) {
               >
                 <Phone size={rf(18)} color={GREEN} strokeWidth={2.4} />
               </View>
-              <Text style={styles.quickTitle}>Contact Operator</Text>
-              <Text style={styles.quickSub}>Call Rahul Patil</Text>
+              <Text style={styles.quickTitle}>{t('droneBookingSuccess.contactOperator')}</Text>
+              <Text style={styles.quickSub}>{t('droneBookingSuccess.callRahulPatil')}</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.quickCard}>
               <View
@@ -487,8 +488,8 @@ export default function DroneBookingSuccessScreen({ navigation }) {
               >
                 <Headphones size={rf(18)} color="#F97316" strokeWidth={2.4} />
               </View>
-              <Text style={styles.quickTitle}>Support</Text>
-              <Text style={styles.quickSub}>24/7 Krishi Bazaar Help</Text>
+              <Text style={styles.quickTitle}>{t('droneBookingSuccess.support')}</Text>
+              <Text style={styles.quickSub}>{t('droneBookingSuccess.247KrishiBazaarHelp')}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -497,14 +498,14 @@ export default function DroneBookingSuccessScreen({ navigation }) {
       <View style={styles.bottomBar}>
         <TouchableOpacity style={styles.viewBtn}>
           <FileText size={rf(14)} color="#FFFFFF" strokeWidth={2.4} />
-          <Text style={styles.viewText}>View Booking Details</Text>
+          <Text style={styles.viewText}>{t('droneBookingSuccess.viewBookingDetails')}</Text>
         </TouchableOpacity>
         <TouchableOpacity
           onPress={() => navigation.navigate('Bazaar')}
           style={styles.homeBtn}
         >
           <Home size={rf(14)} color={DARK_GREEN} strokeWidth={2.4} />
-          <Text style={styles.homeText}>Back to Bazaar</Text>
+          <Text style={styles.homeText}>{t('droneBookingSuccess.backToBazaar')}</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

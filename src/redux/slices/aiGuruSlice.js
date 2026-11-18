@@ -8,11 +8,13 @@ import {
   clearAiGuruHistoryApi,
   sendAiGuruFeedbackApi,
 } from '../../api/aiGuruApi';
+import i18n from 'i18next';
+import { normalizeLanguageCode } from '../../utils/languageUtils';
 
 const errorMessage = (error, fallback) =>
   error.response?.data?.message ||
   (error.code === 'ECONNABORTED'
-    ? 'AI Guru is taking too long. Please try again.'
+    ? i18n.t('aiGuruSlice.aiGuruIsTakingToo')
     : error.message) ||
   fallback;
 
@@ -35,7 +37,9 @@ export const sendAiGuruMessage = createAsyncThunk(
     { message, image, source = 'aiguru', fieldId },
     { getState, rejectWithValue },
   ) => {
-    const { sessionId, activeFieldId, language } = getState().aiGuru;
+    const { sessionId, activeFieldId } = getState().aiGuru;
+    // never a separate AI Guru language: it is the app language
+    const language = normalizeLanguageCode(i18n.language);
 
     try {
       return await sendAiGuruMessageApi({
@@ -48,7 +52,7 @@ export const sendAiGuruMessage = createAsyncThunk(
       });
     } catch (error) {
       return rejectWithValue({
-        message: errorMessage(error, 'Unable to reach AI Guru'),
+        message: errorMessage(error, i18n.t('aiGuruSlice.unableToReachAiGuru')),
         status: error.response?.status || null,
       });
     }
@@ -61,7 +65,7 @@ export const fetchAiGuruSessions = createAsyncThunk(
     try {
       return await getAiGuruSessionsApi({ limit: 30 });
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to load chats'));
+      return rejectWithValue(errorMessage(error, i18n.t('aiGuruSlice.unableToLoadChats')));
     }
   },
 );
@@ -72,7 +76,7 @@ export const openAiGuruSession = createAsyncThunk(
     try {
       return await getAiGuruSessionApi(sessionId);
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to open chat'));
+      return rejectWithValue(errorMessage(error, i18n.t('aiGuruSlice.unableToOpenChat')));
     }
   },
 );
@@ -84,7 +88,7 @@ export const deleteAiGuruSession = createAsyncThunk(
       await deleteAiGuruSessionApi(sessionId);
       return sessionId;
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to delete chat'));
+      return rejectWithValue(errorMessage(error, i18n.t('aiGuruSlice.unableToDeleteChat')));
     }
   },
 );
@@ -95,7 +99,7 @@ export const clearAiGuruHistory = createAsyncThunk(
     try {
       return await clearAiGuruHistoryApi();
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to clear history'));
+      return rejectWithValue(errorMessage(error, i18n.t('aiGuruSlice.unableToClearHistory')));
     }
   },
 );
@@ -107,7 +111,7 @@ export const rateAiGuruMessage = createAsyncThunk(
       await sendAiGuruFeedbackApi(messageId, rating);
       return { messageId, rating };
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to save feedback'));
+      return rejectWithValue(errorMessage(error, i18n.t('aiGuruSlice.unableToSaveFeedback')));
     }
   },
 );
@@ -204,7 +208,7 @@ const aiGuruSlice = createSlice({
       })
       .addCase(sendAiGuruMessage.rejected, (state, action) => {
         const local = findMessage(state, `local-${action.meta.requestId}`);
-        const error = action.payload?.message || 'Unable to reach AI Guru';
+        const error = action.payload?.message || i18n.t('aiGuruSlice.unableToReachAiGuru');
 
         if (local) {
           local.pending = false;

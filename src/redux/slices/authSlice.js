@@ -19,6 +19,7 @@ import {
   getAccessToken,
   getRefreshToken,
 } from '../../utils/tokenStorage';
+import i18n from 'i18next';
 
 /*
 |--------------------------------------------------------------------------
@@ -46,7 +47,7 @@ export const sendOtp = createAsyncThunk(
 
       return rejectWithValue(
         error.response?.data?.message ||
-          'Failed to send OTP',
+          i18n.t('authSlice.failedToSendOtp'),
       );
     }
   },
@@ -100,7 +101,7 @@ export const verifyOtp = createAsyncThunk(
 
       return rejectWithValue(
         error.response?.data?.message ||
-          'Invalid OTP',
+          i18n.t('authSlice.invalidOtp'),
       );
     }
   },
@@ -155,7 +156,7 @@ export const completeProfile = createAsyncThunk(
 
       return rejectWithValue(
         error.response?.data?.message ||
-          'Failed to complete profile',
+          i18n.t('authSlice.failedToCompleteProfile'),
       );
     }
   },
@@ -194,7 +195,7 @@ export const updateProfile = createAsyncThunk(
 
       return rejectWithValue(
         error.response?.data?.message ||
-          'Failed to update profile',
+          i18n.t('authSlice.failedToUpdateProfile'),
       );
     }
   },
@@ -219,7 +220,7 @@ export const refreshAccessToken =
 
         if (!refreshToken) {
           return rejectWithValue(
-            'Refresh token not found',
+            i18n.t('authSlice.refreshTokenNotFound'),
           );
         }
 
@@ -257,7 +258,7 @@ export const refreshAccessToken =
 
         return rejectWithValue(
           error.response?.data?.message ||
-            'Session expired',
+            i18n.t('authSlice.sessionExpired'),
         );
       }
     },
@@ -282,13 +283,13 @@ export const getMe = createAsyncThunk(
       console.log(
         'GET ME ACCESS TOKEN:',
         accessToken
-          ? 'TOKEN EXISTS'
+          ? i18n.t('authSlice.tokenExists')
           : 'NO TOKEN',
       );
 
       if (!accessToken) {
         return rejectWithValue(
-          'Access token not found',
+          i18n.t('authSlice.accessTokenNotFound'),
         );
       }
 
@@ -310,7 +311,7 @@ export const getMe = createAsyncThunk(
 
       return rejectWithValue(
         error.response?.data?.message ||
-          'Failed to get user',
+          i18n.t('authSlice.failedToGetUser'),
       );
     }
   },
@@ -354,7 +355,7 @@ export const logout = createAsyncThunk(
 
       return rejectWithValue(
         error.response?.data?.message ||
-          'Logout failed',
+          i18n.t('authSlice.logoutFailed'),
       );
     }
   },
@@ -474,7 +475,7 @@ const authSlice = createSlice({
           state.otpSent = false;
           state.error =
             action.payload ||
-            'Failed to send OTP';
+            i18n.t('authSlice.failedToSendOtp');
         },
       );
 
@@ -552,7 +553,7 @@ const authSlice = createSlice({
           state.isLoading = false;
           state.error =
             action.payload ||
-            'Invalid OTP';
+            i18n.t('authSlice.invalidOtp');
         },
       );
 
@@ -616,7 +617,7 @@ const authSlice = createSlice({
           state.isLoading = false;
           state.error =
             action.payload ||
-            'Failed to complete profile';
+            i18n.t('authSlice.failedToCompleteProfile');
         },
       );
 
@@ -684,7 +685,7 @@ const authSlice = createSlice({
 
           state.error =
             action.payload ||
-            'Failed to update profile';
+            i18n.t('authSlice.failedToUpdateProfile');
         },
       );
 
@@ -732,7 +733,7 @@ const authSlice = createSlice({
           state.profileCompleted =
             false;
           state.error =
-            'Session expired';
+            i18n.t('authSlice.sessionExpired');
         },
       );
 
@@ -801,7 +802,7 @@ const authSlice = createSlice({
 
           state.error =
             action.payload ||
-            'Failed to get user';
+            i18n.t('authSlice.failedToGetUser');
         },
       );
 

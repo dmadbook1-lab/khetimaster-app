@@ -791,7 +791,7 @@ export default function MapYourFarmScreen({
                   styles.locationLoadingText
                 }
               >
-                Finding your location...
+                {t('mapYourFarm.findingYourLocation')}
               </Text>
             </View>
           )}
@@ -1027,7 +1027,7 @@ export default function MapYourFarmScreen({
                   styles.liveValue
                 }
               >
-                {acres.toFixed(2)} acres
+                {t('mapYourFarm.acres', {v1: acres.toFixed(2)})}
               </Text>
             </View>
           </View>

@@ -17,6 +17,7 @@ import {
   unsaveMarketListingApi,
   getMarketSellerProfileApi,
 } from '../../api/marketApi';
+import i18n from 'i18next';
 
 const errorMessage = (error, fallback) =>
   error.response?.data?.message ||
@@ -36,7 +37,7 @@ export const fetchMarketMeta = createAsyncThunk(
       return await getMarketMetaApi();
     } catch (error) {
       return rejectWithValue(
-        errorMessage(error, 'Unable to load categories'),
+        errorMessage(error, i18n.t('marketSlice.unableToLoadCategories')),
       );
     }
   },
@@ -58,7 +59,7 @@ export const fetchMarketListings = createAsyncThunk(
       return await getMarketListingsApi(params);
     } catch (error) {
       return rejectWithValue(
-        errorMessage(error, 'Unable to load listings'),
+        errorMessage(error, i18n.t('marketSlice.unableToLoadListings')),
       );
     }
   },
@@ -77,7 +78,7 @@ export const fetchMarketListingById = createAsyncThunk(
       return await getMarketListingByIdApi(listingId);
     } catch (error) {
       return rejectWithValue(
-        errorMessage(error, 'Unable to load listing'),
+        errorMessage(error, i18n.t('marketSlice.unableToLoadListing')),
       );
     }
   },
@@ -96,7 +97,7 @@ export const createMarketListing = createAsyncThunk(
       return await createMarketListingApi(listingData);
     } catch (error) {
       return rejectWithValue(
-        errorMessage(error, 'Unable to create listing'),
+        errorMessage(error, i18n.t('marketSlice.unableToCreateListing')),
       );
     }
   },
@@ -112,7 +113,7 @@ export const updateMarketListing = createAsyncThunk(
       );
     } catch (error) {
       return rejectWithValue(
-        errorMessage(error, 'Unable to update listing'),
+        errorMessage(error, i18n.t('marketSlice.unableToUpdateListing')),
       );
     }
   },
@@ -134,7 +135,7 @@ export const updateMarketListingStatus = createAsyncThunk(
       );
     } catch (error) {
       return rejectWithValue(
-        errorMessage(error, 'Unable to update listing'),
+        errorMessage(error, i18n.t('marketSlice.unableToUpdateListing')),
       );
     }
   },
@@ -149,7 +150,7 @@ export const deleteMarketListing = createAsyncThunk(
       return {listingId, data};
     } catch (error) {
       return rejectWithValue(
-        errorMessage(error, 'Unable to delete listing'),
+        errorMessage(error, i18n.t('marketSlice.unableToDeleteListing')),
       );
     }
   },
@@ -168,7 +169,7 @@ export const fetchMyMarketListings = createAsyncThunk(
       return await getMyMarketListingsApi(status);
     } catch (error) {
       return rejectWithValue(
-        errorMessage(error, 'Unable to load your listings'),
+        errorMessage(error, i18n.t('marketSlice.unableToLoadYourListings')),
       );
     }
   },
@@ -187,7 +188,7 @@ export const fetchSavedMarketListings = createAsyncThunk(
       return await getSavedMarketListingsApi();
     } catch (error) {
       return rejectWithValue(
-        errorMessage(error, 'Unable to load saved listings'),
+        errorMessage(error, i18n.t('marketSlice.unableToLoadSavedListings')),
       );
     }
   },
@@ -206,7 +207,7 @@ export const toggleSaveMarketListing = createAsyncThunk(
         : await unsaveMarketListingApi(listingId);
     } catch (error) {
       return rejectWithValue(
-        errorMessage(error, 'Unable to update saved listings'),
+        errorMessage(error, i18n.t('marketSlice.unableToUpdateSavedListings')),
       );
     }
   },
@@ -225,7 +226,7 @@ export const fetchMarketSellerProfile = createAsyncThunk(
       return await getMarketSellerProfileApi(userId);
     } catch (error) {
       return rejectWithValue(
-        errorMessage(error, 'Unable to load seller'),
+        errorMessage(error, i18n.t('marketSlice.unableToLoadSeller')),
       );
     }
   },

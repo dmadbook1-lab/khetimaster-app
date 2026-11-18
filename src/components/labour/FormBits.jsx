@@ -10,6 +10,8 @@ import { Minus, Plus, X } from 'lucide-react-native';
 
 import { MARKET_COLORS as C, MARKET_SHADOW } from '../market/theme';
 
+import {tOpt} from '../../utils/tOpt';
+import {useTranslation} from 'react-i18next';
 export function FormCard({ children, style }) {
   return <View style={[styles.card, style]}>{children}</View>;
 }
@@ -84,6 +86,7 @@ export function SelectChips({
   multiple = false,
   labels = {},
 }) {
+  useTranslation();
   const isSelected = option =>
     multiple ? (value || []).includes(option) : value === option;
 
@@ -116,7 +119,7 @@ export function SelectChips({
             <Text
               style={[styles.chipText, selected && styles.chipTextSelected]}
             >
-              {labels[option] || option}
+              {labels[option] || tOpt(option)}
             </Text>
           </TouchableOpacity>
         );

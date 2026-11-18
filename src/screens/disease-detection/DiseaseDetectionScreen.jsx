@@ -32,6 +32,8 @@ import {
   Sparkles,
   ScanSearch,
 } from 'lucide-react-native';
+import {useTranslation} from 'react-i18next';
+import i18n from 'i18next';
 const { width } = Dimensions.get('window');
 const GREEN = '#16A34A';
 const DARK_GREEN = '#16883E';
@@ -51,22 +53,30 @@ const rf = size => {
 const PHOTO_TIPS = [
   {
     id: 'daylight',
-    title: 'Capture in daylight',
+    get title() {
+    return i18n.t('diseaseDetection.captureInDaylight');
+  },
     Icon: Sun,
   },
   {
     id: 'focus',
-    title: 'Focus on affected area',
+    get title() {
+    return i18n.t('diseaseDetection.focusOnAffectedArea');
+  },
     Icon: Focus,
   },
   {
     id: 'blur',
-    title: 'Avoid blurry photos',
+    get title() {
+    return i18n.t('diseaseDetection.avoidBlurryPhotos');
+  },
     Icon: Square,
   },
   {
     id: 'oneleaf',
-    title: 'One leaf per photo',
+    get title() {
+    return i18n.t('diseaseDetection.oneLeafPerPhoto');
+  },
     Icon: Globe,
   },
 ];
@@ -74,8 +84,12 @@ const HOW_IT_WORKS = [
   {
     id: '01',
     step: '01',
-    title: 'Upload Photo',
-    subtitle: 'Take or select a crop image',
+    get title() {
+    return i18n.t('diseaseDetection.uploadPhoto');
+  },
+    get subtitle() {
+    return i18n.t('diseaseDetection.takeOrSelectACrop');
+  },
     Icon: Upload,
     color: DARK_GREEN,
     bg: '#EAFBF0',
@@ -83,8 +97,12 @@ const HOW_IT_WORKS = [
   {
     id: '02',
     step: '02',
-    title: 'AI Detection',
-    subtitle: 'Our AI scans for diseases',
+    get title() {
+    return i18n.t('diseaseDetection.aiDetection');
+  },
+    get subtitle() {
+    return i18n.t('diseaseDetection.ourAiScansForDiseases');
+  },
     Icon: Cpu,
     color: BLUE,
     bg: '#EFF6FF',
@@ -92,8 +110,12 @@ const HOW_IT_WORKS = [
   {
     id: '03',
     step: '03',
-    title: 'Diagnosis Result',
-    subtitle: 'Accurate disease report',
+    get title() {
+    return i18n.t('diseaseDetection.diagnosisResult');
+  },
+    get subtitle() {
+    return i18n.t('diseaseDetection.accurateDiseaseReport');
+  },
     Icon: ShieldCheck,
     color: PURPLE,
     bg: '#F5F3FF',
@@ -101,8 +123,12 @@ const HOW_IT_WORKS = [
   {
     id: '04',
     step: '04',
-    title: 'Treatment Suggestion',
-    subtitle: 'Tailored cure & prevention',
+    get title() {
+    return i18n.t('diseaseDetection.treatmentSuggestion');
+  },
+    get subtitle() {
+    return i18n.t('diseaseDetection.tailoredCurePrevention');
+  },
     Icon: FlaskConical,
     color: ORANGE,
     bg: '#FFF7ED',
@@ -142,6 +168,7 @@ const SUPPORTED_CROPS = [
   },
 ];
 export default function DiseaseDetectionScreen({ navigation }) {
+  const {t} = useTranslation();
   const [selectedCrop, setSelectedCrop] = useState('cotton');
   const handleBack = () => {
     if (navigation?.canGoBack()) {
@@ -160,12 +187,12 @@ export default function DiseaseDetectionScreen({ navigation }) {
         SUPPORTED_CROPS.find(crop => crop.id === selectedCrop)?.name || 'crop';
       navigation.navigate('AIGuru', {
         photo,
-        question: `This is a photo of my ${cropName} crop. Which disease or pest is this, how serious is it, and what treatment should I use?`,
+        question: t('diseaseDetection.thisIsAPhotoOf', {cropName}),
         source: 'disease',
         newChat: true,
       });
     } catch (error) {
-      Alert.alert('Photo', error.message);
+      Alert.alert(t('diseaseDetection.photo'), error.message);
     }
   };
   const handleTakePhoto = () => {
@@ -175,10 +202,10 @@ export default function DiseaseDetectionScreen({ navigation }) {
     detectFromPhoto(false);
   };
   const handleStartDetection = () => {
-    Alert.alert('Crop photo', 'Take a clear photo of the affected leaf or plant.', [
-      { text: 'Cancel', style: 'cancel' },
-      { text: 'Gallery', onPress: handleGallery },
-      { text: 'Camera', onPress: handleTakePhoto },
+    Alert.alert(t('diseaseDetection.cropPhoto'), t('diseaseDetection.takeAClearPhotoOf'), [
+      { text: t('common.cancel'), style: 'cancel' },
+      { text: t('common.gallery'), onPress: handleGallery },
+      { text: t('common.camera'), onPress: handleTakePhoto },
     ]);
   };
   return (
@@ -195,9 +222,9 @@ export default function DiseaseDetectionScreen({ navigation }) {
         </TouchableOpacity>
 
         <View style={styles.headerTextBox}>
-          <Text style={styles.headerTitle}>Disease Detection</Text>
+          <Text style={styles.headerTitle}>{t('diseaseDetection.diseaseDetection')}</Text>
           <Text numberOfLines={1} style={styles.headerSubtitle}>
-            Identify crop diseases instantly using AI.
+            {t('diseaseDetection.identifyCropDiseasesInstantlyUsing')}
           </Text>
         </View>
 
@@ -234,7 +261,7 @@ export default function DiseaseDetectionScreen({ navigation }) {
           <View style={styles.heroTopRow}>
             <View style={styles.liveBadge}>
               <View style={styles.liveDot} />
-              <Text style={styles.liveBadgeText}>LIVE AI ENGINE</Text>
+              <Text style={styles.liveBadgeText}>{t('diseaseDetection.liveAiEngine')}</Text>
             </View>
 
             <View style={styles.scanIconBox}>
@@ -242,11 +269,10 @@ export default function DiseaseDetectionScreen({ navigation }) {
             </View>
           </View>
 
-          <Text style={styles.heroTitle}>AI Crop Disease{'\n'}Detection</Text>
+          <Text style={styles.heroTitle}>{t('diseaseDetection.aiCropDisease')}{'\n'}{t('diseaseDetection.detection')}</Text>
 
           <Text style={styles.heroSubtitle}>
-            Upload a photo of your crop and receive instant disease
-            identification and treatment recommendations.
+            {t('diseaseDetection.uploadAPhotoOfYour')}
           </Text>
 
           <View style={styles.heroFooter}>
@@ -259,7 +285,7 @@ export default function DiseaseDetectionScreen({ navigation }) {
               />
             </View>
             <Text style={styles.heroFooterText}>
-              Results in under 5 seconds
+              {t('diseaseDetection.resultsInUnder5Seconds')}
             </Text>
           </View>
         </LinearGradient>
@@ -275,15 +301,15 @@ export default function DiseaseDetectionScreen({ navigation }) {
             </View>
           </View>
 
-          <Text style={styles.uploadTitle}>Upload Crop Photo</Text>
+          <Text style={styles.uploadTitle}>{t('diseaseDetection.uploadCropPhoto')}</Text>
           <Text style={styles.uploadSubtitle}>
-            Take or choose a clear photo of a leaf, stem, fruit or flower.
+            {t('diseaseDetection.takeOrChooseAClear')}
           </Text>
 
           <View style={styles.dropZone}>
             <CloudUpload size={rf(30)} color={DARK_GREEN} strokeWidth={1.8} />
             <Text style={styles.dropZoneText}>
-              Drag & drop or use buttons below
+              {t('diseaseDetection.dragDropOrUseButtons')}
             </Text>
           </View>
 
@@ -294,7 +320,7 @@ export default function DiseaseDetectionScreen({ navigation }) {
               style={styles.takePhotoButton}
             >
               <Camera size={rf(15)} color="#FFFFFF" strokeWidth={2.3} />
-              <Text style={styles.takePhotoButtonText}>Take Photo</Text>
+              <Text style={styles.takePhotoButtonText}>{t('diseaseDetection.takePhoto')}</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -303,7 +329,7 @@ export default function DiseaseDetectionScreen({ navigation }) {
               style={styles.galleryButton}
             >
               <ImageIcon size={rf(15)} color={DARK_GREEN} strokeWidth={2.3} />
-              <Text style={styles.galleryButtonText}>Gallery</Text>
+              <Text style={styles.galleryButtonText}>{t('common.gallery')}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -319,7 +345,7 @@ export default function DiseaseDetectionScreen({ navigation }) {
                 fill="#FFFFFF"
               />
             </View>
-            <Text style={styles.tipsHeaderTitle}>Photo Tips</Text>
+            <Text style={styles.tipsHeaderTitle}>{t('diseaseDetection.photoTips')}</Text>
           </View>
 
           <View style={styles.tipsGrid}>
@@ -340,8 +366,8 @@ export default function DiseaseDetectionScreen({ navigation }) {
         {}
         <View style={styles.howCard}>
           <View style={styles.howHeader}>
-            <Text style={styles.howTitle}>How It Works</Text>
-            <Text style={styles.howSteps}>4 STEPS</Text>
+            <Text style={styles.howTitle}>{t('diseaseDetection.howItWorks')}</Text>
+            <Text style={styles.howSteps}>{t('diseaseDetection.4Steps')}</Text>
           </View>
 
           <View style={styles.howList}>
@@ -392,9 +418,9 @@ export default function DiseaseDetectionScreen({ navigation }) {
 
         {}
         <View style={styles.cropsHeader}>
-          <Text style={styles.cropsTitle}>Supported Crops</Text>
+          <Text style={styles.cropsTitle}>{t('diseaseDetection.supportedCrops')}</Text>
           <TouchableOpacity activeOpacity={0.7}>
-            <Text style={styles.cropsViewAll}>View all</Text>
+            <Text style={styles.cropsViewAll}>{t('diseaseDetection.viewAll')}</Text>
           </TouchableOpacity>
         </View>
 
@@ -423,7 +449,7 @@ export default function DiseaseDetectionScreen({ navigation }) {
 
           <TouchableOpacity activeOpacity={0.85} style={styles.cropPill}>
             <Plus size={rf(11)} color={MUTED} strokeWidth={2.4} />
-            <Text style={styles.cropName}>More</Text>
+            <Text style={styles.cropName}>{t('diseaseDetection.more')}</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -435,7 +461,7 @@ export default function DiseaseDetectionScreen({ navigation }) {
           style={styles.detectButton}
         >
           <ScanSearch size={rf(18)} color="#FFFFFF" strokeWidth={2.4} />
-          <Text style={styles.detectButtonText}>Start Detection</Text>
+          <Text style={styles.detectButtonText}>{t('diseaseDetection.startDetection')}</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

@@ -19,6 +19,7 @@ import {
   fetchMandiDistricts,
   setMandiLocation,
 } from '../../redux/slices/mandiSlice';
+import {useTranslation} from 'react-i18next';
 
 const ALL_DISTRICTS = '';
 
@@ -27,6 +28,7 @@ const ALL_DISTRICTS = '';
  * Saves to the mandi location only; the user's profile is not changed.
  */
 export default function LocationSheet({ visible, onClose }) {
+  const {t} = useTranslation();
   const dispatch = useDispatch();
   const { states, districts, districtsLoading, location } = useSelector(
     state => state.mandi,
@@ -112,12 +114,12 @@ export default function LocationSheet({ visible, onClose }) {
             )}
             <View style={styles.flex}>
               <Text style={styles.title}>
-                {step === 'state' ? 'Choose state' : draftState}
+                {step === 'state' ? t('locationSheet.chooseState') : draftState}
               </Text>
               <Text style={styles.subtitle}>
                 {step === 'state'
-                  ? 'Prices are shown for this place'
-                  : 'Pick a district or the whole state'}
+                  ? t('locationSheet.pricesAreShownForThis')
+                  : t('locationSheet.pickADistrictOrThe')}
               </Text>
             </View>
             <Pressable hitSlop={10} style={styles.iconButton} onPress={onClose}>
@@ -131,7 +133,7 @@ export default function LocationSheet({ visible, onClose }) {
               value={search}
               onChangeText={setSearch}
               placeholder={
-                step === 'state' ? 'Search state' : 'Search district'
+                step === 'state' ? t('locationSheet.searchState') : t('locationSheet.searchDistrict')
               }
               placeholderTextColor={C.placeholder}
               style={styles.searchInput}
@@ -149,8 +151,8 @@ export default function LocationSheet({ visible, onClose }) {
               ListEmptyComponent={
                 <Text style={styles.empty}>
                   {step === 'district'
-                    ? 'No districts reported prices recently.'
-                    : 'No match'}
+                    ? t('locationSheet.noDistrictsReportedPricesRecently')
+                    : t('locationSheet.noMatch')}
                 </Text>
               }
               renderItem={({ item }) => {
@@ -175,7 +177,7 @@ export default function LocationSheet({ visible, onClose }) {
                         selected && styles.rowTextSelected,
                       ]}
                     >
-                      {item || `All of ${draftState}`}
+                      {item || t('locationSheet.allOf', {draftState})}
                     </Text>
                     {selected && <Check size={17} color={C.green} />}
                   </TouchableOpacity>
@@ -188,8 +190,8 @@ export default function LocationSheet({ visible, onClose }) {
             <MarketButton
               label={
                 draftDistrict
-                  ? `Show ${draftDistrict} prices`
-                  : `Show ${draftState} prices`
+                  ? t('locationSheet.showPrices', {draftDistrict})
+                  : t('locationSheet.showPrices2', {draftState})
               }
               onPress={apply}
               style={styles.apply}

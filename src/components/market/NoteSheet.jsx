@@ -13,6 +13,7 @@ import {Star, X} from 'lucide-react-native';
 
 import {MARKET_COLORS as C} from './theme';
 import {MarketButton} from './MarketBits';
+import {useTranslation} from 'react-i18next';
 
 /*
  * Small bottom sheet with an optional note, used for reject / cancel
@@ -34,6 +35,7 @@ export default function NoteSheet({
   onClose,
   onSubmit,
 }) {
+  const {t} = useTranslation();
   const [text, setText] = useState('');
   const [rating, setRating] = useState(0);
   const [error, setError] = useState(null);
@@ -48,7 +50,7 @@ export default function NoteSheet({
 
   const handleSubmit = () => {
     if (withRating && !rating) {
-      setError('Please choose a rating');
+      setError(t('noteSheet.pleaseChooseARating'));
       return;
     }
 

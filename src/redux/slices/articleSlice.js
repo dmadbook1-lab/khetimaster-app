@@ -7,6 +7,7 @@ import {
   getLatestArticlesApi,
   getArticleStatsApi,
 } from '../../api/articleApi';
+import i18n from 'i18next';
 
 /*
 |--------------------------------------------------------------------------
@@ -34,7 +35,7 @@ export const fetchLatestArticles =
         if (!response?.success) {
           return rejectWithValue(
             response?.message ||
-              'Failed to fetch agriculture articles',
+              i18n.t('articleSlice.failedToFetchAgricultureArticles'),
           );
         }
 
@@ -46,7 +47,7 @@ export const fetchLatestArticles =
         return rejectWithValue(
           error.response?.data?.message ||
             error.message ||
-            'Failed to fetch agriculture articles',
+            i18n.t('articleSlice.failedToFetchAgricultureArticles'),
         );
       }
     },
@@ -69,7 +70,7 @@ export const fetchArticleStats =
         if (!response?.success) {
           return rejectWithValue(
             response?.message ||
-              'Failed to fetch article statistics',
+              i18n.t('articleSlice.failedToFetchArticleStatistics'),
           );
         }
 
@@ -78,7 +79,7 @@ export const fetchArticleStats =
         return rejectWithValue(
           error.response?.data?.message ||
             error.message ||
-            'Failed to fetch article statistics',
+            i18n.t('articleSlice.failedToFetchArticleStatistics'),
         );
       }
     },
@@ -192,7 +193,7 @@ const articleSlice = createSlice({
 
           state.error =
             action.payload ||
-            'Failed to fetch agriculture articles';
+            i18n.t('articleSlice.failedToFetchAgricultureArticles');
         },
       )
 
@@ -228,7 +229,7 @@ const articleSlice = createSlice({
 
           state.statsError =
             action.payload ||
-            'Failed to fetch article statistics';
+            i18n.t('articleSlice.failedToFetchArticleStatistics');
         },
       );
   },

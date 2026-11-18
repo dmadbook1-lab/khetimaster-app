@@ -10,6 +10,7 @@ import {
   deactivateMachineryApi,
   activateMachineryApi,
 } from '../../api/machineryApi';
+import i18n from 'i18next';
 
 const errorMessage = (error, fallback) =>
   error.response?.data?.message || error.message || fallback;
@@ -26,7 +27,7 @@ export const fetchMachineryMeta = createAsyncThunk(
     try {
       return await getMachineryMetaApi();
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to load options'));
+      return rejectWithValue(errorMessage(error, i18n.t('machinerySlice.unableToLoadOptions')));
     }
   },
 );
@@ -46,7 +47,7 @@ export const fetchMachineryList = createAsyncThunk(
     try {
       return await getAllMachineryApi(params);
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to load machinery'));
+      return rejectWithValue(errorMessage(error, i18n.t('machinerySlice.unableToLoadMachinery')));
     }
   },
 );
@@ -57,7 +58,7 @@ export const fetchMachineryById = createAsyncThunk(
     try {
       return await getMachineryByIdApi(machineryId);
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to load machinery'));
+      return rejectWithValue(errorMessage(error, i18n.t('machinerySlice.unableToLoadMachinery')));
     }
   },
 );
@@ -75,7 +76,7 @@ export const fetchMyMachinery = createAsyncThunk(
       return await getMyMachineryApi();
     } catch (error) {
       return rejectWithValue(
-        errorMessage(error, 'Unable to load your machines'),
+        errorMessage(error, i18n.t('machinerySlice.unableToLoadYourMachines')),
       );
     }
   },
@@ -92,7 +93,7 @@ export const saveMachinery = createAsyncThunk(
         ? await updateMachineryApi(machineryId, machineryData)
         : await createMachineryApi(machineryData);
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to save machine'));
+      return rejectWithValue(errorMessage(error, i18n.t('machinerySlice.unableToSaveMachine')));
     }
   },
 );
@@ -108,7 +109,7 @@ export const setMachineryActive = createAsyncThunk(
         ? await activateMachineryApi(machineryId)
         : await deactivateMachineryApi(machineryId);
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to update machine'));
+      return rejectWithValue(errorMessage(error, i18n.t('machinerySlice.unableToUpdateMachine')));
     }
   },
 );

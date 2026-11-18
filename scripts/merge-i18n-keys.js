@@ -1,5 +1,5 @@
 /**
- * Merges a batch of keys into en/hi/mr. Batch file shape:
+ * Merges a batch of keys into every locale (en/hi/mr required, others optional). Batch file shape:
  *   { "namespace": { "key": { "en": "...", "hi": "...", "mr": "..." } } }
  * Nested namespaces are fine ("a.b" style objects). Existing keys are overwritten.
  * Run: node scripts/merge-i18n-keys.js path/to/batch.json [...more]
@@ -8,7 +8,12 @@ const fs = require('fs');
 const path = require('path');
 
 const LOCALES_DIR = path.join(__dirname, '../src/translation/locales');
-const LANGS = ['en', 'hi', 'mr'];
+const REQUIRED = ['en', 'hi', 'mr'];
+const ALL = fs
+  .readdirSync(LOCALES_DIR)
+  .filter(f => f.endsWith('.json'))
+  .map(f => f.replace('.json', ''));
+const LANGS = ALL;
 
 const isLeaf = v => v && typeof v === 'object' && typeof v.en === 'string';
 
@@ -25,8 +30,12 @@ const merge = (batch, targets, trail) => {
     const at = [...trail, key].join('.');
     if (isLeaf(value)) {
       for (const lang of LANGS) {
-        if (typeof value[lang] !== 'string' || !value[lang].trim()) {
-          throw new Error(`${at}: missing ${lang}`);
+        const ok = typeof value[lang] === 'string' && value[lang].trim();
+        if (!ok) {
+          if (REQUIRED.includes(lang)) {
+            throw new Error(`${at}: missing ${lang}`);
+          }
+          continue; // optional langs are filled later by i18n-fill.js
         }
         targets[lang][key] = value[lang];
       }
@@ -56,4 +65,4 @@ for (const lang of LANGS) {
     `${JSON.stringify(locales[lang], null, 2)}\n`,
   );
 }
-console.log(`Merged ${count} keys into ${LANGS.join(', ')}.`);
+console.log(`Merged ${count} keys into ${LANGS.length} locales.`);

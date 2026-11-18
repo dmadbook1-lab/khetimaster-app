@@ -24,6 +24,8 @@ import {
   Plus,
   Leaf,
 } from 'lucide-react-native';
+import {useTranslation} from 'react-i18next';
+import {tOpt} from '../../utils/tOpt';
 const { width, height } = Dimensions.get('window');
 const GREEN = '#16A34A';
 const DARK_GREEN = '#16883E';
@@ -58,10 +60,11 @@ const RECOMMENDED_PRODUCTS = [
 ];
 const formatINR = value => `₹${Number(value || 0).toLocaleString('en-IN')}`;
 export default function OrderSuccessScreen({ navigation, route }) {
+  const {t} = useTranslation();
   const orderId = route?.params?.orderId || '#KM458921';
   const totalAmount = route?.params?.totalAmount || 5080;
   const savedAmount = route?.params?.savedAmount || 389;
-  const paymentMethod = route?.params?.paymentMethod || 'Cash on Delivery';
+  const paymentMethod = route?.params?.paymentMethod || t('orderSuccess.cashOnDelivery');
   const handleTrackOrder = () => {
     navigation.navigate('OrderDetails', {
       orderNumber: '#KM458921',
@@ -83,14 +86,14 @@ export default function OrderSuccessScreen({ navigation, route }) {
   };
   const handleAddProduct = product => {
     Alert.alert(
-      'Added to Cart',
-      `${product.name} has been added to your cart.`,
+      t('orderSuccess.addedToCart'),
+      t('orderSuccess.hasBeenAddedToYour', {name: product.name}),
       [
         {
-          text: 'Continue',
+          text: t('common.continue'),
         },
         {
-          text: 'Open Cart',
+          text: t('orderSuccess.openCart'),
           onPress: () => navigation.navigate('Cart'),
         },
       ],
@@ -124,13 +127,13 @@ export default function OrderSuccessScreen({ navigation, route }) {
         </View>
 
         <View style={styles.successContent}>
-          <Text style={styles.successTitle}>Order Placed Successfully!</Text>
+          <Text style={styles.successTitle}>{t('orderSuccess.orderPlacedSuccessfully')}</Text>
 
           <Text style={styles.celebration}>🎉</Text>
 
           <Text style={styles.successDescription}>
-            Your order has been confirmed and is being{'\n'}
-            prepared for dispatch to your farm.
+            {t('orderSuccess.yourOrderHasBeenConfirmed')}{'\n'}
+            {t('orderSuccess.preparedForDispatchToYour')}
           </Text>
         </View>
 
@@ -146,13 +149,13 @@ export default function OrderSuccessScreen({ navigation, route }) {
         <FarmingTipCard />
 
         <View style={styles.recommendedHeader}>
-          <Text style={styles.recommendedTitle}>You May Also Need</Text>
+          <Text style={styles.recommendedTitle}>{t('orderSuccess.youMayAlsoNeed')}</Text>
 
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={() => navigation.navigate('AgriProducts')}
           >
-            <Text style={styles.seeAllText}>See All</Text>
+            <Text style={styles.seeAllText}>{t('orderSuccess.seeAll')}</Text>
           </TouchableOpacity>
         </View>
 
@@ -179,7 +182,7 @@ export default function OrderSuccessScreen({ navigation, route }) {
         >
           <MapPin size={rf(20)} color="#FFFFFF" strokeWidth={2.5} />
 
-          <Text style={styles.trackButtonText}>Track Order</Text>
+          <Text style={styles.trackButtonText}>{t('orderSuccess.trackOrder')}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -189,7 +192,7 @@ export default function OrderSuccessScreen({ navigation, route }) {
         >
           <ShoppingBag size={rf(19)} color={DARK_GREEN} strokeWidth={2.4} />
 
-          <Text style={styles.continueButtonText}>Continue Shopping</Text>
+          <Text style={styles.continueButtonText}>{t('orderSuccess.continueShopping')}</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
@@ -201,39 +204,40 @@ function OrderDetailsCard({
   savedAmount,
   paymentMethod,
 }) {
+  const {t} = useTranslation();
   return (
     <View style={styles.orderCard}>
       <View style={styles.orderHeader}>
         <View>
-          <Text style={styles.orderIdLabel}>ORDER ID</Text>
+          <Text style={styles.orderIdLabel}>{t('orderSuccess.orderId')}</Text>
 
           <Text style={styles.orderId}>{orderId}</Text>
         </View>
 
-        <Text style={styles.orderTime}>Today, 10:42 AM</Text>
+        <Text style={styles.orderTime}>{t('orderSuccess.today1042Am')}</Text>
       </View>
 
       <View style={styles.orderGrid}>
         <View style={styles.orderGridItem}>
-          <Text style={styles.orderGridLabel}>EST. DELIVERY</Text>
+          <Text style={styles.orderGridLabel}>{t('orderSuccess.estDelivery')}</Text>
 
-          <Text style={styles.deliveryDate}>26 June 2026</Text>
+          <Text style={styles.deliveryDate}>{t('orderSuccess.26June2026')}</Text>
         </View>
 
         <View style={styles.orderGridItem}>
-          <Text style={styles.orderGridLabel}>PAYMENT</Text>
+          <Text style={styles.orderGridLabel}>{t('orderSuccess.payment')}</Text>
 
           <Text style={styles.paymentValue}>{paymentMethod}</Text>
         </View>
 
         <View style={styles.orderGridItem}>
-          <Text style={styles.orderGridLabel}>TOTAL AMOUNT</Text>
+          <Text style={styles.orderGridLabel}>{t('orderSuccess.totalAmount')}</Text>
 
           <Text style={styles.greenValue}>{formatINR(totalAmount)}</Text>
         </View>
 
         <View style={styles.orderGridItem}>
-          <Text style={styles.orderGridLabel}>YOU SAVED</Text>
+          <Text style={styles.orderGridLabel}>{t('orderSuccess.youSaved')}</Text>
 
           <Text style={styles.greenValue}>{formatINR(savedAmount)} 🎉</Text>
         </View>
@@ -242,35 +246,36 @@ function OrderDetailsCard({
   );
 }
 function OrderStatusCard() {
+  const {t} = useTranslation();
   const steps = [
     {
       id: 'confirmed',
-      label: 'Order\nConfirmed',
+      label: t('orderSuccess.orderConfirmed'),
       Icon: Check,
       active: true,
     },
     {
       id: 'packed',
-      label: 'Packed',
+      label: t('orderSuccess.packed'),
       Icon: Package,
       active: false,
     },
     {
       id: 'shipped',
-      label: 'Shipped',
+      label: t('orderSuccess.shipped'),
       Icon: Truck,
       active: false,
     },
     {
       id: 'delivered',
-      label: 'Delivered',
+      label: t('orderSuccess.delivered'),
       Icon: Home,
       active: false,
     },
   ];
   return (
     <View style={styles.statusCard}>
-      <Text style={styles.cardTitle}>Order Status</Text>
+      <Text style={styles.cardTitle}>{t('orderSuccess.orderStatus')}</Text>
 
       <View style={styles.statusRow}>
         {steps.map((step, index) => {
@@ -317,6 +322,7 @@ function OrderStatusCard() {
   );
 }
 function FarmingTipCard() {
+  const {t} = useTranslation();
   return (
     <LinearGradient
       colors={['#168F3F', '#18A948']}
@@ -340,15 +346,13 @@ function FarmingTipCard() {
           strokeWidth={2.2}
         />
 
-        <Text style={styles.tipBadgeText}>AI FARMING TIP</Text>
+        <Text style={styles.tipBadgeText}>{t('orderSuccess.aiFarmingTip')}</Text>
       </View>
 
-      <Text style={styles.tipTitle}>Maximize Your Soybean Yield</Text>
+      <Text style={styles.tipTitle}>{t('orderSuccess.maximizeYourSoybeanYield')}</Text>
 
       <Text style={styles.tipDescription}>
-        The fertilizer you ordered is recommended for your Soybean crop during
-        the vegetative stage. Proper application will improve nutrient uptake
-        and strengthen root development.
+        {t('orderSuccess.theFertilizerYouOrderedIs')}
       </Text>
 
       <View style={styles.tipInfoCard}>
@@ -357,14 +361,14 @@ function FarmingTipCard() {
         </View>
 
         <Text style={styles.tipInfoText}>
-          Apply within 5–7 days after delivery for best results. Early morning
-          or evening application is ideal.
+          {t('orderSuccess.applyWithin57Days')}
         </Text>
       </View>
     </LinearGradient>
   );
 }
 function RecommendedProductCard({ product, onAdd }) {
+  const {t} = useTranslation();
   return (
     <View style={styles.productCard}>
       <View style={styles.productImageBox}>
@@ -376,7 +380,7 @@ function RecommendedProductCard({ product, onAdd }) {
       </View>
 
       <Text numberOfLines={2} style={styles.productName}>
-        {product.name}
+        {tOpt(product.name)}
       </Text>
 
       <Text style={styles.productPrice}>{formatINR(product.price)}</Text>
@@ -388,7 +392,7 @@ function RecommendedProductCard({ product, onAdd }) {
       >
         <Plus size={rf(15)} color="#FFFFFF" strokeWidth={2.7} />
 
-        <Text style={styles.addButtonText}>Add</Text>
+        <Text style={styles.addButtonText}>{t('orderSuccess.add')}</Text>
       </TouchableOpacity>
     </View>
   );

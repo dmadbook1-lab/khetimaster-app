@@ -14,13 +14,25 @@ import { Star, X } from 'lucide-react-native';
 import { CARE as C } from './careTheme';
 import { CareButton, CareChips, CareField, CareInput } from './CareBits';
 import { addDaysToKey, dayKeyOf, formatDay } from '../../utils/indiaSchedule';
+import {useTranslation} from 'react-i18next';
+import i18n from 'i18next';
 
 const FOLLOW_UPS = [
-  { key: 'none', label: 'No follow-up', days: null },
-  { key: '3', label: 'In 3 days', days: 3 },
-  { key: '7', label: 'In 1 week', days: 7 },
-  { key: '14', label: 'In 2 weeks', days: 14 },
-  { key: '30', label: 'In 1 month', days: 30 },
+  { key: 'none', get label() {
+    return i18n.t('careSheet.noFollowUp');
+  }, days: null },
+  { key: '3', get label() {
+    return i18n.t('careSheet.in3Days');
+  }, days: 3 },
+  { key: '7', get label() {
+    return i18n.t('careSheet.in1Week');
+  }, days: 7 },
+  { key: '14', get label() {
+    return i18n.t('careSheet.in2Weeks');
+  }, days: 14 },
+  { key: '30', get label() {
+    return i18n.t('careSheet.in1Month');
+  }, days: 30 },
 ];
 
 /*
@@ -51,6 +63,7 @@ export default function CareSheet({
   onClose,
   onSubmit,
 }) {
+  const {t} = useTranslation();
   const [values, setValues] = useState({});
   const [rating, setRating] = useState(0);
   const [followUp, setFollowUp] = useState('none');
@@ -84,7 +97,7 @@ export default function CareSheet({
 
   const handleSubmit = () => {
     if (withRating && !rating) {
-      setError('Please choose a rating');
+      setError(t('careSheet.pleaseChooseARating'));
       return;
     }
 
@@ -171,7 +184,7 @@ export default function CareSheet({
             ))}
 
             {withFollowUp && (
-              <CareField label="Follow-up visit">
+              <CareField label={t('careSheet.followUpVisit')}>
                 <CareChips
                   options={followUpOptions}
                   value={followUp}

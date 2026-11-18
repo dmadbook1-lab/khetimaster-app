@@ -7,14 +7,15 @@ import {
   selectMyUserId,
   toggleFollow,
 } from '../../../redux/slices/communitySlice';
+import {useTranslation} from 'react-i18next';
 
 /*
  * variant:
  *   'solid'  green button (profiles, lists)
- *   'text'   inline "Follow" link next to a name (feed header)
+ *   'outline' compact green outline (feed post header)
  *   'glass'  white outline on dark video (reels)
  *
- * Renders nothing for the viewer's own account. 'text' and 'glass' also
+ * Renders nothing for the viewer's own account. 'outline' and 'glass' also
  * hide once the viewer follows the person, as on Instagram.
  */
 export default function FollowButton({
@@ -24,6 +25,7 @@ export default function FollowButton({
   style,
   onChange,
 }) {
+  const {t} = useTranslation();
   const dispatch = useDispatch();
   const myId = useSelector(selectMyUserId);
   const isFollowing = useSelector(state =>
@@ -43,10 +45,14 @@ export default function FollowButton({
     onChange?.(!isFollowing);
   };
 
-  if (variant === 'text') {
+  if (variant === 'outline') {
     return (
-      <Pressable onPress={handlePress} hitSlop={8} style={style}>
-        <Text style={styles.textLink}>Follow</Text>
+      <Pressable
+        onPress={handlePress}
+        hitSlop={6}
+        style={[styles.outline, style]}
+      >
+        <Text style={styles.outlineText}>{t('followButton.follow')}</Text>
       </Pressable>
     );
   }
@@ -54,7 +60,7 @@ export default function FollowButton({
   if (variant === 'glass') {
     return (
       <Pressable onPress={handlePress} style={[styles.glass, style]}>
-        <Text style={styles.glassText}>Follow</Text>
+        <Text style={styles.glassText}>{t('followButton.follow')}</Text>
       </Pressable>
     );
   }
@@ -70,17 +76,25 @@ export default function FollowButton({
       ]}
     >
       <Text style={[styles.solidText, isFollowing && styles.followingText]}>
-        {isFollowing ? 'Following' : 'Follow'}
+        {isFollowing ? t('followButton.following') : t('followButton.follow')}
       </Text>
     </Pressable>
   );
 }
 
 const styles = StyleSheet.create({
-  textLink: {
-    fontSize: rf(13),
-    fontWeight: '800',
-    color: COLORS.DARK_GREEN,
+  outline: {
+    height: 30,
+    paddingHorizontal: 13,
+    borderRadius: 8,
+    borderWidth: 1,
+    borderColor: COLORS.GREEN,
+    justifyContent: 'center',
+  },
+  outlineText: {
+    fontSize: rf(12.5),
+    fontWeight: '600',
+    color: COLORS.GREEN,
   },
   glass: {
     height: 28,

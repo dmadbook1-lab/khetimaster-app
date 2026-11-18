@@ -26,41 +26,70 @@ import DoctorCard from '../../components/doctor/DoctorCard';
 import useDoctorMeta from '../../components/doctor/useDoctorMeta';
 import { DOCTOR_ROUTES } from '../../constants/doctorRoutes';
 import { fetchDoctors } from '../../redux/slices/doctorSlice';
+import {useTranslation} from 'react-i18next';
+import i18n from 'i18next';
 
 const TYPES = [
-  { key: '', label: 'All doctors' },
-  { key: 'veterinarian', label: 'Vets' },
-  { key: 'agriculturalDoctor', label: 'Crop doctors' },
+  { key: '', get label() {
+    return i18n.t('doctorList.allDoctors');
+  } },
+  { key: 'veterinarian', get label() {
+    return i18n.t('doctorList.vets');
+  } },
+  { key: 'agriculturalDoctor', get label() {
+    return i18n.t('doctorList.cropDoctors');
+  } },
 ];
 
 const SORTS = [
-  { key: 'rating', label: 'Top rated' },
-  { key: 'experience', label: 'Most consultations' },
-  { key: 'fee_asc', label: 'Lowest fee' },
-  { key: 'newest', label: 'Newest' },
+  { key: 'rating', get label() {
+    return i18n.t('doctorList.topRated');
+  } },
+  { key: 'experience', get label() {
+    return i18n.t('doctorList.mostConsultations');
+  } },
+  { key: 'fee_asc', get label() {
+    return i18n.t('doctorList.lowestFee');
+  } },
+  { key: 'newest', get label() {
+    return i18n.t('doctorList.newest');
+  } },
 ];
 
 const HERO = {
   '': {
     gradient: 'care',
-    title: 'Find a doctor',
-    subtitle: 'Vets and crop experts who take consultations',
+    get title() {
+    return i18n.t('doctorList.findADoctor');
+  },
+    get subtitle() {
+    return i18n.t('doctorList.vetsAndCropExpertsWho');
+  },
   },
   veterinarian: {
     gradient: 'vet',
-    title: 'Veterinarians',
-    subtitle: 'For cows, buffaloes, goats, poultry and pets',
+    get title() {
+    return i18n.t('doctorList.veterinarians');
+  },
+    get subtitle() {
+    return i18n.t('doctorList.forCowsBuffaloesGoatsPoultry');
+  },
   },
   agriculturalDoctor: {
     gradient: 'crop',
-    title: 'Crop doctors',
-    subtitle: 'For pests, leaf disease, soil and nutrients',
+    get title() {
+    return i18n.t('doctorList.cropDoctors');
+  },
+    get subtitle() {
+    return i18n.t('doctorList.forPestsLeafDiseaseSoil');
+  },
   },
 };
 
 const PAGE_SIZE = 20;
 
 export default function DoctorListScreen({ navigation, route }) {
+  const {t} = useTranslation();
   const dispatch = useDispatch();
   const meta = useDoctorMeta();
   const initial = route.params || {};
@@ -156,7 +185,7 @@ export default function DoctorListScreen({ navigation, route }) {
   const filterOptions = [
     {
       key: 'free',
-      label: 'Free only',
+      label: t('doctorList.freeOnly'),
       active: freeOnly,
       toggle: () => setFreeOnly(v => !v),
     },
@@ -164,7 +193,7 @@ export default function DoctorListScreen({ navigation, route }) {
       ? [
           {
             key: 'near',
-            label: `Near ${nearDistrict}`,
+            label: t('doctorList.near', {nearDistrict}),
             active: nearMe,
             toggle: () => setNearMe(v => !v),
           },
@@ -177,7 +206,7 @@ export default function DoctorListScreen({ navigation, route }) {
       <CareHero
         gradient={hero.gradient}
         eyebrow={
-          listLoading ? 'Searching…' : `${pagination.total} doctors found`
+          listLoading ? t('doctorList.searching') : t('doctorList.doctorsFound', {total: pagination.total})
         }
         title={hero.title}
         subtitle={hero.subtitle}
@@ -191,7 +220,7 @@ export default function DoctorListScreen({ navigation, route }) {
           <TextInput
             value={searchText}
             onChangeText={setSearchText}
-            placeholder="Name, speciality, qualification..."
+            placeholder={t('doctorList.nameSpecialityQualification')}
             placeholderTextColor={C.placeholder}
             style={styles.searchInput}
             returnKeyType="search"
@@ -230,7 +259,7 @@ export default function DoctorListScreen({ navigation, route }) {
           <CareChips
             scroll
             options={[
-              { key: '', label: 'Any speciality' },
+              { key: '', label: t('doctorList.anySpeciality') },
               ...specialityOptions,
             ]}
             value={specialization}
@@ -326,16 +355,16 @@ export default function DoctorListScreen({ navigation, route }) {
           ) : listError ? (
             <CareEmpty
               icon={<Stethoscope size={30} color={C.teal} />}
-              title="Couldn't load doctors"
+              title={t('doctorList.couldntLoadDoctors')}
               message={listError}
-              actionLabel="Try Again"
+              actionLabel={t('doctorList.tryAgain')}
               onAction={loadFirstPage}
             />
           ) : (
             <CareEmpty
               icon={<Stethoscope size={30} color={C.teal} />}
-              title="No doctors match"
-              message="Try another speciality or language, or remove a filter."
+              title={t('doctorList.noDoctorsMatch')}
+              message={t('doctorList.tryAnotherSpecialityOrLanguage')}
             />
           )
         }

@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import { FlatList, Pressable, StatusBar, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useIsFocused } from '@react-navigation/native';
@@ -6,8 +6,9 @@ import { useSelector } from 'react-redux';
 import { ArrowLeft } from 'lucide-react-native';
 import FeedPostCard from '../../components/community/social/FeedPostCard';
 import usePostInteractions from '../../components/community/social/usePostInteractions';
-import { COLORS, rf } from '../../components/community/theme';
+import { COLORS, FIELD, rf } from '../../components/community/theme';
 import { COMMUNITY_ROUTES } from '../../constants/communityRoutes';
+import {useTranslation} from 'react-i18next';
 
 /*
  * A scrollable list of posts opened from a grid, starting at the tapped one.
@@ -15,6 +16,7 @@ import { COMMUNITY_ROUTES } from '../../constants/communityRoutes';
  * params: ids, startId, title
  */
 export default function CommunityPostsScreen({ navigation, route }) {
+  const {t} = useTranslation();
   const { ids: allIds = [], startId, title = 'Posts' } = route.params || {};
 
   const isFocused = useIsFocused();
@@ -25,6 +27,8 @@ export default function CommunityPostsScreen({ navigation, route }) {
   const startIndex = Math.max(ids.indexOf(startId), 0);
 
   const [activeId, setActiveId] = useState(startId);
+  const [muted, setMuted] = useState(true);
+  const toggleMute = useCallback(() => setMuted(value => !value), []);
   const listRef = useRef(null);
   const scrolledToStart = useRef(false);
 
@@ -53,6 +57,8 @@ export default function CommunityPostsScreen({ navigation, route }) {
             postId={item}
             isActive={isFocused && item === activeId}
             actions={actions}
+            muted={muted}
+            onToggleMute={toggleMute}
             onOpenReel={postId =>
               navigation.push(COMMUNITY_ROUTES.REELS, { ids: [postId], startId: postId })
             }
@@ -79,7 +85,7 @@ export default function CommunityPostsScreen({ navigation, route }) {
         viewabilityConfig={viewabilityConfig}
         onViewableItemsChanged={onViewableItemsChanged}
         ListEmptyComponent={
-          <Text style={styles.empty}>This post is no longer available.</Text>
+          <Text style={styles.empty}>{t('communityPosts.thisPostIsNoLonger')}</Text>
         }
         contentContainerStyle={styles.content}
       />
@@ -109,7 +115,10 @@ const styles = StyleSheet.create({
     color: COLORS.DARK,
   },
   content: {
+    paddingTop: 14,
     paddingBottom: 40,
+    backgroundColor: FIELD.SOIL,
+    flexGrow: 1,
   },
   empty: {
     marginTop: 60,

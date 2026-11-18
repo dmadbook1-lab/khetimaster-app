@@ -26,6 +26,8 @@ import {
   Leaf,
   Loader,
 } from 'lucide-react-native';
+import {useTranslation} from 'react-i18next';
+import i18n from 'i18next';
 const { width } = Dimensions.get('window');
 const GREEN = '#16A34A';
 const DARK_GREEN = '#16883E';
@@ -48,68 +50,89 @@ const AnimatedCircle = Animated.createAnimatedComponent(Circle);
 const ANALYSIS_STEPS = [
   {
     id: '1',
-    label: 'Image Uploaded',
+    get label() {
+    return i18n.t('aIDetection.imageUploaded');
+  },
     status: 'done',
   },
   {
     id: '2',
-    label: 'Crop Detected',
+    get label() {
+    return i18n.t('aIDetection.cropDetected');
+  },
     status: 'done',
   },
   {
     id: '3',
-    label: 'Identifying Disease',
+    get label() {
+    return i18n.t('aIDetection.identifyingDisease');
+  },
     status: 'running',
   },
   {
     id: '4',
-    label: 'Comparing with Database',
+    get label() {
+    return i18n.t('aIDetection.comparingWithDatabase');
+  },
     status: 'waiting',
   },
   {
     id: '5',
-    label: 'Preparing Treatment',
+    get label() {
+    return i18n.t('aIDetection.preparingTreatment');
+  },
     status: 'waiting',
   },
 ];
 const ANALYZING_TAGS = [
   {
     id: 'texture',
-    label: 'Leaf texture',
+    get label() {
+    return i18n.t('aIDetection.leafTexture');
+  },
     Icon: Grid3x3,
     color: DARK_GREEN,
     bg: '#EAFBF0',
   },
   {
     id: 'color',
-    label: 'Leaf color',
+    get label() {
+    return i18n.t('aIDetection.leafColor');
+  },
     Icon: Palette,
     color: BLUE,
     bg: '#EFF6FF',
   },
   {
     id: 'patterns',
-    label: 'Disease patterns',
+    get label() {
+    return i18n.t('aIDetection.diseasePatterns');
+  },
     Icon: BarChart3,
     color: PURPLE,
     bg: '#F5F3FF',
   },
   {
     id: 'pest',
-    label: 'Pest damage',
+    get label() {
+    return i18n.t('aIDetection.pestDamage');
+  },
     Icon: Bug,
     color: RED,
     bg: '#FEF2F2',
   },
   {
     id: 'health',
-    label: 'Crop health',
+    get label() {
+    return i18n.t('aIDetection.cropHealth');
+  },
     Icon: Leaf,
     color: ORANGE,
     bg: '#FFF7ED',
   },
 ];
 export default function AIDetectionScreen({ navigation, route }) {
+  const {t} = useTranslation();
   const [progress, setProgress] = useState(68);
   const photoSource = route?.params?.photoUri
     ? {
@@ -169,7 +192,7 @@ export default function AIDetectionScreen({ navigation, route }) {
         </TouchableOpacity>
 
         <View style={styles.headerTextBox}>
-          <Text style={styles.headerTitle}>AI Detection</Text>
+          <Text style={styles.headerTitle}>{t('aIDetection.aiDetection')}</Text>
         </View>
 
         <View style={styles.iconButtonPlaceholder} />
@@ -185,7 +208,7 @@ export default function AIDetectionScreen({ navigation, route }) {
 
           <View style={styles.scanningBadge}>
             <View style={styles.scanningDot} />
-            <Text style={styles.scanningText}>Scanning...</Text>
+            <Text style={styles.scanningText}>{t('aIDetection.scanning')}</Text>
           </View>
 
           {}
@@ -195,7 +218,7 @@ export default function AIDetectionScreen({ navigation, route }) {
           <View style={[styles.cornerScan, styles.cornerBR]} />
 
           <View style={styles.imageMetaBox}>
-            <Text style={styles.imageMetaText}>2.4 MP • Tomato Leaf</Text>
+            <Text style={styles.imageMetaText}>{t('aIDetection.24MpTomatoLeaf')}</Text>
           </View>
         </View>
 
@@ -238,14 +261,14 @@ export default function AIDetectionScreen({ navigation, route }) {
               <Text style={styles.circlePercent}>{progress}%</Text>
               <View style={styles.aiActiveRow}>
                 <View style={styles.aiActiveDot} />
-                <Text style={styles.aiActiveText}>AI ACTIVE</Text>
+                <Text style={styles.aiActiveText}>{t('aIDetection.aiActive')}</Text>
               </View>
             </View>
           </View>
 
-          <Text style={styles.analyzingTitle}>Analyzing Crop...</Text>
+          <Text style={styles.analyzingTitle}>{t('aIDetection.analyzingCrop')}</Text>
           <Text style={styles.analyzingSubtitle}>
-            Please wait while AI processes your image
+            {t('aIDetection.pleaseWaitWhileAiProcesses')}
           </Text>
         </View>
 
@@ -255,9 +278,9 @@ export default function AIDetectionScreen({ navigation, route }) {
             <View style={styles.analysisHeaderIcon}>
               <Menu size={rf(15)} color={DARK_GREEN} strokeWidth={2.4} />
             </View>
-            <Text style={styles.analysisTitle}>Live Analysis</Text>
+            <Text style={styles.analysisTitle}>{t('aIDetection.liveAnalysis')}</Text>
             <View style={styles.stepBadge}>
-              <Text style={styles.stepBadgeText}>STEP 3 OF 5</Text>
+              <Text style={styles.stepBadgeText}>{t('aIDetection.step3Of5')}</Text>
             </View>
           </View>
 
@@ -355,7 +378,7 @@ export default function AIDetectionScreen({ navigation, route }) {
                         },
                       ]}
                     >
-                      {isDone ? 'Done' : isRunning ? 'Running' : 'Waiting'}
+                      {isDone ? t('aIDetection.done') : isRunning ? t('aIDetection.running') : t('aIDetection.waiting')}
                     </Text>
                   </View>
                 </View>
@@ -370,7 +393,7 @@ export default function AIDetectionScreen({ navigation, route }) {
             <View style={styles.tagsHeaderIcon}>
               <Cpu size={rf(15)} color={DARK_GREEN} strokeWidth={2.4} />
             </View>
-            <Text style={styles.tagsTitle}>AI is analyzing:</Text>
+            <Text style={styles.tagsTitle}>{t('aIDetection.aiIsAnalyzing')}</Text>
           </View>
 
           <View style={styles.tagsRow}>
@@ -410,17 +433,17 @@ export default function AIDetectionScreen({ navigation, route }) {
           </View>
           <View style={styles.infoTextBox}>
             <Text style={styles.infoTitle}>
-              Average detection time:{' '}
+              {t('aIDetection.averageDetectionTime')}{' '}
               <Text
                 style={{
                   color: DARK_GREEN,
                 }}
               >
-                5–10 seconds
+                {t('aIDetection.510Seconds')}
               </Text>
             </Text>
             <Text style={styles.infoSubtitle}>
-              Please keep the app open while analysis completes.
+              {t('aIDetection.pleaseKeepTheAppOpen')}
             </Text>
           </View>
         </View>
@@ -430,7 +453,7 @@ export default function AIDetectionScreen({ navigation, route }) {
           onPress={handleCancel}
           style={styles.cancelButton}
         >
-          <Text style={styles.cancelText}>Cancel Analysis</Text>
+          <Text style={styles.cancelText}>{t('aIDetection.cancelAnalysis')}</Text>
         </TouchableOpacity>
       </ScrollView>
     </SafeAreaView>

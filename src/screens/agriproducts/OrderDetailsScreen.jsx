@@ -35,6 +35,8 @@ import {
   CircleX,
   Store,
 } from 'lucide-react-native';
+import {useTranslation} from 'react-i18next';
+import {tOpt} from '../../utils/tOpt';
 const { width } = Dimensions.get('window');
 const GREEN = '#16883E';
 const BRIGHT_GREEN = '#1DB954';
@@ -80,6 +82,7 @@ const ORDER_PRODUCTS = [
 ];
 const formatINR = value => `₹${Number(value || 0).toLocaleString('en-IN')}`;
 export default function OrderDetailsScreen({ navigation, route }) {
+  const {t} = useTranslation();
   const [reminderEnabled, setReminderEnabled] = useState(false);
   const orderNumber = route?.params?.orderNumber || '#KM458921';
   const orderStatus = route?.params?.status || 'Packed';
@@ -92,30 +95,30 @@ export default function OrderDetailsScreen({ navigation, route }) {
   };
   const handleTrackShipment = () => {
     Alert.alert(
-      'Track Shipment',
-      'Current shipment status: Packed. Tracking ID: DEL9234871KM',
+      t('orderDetails.trackShipment'),
+      t('orderDetails.currentShipmentStatusPackedTracking'),
     );
   };
   const handleDownloadDocument = documentName => {
-    Alert.alert(documentName, `${documentName} download will start here.`);
+    Alert.alert(documentName, t('orderDetails.downloadWillStartHere', {documentName}));
   };
   const handleCallSeller = () => {
-    Alert.alert('Call Seller', 'Calling IFFCO Official Store...');
+    Alert.alert(t('orderDetails.callSeller'), t('orderDetails.callingIffcoOfficialStore'));
   };
   const handleChatSeller = () => {
-    Alert.alert('Chat Seller', 'Opening seller chat...');
+    Alert.alert(t('orderDetails.chatSeller'), t('orderDetails.openingSellerChat'));
   };
   const handleEnableReminder = () => {
     setReminderEnabled(current => !current);
     Alert.alert(
-      reminderEnabled ? 'Reminder Disabled' : 'Reminder Enabled',
+      reminderEnabled ? t('orderDetails.reminderDisabled') : t('orderDetails.reminderEnabled'),
       reminderEnabled
-        ? 'The farming reminder has been disabled.'
-        : 'You will be reminded about the best application time.',
+        ? t('orderDetails.theFarmingReminderHasBeen')
+        : t('orderDetails.youWillBeRemindedAbout'),
     );
   };
   const handleRateOrder = () => {
-    Alert.alert('Rate Order', 'Order rating screen can be opened here.');
+    Alert.alert(t('orderDetails.rateOrder'), t('orderDetails.orderRatingScreenCanBe'));
   };
   const handleReorder = () => {
     navigation.navigate('Cart', {
@@ -126,18 +129,18 @@ export default function OrderDetailsScreen({ navigation, route }) {
     });
   };
   const handleCancelOrder = () => {
-    Alert.alert('Cancel Order', 'Are you sure you want to cancel this order?', [
+    Alert.alert(t('orderDetails.cancelOrder'), t('orderDetails.areYouSureYouWant'), [
       {
-        text: 'No',
+        text: t('orderDetails.no'),
         style: 'cancel',
       },
       {
-        text: 'Cancel Order',
+        text: t('orderDetails.cancelOrder'),
         style: 'destructive',
         onPress: () => {
           Alert.alert(
-            'Order Cancelled',
-            'Your order cancellation request has been submitted.',
+            t('orderDetails.orderCancelled'),
+            t('orderDetails.yourOrderCancellationRequestHas'),
           );
         },
       },
@@ -156,7 +159,7 @@ export default function OrderDetailsScreen({ navigation, route }) {
           <ArrowLeft size={rf(23)} color={DARK} strokeWidth={2.4} />
         </TouchableOpacity>
 
-        <Text style={styles.headerTitle}>Order Details</Text>
+        <Text style={styles.headerTitle}>{t('orderDetails.orderDetails')}</Text>
 
         <TouchableOpacity
           activeOpacity={0.8}
@@ -183,15 +186,15 @@ export default function OrderDetailsScreen({ navigation, route }) {
           onViewProduct={handleViewProduct}
         />
 
-        <Text style={styles.sectionTitle}>Seller Information</Text>
+        <Text style={styles.sectionTitle}>{t('orderDetails.sellerInformation')}</Text>
 
         <SellerCard onCall={handleCallSeller} onChat={handleChatSeller} />
 
-        <Text style={styles.sectionTitle}>Delivery Partner</Text>
+        <Text style={styles.sectionTitle}>{t('orderDetails.deliveryPartner')}</Text>
 
         <DeliveryPartnerCard onTrack={handleTrackShipment} />
 
-        <Text style={styles.sectionTitle}>Invoice & Documents</Text>
+        <Text style={styles.sectionTitle}>{t('orderDetails.invoiceDocuments')}</Text>
 
         <DocumentsCard onPress={handleDownloadDocument} />
 
@@ -210,7 +213,7 @@ export default function OrderDetailsScreen({ navigation, route }) {
           >
             <Star size={rf(18)} color={ORANGE} strokeWidth={2.4} />
 
-            <Text style={styles.rateButtonText}>Rate</Text>
+            <Text style={styles.rateButtonText}>{t('orderDetails.rate')}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -220,7 +223,7 @@ export default function OrderDetailsScreen({ navigation, route }) {
           >
             <RefreshCcw size={rf(18)} color="#FFFFFF" strokeWidth={2.4} />
 
-            <Text style={styles.reorderButtonText}>Reorder</Text>
+            <Text style={styles.reorderButtonText}>{t('orderDetails.reorder')}</Text>
           </TouchableOpacity>
         </View>
 
@@ -231,13 +234,14 @@ export default function OrderDetailsScreen({ navigation, route }) {
         >
           <CircleX size={rf(17)} color={RED} strokeWidth={2.4} />
 
-          <Text style={styles.cancelButtonText}>Cancel Order</Text>
+          <Text style={styles.cancelButtonText}>{t('orderDetails.cancelOrder')}</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>
   );
 }
 function OrderHeroCard({ orderNumber, orderStatus }) {
+  const {t} = useTranslation();
   return (
     <LinearGradient
       colors={['#17A84A', '#16883E']}
@@ -253,7 +257,7 @@ function OrderHeroCard({ orderNumber, orderStatus }) {
     >
       <View style={styles.heroTopRow}>
         <View>
-          <Text style={styles.orderNumberLabel}>ORDER NUMBER</Text>
+          <Text style={styles.orderNumberLabel}>{t('orderDetails.orderNumber')}</Text>
 
           <Text style={styles.orderNumber}>{orderNumber}</Text>
         </View>
@@ -276,10 +280,10 @@ function OrderHeroCard({ orderNumber, orderStatus }) {
         </View>
 
         <View style={styles.deliveryInfoContent}>
-          <Text style={styles.estimatedLabel}>ESTIMATED DELIVERY</Text>
+          <Text style={styles.estimatedLabel}>{t('orderDetails.estimatedDelivery')}</Text>
 
           <Text style={styles.estimatedDate}>
-            Tomorrow, 26 June{'\n'}
+            {t('orderDetails.tomorrow26June')}{'\n'}
             2026
           </Text>
         </View>
@@ -287,45 +291,46 @@ function OrderHeroCard({ orderNumber, orderStatus }) {
         <View style={styles.freeBadge}>
           <Truck size={rf(12)} color="#FFFFFF" fill="#FFFFFF" />
 
-          <Text style={styles.freeBadgeText}>Free</Text>
+          <Text style={styles.freeBadgeText}>{t('orderDetails.free')}</Text>
         </View>
       </View>
     </LinearGradient>
   );
 }
 function OrderProgressCard() {
+  const {t} = useTranslation();
   const steps = [
     {
       id: 'placed',
-      label: 'Order\nPlaced',
+      label: t('orderDetails.orderPlaced'),
       Icon: Check,
       completed: true,
     },
     {
       id: 'confirmed',
-      label: 'Confirmed',
+      label: t('orderDetails.confirmed'),
       Icon: Check,
       completed: true,
     },
     {
       id: 'packed',
-      label: 'Packed',
+      label: t('orderDetails.packed'),
       Icon: Box,
       active: true,
     },
     {
       id: 'shipped',
-      label: 'Shipped',
+      label: t('orderDetails.shipped'),
       Icon: Truck,
     },
     {
       id: 'out',
-      label: 'Out for\nDelivery',
+      label: t('orderDetails.outForDelivery'),
       Icon: MapPin,
     },
     {
       id: 'delivered',
-      label: 'Delivered',
+      label: t('orderDetails.delivered'),
       Icon: Home,
     },
   ];
@@ -384,6 +389,7 @@ function OrderProgressCard() {
   );
 }
 function DeliveryAddressCard() {
+  const {t} = useTranslation();
   return (
     <View style={styles.addressCard}>
       <View style={styles.addressIconBox}>
@@ -391,13 +397,13 @@ function DeliveryAddressCard() {
       </View>
 
       <View style={styles.addressContent}>
-        <Text style={styles.addressLabel}>DELIVERY ADDRESS</Text>
+        <Text style={styles.addressLabel}>{t('orderDetails.deliveryAddress')}</Text>
 
-        <Text style={styles.addressName}>Patil Farm</Text>
+        <Text style={styles.addressName}>{t('orderDetails.patilFarm')}</Text>
 
         <Text style={styles.addressText}>
-          Village Khadki, Aurangabad{'\n'}
-          Maharashtra – 431001
+          {t('orderDetails.villageKhadkiAurangabad')}{'\n'}
+          {t('orderDetails.maharashtra431001')}
         </Text>
       </View>
 
@@ -405,25 +411,26 @@ function DeliveryAddressCard() {
         activeOpacity={0.85}
         onPress={() =>
           Alert.alert(
-            'Change Address',
-            'Delivery address settings can be opened here.',
+            t('orderDetails.changeAddress'),
+            t('orderDetails.deliveryAddressSettingsCanBe'),
           )
         }
         style={styles.changeAddressButton}
       >
-        <Text style={styles.changeAddressText}>Change</Text>
+        <Text style={styles.changeAddressText}>{t('orderDetails.change')}</Text>
       </TouchableOpacity>
     </View>
   );
 }
 function OrderedProductsCard({ products, totalProducts, onViewProduct }) {
+  const {t} = useTranslation();
   return (
     <View style={styles.productsCard}>
       <View style={styles.productsHeader}>
-        <Text style={styles.cardHeading}>Ordered Products</Text>
+        <Text style={styles.cardHeading}>{t('orderDetails.orderedProducts')}</Text>
 
         <View style={styles.itemsBadge}>
-          <Text style={styles.itemsBadgeText}>{totalProducts} Items</Text>
+          <Text style={styles.itemsBadgeText}>{t('orderDetails.items', {totalProducts})}</Text>
         </View>
       </View>
 
@@ -445,11 +452,11 @@ function OrderedProductsCard({ products, totalProducts, onViewProduct }) {
 
           <View style={styles.productContent}>
             <Text numberOfLines={2} style={styles.productName}>
-              {product.name}
+              {tOpt(product.name)}
             </Text>
 
             <Text style={styles.productMeta}>
-              Qty: {product.quantity} × {formatINR(product.unitPrice)}
+              {t('orderDetails.qty', {quantity: product.quantity, v2: formatINR(product.unitPrice)})}
             </Text>
 
             <Text style={styles.productPrice}>{formatINR(product.price)}</Text>
@@ -460,7 +467,7 @@ function OrderedProductsCard({ products, totalProducts, onViewProduct }) {
             onPress={() => onViewProduct(product)}
             style={styles.viewButton}
           >
-            <Text style={styles.viewButtonText}>View</Text>
+            <Text style={styles.viewButtonText}>{t('common.view')}</Text>
           </TouchableOpacity>
         </View>
       ))}
@@ -468,21 +475,22 @@ function OrderedProductsCard({ products, totalProducts, onViewProduct }) {
   );
 }
 function SellerCard({ onCall, onChat }) {
+  const {t} = useTranslation();
   return (
     <View style={styles.sellerCard}>
       <View style={styles.sellerInfoRow}>
         <View style={styles.sellerLogo}>
-          <Text style={styles.sellerLogoText}>IFFCO</Text>
+          <Text style={styles.sellerLogoText}>{t('orderDetails.iffco')}</Text>
         </View>
 
         <View style={styles.sellerDetails}>
-          <Text style={styles.sellerName}>IFFCO Official Store</Text>
+          <Text style={styles.sellerName}>{t('orderDetails.iffcoOfficialStore')}</Text>
 
           <View style={styles.verifiedRow}>
             <View style={styles.verifiedBadge}>
               <Check size={rf(10)} color={GREEN} strokeWidth={3} />
 
-              <Text style={styles.verifiedText}>Verified Seller</Text>
+              <Text style={styles.verifiedText}>{t('orderDetails.verifiedSeller')}</Text>
             </View>
 
             <Star size={rf(11)} color="#FACC15" fill="#FACC15" />
@@ -500,7 +508,7 @@ function SellerCard({ onCall, onChat }) {
         >
           <Phone size={rf(17)} color="#FFFFFF" strokeWidth={2.4} />
 
-          <Text style={styles.callButtonText}>Call Seller</Text>
+          <Text style={styles.callButtonText}>{t('orderDetails.callSeller')}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -510,13 +518,14 @@ function SellerCard({ onCall, onChat }) {
         >
           <MessageSquare size={rf(17)} color={BRIGHT_GREEN} strokeWidth={2.4} />
 
-          <Text style={styles.chatButtonText}>Chat Seller</Text>
+          <Text style={styles.chatButtonText}>{t('orderDetails.chatSeller')}</Text>
         </TouchableOpacity>
       </View>
     </View>
   );
 }
 function DeliveryPartnerCard({ onTrack }) {
+  const {t} = useTranslation();
   return (
     <View style={styles.deliveryPartnerCard}>
       <View style={styles.partnerInfoRow}>
@@ -525,10 +534,10 @@ function DeliveryPartnerCard({ onTrack }) {
         </View>
 
         <View style={styles.partnerDetails}>
-          <Text style={styles.partnerName}>Delhivery Express</Text>
+          <Text style={styles.partnerName}>{t('orderDetails.delhiveryExpress')}</Text>
 
           <Text style={styles.trackingText}>
-            Tracking ID: <Text style={styles.trackingId}>DEL9234871KM</Text>
+            {t('orderDetails.trackingId')} <Text style={styles.trackingId}>{t('orderDetails.del9234871km')}</Text>
           </Text>
         </View>
       </View>
@@ -540,26 +549,27 @@ function DeliveryPartnerCard({ onTrack }) {
       >
         <Map size={rf(19)} color="#FFFFFF" strokeWidth={2.4} />
 
-        <Text style={styles.trackShipmentText}>Track Shipment</Text>
+        <Text style={styles.trackShipmentText}>{t('orderDetails.trackShipment')}</Text>
       </TouchableOpacity>
     </View>
   );
 }
 function DocumentsCard({ onPress }) {
+  const {t} = useTranslation();
   const documents = [
     {
       id: 'invoice',
-      title: 'Download Invoice',
+      title: t('orderDetails.downloadInvoice'),
       Icon: Download,
     },
     {
       id: 'gst',
-      title: 'GST Invoice',
+      title: t('orderDetails.gstInvoice'),
       Icon: FileText,
     },
     {
       id: 'receipt',
-      title: 'Order Receipt',
+      title: t('orderDetails.orderReceipt'),
       Icon: ReceiptText,
     },
   ];
@@ -591,6 +601,7 @@ function DocumentsCard({ onPress }) {
   );
 }
 function ReminderCard({ enabled, onPress }) {
+  const {t} = useTranslation();
   return (
     <LinearGradient
       colors={['#16883E', '#188D40']}
@@ -609,15 +620,13 @@ function ReminderCard({ enabled, onPress }) {
       <View style={styles.reminderBadge}>
         <Sparkles size={rf(11)} color="#FFFFFF" strokeWidth={2.3} />
 
-        <Text style={styles.reminderBadgeText}>AI Reminder</Text>
+        <Text style={styles.reminderBadgeText}>{t('orderDetails.aiReminder')}</Text>
       </View>
 
-      <Text style={styles.reminderTitle}>Smart Application Reminder</Text>
+      <Text style={styles.reminderTitle}>{t('orderDetails.smartApplicationReminder')}</Text>
 
       <Text style={styles.reminderDescription}>
-        “When your fertilizer arrives, KhetiMaster will remind you about the
-        best application time based on weather, crop stage, and soil conditions
-        – so your Soybean crop gets maximum benefit.”
+        {t('orderDetails.whenYourFertilizerArrivesKhetimaster')}
       </Text>
 
       <TouchableOpacity
@@ -636,7 +645,7 @@ function ReminderCard({ enabled, onPress }) {
         />
 
         <Text style={styles.enableReminderText}>
-          {enabled ? 'Reminder Enabled' : 'Enable Reminder'}
+          {enabled ? t('orderDetails.reminderEnabled') : t('orderDetails.enableReminder')}
         </Text>
       </TouchableOpacity>
     </LinearGradient>

@@ -1,22 +1,23 @@
 import React from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { BadgeCheck, ChevronRight } from 'lucide-react-native';
+import {useTranslation} from 'react-i18next';
 const { width } = Dimensions.get('window');
 export default function AIRecommendedCard() {
+  const {t} = useTranslation();
   return (
     <View style={styles.card}>
-      <Text style={styles.badge}>● AI RECOMMENDED</Text>
+      <Text style={styles.badge}>{t('aIRecommendedCard.aiRecommended')}</Text>
 
-      <Text style={styles.title}>Recommended for Your Farm</Text>
+      <Text style={styles.title}>{t('aIRecommendedCard.recommendedForYourFarm')}</Text>
 
       <Text style={styles.desc}>
-        This fertilizer is best suited for your Soybean crop during the
-        vegetative stage. Apply 100 kg/hectare for optimal yield improvement.
+        {t('aIRecommendedCard.thisFertilizerIsBestSuited')}
       </Text>
 
       <View style={styles.bottom}>
         <View style={styles.progressBox}>
-          <Text style={styles.confidence}>Confidence</Text>
+          <Text style={styles.confidence}>{t('aIRecommendedCard.confidence')}</Text>
           <View style={styles.track}>
             <View style={styles.fill} />
           </View>
@@ -25,7 +26,7 @@ export default function AIRecommendedCard() {
         <Text style={styles.percent}>92%</Text>
 
         <View style={styles.learnRow}>
-          <Text style={styles.learn}>Learn More</Text>
+          <Text style={styles.learn}>{t('aIRecommendedCard.learnMore')}</Text>
           <ChevronRight size={14} color="#FFFFFF" />
         </View>
       </View>

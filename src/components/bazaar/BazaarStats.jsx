@@ -1,6 +1,8 @@
 import React from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { ShoppingBag, Tractor, Users } from 'lucide-react-native';
+import i18n from 'i18next';
+import {useTranslation} from 'react-i18next';
 const { width } = Dimensions.get('window');
 const rf = size => {
   const scale = width / 390;
@@ -10,29 +12,42 @@ const stats = [
   {
     Icon: ShoppingBag,
     value: '1200+',
-    label: 'PRODUCTS',
-    desc: 'Quality Assured',
+    get label() {
+    return i18n.t('bazaarStats.products');
+  },
+    get desc() {
+    return i18n.t('bazaarStats.qualityAssured');
+  },
     color: '#16A34A',
     bg: '#ECFDF5',
   },
   {
     Icon: Tractor,
     value: '350+',
-    label: 'MACHINES',
-    desc: 'Ready to Rent',
+    get label() {
+    return i18n.t('bazaarStats.machines');
+  },
+    get desc() {
+    return i18n.t('bazaarStats.readyToRent');
+  },
     color: '#F97316',
     bg: '#FFF7ED',
   },
   {
     Icon: Users,
     value: '800+',
-    label: 'WORKERS',
-    desc: 'Skilled & Verified',
+    get label() {
+    return i18n.t('bazaarStats.workers');
+  },
+    get desc() {
+    return i18n.t('bazaarStats.skilledVerified');
+  },
     color: '#6366F1',
     bg: '#EEF2FF',
   },
 ];
 export default function BazaarStats() {
+  useTranslation();
   return (
     <View style={styles.card}>
       {stats.map((item, index) => {

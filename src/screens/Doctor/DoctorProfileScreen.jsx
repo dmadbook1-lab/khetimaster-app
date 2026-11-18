@@ -57,6 +57,7 @@ import {
   doctorPlace,
   feeLabel,
 } from '../../utils/doctorFormat';
+import {useTranslation} from 'react-i18next';
 
 /*
  * Booked times grouped by day: [{day, times: ['10:00 AM', ...]}]
@@ -74,6 +75,7 @@ const groupBookedSlots = slots => {
 };
 
 export default function DoctorProfileScreen({ navigation, route }) {
+  const {t} = useTranslation();
   const { doctorId } = route.params;
   const dispatch = useDispatch();
   const todayKey = todayInIndiaKey();
@@ -98,12 +100,12 @@ export default function DoctorProfileScreen({ navigation, route }) {
   if (!doctor) {
     return (
       <SafeAreaView style={styles.container} edges={['left', 'right']}>
-        <CareTopBar title="Doctor" onBack={() => navigation.goBack()} />
+        <CareTopBar title={t('doctorProfile.doctor')} onBack={() => navigation.goBack()} />
         {selectedError && !selectedLoading ? (
           <CareEmpty
-            title="Doctor not available"
+            title={t('doctorProfile.doctorNotAvailable')}
             message={selectedError}
-            actionLabel="Go Back"
+            actionLabel={t('doctorProfile.goBack')}
             onAction={() => navigation.goBack()}
           />
         ) : (
@@ -179,7 +181,7 @@ export default function DoctorProfileScreen({ navigation, route }) {
                   </Text>
                 </View>
                 <Text style={styles.statLabel}>
-                  {doctor.totalReviews || 0} reviews
+                  {t('doctorProfile.reviews', {v1: doctor.totalReviews || 0})}
                 </Text>
               </View>
               <View style={styles.statDivider} />
@@ -187,14 +189,14 @@ export default function DoctorProfileScreen({ navigation, route }) {
                 <Text style={styles.statValue}>
                   {doctor.totalConsultations || 0}
                 </Text>
-                <Text style={styles.statLabel}>Consultations</Text>
+                <Text style={styles.statLabel}>{t('doctorProfile.consultations')}</Text>
               </View>
               <View style={styles.statDivider} />
               <View style={styles.stat}>
                 <Text style={[styles.statValue, styles.feeValue]}>
                   {feeLabel(doctor)}
                 </Text>
-                <Text style={styles.statLabel}>Per visit</Text>
+                <Text style={styles.statLabel}>{t('doctorProfile.perVisit')}</Text>
               </View>
             </View>
           </View>
@@ -215,7 +217,7 @@ export default function DoctorProfileScreen({ navigation, route }) {
               <CalendarCheck size={20} color={C.teal} />
               <View style={styles.flex}>
                 <Text style={styles.activeTitle}>
-                  You have a consultation with this doctor
+                  {t('doctorProfile.youHaveAConsultationWith')}
                 </Text>
                 <Text style={styles.activeText}>
                   {formatDay(active.consultationDate, { year: false })} ·{' '}
@@ -229,7 +231,7 @@ export default function DoctorProfileScreen({ navigation, route }) {
           {/* EXPERTISE */}
           {!!(doctor.specialization || []).length && (
             <>
-              <CareSectionTitle title="Treats" />
+              <CareSectionTitle title={t('doctorProfile.treats')} />
               <View style={styles.tags}>
                 {doctor.specialization.map(item => (
                   <Text
@@ -262,7 +264,7 @@ export default function DoctorProfileScreen({ navigation, route }) {
               <View style={styles.infoLine}>
                 <Languages size={17} color={C.teal} />
                 <Text style={styles.infoText}>
-                  Speaks {doctor.languages.join(', ')}
+                  {t('doctorProfile.speaks', {v1: doctor.languages.join(', ')})}
                 </Text>
               </View>
             )}
@@ -276,16 +278,14 @@ export default function DoctorProfileScreen({ navigation, route }) {
               <View style={styles.infoLine}>
                 <CalendarClock size={17} color={C.teal} />
                 <Text style={styles.infoText}>
-                  Taking consultations
-                  {from && from > todayKey ? ` from ${formatDay(from)}` : ''}
-                  {until ? ` until ${formatDay(until)}` : ''}
+                  {t('doctorProfile.takingConsultations', {v1: from && from > todayKey ? ` from ${formatDay(from)}` : '', v2: until ? ` until ${formatDay(until)}` : ''})}
                 </Text>
               </View>
             )}
             <View style={styles.infoLine}>
               <Lock size={17} color={C.muted} />
               <Text style={[styles.infoText, styles.mutedText]}>
-                Phone number is shared once the doctor accepts your request
+                {t('doctorProfile.phoneNumberIsSharedOnce')}
               </Text>
             </View>
           </CareCard>
@@ -296,16 +296,16 @@ export default function DoctorProfileScreen({ navigation, route }) {
               <CareCardTitle
                 icon={<CalendarClock size={16} color={C.coral} />}
                 color={C.coral}
-                title="Already booked"
+                title={t('doctorProfile.alreadyBooked')}
               />
               <Text style={styles.cardHint}>
-                Pick a different time on these days.
+                {t('doctorProfile.pickADifferentTimeOn')}
               </Text>
               {booked.slice(0, 6).map(({ day, times }) => (
                 <View key={day} style={styles.slotRow}>
                   <Text style={styles.slotDay}>
                     {day === todayKey
-                      ? 'Today'
+                      ? t('common.today')
                       : formatDay(day, { year: false })}
                   </Text>
                   <Text style={styles.slotTimes} numberOfLines={2}>
@@ -317,11 +317,11 @@ export default function DoctorProfileScreen({ navigation, route }) {
           )}
 
           {/* REVIEWS */}
-          <CareSectionTitle title="What farmers say" />
+          <CareSectionTitle title={t('doctorProfile.whatFarmersSay')} />
           {reviews.length === 0 ? (
             <CareCard>
               <Text style={styles.mutedText}>
-                No reviews yet. Be the first to consult this doctor.
+                {t('doctorProfile.noReviewsYetBeThe')}
               </Text>
             </CareCard>
           ) : (
@@ -361,7 +361,7 @@ export default function DoctorProfileScreen({ navigation, route }) {
           <View style={styles.verified}>
             <BadgeCheck size={14} color={C.muted} />
             <Text style={styles.verifiedText}>
-              Fees are set by the doctor and shown before you book.
+              {t('doctorProfile.feesAreSetByThe')}
             </Text>
           </View>
         </View>
@@ -372,7 +372,7 @@ export default function DoctorProfileScreen({ navigation, route }) {
           <>
             <CareButton
               variant="outline"
-              label="Edit"
+              label={t('doctorProfile.edit')}
               icon={<Pencil size={16} color={C.tealDark} />}
               onPress={() =>
                 navigation.navigate(DOCTOR_ROUTES.FORM, { doctor })
@@ -380,7 +380,7 @@ export default function DoctorProfileScreen({ navigation, route }) {
               style={styles.flex}
             />
             <CareButton
-              label="Dashboard"
+              label={t('doctorProfile.dashboard')}
               icon={<LayoutDashboard size={16} color={C.white} />}
               onPress={() => navigation.navigate(DOCTOR_ROUTES.DASHBOARD)}
               style={styles.flexWide}
@@ -389,12 +389,12 @@ export default function DoctorProfileScreen({ navigation, route }) {
         ) : (
           <>
             <View style={styles.flex}>
-              <Text style={styles.bottomLabel}>Consultation fee</Text>
+              <Text style={styles.bottomLabel}>{t('doctorProfile.consultationFee')}</Text>
               <Text style={styles.bottomPrice}>{feeLabel(doctor)}</Text>
             </View>
             {active ? (
               <CareButton
-                label="View Booking"
+                label={t('doctorProfile.viewBooking')}
                 icon={<CalendarCheck size={17} color={C.white} />}
                 onPress={() =>
                   navigation.navigate(DOCTOR_ROUTES.CONSULTATION, {
@@ -405,7 +405,7 @@ export default function DoctorProfileScreen({ navigation, route }) {
               />
             ) : (
               <CareButton
-                label={canBook ? 'Book Consultation' : 'Not available'}
+                label={canBook ? t('doctorProfile.bookConsultation') : t('doctorProfile.notAvailable')}
                 icon={
                   canBook ? <CalendarCheck size={17} color={C.white} /> : null
                 }

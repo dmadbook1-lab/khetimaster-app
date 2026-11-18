@@ -11,12 +11,14 @@ import { Crown, MapPin, X } from 'lucide-react-native';
 
 import { MARKET_COLORS as C } from '../market/theme';
 import { formatPerKg, formatQuintal, isPrice } from '../../utils/mandiFormat';
+import {useTranslation} from 'react-i18next';
 
 /*
  * The chosen markets side by side, best first, with one sentence that
  * says which pays more and by how much.
  */
 export default function CompareMarketsSheet({ visible, records, onClose }) {
+  const {t} = useTranslation();
   const ranked = [...records]
     .filter(record => isPrice(record.modalPrice))
     .sort((a, b) => b.modalPrice - a.modalPrice);
@@ -39,7 +41,7 @@ export default function CompareMarketsSheet({ visible, records, onClose }) {
         <View style={styles.sheet}>
           <View style={styles.handle} />
           <View style={styles.headerRow}>
-            <Text style={styles.title}>Which market pays more?</Text>
+            <Text style={styles.title}>{t('compareMarketsSheet.whichMarketPaysMore')}</Text>
             <Pressable hitSlop={10} onPress={onClose}>
               <X size={20} color={C.muted} />
             </Pressable>
@@ -52,15 +54,14 @@ export default function CompareMarketsSheet({ visible, records, onClose }) {
                 <View style={styles.flex}>
                   <Text style={styles.verdictTitle}>{best.market}</Text>
                   <Text style={styles.verdictText}>
-                    pays {formatQuintal(gap)} more per quintal (
-                    {formatPerKg(gap)} more) than {worst.market}.
+                    {t('compareMarketsSheet.paysMorePerQuintalMore', {v1: formatQuintal(gap), v2: formatPerKg(gap), market: worst.market})}
                   </Text>
                 </View>
               </View>
             ) : (
               <View style={styles.verdict}>
                 <Text style={styles.verdictText}>
-                  These markets pay the same price.
+                  {t('compareMarketsSheet.theseMarketsPayTheSame')}
                 </Text>
               </View>
             )}
@@ -72,7 +73,7 @@ export default function CompareMarketsSheet({ visible, records, onClose }) {
               >
                 <View style={styles.cardTop}>
                   <View style={styles.flex}>
-                    {index === 0 && <Text style={styles.bestTag}>Best</Text>}
+                    {index === 0 && <Text style={styles.bestTag}>{t('compareMarketsSheet.best')}</Text>}
                     <Text style={styles.market} numberOfLines={1}>
                       {record.market}
                     </Text>
@@ -108,8 +109,7 @@ export default function CompareMarketsSheet({ visible, records, onClose }) {
             ))}
 
             <Text style={styles.note}>
-              Prices per quintal (100 kg) on each market's latest day. Think
-              about the cost of taking your crop there too.
+              {t('compareMarketsSheet.pricesPerQuintal100Kg')}
             </Text>
           </ScrollView>
         </View>

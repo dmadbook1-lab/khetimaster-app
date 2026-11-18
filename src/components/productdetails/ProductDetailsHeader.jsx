@@ -7,12 +7,14 @@ import {
   Dimensions,
 } from 'react-native';
 import { ArrowLeft, Heart, Share2, ShoppingCart } from 'lucide-react-native';
+import {useTranslation} from 'react-i18next';
 const { width } = Dimensions.get('window');
 const rf = size => {
   const scale = width / 390;
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
 export default function ProductDetailsHeader({ navigation }) {
+  const {t} = useTranslation();
   return (
     <View style={styles.header}>
       <TouchableOpacity
@@ -23,7 +25,7 @@ export default function ProductDetailsHeader({ navigation }) {
         <ArrowLeft size={22} color="#111827" strokeWidth={2.5} />
       </TouchableOpacity>
 
-      <Text style={styles.title}>Product Details</Text>
+      <Text style={styles.title}>{t('productDetailsHeader.productDetails')}</Text>
 
       <View style={styles.actions}>
         <TouchableOpacity activeOpacity={0.8} style={styles.iconBtn}>

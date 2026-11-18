@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { CloudRain, ArrowRight } from 'lucide-react-native';
+import {useTranslation} from 'react-i18next';
 const { width } = Dimensions.get('window');
 const isSmall = width < 370;
 const rf = size => {
@@ -16,6 +17,7 @@ const rf = size => {
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
 export default function SaleBanner() {
+  const {t} = useTranslation();
   return (
     <ImageBackground
       source={require('../../assets/bazar/sales-banner.jpg')}
@@ -50,25 +52,25 @@ export default function SaleBanner() {
         </View>
 
         <View style={styles.textBox}>
-          <Text style={styles.tag}>LIMITED TIME OFFER</Text>
+          <Text style={styles.tag}>{t('saleBanner.limitedTimeOffer')}</Text>
 
           <Text numberOfLines={2} style={styles.title}>
-            Monsoon Mega Sale
+            {t('saleBanner.monsoonMegaSale')}
           </Text>
 
           <Text numberOfLines={2} style={styles.sub}>
-            Save big on fertilizers, pesticides, seeds & crop nutrition.
+            {t('saleBanner.saveBigOnFertilizersPesticides')}
           </Text>
 
           <TouchableOpacity activeOpacity={0.9} style={styles.button}>
-            <Text style={styles.buttonText}>Shop Now</Text>
+            <Text style={styles.buttonText}>{t('saleBanner.shopNow')}</Text>
             <ArrowRight size={14} color="#F97316" strokeWidth={2.8} />
           </TouchableOpacity>
         </View>
 
         <View style={styles.discountCircle}>
           <Text style={styles.percent}>20%</Text>
-          <Text style={styles.off}>OFF</Text>
+          <Text style={styles.off}>{t('saleBanner.off')}</Text>
         </View>
       </View>
     </ImageBackground>

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { COLORS, rf } from '../theme';
 import { splitCaption } from '../../../utils/communityFormat';
+import {useTranslation} from 'react-i18next';
 
 /*
  * "name caption… more" with tappable #hashtags.
@@ -19,6 +20,7 @@ export default function CaptionText({
   onHashtagPress,
   style,
 }) {
+  const {t} = useTranslation();
   const [expanded, setExpanded] = useState(false);
   const [truncated, setTruncated] = useState(false);
 
@@ -84,7 +86,7 @@ export default function CaptionText({
           style={[styles.more, dark && styles.moreDark]}
           onPress={() => setExpanded(true)}
         >
-          more
+          {t('captionText.more')}
         </Text>
       ) : null}
     </View>
@@ -115,7 +117,7 @@ const styles = StyleSheet.create({
     fontWeight: '700',
   },
   tagDark: {
-    color: '#BBF7D0',
+    color: '#FFD08A',
   },
   more: {
     marginTop: 1,

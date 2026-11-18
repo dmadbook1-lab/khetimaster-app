@@ -7,7 +7,7 @@ module.exports = {
         moduleName: '@env',
         path: '.env',
         blacklist: null,
-        whitelist: ['API_BASE_URL', 'CLOUDINARY_CLOUD_NAME', 'CLOUDINARY_UPLOAD_PRESET'],
+        whitelist: ['API_BASE_URL', 'CLOUDINARY_CLOUD_NAME', 'CLOUDINARY_UPLOAD_PRESET', 'MANDI_API_KEY'],
         safe: false,
         allowUndefined: true,
       },

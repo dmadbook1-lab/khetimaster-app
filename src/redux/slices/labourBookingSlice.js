@@ -14,6 +14,7 @@ import {
   completeLabourBookingApi,
   reviewLabourBookingApi,
 } from '../../api/labourBookingApi';
+import i18n from 'i18next';
 
 const errorMessage = (error, fallback) =>
   error.response?.data?.message ||
@@ -37,7 +38,7 @@ export const createLabourBooking = createAsyncThunk(
       return await createLabourBookingApi(bookingData);
     } catch (error) {
       return rejectWithValue({
-        message: errorMessage(error, 'Unable to send the booking request'),
+        message: errorMessage(error, i18n.t('labourBookingSlice.unableToSendTheBooking')),
         bookingId: error.response?.data?.booking?._id || null,
       });
     }
@@ -59,7 +60,7 @@ export const fetchMyLabourBookings = createAsyncThunk(
     try {
       return await getMyBookingsApi(params);
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to load your bookings'));
+      return rejectWithValue(errorMessage(error, i18n.t('labourBookingSlice.unableToLoadYourBookings')));
     }
   },
 );
@@ -70,7 +71,7 @@ export const fetchLabourRequests = createAsyncThunk(
     try {
       return await getLabourRequestsApi(params);
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to load work requests'));
+      return rejectWithValue(errorMessage(error, i18n.t('labourBookingSlice.unableToLoadWorkRequests')));
     }
   },
 );
@@ -81,7 +82,7 @@ export const fetchLabourBookingById = createAsyncThunk(
     try {
       return await getBookingByIdApi(bookingId);
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to load booking'));
+      return rejectWithValue(errorMessage(error, i18n.t('labourBookingSlice.unableToLoadBooking')));
     }
   },
 );
@@ -108,7 +109,7 @@ export const updateLabourBooking = createAsyncThunk(
     try {
       return await ACTION_APIS[action](bookingId, reason);
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to update booking'));
+      return rejectWithValue(errorMessage(error, i18n.t('labourBookingSlice.unableToUpdateBooking')));
     }
   },
 );
@@ -119,7 +120,7 @@ export const reviewLabourBooking = createAsyncThunk(
     try {
       return await reviewLabourBookingApi(bookingId, {rating, comment});
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to submit review'));
+      return rejectWithValue(errorMessage(error, i18n.t('labourBookingSlice.unableToSubmitReview')));
     }
   },
 );

@@ -1,6 +1,7 @@
 import {
   launchImageLibrary,
 } from 'react-native-image-picker';
+import i18n from 'i18next';
 
 /*
 |--------------------------------------------------------------------------
@@ -27,7 +28,7 @@ export const pickNurseryImages =
     if (result.errorCode) {
       throw new Error(
         result.errorMessage ||
-          'Unable to select images',
+          i18n.t('nurseryImagePicker.unableToSelectImages'),
       );
     }
 

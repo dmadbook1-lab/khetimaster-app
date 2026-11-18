@@ -2,41 +2,46 @@ import { useEffect, useState } from 'react';
 import { Image } from 'react-native';
 
 // height / width from the size saved with the upload, or null
-export const storedRatio = item =>
+const storedRatio = item =>
   item?.width && item?.height ? item.height / item.width : null;
+
+const sourceOf = item =>
+  item?.type === 'video' ? item?.thumbnailUrl : item?.url;
 
 const measured = {};
 
 /*
- * height / width of a media item. Older posts have no saved size, so the
- * image (or a video's thumbnail) is measured once and cached by URL.
+ * height / width of every media item. Older posts have no saved size, so
+ * the image (or a video's thumbnail) is measured once and cached by URL.
  */
-export default function useMediaRatio(item, fallback = 1) {
-  const known = storedRatio(item);
-  const source = item?.type === 'video' ? item?.thumbnailUrl : item?.url;
-  const [ratio, setRatio] = useState(known || measured[source] || null);
+export function useMediaRatios(items, fallback = 1) {
+  const [, setMeasuredCount] = useState(0);
 
   useEffect(() => {
-    if (known || !source) return undefined;
-    if (measured[source]) {
-      setRatio(measured[source]);
-      return undefined;
-    }
-
     let alive = true;
-    Image.getSize(
-      source,
-      (w, h) => {
-        if (!w || !h) return;
-        measured[source] = h / w;
-        if (alive) setRatio(h / w);
-      },
-      () => {},
-    );
+
+    (items || []).forEach(item => {
+      const source = sourceOf(item);
+
+      if (storedRatio(item) || !source || measured[source]) return;
+
+      Image.getSize(
+        source,
+        (w, h) => {
+          if (!w || !h) return;
+          measured[source] = h / w;
+          if (alive) setMeasuredCount(count => count + 1);
+        },
+        () => {},
+      );
+    });
+
     return () => {
       alive = false;
     };
-  }, [known, source]);
+  }, [items]);
 
-  return known || ratio || fallback;
+  return (items || []).map(
+    item => storedRatio(item) || measured[sourceOf(item)] || fallback,
+  );
 }

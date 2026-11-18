@@ -54,7 +54,7 @@ export default function GridTile({
 
 const styles = StyleSheet.create({
   tile: {
-    backgroundColor: '#E8DFCC',
+    backgroundColor: '#E3E9EF',
     overflow: 'hidden',
   },
   pressed: {

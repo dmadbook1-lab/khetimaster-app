@@ -60,46 +60,81 @@ import {
   DOCTOR_TYPE_META,
   feeLabel,
 } from '../../utils/doctorFormat';
+import {useTranslation} from 'react-i18next';
+import i18n from 'i18next';
 
 const JOIN_STEPS = [
   {
-    title: 'Create your profile',
-    text: 'Type, specialities, fee and languages',
+    get title() {
+    return i18n.t('doctorDashboard.createYourProfile');
   },
-  { title: 'Farmers find you', text: 'In search for vets and crop doctors' },
-  { title: 'Accept requests', text: 'Phone numbers are shared on accept' },
+    get text() {
+    return i18n.t('doctorDashboard.typeSpecialitiesFeeAndLanguages');
+  },
+  },
+  { get title() {
+    return i18n.t('doctorDashboard.farmersFindYou');
+  }, get text() {
+    return i18n.t('doctorDashboard.inSearchForVetsAnd');
+  } },
+  { get title() {
+    return i18n.t('doctorDashboard.acceptRequests');
+  }, get text() {
+    return i18n.t('doctorDashboard.phoneNumbersAreSharedOn');
+  } },
   {
-    title: 'Visit & advise',
-    text: 'Write diagnosis and prescription in the app',
+    get title() {
+    return i18n.t('doctorDashboard.visitAdvise');
+  },
+    get text() {
+    return i18n.t('doctorDashboard.writeDiagnosisAndPrescriptionIn');
+  },
   },
 ];
 
 const BENEFITS = [
   {
     icon: IndianRupee,
-    title: 'Set your own fee',
-    text: 'Or offer free consultations',
+    get title() {
+    return i18n.t('doctorDashboard.setYourOwnFee');
+  },
+    get text() {
+    return i18n.t('doctorDashboard.orOfferFreeConsultations');
+  },
   },
   {
     icon: BellRing,
-    title: 'Requests come to you',
-    text: 'With photos of the problem',
+    get title() {
+    return i18n.t('doctorDashboard.requestsComeToYou');
+  },
+    get text() {
+    return i18n.t('doctorDashboard.withPhotosOfTheProblem');
+  },
   },
   {
     icon: CalendarDays,
-    title: 'No double booking',
-    text: 'Your booked slots are blocked',
+    get title() {
+    return i18n.t('doctorDashboard.noDoubleBooking');
+  },
+    get text() {
+    return i18n.t('doctorDashboard.yourBookedSlotsAreBlocked');
+  },
   },
   {
     icon: Star,
-    title: 'Build your rating',
-    text: 'Farmers review after each visit',
+    get title() {
+    return i18n.t('doctorDashboard.buildYourRating');
+  },
+    get text() {
+    return i18n.t('doctorDashboard.farmersReviewAfterEachVisit');
+  },
   },
 ];
 
 const AVAILABILITY_ORDER = ['available', 'busy', 'unavailable'];
 
 export default function DoctorDashboardScreen({ navigation }) {
+  const {t} = useTranslation();
   const dispatch = useDispatch();
   const feedback = useFeedbackModal();
   const toast = useToast();
@@ -133,9 +168,9 @@ export default function DoctorDashboardScreen({ navigation }) {
           <CareHero
             banner={DOCTOR_BANNER}
             onBack={() => navigation.goBack()}
-            eyebrow="For doctors & vets"
-            title={'Help farmers.\nGrow your practice.'}
-            subtitle="Vets and crop doctors get consultation requests from farmers nearby."
+            eyebrow={t('doctorDashboard.forDoctorsVets')}
+            title={t('doctorDashboard.helpFarmersGrowYourPractice')}
+            subtitle={t('doctorDashboard.vetsAndCropDoctorsGet')}
           >
             <TouchableOpacity
               activeOpacity={0.88}
@@ -143,25 +178,25 @@ export default function DoctorDashboardScreen({ navigation }) {
               onPress={join}
             >
               <Stethoscope size={18} color={C.navy} />
-              <Text style={styles.heroCtaText}>Join as a doctor</Text>
+              <Text style={styles.heroCtaText}>{t('doctorDashboard.joinAsADoctor')}</Text>
               <ArrowRight size={17} color={C.navy} />
             </TouchableOpacity>
-            <Text style={styles.heroCtaNote}>Free · takes about 3 minutes</Text>
+            <Text style={styles.heroCtaNote}>{t('doctorDashboard.freeTakesAbout3Minutes')}</Text>
           </CareHero>
 
           <View style={styles.body}>
             {myProfileStatus === 'error' ? (
               <CareEmpty
-                title="Couldn't load your profile"
+                title={t('doctorDashboard.couldntLoadYourProfile')}
                 message={myProfileError}
-                actionLabel="Try Again"
+                actionLabel={t('doctorDashboard.tryAgain')}
                 onAction={load}
               />
             ) : !missing ? (
               <CareLoading />
             ) : (
               <>
-                <CareSectionTitle title="How it works" />
+                <CareSectionTitle title={t('doctorDashboard.howItWorks')} />
                 <CareCard>
                   {JOIN_STEPS.map((step, index) => (
                     <View key={step.title} style={styles.joinStep}>
@@ -181,7 +216,7 @@ export default function DoctorDashboardScreen({ navigation }) {
                   ))}
                 </CareCard>
 
-                <CareSectionTitle title="Why join" />
+                <CareSectionTitle title={t('doctorDashboard.whyJoin')} />
                 <View style={styles.benefits}>
                   {BENEFITS.map(({ icon: Icon, title, text }) => (
                     <View key={title} style={styles.benefit}>
@@ -197,8 +232,7 @@ export default function DoctorDashboardScreen({ navigation }) {
                 <View style={styles.privacy}>
                   <ShieldCheck size={16} color={C.teal} />
                   <Text style={styles.privacyText}>
-                    Your phone number and email are never shown publicly. A
-                    farmer sees your number only after you accept their request.
+                    {t('doctorDashboard.yourPhoneNumberAndEmail')}
                   </Text>
                 </View>
               </>
@@ -209,7 +243,7 @@ export default function DoctorDashboardScreen({ navigation }) {
         {missing && (
           <CareBottomBar>
             <CareButton
-              label="Create Doctor Profile"
+              label={t('doctorDashboard.createDoctorProfile')}
               icon={<Stethoscope size={17} color={C.white} />}
               onPress={join}
               style={styles.flex}
@@ -233,10 +267,10 @@ export default function DoctorDashboardScreen({ navigation }) {
       await dispatch(setMyDoctorAvailability(availability)).unwrap();
       toast.show(
         availability === 'available'
-          ? 'Farmers can book you again'
-          : `You are now shown as ${AVAILABILITY_META[
+          ? t('doctorDashboard.farmersCanBookYouAgain')
+          : t('doctorDashboard.youAreNowShownAs', {v1: AVAILABILITY_META[
               availability
-            ].label.toLowerCase()}`,
+            ].label.toLowerCase()}),
       );
     } catch (error) {
       feedback.error('Could not update', String(error));
@@ -246,13 +280,13 @@ export default function DoctorDashboardScreen({ navigation }) {
   const toggleActive = () => {
     if (hidden) {
       feedback.confirm({
-        title: 'Start taking consultations?',
-        message: 'Your profile will be visible to farmers again.',
-        confirmLabel: 'Activate',
+        title: t('doctorDashboard.startTakingConsultations'),
+        message: t('doctorDashboard.yourProfileWillBeVisible'),
+        confirmLabel: t('doctorDashboard.activate'),
         onConfirm: async () => {
           try {
             await dispatch(setMyDoctorActive(true)).unwrap();
-            toast.show('Your profile is live again');
+            toast.show(t('doctorDashboard.yourProfileIsLiveAgain'));
           } catch (error) {
             feedback.error('Could not activate', String(error));
           }
@@ -262,19 +296,19 @@ export default function DoctorDashboardScreen({ navigation }) {
     }
 
     feedback.confirm({
-      title: 'Stop taking consultations?',
+      title: t('doctorDashboard.stopTakingConsultations'),
       message:
-        'Your profile will be hidden and new requests will be cancelled. You can turn it back on any time.',
-      confirmLabel: 'Deactivate',
+        t('doctorDashboard.yourProfileWillBeHidden'),
+      confirmLabel: t('doctorDashboard.deactivate'),
       destructive: true,
       onConfirm: async () => {
         try {
           await dispatch(setMyDoctorActive(false)).unwrap();
-          toast.show('Profile hidden from farmers');
+          toast.show(t('doctorDashboard.profileHiddenFromFarmers'));
         } catch (error) {
           feedback.error('Could not deactivate', String(error), {
-            primaryLabel: 'View Accepted',
-            secondaryLabel: 'Close',
+            primaryLabel: t('doctorDashboard.viewAccepted'),
+            secondaryLabel: t('common.close'),
             onPrimary: () =>
               navigation.navigate(DOCTOR_ROUTES.REQUESTS, {
                 status: 'accepted',
@@ -318,11 +352,9 @@ export default function DoctorDashboardScreen({ navigation }) {
               ? 'crop'
               : 'care'
           }
-          eyebrow={hidden ? 'Profile hidden' : type?.label}
+          eyebrow={hidden ? t('doctorDashboard.profileHidden') : type?.label}
           title={doctor.fullName}
-          subtitle={`${feeLabel(doctor)} per consultation · ${
-            doctor.totalReviews ? `★ ${doctor.rating}` : 'No reviews yet'
-          }`}
+          subtitle={t('doctorDashboard.perConsultation', {v1: feeLabel(doctor), v2: doctor.totalReviews ? `★ ${doctor.rating}` : t('doctorDashboard.noReviewsYet')})}
           aside={
             <DoctorAvatar
               name={doctor.fullName}
@@ -335,16 +367,16 @@ export default function DoctorDashboardScreen({ navigation }) {
           <View style={styles.statsRow}>
             <CareStat
               value={doctor.pendingRequests || 0}
-              label="New requests"
+              label={t('doctorDashboard.newRequests')}
               highlight={doctor.pendingRequests > 0}
             />
             <CareStat
               value={doctor.upcomingConsultations || 0}
-              label="Upcoming"
+              label={t('doctorDashboard.upcoming')}
             />
             <CareStat
               value={doctor.totalConsultations || 0}
-              label="Completed"
+              label={t('doctorDashboard.completed')}
             />
           </View>
         </CareHero>
@@ -352,13 +384,12 @@ export default function DoctorDashboardScreen({ navigation }) {
         <View style={styles.body}>
           {hidden ? (
             <CareCard style={styles.hiddenCard}>
-              <Text style={styles.hiddenTitle}>Farmers can't see you</Text>
+              <Text style={styles.hiddenTitle}>{t('doctorDashboard.farmersCantSeeYou')}</Text>
               <Text style={styles.hiddenText}>
-                Activate your profile to start getting consultation requests
-                again.
+                {t('doctorDashboard.activateYourProfileToStart')}
               </Text>
               <CareButton
-                label="Activate Profile"
+                label={t('doctorDashboard.activateProfile')}
                 icon={<Power size={16} color={C.white} />}
                 loading={updating}
                 onPress={toggleActive}
@@ -367,7 +398,7 @@ export default function DoctorDashboardScreen({ navigation }) {
             </CareCard>
           ) : (
             <>
-              <CareSectionTitle title="Your status" />
+              <CareSectionTitle title={t('doctorDashboard.yourStatus')} />
               <View style={styles.availability}>
                 {AVAILABILITY_ORDER.map(key => {
                   const meta = AVAILABILITY_META[key];
@@ -406,34 +437,34 @@ export default function DoctorDashboardScreen({ navigation }) {
                 })}
               </View>
               <Text style={styles.availabilityHint}>
-                Only "Available" doctors can be booked.
+                {t('doctorDashboard.onlyAvailableDoctorsCanBe')}
               </Text>
             </>
           )}
 
-          <CareSectionTitle title="Work" />
+          <CareSectionTitle title={t('doctorDashboard.work')} />
           {[
             {
               icon: Inbox,
               color: C.coral,
-              title: 'New requests',
+              title: t('doctorDashboard.newRequests'),
               text: doctor.pendingRequests
-                ? `${doctor.pendingRequests} farmers are waiting for your reply`
-                : 'No new requests right now',
+                ? t('doctorDashboard.farmersAreWaitingForYour', {pendingRequests: doctor.pendingRequests})
+                : t('doctorDashboard.noNewRequestsRightNow'),
               params: { status: 'pending' },
             },
             {
               icon: CalendarCheck,
               color: C.teal,
-              title: "Today's schedule",
-              text: 'Accepted consultations for today',
+              title: t('doctorDashboard.todaysSchedule'),
+              text: t('doctorDashboard.acceptedConsultationsForToday'),
               params: { status: 'accepted', day: 'today' },
             },
             {
               icon: CalendarDays,
               color: C.blue,
-              title: 'All consultations',
-              text: `${doctor.upcomingConsultations || 0} upcoming`,
+              title: t('doctorDashboard.allConsultations'),
+              text: t('doctorDashboard.upcoming2', {v1: doctor.upcomingConsultations || 0}),
               params: { status: 'all' },
             },
           ].map(({ icon: Icon, color, title, text, params }) => (
@@ -458,7 +489,7 @@ export default function DoctorDashboardScreen({ navigation }) {
             </TouchableOpacity>
           ))}
 
-          <CareSectionTitle title="Profile" />
+          <CareSectionTitle title={t('doctorDashboard.profile')} />
           <TouchableOpacity
             activeOpacity={0.88}
             style={styles.actionRow}
@@ -473,9 +504,9 @@ export default function DoctorDashboardScreen({ navigation }) {
               <Eye size={20} color={C.teal} />
             </View>
             <View style={styles.flex}>
-              <Text style={styles.actionTitle}>See your public profile</Text>
+              <Text style={styles.actionTitle}>{t('doctorDashboard.seeYourPublicProfile')}</Text>
               <Text style={styles.actionText}>
-                {hidden ? 'Hidden while deactivated' : 'What farmers see'}
+                {hidden ? t('doctorDashboard.hiddenWhileDeactivated') : t('doctorDashboard.whatFarmersSee')}
               </Text>
             </View>
             <ChevronRight size={19} color={C.muted} />
@@ -489,9 +520,9 @@ export default function DoctorDashboardScreen({ navigation }) {
               <Pencil size={20} color={C.blue} />
             </View>
             <View style={styles.flex}>
-              <Text style={styles.actionTitle}>Edit profile</Text>
+              <Text style={styles.actionTitle}>{t('doctorDashboard.editProfile')}</Text>
               <Text style={styles.actionText}>
-                Fee, specialities, languages, availability dates
+                {t('doctorDashboard.feeSpecialitiesLanguagesAvailabilityDates')}
               </Text>
             </View>
             <ChevronRight size={19} color={C.muted} />
@@ -506,7 +537,7 @@ export default function DoctorDashboardScreen({ navigation }) {
             >
               <Power size={15} color={C.red} />
               <Text style={styles.deactivateText}>
-                Stop taking consultations
+                {t('doctorDashboard.stopTakingConsultations2')}
               </Text>
             </TouchableOpacity>
           )}

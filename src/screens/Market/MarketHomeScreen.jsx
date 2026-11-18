@@ -52,23 +52,40 @@ import {
   fetchMarketListings,
   toggleSaveMarketListing,
 } from '../../redux/slices/marketSlice';
+import {useTranslation} from 'react-i18next';
+import i18n from 'i18next';
+import VoiceActionButton from '../../components/voice/VoiceActionButton';
+import VoiceFlowOverlay from '../../components/voice/VoiceFlowOverlay';
+import { useMarketVoiceFlow } from '../../components/voice/flows/useFindVoiceFlows';
 
 const { width } = Dimensions.get('window');
 const GUTTER = 16;
 const CARD_WIDTH = (width - GUTTER * 2 - 12) / 2;
 
 const SORTS = [
-  { key: 'newest', label: 'Newest' },
-  { key: 'price_asc', label: 'Price: Low to High' },
-  { key: 'price_desc', label: 'Price: High to Low' },
+  { key: 'newest', get label() {
+    return i18n.t('marketHome.newest');
+  } },
+  { key: 'price_asc', get label() {
+    return i18n.t('marketHome.priceLowToHigh');
+  } },
+  { key: 'price_desc', get label() {
+    return i18n.t('marketHome.priceHighToLow');
+  } },
 ];
 
 const PAGE_SIZE = 20;
 
 const TRUST_POINTS = [
-  { icon: Wallet, label: 'No commission' },
-  { icon: Handshake, label: 'Negotiate price' },
-  { icon: ShieldCheck, label: 'Pay on handover' },
+  { icon: Wallet, get label() {
+    return i18n.t('marketHome.noCommission');
+  } },
+  { icon: Handshake, get label() {
+    return i18n.t('marketHome.negotiatePrice');
+  } },
+  { icon: ShieldCheck, get label() {
+    return i18n.t('marketHome.payOnHandover');
+  } },
 ];
 
 function ToggleChip({ label, active, onPress }) {
@@ -130,6 +147,9 @@ function KindTile({
 }
 
 export default function MarketHomeScreen({ navigation }) {
+  const {t} = useTranslation();
+  const [voiceOpen, setVoiceOpen] = useState(false);
+  const voiceFlow = useMarketVoiceFlow(navigation);
   const dispatch = useDispatch();
   const { categories } = useMarketMeta();
 
@@ -164,12 +184,12 @@ export default function MarketHomeScreen({ navigation }) {
 
   const categoryOptions = useMemo(
     () => [
-      { key: '', label: 'All categories' },
+      { key: '', label: t('marketHome.allCategories') },
       ...categories
         .filter(item => !kind || item.kind === kind)
         .map(item => ({ key: item.key, label: item.label })),
     ],
-    [categories, kind],
+    [categories, kind, t],
   );
 
   const params = useMemo(
@@ -266,9 +286,9 @@ export default function MarketHomeScreen({ navigation }) {
       <MarketHero
         image={require('../../assets/bazar/bazar-hero.png')}
         onBack={() => navigation.goBack()}
-        eyebrow="Farmer to farmer"
-        title={'Kheti Market'}
-        subtitle="Buy and sell crops, equipment and farm inputs directly. No middlemen."
+        eyebrow={t('marketHome.farmerToFarmer')}
+        title={t('marketHome.khetiMarket')}
+        subtitle={t('marketHome.buyAndSellCropsEquipment')}
         right={
           <>
             <GlassButton
@@ -300,7 +320,7 @@ export default function MarketHomeScreen({ navigation }) {
           <TextInput
             value={searchText}
             onChangeText={setSearchText}
-            placeholder="Search soybean, rotavator, urea..."
+            placeholder={t('marketHome.searchSoybeanRotavatorUrea')}
             placeholderTextColor={C.placeholder}
             style={styles.searchInput}
             returnKeyType="search"
@@ -330,9 +350,9 @@ export default function MarketHomeScreen({ navigation }) {
               <View style={styles.sellIcon}>
                 <Plus size={20} color="#A25200" strokeWidth={3} />
               </View>
-              <Text style={styles.sellTitle}>Sell on{'\n'}Kheti Market</Text>
+              <Text style={styles.sellTitle}>{t('marketHome.sellOn')}{'\n'}{t('marketHome.khetiMarket')}</Text>
               <View style={styles.sellLink}>
-                <Text style={styles.sellLinkText}>List for free</Text>
+                <Text style={styles.sellLinkText}>{t('marketHome.listForFree')}</Text>
                 <ArrowRight size={13} color="#3A2400" strokeWidth={2.8} />
               </View>
             </LinearGradient>
@@ -349,7 +369,7 @@ export default function MarketHomeScreen({ navigation }) {
               >
                 <Store size={18} color={C.green} />
               </View>
-              <Text style={styles.shortcutText}>My Listings</Text>
+              <Text style={styles.shortcutText}>{t('marketHome.myListings')}</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
@@ -362,17 +382,22 @@ export default function MarketHomeScreen({ navigation }) {
               >
                 <Handshake size={18} color={C.blue} />
               </View>
-              <Text style={styles.shortcutText}>My Deals</Text>
+              <Text style={styles.shortcutText}>{t('marketHome.myDeals')}</Text>
             </TouchableOpacity>
           </View>
         </View>
 
+        <VoiceActionButton
+          label={t('voiceFlow.button.market')}
+          onPress={() => setVoiceOpen(true)}
+        />
+
         {/* SHOP BY TYPE */}
-        <Text style={styles.sectionTitle}>Shop by type</Text>
+        <Text style={styles.sectionTitle}>{t('marketHome.shopByType')}</Text>
         <View style={styles.kindRow}>
           <KindTile
-            label="Everything"
-            tagline="All listings"
+            label={t('marketHome.everything')}
+            tagline={t('marketHome.allListings')}
             icon={<LayoutGrid size={26} color={C.dark} />}
             color={C.dark}
             bg="#EEF1EF"
@@ -405,19 +430,19 @@ export default function MarketHomeScreen({ navigation }) {
         <View style={styles.filterRow}>
           {!!nearDistrict && (
             <ToggleChip
-              label={`Near ${nearDistrict}`}
+              label={t('marketHome.near', {nearDistrict})}
               active={nearMe}
               onPress={() => setNearMe(value => !value)}
             />
           )}
           <ToggleChip
-            label="Delivery"
+            label={t('marketHome.delivery')}
             active={deliveryOnly}
             onPress={() => setDeliveryOnly(value => !value)}
           />
           {kind === 'PRODUCE' && (
             <ToggleChip
-              label="Organic"
+              label={t('marketHome.organic')}
               active={organicOnly}
               onPress={() => setOrganicOnly(value => !value)}
             />
@@ -428,12 +453,12 @@ export default function MarketHomeScreen({ navigation }) {
         <View style={styles.resultsHeader}>
           <View>
             <Text style={styles.sectionTitleFlat}>
-              {kind ? KIND_META[kind].label : 'Fresh listings'}
+              {kind ? KIND_META[kind].label : t('marketHome.freshListings')}
             </Text>
             <Text style={styles.resultCount}>
               {listingsLoading
-                ? 'Searching…'
-                : `${pagination.total} listings found`}
+                ? t('marketHome.searching')
+                : t('marketHome.listingsFound', {total: pagination.total})}
             </Text>
           </View>
 
@@ -479,17 +504,17 @@ export default function MarketHomeScreen({ navigation }) {
           ) : listingsError ? (
             <EmptyState
               icon={<PackageSearch size={30} color={C.green} />}
-              title="Couldn't load listings"
+              title={t('marketHome.couldntLoadListings')}
               message={listingsError}
-              actionLabel="Try Again"
+              actionLabel={t('marketHome.tryAgain')}
               onAction={loadFirstPage}
             />
           ) : (
             <EmptyState
               icon={<PackageSearch size={30} color={C.green} />}
-              title="No listings found"
-              message="Try another category or clear your filters. You can also be the first to list here."
-              actionLabel="Sell Something"
+              title={t('marketHome.noListingsFound')}
+              message={t('marketHome.tryAnotherCategoryOrClear')}
+              actionLabel={t('marketHome.sellSomething')}
               onAction={() => navigation.navigate(MARKET_ROUTES.SELL)}
             />
           )
@@ -499,6 +524,12 @@ export default function MarketHomeScreen({ navigation }) {
             <ActivityIndicator color={C.green} style={styles.footerLoader} />
           ) : null
         }
+      />
+
+      <VoiceFlowOverlay
+        visible={voiceOpen}
+        flow={voiceFlow}
+        onClose={() => setVoiceOpen(false)}
       />
     </SafeAreaView>
   );

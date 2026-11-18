@@ -11,21 +11,9 @@ import {
   STATUS_META,
   describeConsultationState,
 } from '../../utils/doctorFormat';
+import {useTranslation} from 'react-i18next';
+import {monthName} from '../../utils/dateFormat';
 
-const MONTHS = [
-  'JAN',
-  'FEB',
-  'MAR',
-  'APR',
-  'MAY',
-  'JUN',
-  'JUL',
-  'AUG',
-  'SEP',
-  'OCT',
-  'NOV',
-  'DEC',
-];
 
 /*
  * Consultation row for the farmer ("My consultations") and the doctor
@@ -33,6 +21,7 @@ const MONTHS = [
  * right.
  */
 function ConsultationCard({ consultation, todayKey, onPress, footer }) {
+  const {t} = useTranslation();
   const isDoctor = consultation.myRole === 'doctor';
   const needsMe = isDoctor && consultation.status === 'pending';
   const key = dayKeyOf(consultation.consultationDate);
@@ -59,7 +48,7 @@ function ConsultationCard({ consultation, todayKey, onPress, footer }) {
       <View style={styles.row}>
         <View style={[styles.dateTile, isToday && styles.dateTileToday]}>
           <Text style={[styles.month, isToday && styles.todayText]}>
-            {isToday ? 'TODAY' : date ? MONTHS[date.getUTCMonth()] : ''}
+            {isToday ? t('common.today').toUpperCase() : date ? monthName(date.getUTCMonth()).toUpperCase() : ''}
           </Text>
           <Text style={[styles.day, isToday && styles.todayText]}>
             {date ? date.getUTCDate() : '-'}
@@ -124,7 +113,7 @@ function ConsultationCard({ consultation, todayKey, onPress, footer }) {
             <Text style={styles.fee}>
               {consultation.totalAmount
                 ? formatRupees(consultation.totalAmount)
-                : 'Free'}
+                : t('consultationCard.free')}
             </Text>
           </View>
         </View>

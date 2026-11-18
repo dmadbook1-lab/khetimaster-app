@@ -146,7 +146,7 @@ export default function WeatherDayScreen({ navigation, route }) {
               },
               {
                 icon: Sun,
-                label: 'UV',
+                label: t('weatherDay.uv'),
                 value: String(round(day.uvindex) ?? 0),
                 color: '#F59E0B',
               },

@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { Sprout } from 'lucide-react-native';
+import {useTranslation} from 'react-i18next';
 const { width } = Dimensions.get('window');
 const GREEN = '#16883E';
 const rf = size => {
@@ -8,12 +9,13 @@ const rf = size => {
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
 export default function CropGrowthCard() {
+  const {t} = useTranslation();
   return (
     <View style={styles.card}>
       <View style={styles.headerRow}>
         <View>
-          <Text style={styles.title}>Crop Growth Stage</Text>
-          <Text style={styles.subtitle}>Vegetative growth phase</Text>
+          <Text style={styles.title}>{t('cropGrowthCard.cropGrowthStage')}</Text>
+          <Text style={styles.subtitle}>{t('cropGrowthCard.vegetativeGrowthPhase')}</Text>
         </View>
 
         <View style={styles.iconBox}>
@@ -26,13 +28,12 @@ export default function CropGrowthCard() {
       </View>
 
       <View style={styles.bottomRow}>
-        <Text style={styles.dayText}>Day 42 of 90</Text>
+        <Text style={styles.dayText}>{t('cropGrowthCard.day42Of90')}</Text>
         <Text style={styles.percentText}>64%</Text>
       </View>
 
       <Text style={styles.note}>
-        Crop growth is on track. Maintain regular irrigation and monitor for
-        early signs of pest activity.
+        {t('cropGrowthCard.cropGrowthIsOnTrack')}
       </Text>
     </View>
   );

@@ -14,6 +14,7 @@ import {
   listingSubtitle,
   timeAgo,
 } from '../../utils/marketFormat';
+import {useTranslation} from 'react-i18next';
 
 const EXPIRY_TONES = {
   expired: {color: C.red, bg: C.lightRed},
@@ -28,6 +29,7 @@ const EXPIRY_TONES = {
  * onToggleSave -> show the bookmark button
  */
 function ListingCard({listing, onPress, onToggleSave, showStatus, footer}) {
+  const {t} = useTranslation();
   const kind = getKindMeta(listing.kind);
   const image = listing.images?.[0];
   const location = formatLocation(listing.location, {short: true});
@@ -79,8 +81,7 @@ function ListingCard({listing, onPress, onToggleSave, showStatus, footer}) {
           </Text>
 
           <Text style={styles.meta} numberOfLines={1}>
-            {formatQuantity(listing.quantity, listing.unit)} available
-            {listing.isNegotiable ? ' · Negotiable' : ''}
+            {t('listingCard.available', {v1: formatQuantity(listing.quantity, listing.unit), v2: listing.isNegotiable ? ' · Negotiable' : ''})}
           </Text>
 
           <View style={styles.bottomRow}>

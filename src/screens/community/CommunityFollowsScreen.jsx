@@ -17,6 +17,7 @@ import { COLORS, rf } from '../../components/community/theme';
 import { COMMUNITY_ROUTES } from '../../constants/communityRoutes';
 import { getUserFollowsApi } from '../../api/communityApi';
 import { setFollowing } from '../../redux/slices/communitySlice';
+import {useTranslation} from 'react-i18next';
 
 /*
  * Followers / following of a user.
@@ -24,6 +25,7 @@ import { setFollowing } from '../../redux/slices/communitySlice';
  * params: userId, list ('followers' | 'following'), name
  */
 export default function CommunityFollowsScreen({ navigation, route }) {
+  const {t} = useTranslation();
   const { userId, name } = route.params;
 
   const dispatch = useDispatch();
@@ -83,7 +85,7 @@ export default function CommunityFollowsScreen({ navigation, route }) {
             style={[styles.tab, list === key && styles.tabActive]}
           >
             <Text style={[styles.tabText, list === key && styles.tabTextActive]}>
-              {key === 'followers' ? 'Followers' : 'Following'}
+              {key === 'followers' ? t('communityFollows.followers') : t('communityFollows.following')}
             </Text>
           </Pressable>
         ))}
@@ -122,7 +124,7 @@ export default function CommunityFollowsScreen({ navigation, route }) {
             <View style={styles.empty}>
               <Users size={42} color="#C5CCD3" strokeWidth={1.6} />
               <Text style={styles.emptyText}>
-                {list === 'followers' ? 'No followers yet' : 'Not following anyone yet'}
+                {list === 'followers' ? t('communityFollows.noFollowersYet') : t('communityFollows.notFollowingAnyoneYet')}
               </Text>
             </View>
           )

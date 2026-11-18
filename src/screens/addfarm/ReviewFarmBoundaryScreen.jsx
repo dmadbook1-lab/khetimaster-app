@@ -59,7 +59,7 @@ export default function ReviewFarmBoundaryScreen({ navigation }) {
           </TouchableOpacity>
 
           <View style={styles.headerCenter}>
-            <Text style={styles.brandText}>KHETIMASTER</Text>
+            <Text style={styles.brandText}>{t('reviewFarmBoundary.khetimaster')}</Text>
             <Text style={styles.title}>{t('walk.review_title')}</Text>
           </View>
 

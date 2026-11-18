@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { ArrowLeft, ShoppingCart, Bell } from 'lucide-react-native';
+import {useTranslation} from 'react-i18next';
 const { width } = Dimensions.get('window');
 const DARK = '#111827';
 const ORANGE = '#F97316';
@@ -16,12 +17,15 @@ const rf = size => {
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
 export default function AgriHeader({
-  title = 'Agri Products',
-  subtitle = '2400+ Products Available',
+  title,
+  subtitle,
   cartCount = 2,
   fallbackRoute = 'Bazaar',
   onNotificationPress,
 }) {
+  const {t} = useTranslation();
+  title = title ?? t('agriHeader.agriProducts');
+  subtitle = subtitle ?? t('agriHeader.productsAvailable', {count: 2400});
   const navigation = useNavigation();
   const handleBackPress = () => {
     if (navigation.canGoBack()) {

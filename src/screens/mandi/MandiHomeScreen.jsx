@@ -51,7 +51,9 @@ import {
   searchCrops,
   summaryKey,
 } from '../../utils/mandiFormat';
+import {useTranslation} from 'react-i18next';
 
+import {tOpt} from '../../utils/tOpt';
 const POPULAR = ['onion', 'tomato', 'potato', 'soybean', 'cotton', 'wheat'];
 
 // 4 equal columns: screen width minus the 16px gutters and 3 gaps of 10
@@ -63,6 +65,7 @@ const TILE_WIDTH = Math.floor(
 );
 
 export default function MandiHomeScreen({ navigation }) {
+  const {t} = useTranslation();
   const dispatch = useDispatch();
   const { crops, cropsStatus, cropsError, location } = useMandiSetup();
   const { recentCrops, summaries } = useSelector(state => state.mandi);
@@ -78,7 +81,7 @@ export default function MandiHomeScreen({ navigation }) {
   );
   const placeLabel = location?.state
     ? [location.district, location.state].filter(Boolean).join(', ')
-    : 'All India';
+    : t('mandiHome.allIndia');
 
   // quick price cards: recent crops, else popular ones
   const quickCrops = useMemo(() => {
@@ -134,9 +137,9 @@ export default function MandiHomeScreen({ navigation }) {
         <MarketHero
           banner={MANDI_BANNER}
           onBack={() => navigation.goBack()}
-          eyebrow="Mandi Bhav"
-          title="Today's Crop Prices"
-          subtitle="Live prices from mandis near you. Find where you get the best rate."
+          eyebrow={t('mandiHome.mandiBhav')}
+          title={t('mandiHome.todaysCropPrices')}
+          subtitle={t('mandiHome.livePricesFromMandisNear')}
           right={
             <GlassButton
               onPress={() => navigation.navigate(MANDI_ROUTES.COMPARE)}
@@ -154,7 +157,7 @@ export default function MandiHomeScreen({ navigation }) {
             <Text style={styles.locationText} numberOfLines={1}>
               {placeLabel}
             </Text>
-            <Text style={styles.locationChange}>Change</Text>
+            <Text style={styles.locationChange}>{t('mandiHome.change')}</Text>
             <ChevronDown size={15} color={C.white} />
           </TouchableOpacity>
         </MarketHero>
@@ -165,7 +168,7 @@ export default function MandiHomeScreen({ navigation }) {
             <TextInput
               value={search}
               onChangeText={setSearch}
-              placeholder="Search crop: onion, kanda, tur, kapas..."
+              placeholder={t('mandiHome.searchCropOnionKandaTur')}
               placeholderTextColor={C.placeholder}
               style={styles.searchInput}
               returnKeyType="search"
@@ -182,10 +185,10 @@ export default function MandiHomeScreen({ navigation }) {
             <>
               <View style={styles.sectionRow}>
                 <Text style={styles.sectionTitle}>
-                  {recentCrops.length ? 'Your crops today' : 'Popular today'}
+                  {recentCrops.length ? t('mandiHome.yourCropsToday') : t('mandiHome.popularToday')}
                 </Text>
                 <Text style={styles.sectionHint} numberOfLines={1}>
-                  {location?.district || location?.state || 'All India'}
+                  {location?.district || location?.state || t('mandiHome.allIndia')}
                 </Text>
               </View>
               <ScrollView
@@ -216,7 +219,7 @@ export default function MandiHomeScreen({ navigation }) {
                       />
                       <View style={styles.quickInfo}>
                         <Text style={styles.quickName} numberOfLines={1}>
-                          {crop.name}
+                          {tOpt(crop.name)}
                         </Text>
                         {!entry.status || entry.status === 'loading' ? (
                           <View style={styles.skeleton} />
@@ -224,14 +227,14 @@ export default function MandiHomeScreen({ navigation }) {
                           <>
                             <Text style={styles.quickPrice}>
                               {formatQuintal(average)}
-                              <Text style={styles.quickUnit}> /qtl</Text>
+                              <Text style={styles.quickUnit}> {t('mandiHome.qtl')}</Text>
                             </Text>
                             <Text style={styles.quickKg}>
                               {formatPerKg(average)}
                             </Text>
                           </>
                         ) : (
-                          <Text style={styles.quickNone}>No price today</Text>
+                          <Text style={styles.quickNone}>{t('mandiHome.noPriceToday')}</Text>
                         )}
                       </View>
                     </TouchableOpacity>
@@ -257,9 +260,9 @@ export default function MandiHomeScreen({ navigation }) {
                   <ChartColumn size={22} color="#A25200" />
                 </View>
                 <View style={styles.flex}>
-                  <Text style={styles.compareTitle}>Which crop pays more?</Text>
+                  <Text style={styles.compareTitle}>{t('mandiHome.whichCropPaysMore')}</Text>
                   <Text style={styles.compareText}>
-                    Compare prices of up to 4 crops
+                    {t('mandiHome.comparePricesOfUpTo')}
                   </Text>
                 </View>
                 <ArrowRight size={20} color="#3A2400" strokeWidth={2.6} />
@@ -269,7 +272,7 @@ export default function MandiHomeScreen({ navigation }) {
 
           {/* ALL CROPS */}
           <Text style={styles.allTitle}>
-            {typed ? 'Matching crops' : 'Choose your crop'}
+            {typed ? t('mandiHome.matchingCrops') : t('mandiHome.chooseYourCrop')}
           </Text>
           {!typed && (
             <ScrollView
@@ -293,7 +296,7 @@ export default function MandiHomeScreen({ navigation }) {
                         selected && styles.categoryTextOn,
                       ]}
                     >
-                      {item}
+                      {tOpt(item)}
                     </Text>
                   </TouchableOpacity>
                 );
@@ -305,9 +308,9 @@ export default function MandiHomeScreen({ navigation }) {
             <LoadingState />
           ) : cropsStatus === 'error' ? (
             <EmptyState
-              title="Couldn't load crops"
+              title={t('mandiHome.couldntLoadCrops')}
               message={cropsError}
-              actionLabel="Try Again"
+              actionLabel={t('mandiHome.tryAgain')}
               onAction={() => dispatch(fetchMandiCrops())}
             />
           ) : (
@@ -315,7 +318,7 @@ export default function MandiHomeScreen({ navigation }) {
               {groups.map(group => (
                 <View key={group.category}>
                   {(category === 'All' || typed) && (
-                    <Text style={styles.groupTitle}>{group.category}</Text>
+                    <Text style={styles.groupTitle}>{tOpt(group.category)}</Text>
                   )}
                   <View style={styles.grid}>
                     {group.crops.map(crop => (
@@ -332,7 +335,7 @@ export default function MandiHomeScreen({ navigation }) {
                         />
                         <View style={styles.tileBody}>
                           <Text style={styles.tileName} numberOfLines={2}>
-                            {crop.name}
+                            {tOpt(crop.name)}
                           </Text>
                           {!!crop.aliases?.[0] && (
                             <Text style={styles.tileAlias} numberOfLines={1}>
@@ -360,8 +363,7 @@ export default function MandiHomeScreen({ navigation }) {
                 >
                   <Search size={18} color={C.green} />
                   <Text style={styles.typedText}>
-                    {results.length ? 'Not listed? ' : ''}Check prices for "
-                    {typed}"
+                    {t('mandiHome.checkPricesFor', {v1: results.length ? t('mandiHome.notListed') : '', typed})}
                   </Text>
                   <ArrowRight size={17} color={C.green} />
                 </TouchableOpacity>
@@ -376,8 +378,8 @@ export default function MandiHomeScreen({ navigation }) {
           >
             <Info size={13} color={C.muted} />
             <Text style={styles.sourceText}>
-              Prices: Agmarknet (data.gov.in), ₹ per quintal = 100 kg ·{' '}
-              <Text style={styles.sourceLink}>Photo credits</Text>
+              {t('mandiHome.pricesAgmarknetDataGovIn')}{' '}
+              <Text style={styles.sourceLink}>{t('mandiHome.photoCredits')}</Text>
             </Text>
           </TouchableOpacity>
         </View>
@@ -401,13 +403,13 @@ export default function MandiHomeScreen({ navigation }) {
           />
           <View style={styles.sheet}>
             <View style={styles.sheetHead}>
-              <Text style={styles.sheetTitle}>Crop photo credits</Text>
+              <Text style={styles.sheetTitle}>{t('mandiHome.cropPhotoCredits')}</Text>
               <Pressable hitSlop={10} onPress={() => setCreditsOpen(false)}>
                 <X size={20} color={C.muted} />
               </Pressable>
             </View>
             <Text style={styles.sheetText}>
-              Photos from Wikimedia Commons, cropped to squares.
+              {t('mandiHome.photosFromWikimediaCommonsCropped')}
             </Text>
             <ScrollView>
               {CROP_PHOTO_CREDITS.map(item => (

@@ -60,11 +60,19 @@ import {
   todayInIndiaKey,
 } from '../../utils/labourFormat';
 import { formatRupees } from '../../utils/marketFormat';
+import {useTranslation} from 'react-i18next';
+import i18n from 'i18next';
 
 const TIME_PRESETS = [
-  { key: 'full', label: 'Full day', start: '08:00', end: '17:00' },
-  { key: 'morning', label: 'Morning', start: '07:00', end: '12:00' },
-  { key: 'afternoon', label: 'Afternoon', start: '13:00', end: '18:00' },
+  { key: 'full', get label() {
+    return i18n.t('bookLabour.fullDay');
+  }, start: '08:00', end: '17:00' },
+  { key: 'morning', get label() {
+    return i18n.t('bookLabour.morning');
+  }, start: '07:00', end: '12:00' },
+  { key: 'afternoon', get label() {
+    return i18n.t('bookLabour.afternoon');
+  }, start: '13:00', end: '18:00' },
 ];
 
 const WAGE_TYPES = ['daily', 'hourly', 'monthly'];
@@ -82,6 +90,7 @@ const timeToDate = value => {
 };
 
 export default function BookLabourScreen({ navigation, route }) {
+  const {t} = useTranslation();
   const { labourer } = route.params;
   const dispatch = useDispatch();
   const insets = useSafeAreaInsets();
@@ -125,14 +134,14 @@ export default function BookLabourScreen({ navigation, route }) {
           key,
           top:
             index === 0
-              ? 'Today'
+              ? t('common.today')
               : index === 1
-              ? 'Tomorrow'
+              ? t('common.tomorrow')
               : formatDay(key).split(',')[0],
           bottom: formatDay(key, { weekday: false, year: false }),
         };
       }),
-    [today],
+    [today, t],
   );
 
   const workOptions = useMemo(() => {
@@ -174,26 +183,26 @@ export default function BookLabourScreen({ navigation, route }) {
     }
 
     feedback.confirm({
-      title: `Send request to ${labourer.fullName}?`,
-      message: `${payload.workType} on ${formatDateRange(
+      title: t('bookLabour.sendRequestTo', {fullName: labourer.fullName}),
+      message: t('bookLabour.onEstimatedYoullGetTheir', {workType: payload.workType, v2: formatDateRange(
         payload.bookingDate,
         payload.numberOfDays,
-      )}, ${formatTimeRange(
+      ), v3: formatTimeRange(
         payload.startTime,
         payload.endTime,
-      )}. Estimated ${formatRupees(
+      ), v4: formatRupees(
         estimate,
-      )}. You'll get their phone number once they accept.`,
-      confirmLabel: 'Send Request',
+      )}),
+      confirmLabel: t('bookLabour.sendRequest'),
       onConfirm: async () => {
         try {
           const result = await dispatch(createLabourBooking(payload)).unwrap();
 
           feedback.success(
-            'Request sent!',
-            `${labourer.fullName} will see your request now. We'll show their phone number here once they accept.`,
+            t('bookLabour.requestSent'),
+            t('bookLabour.willSeeYourRequestNow', {fullName: labourer.fullName}),
             {
-              primaryLabel: 'View Booking',
+              primaryLabel: t('bookLabour.viewBooking'),
               dismissable: false,
               onPrimary: () =>
                 navigation.replace(LABOUR_ROUTES.BOOKING_DETAILS, {
@@ -204,8 +213,8 @@ export default function BookLabourScreen({ navigation, route }) {
         } catch (failure) {
           feedback.error('Could not send request', failure?.message, {
             ...(failure?.bookingId && {
-              primaryLabel: 'View Booking',
-              secondaryLabel: 'Close',
+              primaryLabel: t('bookLabour.viewBooking'),
+              secondaryLabel: t('common.close'),
               onPrimary: () =>
                 navigation.replace(LABOUR_ROUTES.BOOKING_DETAILS, {
                   bookingId: failure.bookingId,
@@ -232,8 +241,8 @@ export default function BookLabourScreen({ navigation, route }) {
           <MarketHero
             compact
             onBack={() => navigation.goBack()}
-            eyebrow="Book a worker"
-            title="Hire for your farm"
+            eyebrow={t('bookLabour.bookAWorker')}
+            title={t('bookLabour.hireForYourFarm')}
           >
             <View style={styles.workerCard}>
               <PersonAvatar
@@ -263,7 +272,7 @@ export default function BookLabourScreen({ navigation, route }) {
             {/* WHEN */}
             <SectionHeading
               icon={<CalendarDays size={16} color={C.green} />}
-              title="When do you need them?"
+              title={t('bookLabour.whenDoYouNeedThem')}
             />
             <ScrollView
               horizontal
@@ -324,14 +333,14 @@ export default function BookLabourScreen({ navigation, route }) {
                         weekday: false,
                         year: false,
                       })
-                    : 'Other'}
+                    : t('bookLabour.other')}
                 </Text>
               </TouchableOpacity>
             </ScrollView>
 
             <FormCard>
               <Field
-                label="Number of days"
+                label={t('bookLabour.numberOfDays')}
                 hint={
                   form.numberOfDays > 1
                     ? `${formatDateRange(form.bookingDate, form.numberOfDays)}`
@@ -342,7 +351,7 @@ export default function BookLabourScreen({ navigation, route }) {
                   value={form.numberOfDays}
                   onChange={value => setField('numberOfDays', value)}
                   max={maxBookingDays}
-                  suffix={form.numberOfDays === 1 ? 'day' : 'days'}
+                  suffix={form.numberOfDays === 1 ? t('plural.day') : t('plural.days')}
                 />
               </Field>
             </FormCard>
@@ -351,10 +360,10 @@ export default function BookLabourScreen({ navigation, route }) {
             <SectionHeading
               icon={<Clock size={16} color={C.blue} />}
               color={C.blue}
-              title="Working hours"
+              title={t('bookLabour.workingHours')}
             />
             <FormCard>
-              <Field label="Quick pick">
+              <Field label={t('bookLabour.quickPick')}>
                 <View style={styles.presetRow}>
                   {TIME_PRESETS.map(preset => {
                     const selected =
@@ -401,11 +410,11 @@ export default function BookLabourScreen({ navigation, route }) {
 
               <View style={styles.row}>
                 <View style={styles.flex}>
-                  <Field label="Start time *">
+                  <Field label={t('bookLabour.startTime')}>
                     <PickerField
                       icon={<Clock size={16} color={C.green} />}
                       value={formatTime(form.startTime)}
-                      placeholder="Start"
+                      placeholder={t('bookLabour.start')}
                       onPress={() => setPicker('start')}
                     />
                   </Field>
@@ -413,13 +422,13 @@ export default function BookLabourScreen({ navigation, route }) {
                 <View style={styles.flex}>
                   <Field
                     label={
-                      form.wageType === 'hourly' ? 'End time *' : 'End time'
+                      form.wageType === 'hourly' ? t('bookLabour.endTime') : t('bookLabour.endTime2')
                     }
                   >
                     <PickerField
                       icon={<Clock size={16} color={C.green} />}
                       value={form.endTime ? formatTime(form.endTime) : ''}
-                      placeholder="Optional"
+                      placeholder={t('bookLabour.optional')}
                       onPress={() => setPicker('end')}
                       onClear={
                         form.wageType === 'hourly'
@@ -436,10 +445,10 @@ export default function BookLabourScreen({ navigation, route }) {
             <SectionHeading
               icon={<Briefcase size={16} color={C.orange} />}
               color={C.orange}
-              title="What work?"
+              title={t('bookLabour.whatWork')}
             />
             <FormCard>
-              <Field label="Type of work *">
+              <Field label={t('bookLabour.typeOfWork')}>
                 <SelectChips
                   options={workOptions}
                   value={form.workType}
@@ -447,11 +456,11 @@ export default function BookLabourScreen({ navigation, route }) {
                 />
               </Field>
 
-              <Field label="Details for the worker">
+              <Field label={t('bookLabour.detailsForTheWorker')}>
                 <FormInput
                   value={form.description}
                   onChangeText={value => setField('description', value)}
-                  placeholder="e.g. Soybean harvesting on 2 acres, bring your own sickle"
+                  placeholder={t('bookLabour.eGSoybeanHarvestingOn')}
                   maxLength={1000}
                   multiline
                   textAlignVertical="top"
@@ -463,18 +472,16 @@ export default function BookLabourScreen({ navigation, route }) {
             {/* WAGE */}
             <SectionHeading
               icon={<IndianRupee size={16} color={C.green} />}
-              title="Wage"
-              subtitle={`${
-                labourer.fullName.split(' ')[0]
-              } usually asks ${formatWage(
+              title={t('bookLabour.wage')}
+              subtitle={t('bookLabour.usuallyAsks', {v1: labourer.fullName.split(' ')[0], v2: formatWage(
                 labourer.expectedWage,
                 labourer.wageType,
-              )}`}
+              )})}
             />
             <FormCard>
               <View style={styles.row}>
                 <View style={styles.flex}>
-                  <Field label="Wage amount *">
+                  <Field label={t('bookLabour.wageAmount')}>
                     <View style={[styles.wageBox]}>
                       <Text style={styles.rupee}>₹</Text>
                       <FormInput
@@ -488,7 +495,7 @@ export default function BookLabourScreen({ navigation, route }) {
                   </Field>
                 </View>
               </View>
-              <Field label="Paid">
+              <Field label={t('bookLabour.paid')}>
                 <SelectChips
                   options={WAGE_TYPES}
                   labels={WAGE_TYPE_LABELS}
@@ -501,51 +508,50 @@ export default function BookLabourScreen({ navigation, route }) {
             {/* WHERE */}
             <SectionHeading
               icon={<MapPin size={16} color={C.green} />}
-              title="Where is the work?"
-              subtitle="Filled from your profile. Change it if the farm is elsewhere."
+              title={t('bookLabour.whereIsTheWork')}
+              subtitle={t('bookLabour.filledFromYourProfileChange')}
             />
             <FormCard>
               <View style={styles.row}>
                 <View style={styles.flex}>
-                  <Field label="Village">
+                  <Field label={t('bookLabour.village')}>
                     <FormInput
                       value={form.village}
                       onChangeText={value => setField('village', value)}
-                      placeholder="Village"
+                      placeholder={t('bookLabour.village')}
                     />
                   </Field>
                 </View>
                 <View style={styles.flex}>
-                  <Field label="District">
+                  <Field label={t('bookLabour.district')}>
                     <FormInput
                       value={form.district}
                       onChangeText={value => setField('district', value)}
-                      placeholder="District"
+                      placeholder={t('bookLabour.district')}
                     />
                   </Field>
                 </View>
               </View>
-              <Field label="Farm address / landmark">
+              <Field label={t('bookLabour.farmAddressLandmark')}>
                 <FormInput
                   value={form.address}
                   onChangeText={value => setField('address', value)}
-                  placeholder="e.g. Near Hanuman temple, Patil farm"
+                  placeholder={t('bookLabour.eGNearHanumanTemple')}
                   maxLength={300}
                 />
               </Field>
-              <Field label="Note to worker (optional)">
+              <Field label={t('bookLabour.noteToWorkerOptional')}>
                 <FormInput
                   value={form.farmerNotes}
                   onChangeText={value => setField('farmerNotes', value)}
-                  placeholder="e.g. Lunch will be provided"
+                  placeholder={t('bookLabour.eGLunchWillBe')}
                   maxLength={500}
                 />
               </Field>
             </FormCard>
 
             <Text style={styles.disclaimer}>
-              The final amount is calculated when the request is sent. Pay the
-              worker directly after the work is done.
+              {t('bookLabour.theFinalAmountIsCalculated')}
             </Text>
           </View>
         </ScrollView>
@@ -559,13 +565,13 @@ export default function BookLabourScreen({ navigation, route }) {
         ]}
       >
         <View style={styles.flex}>
-          <Text style={styles.bottomLabel}>Estimated total</Text>
+          <Text style={styles.bottomLabel}>{t('bookLabour.estimatedTotal')}</Text>
           <Text style={styles.bottomTotal}>
             {estimate ? formatRupees(estimate) : '—'}
           </Text>
         </View>
         <MarketButton
-          label="Send Request"
+          label={t('bookLabour.sendRequest')}
           icon={<Send size={16} color={C.white} />}
           loading={creating}
           onPress={handleSubmit}

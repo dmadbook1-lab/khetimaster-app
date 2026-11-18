@@ -1,28 +1,47 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { ChevronRight } from 'lucide-react-native';
+import {useTranslation} from 'react-i18next';
+import i18n from 'i18next';
 const guide = [
   {
-    title: 'Dosage',
-    text: 'Apply 100 kg per hectare as basal dose. For top dressing, use 50 kg/hectare after 30 days of sowing.',
+    get title() {
+    return i18n.t('applicationGuide.dosage');
+  },
+    get text() {
+    return i18n.t('applicationGuide.apply100KgPerHectare');
+  },
   },
   {
-    title: 'Application Method',
-    text: 'Broadcast evenly or apply in furrows near root zone. Mix with moist soil for best absorption.',
+    get title() {
+    return i18n.t('applicationGuide.applicationMethod');
+  },
+    get text() {
+    return i18n.t('applicationGuide.broadcastEvenlyOrApplyIn');
+  },
   },
   {
-    title: 'Best Crop Stage',
-    text: 'Vegetative & early reproductive stages. Apply before irrigation for maximum effectiveness.',
+    get title() {
+    return i18n.t('applicationGuide.bestCropStage');
+  },
+    get text() {
+    return i18n.t('applicationGuide.vegetativeEarlyReproductiveStagesApply');
+  },
   },
   {
-    title: 'Safety Instructions',
-    text: 'Store in a cool, dry place. Wear gloves during handling. Keep away from direct sunlight.',
+    get title() {
+    return i18n.t('applicationGuide.safetyInstructions');
+  },
+    get text() {
+    return i18n.t('applicationGuide.storeInACoolDry');
+  },
   },
 ];
 export default function ApplicationGuide() {
+  const {t} = useTranslation();
   return (
     <View style={styles.wrapper}>
-      <Text style={styles.sectionTitle}>Application Guide</Text>
+      <Text style={styles.sectionTitle}>{t('applicationGuide.applicationGuide')}</Text>
 
       <View style={styles.list}>
         {guide.map((item, index) => (

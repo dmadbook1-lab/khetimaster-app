@@ -1850,7 +1850,7 @@ export default function FarmDetailsScreen() {
                     styles.changeText
                   }
                 >
-                  Edit
+                  {t('farmDetails.edit')}
                 </Text>
               </TouchableOpacity>
             </View>
@@ -2058,7 +2058,7 @@ export default function FarmDetailsScreen() {
                         styles.cropRetryText
                       }
                     >
-                      Retry
+                      {t('farmDetails.retry')}
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -2072,8 +2072,7 @@ export default function FarmDetailsScreen() {
                     styles.cropAvailableText
                   }
                 >
-                  {crops.length} crops
-                  available
+                  {t('farmDetails.cropsAvailable', {length: crops.length})}
                 </Text>
               )}
           </View>
@@ -2242,7 +2241,7 @@ export default function FarmDetailsScreen() {
                 styles.acreUnit
               }
             >
-              acres
+              {t('farmDetails.acres')}
             </Text>
           </View>
 
@@ -2650,7 +2649,7 @@ export default function FarmDetailsScreen() {
                     styles.saveButtonText
                   }
                 >
-                  Saving your farm...
+                  {t('farmDetails.savingYourFarm')}
                 </Text>
               </>
             ) : (
@@ -2846,7 +2845,7 @@ export default function FarmDetailsScreen() {
                     styles.cropLoadingText
                   }
                 >
-                  Loading crops...
+                  {t('farmDetails.loadingCrops')}
                 </Text>
               </View>
             ) : cropError ? (
@@ -2892,7 +2891,7 @@ export default function FarmDetailsScreen() {
                       styles.retryButtonText
                     }
                   >
-                    Retry
+                    {t('farmDetails.retry')}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -3369,7 +3368,7 @@ export default function FarmDetailsScreen() {
                     styles.todayButtonText
                   }
                 >
-                  Today
+                  {t('common.today')}
                 </Text>
               </TouchableOpacity>
 
@@ -3395,7 +3394,7 @@ export default function FarmDetailsScreen() {
                     styles.doneButtonText
                   }
                 >
-                  Done
+                  {t('farmDetails.done')}
                 </Text>
               </TouchableOpacity>
             </View>

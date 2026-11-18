@@ -8,6 +8,8 @@ import {
   Dimensions,
 } from 'react-native';
 import { Heart, ShoppingCart, Star } from 'lucide-react-native';
+import {useTranslation} from 'react-i18next';
+import {tOpt} from '../../utils/tOpt';
 const { width } = Dimensions.get('window');
 const GREEN = '#16883E';
 const rf = size => {
@@ -15,6 +17,7 @@ const rf = size => {
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
 export default function ProductCard({ product, compact = false, onPress }) {
+  const {t} = useTranslation();
   return (
     <TouchableOpacity
       activeOpacity={0.9}
@@ -39,7 +42,7 @@ export default function ProductCard({ product, compact = false, onPress }) {
 
       <Text style={styles.brand}>{product.brand}</Text>
       <Text numberOfLines={2} style={styles.name}>
-        {product.name}
+        {tOpt(product.name)}
       </Text>
 
       <View style={styles.ratingRow}>
@@ -62,13 +65,13 @@ export default function ProductCard({ product, compact = false, onPress }) {
       {!compact && (
         <TouchableOpacity activeOpacity={0.9} style={styles.cartBtn}>
           <ShoppingCart size={14} color={GREEN} strokeWidth={2.5} />
-          <Text style={styles.cartText}>Add to Cart</Text>
+          <Text style={styles.cartText}>{t('productCard.addToCart')}</Text>
         </TouchableOpacity>
       )}
 
       {compact && (
         <TouchableOpacity activeOpacity={0.9} style={styles.compactCartBtn}>
-          <Text style={styles.compactCartText}>Add to Cart</Text>
+          <Text style={styles.compactCartText}>{t('productCard.addToCart')}</Text>
         </TouchableOpacity>
       )}
     </TouchableOpacity>

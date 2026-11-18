@@ -9,6 +9,7 @@ import {
 import { SlidersHorizontal } from 'lucide-react-native';
 import ProductCard from './ProductCard';
 import { allProducts } from './product';
+import {useTranslation} from 'react-i18next';
 const { width } = Dimensions.get('window');
 const rf = size => {
   const scale = width / 390;
@@ -19,6 +20,7 @@ export default function ProductGrid({
   startIndex = 0,
   hideHeader = false,
 }) {
+  const {t} = useTranslation();
   const products = hideHeader
     ? allProducts.slice(startIndex)
     : allProducts.slice(0, 4);
@@ -26,11 +28,11 @@ export default function ProductGrid({
     <View style={styles.wrapper}>
       {!hideHeader && (
         <View style={styles.sectionRow}>
-          <Text style={styles.title}>All Products</Text>
+          <Text style={styles.title}>{t('productGrid.allProducts')}</Text>
 
           <TouchableOpacity activeOpacity={0.8} style={styles.sortBtn}>
             <SlidersHorizontal size={14} color="#64748B" strokeWidth={2.4} />
-            <Text style={styles.sortText}>Sort</Text>
+            <Text style={styles.sortText}>{t('productGrid.sort')}</Text>
           </TouchableOpacity>
         </View>
       )}

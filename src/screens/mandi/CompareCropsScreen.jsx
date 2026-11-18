@@ -41,11 +41,14 @@ import {
   searchCrops,
   summaryKey,
 } from '../../utils/mandiFormat';
+import {useTranslation} from 'react-i18next';
+import {tOpt} from '../../utils/tOpt';
 
 const MAX_CROPS = 4;
 const DEFAULT_CROPS = ['onion', 'tomato', 'potato'];
 
 export default function CompareCropsScreen({ navigation, route }) {
+  const {t} = useTranslation();
   const dispatch = useDispatch();
   const { crops, location } = useMandiSetup();
   const { summaries, recentCrops } = useSelector(state => state.mandi);
@@ -138,7 +141,7 @@ export default function CompareCropsScreen({ navigation, route }) {
       ? [{ key: 'district', label: location.district }]
       : []),
     ...(location?.state ? [{ key: 'state', label: location.state }] : []),
-    { key: 'india', label: 'All India' },
+    { key: 'india', label: t('compareCrops.allIndia') },
   ];
 
   return (
@@ -152,9 +155,9 @@ export default function CompareCropsScreen({ navigation, route }) {
         <MarketHero
           banner={MANDI_BANNER}
           onBack={() => navigation.goBack()}
-          eyebrow={`Compare · ${placeName}`}
-          title="Which crop pays more?"
-          subtitle="Today's average mandi price of your crops, side by side."
+          eyebrow={t('compareCrops.compare', {placeName})}
+          title={t('compareCrops.whichCropPaysMore')}
+          subtitle={t('compareCrops.todaysAverageMandiPriceOf')}
           right={
             <GlassButton onPress={() => load(true)}>
               <RefreshCw size={18} color={C.white} />
@@ -175,7 +178,7 @@ export default function CompareCropsScreen({ navigation, route }) {
 
           {/* PICKED */}
           <Text style={styles.label}>
-            Your crops ({picked.length}/{MAX_CROPS})
+            {t('compareCrops.yourCrops', {length: picked.length, MAX_CROPS})}
           </Text>
           <View style={styles.pickedRow}>
             {rows.map(row => (
@@ -187,7 +190,7 @@ export default function CompareCropsScreen({ navigation, route }) {
                   iconSize={14}
                 />
                 <Text style={styles.pickedText} numberOfLines={1}>
-                  {row.name}
+                  {tOpt(row.name)}
                 </Text>
                 {picked.length > 1 && (
                   <TouchableOpacity hitSlop={8} onPress={() => remove(row.id)}>
@@ -203,7 +206,7 @@ export default function CompareCropsScreen({ navigation, route }) {
                 onPress={() => setAdding(value => !value)}
               >
                 <Plus size={15} color={C.green} />
-                <Text style={styles.addText}>Add crop</Text>
+                <Text style={styles.addText}>{t('compareCrops.addCrop')}</Text>
               </TouchableOpacity>
             )}
           </View>
@@ -215,7 +218,7 @@ export default function CompareCropsScreen({ navigation, route }) {
                 <TextInput
                   value={search}
                   onChangeText={setSearch}
-                  placeholder="Search crop"
+                  placeholder={t('compareCrops.searchCrop')}
                   placeholderTextColor={C.placeholder}
                   style={styles.searchInput}
                   autoFocus
@@ -240,7 +243,7 @@ export default function CompareCropsScreen({ navigation, route }) {
                       style={styles.choicePhoto}
                     />
                     <Text style={styles.choiceText} numberOfLines={1}>
-                      {crop.name}
+                      {tOpt(crop.name)}
                     </Text>
                   </TouchableOpacity>
                 ))}
@@ -254,11 +257,10 @@ export default function CompareCropsScreen({ navigation, route }) {
               <Trophy size={24} color={C.amber} />
               <View style={styles.flex}>
                 <Text style={styles.winnerTitle}>
-                  {winner.name} has the highest price
+                  {t('compareCrops.hasTheHighestPrice', {name: winner.name})}
                 </Text>
                 <Text style={styles.winnerText}>
-                  {formatQuintal(winner.average)} per quintal (
-                  {formatPerKg(winner.average)}) in {placeName}
+                  {t('compareCrops.perQuintalIn', {v1: formatQuintal(winner.average), v2: formatPerKg(winner.average), placeName})}
                 </Text>
               </View>
             </View>
@@ -289,7 +291,7 @@ export default function CompareCropsScreen({ navigation, route }) {
                   <View style={styles.flex}>
                     <Text style={styles.cropName} numberOfLines={1}>
                       {row.average ? `${index + 1}. ` : ''}
-                      {row.name}
+                      {tOpt(row.name)}
                     </Text>
                     {row.loading ? (
                       <ActivityIndicator
@@ -302,16 +304,16 @@ export default function CompareCropsScreen({ navigation, route }) {
                           style={[styles.cropPrice, isWinner && styles.green]}
                         >
                           {formatQuintal(row.average)}
-                          <Text style={styles.cropUnit}> per quintal</Text>
+                          <Text style={styles.cropUnit}> {t('compareCrops.perQuintal')}</Text>
                         </Text>
                         <Text style={styles.cropKg}>
                           {formatPerKg(row.average)} · {row.summary?.markets}{' '}
-                          mandis
+                          {t('compareCrops.mandis')}
                         </Text>
                       </>
                     ) : (
                       <Text style={styles.cropNone}>
-                        {row.error || `No price in ${placeName}`}
+                        {row.error || t('compareCrops.noPriceIn', {placeName})}
                       </Text>
                     )}
                   </View>
@@ -334,8 +336,7 @@ export default function CompareCropsScreen({ navigation, route }) {
           })}
 
           <Text style={styles.note}>
-            Average of all mandis in {placeName}. Tap a crop to see each mandi's
-            price.
+            {t('compareCrops.averageOfAllMandisIn', {placeName})}
           </Text>
         </View>
       </ScrollView>

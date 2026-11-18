@@ -65,6 +65,8 @@ import {
   isAcceptedStatus,
 } from '../../utils/labourFormat';
 import { formatRupees } from '../../utils/marketFormat';
+import {useTranslation} from 'react-i18next';
+import i18n from 'i18next';
 
 const heroGradientFor = booking => {
   if (booking.status === 'pending')
@@ -77,37 +79,69 @@ const heroGradientFor = booking => {
 
 const SHEETS = {
   reject: {
-    title: 'Decline this request?',
-    description:
-      'The farmer will see that you declined. Add a reason if you like.',
-    placeholder: 'Reason (optional), e.g. Already working that day',
-    submitLabel: 'Decline Request',
+    get title() {
+    return i18n.t('labourBookingDetails.declineThisRequest');
+  },
+    get description() {
+    return i18n.t('labourBookingDetails.theFarmerWillSeeThat');
+  },
+    get placeholder() {
+    return i18n.t('labourBookingDetails.reasonOptionalEGAlready');
+  },
+    get submitLabel() {
+    return i18n.t('labourBookingDetails.declineRequest');
+  },
     variant: 'danger',
   },
   cancel: {
-    title: 'Cancel booking?',
-    description: 'This cancels the booking for both of you.',
-    placeholder: 'Reason (optional)',
-    submitLabel: 'Cancel Booking',
+    get title() {
+    return i18n.t('labourBookingDetails.cancelBooking');
+  },
+    get description() {
+    return i18n.t('labourBookingDetails.thisCancelsTheBookingFor');
+  },
+    get placeholder() {
+    return i18n.t('labourBookingDetails.reasonOptional');
+  },
+    get submitLabel() {
+    return i18n.t('labourBookingDetails.cancelBooking2');
+  },
     variant: 'danger',
   },
   review: {
-    title: 'Rate the worker',
-    description: 'Your rating helps other farmers hire good workers.',
-    placeholder: 'How was the work? (optional)',
-    submitLabel: 'Submit Rating',
+    get title() {
+    return i18n.t('labourBookingDetails.rateTheWorker');
+  },
+    get description() {
+    return i18n.t('labourBookingDetails.yourRatingHelpsOtherFarmers');
+  },
+    get placeholder() {
+    return i18n.t('labourBookingDetails.howWasTheWorkOptional');
+  },
+    get submitLabel() {
+    return i18n.t('labourBookingDetails.submitRating');
+  },
     withRating: true,
   },
 };
 
 const TOASTS = {
-  accept: 'Booking accepted. You can now call the farmer.',
-  reject: 'Request declined',
-  cancel: 'Booking cancelled',
-  complete: 'Marked as completed',
+  get accept() {
+    return i18n.t('labourBookingDetails.bookingAcceptedYouCanNow');
+  },
+  get reject() {
+    return i18n.t('labourBookingDetails.requestDeclined');
+  },
+  get cancel() {
+    return i18n.t('labourBookingDetails.bookingCancelled');
+  },
+  get complete() {
+    return i18n.t('labourBookingDetails.markedAsCompleted');
+  },
 };
 
 export default function LabourBookingDetailsScreen({ navigation, route }) {
+  const {t} = useTranslation();
   const { bookingId } = route.params;
   const dispatch = useDispatch();
   const insets = useSafeAreaInsets();
@@ -168,7 +202,7 @@ export default function LabourBookingDetailsScreen({ navigation, route }) {
           reviewLabourBooking({ bookingId, rating, comment: text }),
         ).unwrap();
         setSheet(null);
-        toast.show('Thanks for rating the worker');
+        toast.show(t('labourBookingDetails.thanksForRatingTheWorker'));
       } catch (error) {
         setSheetError(String(error));
       }
@@ -183,12 +217,12 @@ export default function LabourBookingDetailsScreen({ navigation, route }) {
   if (!booking) {
     return (
       <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
-        <MarketHeader title="Booking" onBack={() => navigation.goBack()} />
+        <MarketHeader title={t('labourBookingDetails.booking')} onBack={() => navigation.goBack()} />
         {bookingError && !bookingLoading ? (
           <EmptyState
-            title="Booking not available"
+            title={t('labourBookingDetails.bookingNotAvailable')}
             message={bookingError}
-            actionLabel="Go Back"
+            actionLabel={t('labourBookingDetails.goBack')}
             onAction={() => navigation.goBack()}
           />
         ) : (
@@ -214,24 +248,24 @@ export default function LabourBookingDetailsScreen({ navigation, route }) {
 
   const handleAccept = () =>
     feedback.confirm({
-      title: 'Accept this work?',
-      message: `${booking.workType} on ${formatDateRange(
+      title: t('labourBookingDetails.acceptThisWork'),
+      message: t('labourBookingDetails.onForOtherRequestsFor', {workType: booking.workType, v2: formatDateRange(
         booking.bookingDate,
         booking.numberOfDays,
-      )} for ${formatRupees(
+      ), v3: formatRupees(
         booking.totalAmount,
-      )}. Other requests for these dates will be declined automatically.`,
-      confirmLabel: 'Accept Work',
+      )}),
+      confirmLabel: t('labourBookingDetails.acceptWork'),
       onConfirm: () => runAction('accept'),
     });
 
   const handleComplete = () =>
     feedback.confirm({
-      title: 'Mark work as completed?',
+      title: t('labourBookingDetails.markWorkAsCompleted'),
       message: isFarmer
-        ? 'Do this once the work is finished and you have paid the worker.'
-        : 'Do this once the work is finished and you have been paid.',
-      confirmLabel: 'Yes, completed',
+        ? t('labourBookingDetails.doThisOnceTheWork')
+        : t('labourBookingDetails.doThisOnceTheWork2'),
+      confirmLabel: t('labourBookingDetails.yesCompleted'),
       onConfirm: () => runAction('complete'),
     });
 
@@ -245,14 +279,14 @@ export default function LabourBookingDetailsScreen({ navigation, route }) {
         <>
           <MarketButton
             variant="danger"
-            label="Decline"
+            label={t('labourBookingDetails.decline')}
             icon={<CircleX size={16} color={C.red} />}
             disabled={!!actionInProgress}
             onPress={() => openSheet('reject')}
             style={styles.flex}
           />
           <MarketButton
-            label="Accept Work"
+            label={t('labourBookingDetails.acceptWork')}
             icon={<CircleCheck size={17} color={C.white} />}
             disabled={!!actionInProgress}
             onPress={handleAccept}
@@ -265,7 +299,7 @@ export default function LabourBookingDetailsScreen({ navigation, route }) {
     if (actions.includes('review')) {
       return (
         <MarketButton
-          label="Rate the Worker"
+          label={t('labourBookingDetails.rateTheWorker2')}
           icon={<Star size={17} color={C.white} />}
           onPress={() => openSheet('review')}
           style={styles.flex}
@@ -278,7 +312,7 @@ export default function LabourBookingDetailsScreen({ navigation, route }) {
         {actions.includes('cancel') && (
           <MarketButton
             variant="danger"
-            label={booking.status === 'pending' ? 'Cancel Request' : 'Cancel'}
+            label={booking.status === 'pending' ? t('labourBookingDetails.cancelRequest') : t('common.cancel')}
             disabled={!!actionInProgress}
             onPress={() => openSheet('cancel')}
             style={styles.flex}
@@ -286,7 +320,7 @@ export default function LabourBookingDetailsScreen({ navigation, route }) {
         )}
         {actions.includes('complete') ? (
           <MarketButton
-            label="Mark Completed"
+            label={t('labourBookingDetails.markCompleted')}
             icon={<CircleCheck size={16} color={C.white} />}
             disabled={!!actionInProgress}
             onPress={handleComplete}
@@ -296,7 +330,7 @@ export default function LabourBookingDetailsScreen({ navigation, route }) {
           contactShared &&
           !!other?.phoneNumber && (
             <MarketButton
-              label={isFarmer ? 'Call Worker' : 'Call Farmer'}
+              label={isFarmer ? t('labourBookingDetails.callWorker') : t('labourBookingDetails.callFarmer')}
               icon={<Phone size={16} color={C.white} />}
               onPress={callOther}
               style={styles.flexWide}
@@ -334,7 +368,7 @@ export default function LabourBookingDetailsScreen({ navigation, route }) {
           compact
           gradient={heroGradientFor(booking)}
           onBack={() => navigation.goBack()}
-          eyebrow={isFarmer ? 'Your booking' : 'Work request'}
+          eyebrow={isFarmer ? t('labourBookingDetails.yourBooking') : t('labourBookingDetails.workRequest')}
           title={booking.workType}
           right={
             <StatusPill
@@ -343,7 +377,7 @@ export default function LabourBookingDetailsScreen({ navigation, route }) {
             />
           }
         >
-          <Text style={styles.heroLabel}>Total payment</Text>
+          <Text style={styles.heroLabel}>{t('labourBookingDetails.totalPayment')}</Text>
           <Text style={styles.heroAmount}>
             {formatRupees(booking.totalAmount)}
           </Text>
@@ -368,7 +402,7 @@ export default function LabourBookingDetailsScreen({ navigation, route }) {
             </Text>
             {!!closingReason &&
               ['rejected', 'cancelled'].includes(booking.status) && (
-                <Text style={styles.heroReason}>Reason: {closingReason}</Text>
+                <Text style={styles.heroReason}>{t('labourBookingDetails.reason', {closingReason})}</Text>
               )}
           </View>
         </MarketHero>
@@ -386,7 +420,7 @@ export default function LabourBookingDetailsScreen({ navigation, route }) {
             }
           >
             <Text style={styles.cardLabel}>
-              {isFarmer ? 'Worker' : 'Farmer'}
+              {isFarmer ? t('labourBookingDetails.worker') : t('common.farmer')}
             </Text>
             <View style={styles.partyRow}>
               <PersonAvatar
@@ -430,7 +464,7 @@ export default function LabourBookingDetailsScreen({ navigation, route }) {
               <View style={styles.lockedRow}>
                 <Lock size={13} color={C.muted} />
                 <Text style={styles.lockedText}>
-                  Phone number is shared once the worker accepts
+                  {t('labourBookingDetails.phoneNumberIsSharedOnce')}
                 </Text>
               </View>
             )}
@@ -440,20 +474,20 @@ export default function LabourBookingDetailsScreen({ navigation, route }) {
           <View style={styles.card}>
             <View style={styles.cardTitleRow}>
               <CalendarDays size={17} color={C.green} />
-              <Text style={styles.cardTitle}>Schedule</Text>
+              <Text style={styles.cardTitle}>{t('labourBookingDetails.schedule')}</Text>
             </View>
-            <InfoRow label="Starts" value={formatDay(booking.bookingDate)} />
+            <InfoRow label={t('labourBookingDetails.starts')} value={formatDay(booking.bookingDate)} />
             {booking.numberOfDays > 1 && (
-              <InfoRow label="Ends" value={formatDay(booking.endDate)} />
+              <InfoRow label={t('labourBookingDetails.ends')} value={formatDay(booking.endDate)} />
             )}
             <InfoRow
-              label="Duration"
+              label={t('labourBookingDetails.duration')}
               value={`${booking.numberOfDays || 1} ${
-                booking.numberOfDays > 1 ? 'days' : 'day'
+                booking.numberOfDays > 1 ? t('plural.days') : t('plural.day')
               }`}
             />
             <InfoRow
-              label="Hours"
+              label={t('labourBookingDetails.hours')}
               value={formatTimeRange(booking.startTime, booking.endTime)}
             />
           </View>
@@ -462,9 +496,9 @@ export default function LabourBookingDetailsScreen({ navigation, route }) {
           <View style={styles.card}>
             <View style={styles.cardTitleRow}>
               <Briefcase size={17} color={C.orange} />
-              <Text style={styles.cardTitle}>Work</Text>
+              <Text style={styles.cardTitle}>{t('labourBookingDetails.work')}</Text>
             </View>
-            <InfoRow label="Type" value={booking.workType} />
+            <InfoRow label={t('labourBookingDetails.type')} value={booking.workType} />
             {!!booking.description && (
               <Text style={styles.paragraph}>{booking.description}</Text>
             )}
@@ -488,23 +522,23 @@ export default function LabourBookingDetailsScreen({ navigation, route }) {
           <View style={styles.card}>
             <View style={styles.cardTitleRow}>
               <Clock size={17} color={C.blue} />
-              <Text style={styles.cardTitle}>Payment</Text>
+              <Text style={styles.cardTitle}>{t('labourBookingDetails.payment')}</Text>
             </View>
             <InfoRow
-              label="Wage"
+              label={t('labourBookingDetails.wage')}
               value={`${formatRupees(booking.wage)} ${
                 WAGE_TYPE_LABELS[booking.wageType] || ''
               }`}
             />
-            <InfoRow label="Days" value={booking.numberOfDays || 1} />
+            <InfoRow label={t('labourBookingDetails.days')} value={booking.numberOfDays || 1} />
             <View style={styles.totalRow}>
-              <Text style={styles.totalLabel}>Total</Text>
+              <Text style={styles.totalLabel}>{t('labourBookingDetails.total')}</Text>
               <Text style={styles.totalValue}>
                 {formatRupees(booking.totalAmount)}
               </Text>
             </View>
             <Text style={styles.payNote}>
-              Paid directly to the worker after the work.
+              {t('labourBookingDetails.paidDirectlyToTheWorker')}
             </Text>
           </View>
 
@@ -512,7 +546,7 @@ export default function LabourBookingDetailsScreen({ navigation, route }) {
           {!!booking.review?.rating && (
             <View style={styles.card}>
               <Text style={styles.cardTitle}>
-                {isFarmer ? 'Your rating' : "Farmer's rating"}
+                {isFarmer ? t('labourBookingDetails.yourRating') : t('labourBookingDetails.farmersRating')}
               </Text>
               <View style={[styles.inline, styles.stars]}>
                 {[1, 2, 3, 4, 5].map(value => (

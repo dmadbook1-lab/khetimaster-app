@@ -126,7 +126,7 @@ const LoginScreen = ({ navigation }) => {
             <Text style={styles.title}>
               {t('login.welcome')}
               {'\n'}
-              <Text style={styles.greenText}>KhetiMaster 👋</Text>
+              <Text style={styles.greenText}>{t('login.khetimaster')}</Text>
             </Text>
 
             <Text style={styles.subtitle}>
@@ -163,7 +163,7 @@ const LoginScreen = ({ navigation }) => {
                 autoCorrect={false}
                 autoComplete="email"
                 textContentType="emailAddress"
-                placeholder="example@gmail.com"
+                placeholder={t('login.exampleGmailCom')}
                 placeholderTextColor="#C8D1DF"
                 style={styles.input}
                 editable={!isLoading}

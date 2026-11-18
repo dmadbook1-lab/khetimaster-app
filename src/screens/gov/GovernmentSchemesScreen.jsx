@@ -28,15 +28,22 @@ import {
 } from 'lucide-react-native';
 import { COLORS, rf, PAGE_PADDING } from '../../components/gov/theme';
 import { GOV_ROUTES } from '../../constants/govRoutes';
+import {useTranslation} from 'react-i18next';
+import i18n from 'i18next';
+import {tOpt} from '../../utils/tOpt';
 const RECOMMENDED = [
   {
     id: 'r1',
     name: 'PM-KISAN',
-    desc: 'Income Support for\nFarmers',
+    get desc() {
+    return i18n.t('governmentSchemes.incomeSupportForFarmers');
+  },
     status: 'Eligible',
     statusBg: '#DCFCE7',
     statusColor: COLORS.DARK_GREEN,
-    cta: 'Apply Now',
+    get cta() {
+    return i18n.t('governmentSchemes.applyNow');
+  },
     icon: Users,
     iconBg: '#DCFCE7',
     iconColor: COLORS.DARK_GREEN,
@@ -44,11 +51,15 @@ const RECOMMENDED = [
   {
     id: 'r2',
     name: 'PM Fasal Bima\nYojana',
-    desc: 'Crop Insurance\nScheme',
+    get desc() {
+    return i18n.t('governmentSchemes.cropInsuranceScheme');
+  },
     status: 'New',
     statusBg: '#FFF7ED',
     statusColor: COLORS.ORANGE,
-    cta: 'View Details',
+    get cta() {
+    return i18n.t('common.view_details');
+  },
     icon: Users,
     iconBg: '#FFEDD5',
     iconColor: COLORS.ORANGE,
@@ -56,11 +67,15 @@ const RECOMMENDED = [
   {
     id: 'r3',
     name: 'Kisan Credit\nCard',
-    desc: 'Low Interest Farm Loan',
+    get desc() {
+    return i18n.t('governmentSchemes.lowInterestFarmLoan');
+  },
     status: 'Recommended',
     statusBg: '#DBEAFE',
     statusColor: COLORS.BLUE,
-    cta: 'Apply Now',
+    get cta() {
+    return i18n.t('governmentSchemes.applyNow');
+  },
     icon: CreditCard,
     iconBg: '#DBEAFE',
     iconColor: COLORS.BLUE,
@@ -70,7 +85,9 @@ const POPULAR = [
   {
     id: 'p1',
     name: 'PM-Kisan Samman Nidhi',
-    desc: 'Income support of ₹6,000...',
+    get desc() {
+    return i18n.t('governmentSchemes.incomeSupportOf6000');
+  },
     icon: Wallet,
     bg: '#DCFCE7',
     color: COLORS.DARK_GREEN,
@@ -78,7 +95,9 @@ const POPULAR = [
   {
     id: 'p2',
     name: 'PM Fasal Bima Yojana',
-    desc: 'Crop insurance scheme for...',
+    get desc() {
+    return i18n.t('governmentSchemes.cropInsuranceSchemeFor');
+  },
     icon: Users,
     bg: '#FFEDD5',
     color: COLORS.ORANGE,
@@ -86,7 +105,9 @@ const POPULAR = [
   {
     id: 'p3',
     name: 'Kisan Credit Card (KCC)',
-    desc: 'Easy credit for farmers at...',
+    get desc() {
+    return i18n.t('governmentSchemes.easyCreditForFarmersAt');
+  },
     icon: CreditCard,
     bg: '#DBEAFE',
     color: COLORS.BLUE,
@@ -94,7 +115,9 @@ const POPULAR = [
   {
     id: 'p4',
     name: 'Soil Health Card Scheme',
-    desc: 'Improve soil health and...',
+    get desc() {
+    return i18n.t('governmentSchemes.improveSoilHealthAnd');
+  },
     icon: Sprout,
     bg: '#F3E8FF',
     color: COLORS.PURPLE,
@@ -102,13 +125,16 @@ const POPULAR = [
   {
     id: 'p5',
     name: 'PM Krishi Sinchai Yojana',
-    desc: 'Financial assistance for...',
+    get desc() {
+    return i18n.t('governmentSchemes.financialAssistanceFor');
+  },
     icon: Droplet,
     bg: '#DBEAFE',
     color: COLORS.BLUE,
   },
 ];
 export default function GovernmentSchemesScreen({ navigation }) {
+  const {t} = useTranslation();
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
       <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
@@ -128,7 +154,7 @@ export default function GovernmentSchemesScreen({ navigation }) {
             alignItems: 'center',
           }}
         >
-          <Text style={styles.headerTitle}>Government Schemes</Text>
+          <Text style={styles.headerTitle}>{t('governmentSchemes.governmentSchemes')}</Text>
           <Text style={styles.headerSub}>सरकारी योजनाएं</Text>
         </View>
         <TouchableOpacity activeOpacity={0.8} style={styles.iconBtn}>
@@ -168,10 +194,9 @@ export default function GovernmentSchemesScreen({ navigation }) {
             <View style={styles.heroIconBox}>
               <Landmark size={rf(20)} color="#FFFFFF" strokeWidth={2.4} />
             </View>
-            <Text style={styles.heroTitle}>Government{'\n'}Assistance Hub</Text>
+            <Text style={styles.heroTitle}>{t('governmentSchemes.government')}{'\n'}{t('governmentSchemes.assistanceHub')}</Text>
             <Text style={styles.heroDesc}>
-              Discover agricultural schemes,{'\n'}subsidies, insurance and
-              financial{'\n'}support for your farm.
+              {t('governmentSchemes.discoverAgriculturalSchemes')}{'\n'}{t('governmentSchemes.subsidiesInsuranceAndFinancial')}{'\n'}{t('governmentSchemes.supportForYourFarm')}
             </Text>
 
             <View style={styles.heroBtnRow}>
@@ -182,7 +207,7 @@ export default function GovernmentSchemesScreen({ navigation }) {
                 }
                 style={styles.heroCheckBtn}
               >
-                <Text style={styles.heroCheckText}>Check Eligibility</Text>
+                <Text style={styles.heroCheckText}>{t('governmentSchemes.checkEligibility')}</Text>
                 <ArrowRight size={rf(14)} color="#FFFFFF" strokeWidth={2.5} />
               </TouchableOpacity>
               <TouchableOpacity
@@ -190,7 +215,7 @@ export default function GovernmentSchemesScreen({ navigation }) {
                 onPress={() => navigation?.navigate('LatestSchemes')}
                 style={styles.heroBrowseBtn}
               >
-                <Text style={styles.heroBrowseText}>Browse Schemes</Text>
+                <Text style={styles.heroBrowseText}>{t('governmentSchemes.browseSchemes')}</Text>
               </TouchableOpacity>
             </View>
           </LinearGradient>
@@ -198,12 +223,12 @@ export default function GovernmentSchemesScreen({ navigation }) {
 
         {}
         <View style={styles.sectionHead}>
-          <Text style={styles.sectionTitle}>Recommended For You</Text>
+          <Text style={styles.sectionTitle}>{t('governmentSchemes.recommendedForYou')}</Text>
           <TouchableOpacity
             activeOpacity={0.8}
             onPress={() => navigation?.navigate(GOV_ROUTES.LATEST_SCHEMES)}
           >
-            <Text style={styles.viewAll}>View All</Text>
+            <Text style={styles.viewAll}>{t('common.view_all')}</Text>
           </TouchableOpacity>
         </View>
 
@@ -235,7 +260,7 @@ export default function GovernmentSchemesScreen({ navigation }) {
                 >
                   <Icon size={rf(17)} color={r.iconColor} strokeWidth={2.3} />
                 </View>
-                <Text style={styles.recName}>{r.name}</Text>
+                <Text style={styles.recName}>{tOpt(r.name)}</Text>
                 <Text style={styles.recDesc}>{r.desc}</Text>
                 <View
                   style={[
@@ -260,7 +285,7 @@ export default function GovernmentSchemesScreen({ navigation }) {
                       },
                     ]}
                   >
-                    {r.status}
+                    {tOpt(r.status)}
                   </Text>
                 </View>
                 <View style={styles.recDivider} />
@@ -286,7 +311,7 @@ export default function GovernmentSchemesScreen({ navigation }) {
             },
           ]}
         >
-          Popular Schemes
+          {t('governmentSchemes.popularSchemes')}
         </Text>
         <View style={styles.popularCard}>
           {POPULAR.map((p, i) => {
@@ -320,7 +345,7 @@ export default function GovernmentSchemesScreen({ navigation }) {
                     flex: 1,
                   }}
                 >
-                  <Text style={styles.popName}>{p.name}</Text>
+                  <Text style={styles.popName}>{tOpt(p.name)}</Text>
                   <Text style={styles.popDesc}>{p.desc}</Text>
                 </View>
                 <ChevronRight
@@ -335,9 +360,9 @@ export default function GovernmentSchemesScreen({ navigation }) {
 
         {}
         <View style={styles.sectionHead}>
-          <Text style={styles.sectionTitle}>Latest Updates</Text>
+          <Text style={styles.sectionTitle}>{t('governmentSchemes.latestUpdates')}</Text>
           <TouchableOpacity activeOpacity={0.8}>
-            <Text style={styles.viewAll}>View All</Text>
+            <Text style={styles.viewAll}>{t('common.view_all')}</Text>
           </TouchableOpacity>
         </View>
 
@@ -378,16 +403,16 @@ export default function GovernmentSchemesScreen({ navigation }) {
                     },
                   ]}
                 >
-                  PM-KISAN
+                  {t('governmentSchemes.pmKisan')}
                 </Text>
               </View>
             </View>
-            <Text style={styles.updateTitle}>15th Installment Released</Text>
+            <Text style={styles.updateTitle}>{t('governmentSchemes.15thInstallmentReleased')}</Text>
             <Text style={styles.updateDesc}>
-              ₹2,000 credited to farmers'{'\n'}bank accounts.
+              {t('governmentSchemes.2000CreditedToFarmers')}{'\n'}{t('governmentSchemes.bankAccounts')}
             </Text>
             <TouchableOpacity activeOpacity={0.8}>
-              <Text style={styles.updateLink}>Read More →</Text>
+              <Text style={styles.updateLink}>{t('governmentSchemes.readMore')}</Text>
             </TouchableOpacity>
             <Image
               source={require('../../assets/gov/pmkisan.png')}
@@ -432,13 +457,13 @@ export default function GovernmentSchemesScreen({ navigation }) {
                     },
                   ]}
                 >
-                  NEW SUBSIDY
+                  {t('governmentSchemes.newSubsidy')}
                 </Text>
               </View>
             </View>
-            <Text style={styles.updateTitle}>Solar Pump Subsidy</Text>
+            <Text style={styles.updateTitle}>{t('governmentSchemes.solarPumpSubsidy')}</Text>
             <Text style={styles.updateDesc}>
-              Up to 90% subsidy for solar{'\n'}pump installation.
+              {t('governmentSchemes.upTo90SubsidyFor')}{'\n'}{t('governmentSchemes.pumpInstallation')}
             </Text>
             <TouchableOpacity activeOpacity={0.8}>
               <Text
@@ -449,7 +474,7 @@ export default function GovernmentSchemesScreen({ navigation }) {
                   },
                 ]}
               >
-                Read More →
+                {t('governmentSchemes.readMore')}
               </Text>
             </TouchableOpacity>
             <Image
@@ -475,9 +500,9 @@ export default function GovernmentSchemesScreen({ navigation }) {
                 flex: 1,
               }}
             >
-              <Text style={styles.appTitle}>My Applications Overview</Text>
+              <Text style={styles.appTitle}>{t('governmentSchemes.myApplicationsOverview')}</Text>
               <Text style={styles.appDesc}>
-                Track all your scheme applications in one place
+                {t('governmentSchemes.trackAllYourSchemeApplications')}
               </Text>
             </View>
           </View>
@@ -495,7 +520,7 @@ export default function GovernmentSchemesScreen({ navigation }) {
                 2
               </Text>
               <View style={styles.appStatUnderline} />
-              <Text style={styles.appStatLabel}>APPROVED</Text>
+              <Text style={styles.appStatLabel}>{t('governmentSchemes.approved')}</Text>
             </View>
             <View style={styles.appStat}>
               <Text
@@ -508,7 +533,7 @@ export default function GovernmentSchemesScreen({ navigation }) {
               >
                 1
               </Text>
-              <Text style={styles.appStatLabel}>UNDER REVIEW</Text>
+              <Text style={styles.appStatLabel}>{t('governmentSchemes.underReview')}</Text>
             </View>
             <View style={styles.appStat}>
               <Text
@@ -521,7 +546,7 @@ export default function GovernmentSchemesScreen({ navigation }) {
               >
                 0
               </Text>
-              <Text style={styles.appStatLabel}>REJECTED</Text>
+              <Text style={styles.appStatLabel}>{t('governmentSchemes.rejected')}</Text>
             </View>
             <ChevronRight
               size={rf(16)}
@@ -537,7 +562,7 @@ export default function GovernmentSchemesScreen({ navigation }) {
             onPress={() => navigation?.navigate(GOV_ROUTES.MY_APPLICATIONS)}
             style={styles.trackBtn}
           >
-            <Text style={styles.trackText}>Track All Applications →</Text>
+            <Text style={styles.trackText}>{t('governmentSchemes.trackAllApplications')}</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

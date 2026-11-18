@@ -55,18 +55,38 @@ import {
   todayInIndiaKey,
 } from '../../utils/indiaSchedule';
 import { STATUS_META, isAcceptedStatus } from '../../utils/doctorFormat';
+import {useTranslation} from 'react-i18next';
+import i18n from 'i18next';
+import VoiceActionButton from '../../components/voice/VoiceActionButton';
+import VoiceFlowOverlay from '../../components/voice/VoiceFlowOverlay';
+import useDoctorVoiceFlow from '../../components/voice/flows/useDoctorVoiceFlow';
 
 const STEPS = [
-  { icon: Search, title: 'Pick a doctor', text: 'Vet or crop expert near you' },
+  { icon: Search, get title() {
+    return i18n.t('doctorHome.pickADoctor');
+  }, get text() {
+    return i18n.t('doctorHome.vetOrCropExpertNear');
+  } },
   {
     icon: CalendarCheck,
-    title: 'Choose a time',
-    text: 'Tell them the problem',
+    get title() {
+    return i18n.t('doctorHome.chooseATime');
   },
-  { icon: Phone, title: 'Get advice', text: 'Call or visit after accept' },
+    get text() {
+    return i18n.t('doctorHome.tellThemTheProblem');
+  },
+  },
+  { icon: Phone, get title() {
+    return i18n.t('doctorHome.getAdvice');
+  }, get text() {
+    return i18n.t('doctorHome.callOrVisitAfterAccept');
+  } },
 ];
 
 export default function DoctorHomeScreen({ navigation }) {
+  const {t} = useTranslation();
+  const [voiceOpen, setVoiceOpen] = useState(false);
+  const voiceFlow = useDoctorVoiceFlow(navigation);
   const dispatch = useDispatch();
   const meta = useDoctorMeta();
   const todayKey = todayInIndiaKey();
@@ -165,9 +185,9 @@ export default function DoctorHomeScreen({ navigation }) {
               )}
             </>
           }
-          eyebrow="Doctor & Vet"
-          title={'Sick animal?\nCrop trouble?'}
-          subtitle="Book a vet or crop doctor near you. Phone numbers are shared once they accept."
+          eyebrow={t('doctorHome.doctorVet')}
+          title={t('doctorHome.sickAnimalCropTrouble')}
+          subtitle={t('doctorHome.bookAVetOrCrop')}
         />
 
         <View style={styles.searchWrap}>
@@ -176,7 +196,7 @@ export default function DoctorHomeScreen({ navigation }) {
             <TextInput
               value={search}
               onChangeText={setSearch}
-              placeholder="Search doctor, speciality..."
+              placeholder={t('doctorHome.searchDoctorSpeciality')}
               placeholderTextColor={C.placeholder}
               style={styles.searchInput}
               returnKeyType="search"
@@ -193,22 +213,27 @@ export default function DoctorHomeScreen({ navigation }) {
         </View>
 
         <View style={styles.body}>
+        <VoiceActionButton
+          label={t('voiceFlow.button.doctor')}
+          onPress={() => setVoiceOpen(true)}
+        />
+
           {/* WHO DO YOU NEED */}
-          <CareSectionTitle title="Who do you need?" />
+          <CareSectionTitle title={t('doctorHome.whoDoYouNeed')} />
           <View style={styles.typeRow}>
             {[
               {
                 key: 'veterinarian',
                 icon: PawPrint,
-                title: 'Veterinarian',
-                text: 'Cows, buffaloes, goats, poultry & pets',
+                title: t('doctorHome.veterinarian'),
+                text: t('doctorHome.cowsBuffaloesGoatsPoultryPets'),
                 gradient: CARE_GRADIENTS.vet,
               },
               {
                 key: 'agriculturalDoctor',
                 icon: Leaf,
-                title: 'Crop Doctor',
-                text: 'Pests, leaf disease, soil & nutrients',
+                title: t('doctorHome.cropDoctor'),
+                text: t('doctorHome.pestsLeafDiseaseSoilNutrients'),
                 gradient: CARE_GRADIENTS.crop,
               },
             ].map(({ key, icon: Icon, title, text, gradient }) => (
@@ -230,7 +255,7 @@ export default function DoctorHomeScreen({ navigation }) {
                   <Text style={styles.typeTitle}>{title}</Text>
                   <Text style={styles.typeText}>{text}</Text>
                   <View style={styles.typeLink}>
-                    <Text style={styles.typeLinkText}>Find</Text>
+                    <Text style={styles.typeLinkText}>{t('doctorHome.find')}</Text>
                     <ArrowRight size={13} color={C.white} />
                   </View>
                 </LinearGradient>
@@ -258,15 +283,15 @@ export default function DoctorHomeScreen({ navigation }) {
               <View style={styles.flex}>
                 <Text style={styles.nextLabel}>
                   {isAcceptedStatus(next.status)
-                    ? 'Your next consultation'
-                    : 'Waiting for the doctor'}
+                    ? t('doctorHome.yourNextConsultation')
+                    : t('doctorHome.waitingForTheDoctor')}
                 </Text>
                 <Text style={styles.nextName} numberOfLines={1}>
                   {next.doctor?.fullName || 'Doctor'}
                 </Text>
                 <Text style={styles.nextWhen}>
                   {dayKeyOf(next.consultationDate) === todayKey
-                    ? 'Today'
+                    ? t('common.today')
                     : formatDay(next.consultationDate, { year: false })}{' '}
                   · {formatTime(next.startTime)}
                 </Text>
@@ -292,7 +317,7 @@ export default function DoctorHomeScreen({ navigation }) {
           {/* SPECIALITIES */}
           {specialities.length > 0 && (
             <>
-              <CareSectionTitle title="Popular specialities" />
+              <CareSectionTitle title={t('doctorHome.popularSpecialities')} />
               <CareChips
                 scroll
                 options={specialities}
@@ -308,8 +333,8 @@ export default function DoctorHomeScreen({ navigation }) {
 
           {/* TOP DOCTORS */}
           <CareSectionTitle
-            title="Top rated doctors"
-            action="See all"
+            title={t('doctorHome.topRatedDoctors')}
+            action={t('doctorHome.seeAll')}
             onAction={() => openList({})}
           />
           <View style={styles.list}>
@@ -318,16 +343,16 @@ export default function DoctorHomeScreen({ navigation }) {
             ) : listError && !list.length ? (
               <CareEmpty
                 icon={<Stethoscope size={30} color={C.teal} />}
-                title="Couldn't load doctors"
+                title={t('doctorHome.couldntLoadDoctors')}
                 message={listError}
-                actionLabel="Try Again"
+                actionLabel={t('doctorHome.tryAgain')}
                 onAction={load}
               />
             ) : !list.length ? (
               <CareEmpty
                 icon={<Stethoscope size={30} color={C.teal} />}
-                title="No doctors available yet"
-                message="Doctors who join KhetiMaster will show up here."
+                title={t('doctorHome.noDoctorsAvailableYet')}
+                message={t('doctorHome.doctorsWhoJoinKhetimasterWill')}
               />
             ) : (
               list.slice(0, 5).map(doctor => (
@@ -345,7 +370,7 @@ export default function DoctorHomeScreen({ navigation }) {
           </View>
 
           {/* HOW IT WORKS */}
-          <CareSectionTitle title="How it works" />
+          <CareSectionTitle title={t('doctorHome.howItWorks')} />
           <View style={styles.steps}>
             {STEPS.map(({ icon: Icon, title, text }, index) => (
               <View key={title} style={styles.step}>
@@ -370,14 +395,14 @@ export default function DoctorHomeScreen({ navigation }) {
             </View>
             <View style={styles.flex}>
               <Text style={styles.joinTitle}>
-                {isDoctor ? 'Doctor dashboard' : 'Are you a doctor or vet?'}
+                {isDoctor ? t('doctorHome.doctorDashboard') : t('doctorHome.areYouADoctorOr')}
               </Text>
               <Text style={styles.joinText}>
                 {isDoctor
                   ? pendingRequests
-                    ? `${pendingRequests} new requests waiting for you`
-                    : 'See your requests and schedule'
-                  : 'Join free and get consultation requests from farmers'}
+                    ? t('doctorHome.newRequestsWaitingForYou', {pendingRequests})
+                    : t('doctorHome.seeYourRequestsAndSchedule')
+                  : t('doctorHome.joinFreeAndGetConsultation')}
               </Text>
             </View>
             <ChevronRight size={20} color={C.white} />
@@ -386,11 +411,17 @@ export default function DoctorHomeScreen({ navigation }) {
           <View style={styles.trust}>
             <ShieldCheck size={14} color={C.muted} />
             <Text style={styles.trustText}>
-              Your phone number is shared only after the doctor accepts.
+              {t('doctorHome.yourPhoneNumberIsShared')}
             </Text>
           </View>
         </View>
       </ScrollView>
+
+      <VoiceFlowOverlay
+        visible={voiceOpen}
+        flow={voiceFlow}
+        onClose={() => setVoiceOpen(false)}
+      />
     </SafeAreaView>
   );
 }

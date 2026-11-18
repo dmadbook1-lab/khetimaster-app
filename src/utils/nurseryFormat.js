@@ -1,4 +1,5 @@
 import { formatRupees } from './marketFormat';
+import i18n from 'i18next';
 
 /*
 |--------------------------------------------------------------------------
@@ -25,33 +26,63 @@ export const DEFAULT_DELIVERY = { fee: 50, freeAbove: 500 };
 export const MAX_PLANT_IMAGES = 10;
 
 export const ORDER_STATUS_META = {
-  PENDING: { label: 'Placed', color: '#B7791F', bg: '#FFF6E0' },
-  CONFIRMED: { label: 'Confirmed', color: '#2563EB', bg: '#EAF1FF' },
-  DISPATCHED: { label: 'Dispatched', color: '#7C3AED', bg: '#F1EAFE' },
+  PENDING: { get label() {
+    return i18n.t('nurseryFormat.placed');
+  }, color: '#B7791F', bg: '#FFF6E0' },
+  CONFIRMED: { get label() {
+    return i18n.t('nurseryFormat.confirmed');
+  }, color: '#2563EB', bg: '#EAF1FF' },
+  DISPATCHED: { get label() {
+    return i18n.t('nurseryFormat.dispatched');
+  }, color: '#7C3AED', bg: '#F1EAFE' },
   OUT_FOR_DELIVERY: {
-    label: 'Out for delivery',
+    get label() {
+    return i18n.t('nurseryFormat.outForDelivery');
+  },
     color: '#E8710A',
     bg: '#FFF1E3',
   },
-  DELIVERED: { label: 'Delivered', color: '#159447', bg: '#EAF7EF' },
-  CANCELLED: { label: 'Cancelled', color: '#B42318', bg: '#FDECEA' },
+  DELIVERED: { get label() {
+    return i18n.t('nurseryFormat.delivered');
+  }, color: '#159447', bg: '#EAF7EF' },
+  CANCELLED: { get label() {
+    return i18n.t('nurseryFormat.cancelled');
+  }, color: '#B42318', bg: '#FDECEA' },
 };
 
 // short labels for the progress tracker
 export const TRACKER_LABELS = {
-  PENDING: 'Placed',
-  CONFIRMED: 'Confirmed',
-  DISPATCHED: 'Dispatched',
-  OUT_FOR_DELIVERY: 'On the way',
-  DELIVERED: 'Delivered',
+  get PENDING() {
+    return i18n.t('nurseryFormat.placed');
+  },
+  get CONFIRMED() {
+    return i18n.t('nurseryFormat.confirmed');
+  },
+  get DISPATCHED() {
+    return i18n.t('nurseryFormat.dispatched');
+  },
+  get OUT_FOR_DELIVERY() {
+    return i18n.t('nurseryFormat.onTheWay');
+  },
+  get DELIVERED() {
+    return i18n.t('nurseryFormat.delivered');
+  },
 };
 
 // what the seller's main button does for each status
 export const SELLER_NEXT_STEP = {
-  PENDING: { status: 'CONFIRMED', label: 'Confirm Order' },
-  CONFIRMED: { status: 'DISPATCHED', label: 'Mark Dispatched' },
-  DISPATCHED: { status: 'OUT_FOR_DELIVERY', label: 'Out for Delivery' },
-  OUT_FOR_DELIVERY: { status: 'DELIVERED', label: 'Mark Delivered' },
+  PENDING: { status: 'CONFIRMED', get label() {
+    return i18n.t('nurseryFormat.confirmOrder');
+  } },
+  CONFIRMED: { status: 'DISPATCHED', get label() {
+    return i18n.t('nurseryFormat.markDispatched');
+  } },
+  DISPATCHED: { status: 'OUT_FOR_DELIVERY', get label() {
+    return i18n.t('nurseryFormat.outForDelivery2');
+  } },
+  OUT_FOR_DELIVERY: { status: 'DELIVERED', get label() {
+    return i18n.t('nurseryFormat.markDelivered');
+  } },
 };
 
 /*
@@ -154,25 +185,25 @@ export const describeOrderState = order => {
 
   if (status === 'CANCELLED') {
     return order.cancelledBy === 'SELLER'
-      ? 'Cancelled by the seller. Nothing to pay.'
-      : 'You cancelled this order. Nothing to pay.';
+      ? i18n.t('nurseryFormat.cancelledByTheSellerNothing')
+      : i18n.t('nurseryFormat.youCancelledThisOrderNothing');
   }
 
   if (status === 'DELIVERED') {
     return order.paymentStatus === 'PAID'
-      ? 'Delivered and paid. Enjoy your plants!'
-      : 'Delivered. Enjoy your plants!';
+      ? i18n.t('nurseryFormat.deliveredAndPaidEnjoyYour')
+      : i18n.t('nurseryFormat.deliveredEnjoyYourPlants');
   }
 
   if (mixed) {
-    return 'Your sellers are at different steps. See each one below.';
+    return i18n.t('nurseryFormat.yourSellersAreAtDifferent');
   }
 
   return {
-    PENDING: 'Waiting for the seller to confirm.',
-    CONFIRMED: 'Confirmed. The seller is packing your plants.',
-    DISPATCHED: 'Dispatched. Your plants are on their way.',
-    OUT_FOR_DELIVERY: 'Out for delivery. Keep cash ready.',
+    PENDING: i18n.t('nurseryFormat.waitingForTheSellerTo'),
+    CONFIRMED: i18n.t('nurseryFormat.confirmedTheSellerIsPacking'),
+    DISPATCHED: i18n.t('nurseryFormat.dispatchedYourPlantsAreOn'),
+    OUT_FOR_DELIVERY: i18n.t('nurseryFormat.outForDeliveryKeepCash'),
   }[status];
 };
 
@@ -181,12 +212,12 @@ export const describeOrderState = order => {
  */
 export const describeSellerState = sellerStatus =>
   ({
-    PENDING: 'New order. Confirm it so the buyer knows.',
-    CONFIRMED: 'Confirmed. Pack and dispatch the plants.',
-    DISPATCHED: 'Dispatched. Mark it when it goes out for delivery.',
-    OUT_FOR_DELIVERY: 'Out for delivery. Mark delivered once handed over.',
-    DELIVERED: 'Delivered. Payment collected on delivery.',
-    CANCELLED: 'Cancelled. Stock was put back.',
+    PENDING: i18n.t('nurseryFormat.newOrderConfirmItSo'),
+    CONFIRMED: i18n.t('nurseryFormat.confirmedPackAndDispatchThe'),
+    DISPATCHED: i18n.t('nurseryFormat.dispatchedMarkItWhenIt'),
+    OUT_FOR_DELIVERY: i18n.t('nurseryFormat.outForDeliveryMarkDelivered'),
+    DELIVERED: i18n.t('nurseryFormat.deliveredPaymentCollectedOnDelivery'),
+    CANCELLED: i18n.t('nurseryFormat.cancelledStockWasPutBack'),
   }[sellerStatus] || '');
 
 /*
@@ -198,9 +229,9 @@ export const describeSellerState = sellerStatus =>
 export const stockInfo = quantity => {
   const count = Number(quantity) || 0;
 
-  if (count <= 0) return { label: 'Out of stock', tone: 'out' };
-  if (count <= 5) return { label: `Only ${count} left`, tone: 'low' };
-  return { label: `${count} in stock`, tone: 'ok' };
+  if (count <= 0) return { label: i18n.t('nurseryFormat.outOfStock'), tone: 'out' };
+  if (count <= 5) return { label: i18n.t('nurseryFormat.onlyLeft', {count}), tone: 'low' };
+  return { label: i18n.t('nurseryFormat.inStock', {count}), tone: 'ok' };
 };
 
 export const plantLocation = plant =>
@@ -227,20 +258,20 @@ export const buildPlantPayload = (form, { isCreate = true } = {}) => {
   const category = trim(form.category);
   const description = trim(form.description);
 
-  if (!name) return { error: 'Please enter the plant name', field: 'name' };
+  if (!name) return { error: i18n.t('nurseryFormat.pleaseEnterThePlantName'), field: 'name' };
   if (name.length > 100) {
     return {
-      error: 'Plant name must be at most 100 characters',
+      error: i18n.t('nurseryFormat.plantNameMustBeAt'),
       field: 'name',
     };
   }
 
   if (!category) {
-    return { error: 'Please choose a category', field: 'category' };
+    return { error: i18n.t('nurseryFormat.pleaseChooseACategory'), field: 'category' };
   }
   if (category.length > 100) {
     return {
-      error: 'Category must be at most 100 characters',
+      error: i18n.t('nurseryFormat.categoryMustBeAtMost'),
       field: 'category',
     };
   }
@@ -249,7 +280,7 @@ export const buildPlantPayload = (form, { isCreate = true } = {}) => {
   const price = Number(priceText);
 
   if (!priceText || !Number.isFinite(price) || price <= 0) {
-    return { error: 'Price must be more than ₹0', field: 'price' };
+    return { error: i18n.t('nurseryFormat.priceMustBeMoreThan'), field: 'price' };
   }
 
   const quantityText = trim(String(form.quantity ?? ''));
@@ -257,18 +288,18 @@ export const buildPlantPayload = (form, { isCreate = true } = {}) => {
 
   if (!quantityText || !Number.isInteger(quantity) || quantity < 0) {
     return {
-      error: 'Stock must be a whole number of plants',
+      error: i18n.t('nurseryFormat.stockMustBeAWhole'),
       field: 'quantity',
     };
   }
 
   if (isCreate && quantity === 0) {
-    return { error: 'Stock must be at least 1 plant', field: 'quantity' };
+    return { error: i18n.t('nurseryFormat.stockMustBeAtLeast'), field: 'quantity' };
   }
 
   if (description.length > 1000) {
     return {
-      error: 'Description must be at most 1000 characters',
+      error: i18n.t('nurseryFormat.descriptionMustBeAtMost'),
       field: 'description',
     };
   }
@@ -277,7 +308,7 @@ export const buildPlantPayload = (form, { isCreate = true } = {}) => {
 
   if (images.length > MAX_PLANT_IMAGES) {
     return {
-      error: `You can add at most ${MAX_PLANT_IMAGES} photos`,
+      error: i18n.t('nurseryFormat.youCanAddAtMost', {MAX_PLANT_IMAGES}),
       field: 'images',
     };
   }
@@ -318,22 +349,22 @@ export const validateAddress = input => {
   };
 
   if (!address.fullName) {
-    return { error: 'Please enter the receiver name', field: 'fullName' };
+    return { error: i18n.t('nurseryFormat.pleaseEnterTheReceiverName'), field: 'fullName' };
   }
   if (!/^\+?[0-9\s-]{10,15}$/.test(address.phoneNumber)) {
     return {
-      error: 'Please enter a valid 10 digit phone number',
+      error: i18n.t('nurseryFormat.pleaseEnterAValid10'),
       field: 'phoneNumber',
     };
   }
   if (!address.address) {
     return {
-      error: 'Please enter the house / street address',
+      error: i18n.t('nurseryFormat.pleaseEnterTheHouseStreet'),
       field: 'address',
     };
   }
   if (!/^\d{6}$/.test(address.pincode)) {
-    return { error: 'Pincode must be 6 digits', field: 'pincode' };
+    return { error: i18n.t('nurseryFormat.pincodeMustBe6Digits'), field: 'pincode' };
   }
 
   return { address };

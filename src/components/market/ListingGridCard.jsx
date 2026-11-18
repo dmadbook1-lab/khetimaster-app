@@ -12,11 +12,13 @@ import {
   getExpiryInfo,
   listingSubtitle,
 } from '../../utils/marketFormat';
+import {useTranslation} from 'react-i18next';
 
 /*
  * Two-column browse card: photo with price overlay on top, details below.
  */
 function ListingGridCard({listing, onPress, onToggleSave, width}) {
+  const {t} = useTranslation();
   const kind = getKindMeta(listing.kind);
   const image = listing.images?.[0];
   const subtitle = listingSubtitle(listing);
@@ -45,7 +47,7 @@ function ListingGridCard({listing, onPress, onToggleSave, width}) {
 
         <View style={styles.topBadges}>
           {listing.isOrganic ? (
-            <Text style={[styles.badge, styles.organicBadge]}>Organic</Text>
+            <Text style={[styles.badge, styles.organicBadge]}>{t('listingGridCard.organic')}</Text>
           ) : expiry?.tone === 'soon' ? (
             <Text style={[styles.badge, styles.expiryBadge]}>{expiry.label}</Text>
           ) : (
@@ -72,7 +74,7 @@ function ListingGridCard({listing, onPress, onToggleSave, width}) {
             ₹{formatAmount(listing.pricePerUnit)}
             <Text style={styles.priceUnit}>/{listing.unit}</Text>
           </Text>
-          {listing.isNegotiable && <Text style={styles.negotiable}>Negotiable</Text>}
+          {listing.isNegotiable && <Text style={styles.negotiable}>{t('listingGridCard.negotiable')}</Text>}
         </View>
       </View>
 
@@ -87,7 +89,7 @@ function ListingGridCard({listing, onPress, onToggleSave, width}) {
         )}
 
         <Text style={styles.quantity} numberOfLines={1}>
-          {formatQuantity(listing.quantity, listing.unit)} available
+          {t('listingGridCard.available', {v1: formatQuantity(listing.quantity, listing.unit)})}
         </Text>
 
         <View style={styles.footer}>

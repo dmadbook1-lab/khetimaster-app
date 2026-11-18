@@ -1,232 +1,187 @@
 import React from 'react';
-import { Animated, Pressable, StyleSheet, Text, View } from 'react-native';
-import { useSelector } from 'react-redux';
-import LinearGradient from 'react-native-linear-gradient';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
-  ArrowLeft,
-  Clapperboard,
-  Compass,
-  Search,
-  UsersRound,
-} from 'lucide-react-native';
+  Pressable,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native';
+import { useSelector } from 'react-redux';
+import { Clapperboard, Images, Search, UsersRound } from 'lucide-react-native';
+import MarketHero, { GlassButton } from '../market/MarketHero';
 import Avatar from './social/Avatar';
-import { FIELD, rf, PAGE_PADDING } from './theme';
+import { CARD_GUTTER, CARD_SHADOW, FIELD, rf } from './theme';
 import { COMMUNITY_ROUTES } from '../../constants/communityRoutes';
+import {useTranslation} from 'react-i18next';
+import i18n from 'i18next';
 
 export const COMMUNITY_TABS = [
-  { id: 'Community', label: 'Discover', Icon: Compass },
-  { id: 'Following', label: 'My Circle', Icon: UsersRound },
-  { id: 'Reels', label: 'Field Reels', Icon: Clapperboard },
+  { id: 'Community', get label() {
+    return i18n.t('communityHeader.discover');
+  } },
+  { id: 'Following', get label() {
+    return i18n.t('communityHeader.myCircle');
+  } },
+  { id: 'Reels', get label() {
+    return i18n.t('communityHeader.reels');
+  } },
+];
+
+const HERO_POINTS = [
+  { Icon: Images, get label() {
+    return i18n.t('communityHeader.fieldUpdates');
+  } },
+  { Icon: Clapperboard, get label() {
+    return i18n.t('communityHeader.shortReels');
+  } },
+  { Icon: UsersRound, get label() {
+    return i18n.t('communityHeader.farmerCircle');
+  } },
 ];
 
 /*
- * Curved field-green header with the section switch built in.
- *
- * collapse             optional Animated value 0 → 1 as the header tucks away
- * onCollapsibleLayout  height of the part above the tabs (what may hide)
+ * Hero and search box, laid out like the labour, nursery and doctor homes.
+ * Scrolls away with the feed.
  */
-export default function CommunityHeader({
-  navigation,
-  activeTab,
-  onTabChange,
-  collapse,
-  onCollapsibleLayout,
-}) {
+export default function CommunityHero({ navigation }) {
+  const {t} = useTranslation();
   const me = useSelector(state => state.auth.user);
-  const insets = useSafeAreaInsets();
-
-  const topOpacity = collapse
-    ? collapse.interpolate({
-        inputRange: [0, 0.6],
-        outputRange: [1, 0],
-        extrapolate: 'clamp',
-      })
-    : 1;
 
   return (
-    <LinearGradient
-      colors={[FIELD.DEEP, FIELD.FOREST]}
-      start={{ x: 0, y: 0 }}
-      end={{ x: 1, y: 1 }}
-      style={[styles.hero, { paddingTop: insets.top + 8 }]}
-    >
-      {/* soft wheat glow */}
-      <View style={styles.glow} pointerEvents="none" />
-      <View style={styles.glowSmall} pointerEvents="none" />
-
-      <Animated.View
-        style={{ opacity: topOpacity }}
-        onLayout={event =>
-          onCollapsibleLayout?.(event.nativeEvent.layout.height)
+    <View>
+      <MarketHero
+        gradient="steel"
+        onBack={() => navigation.goBack()}
+        eyebrow={t('communityHeader.farmersAcrossIndia')}
+        title={t('communityHeader.community')}
+        subtitle={t('communityHeader.shareFieldUpdatesWatchReels')}
+        right={
+          <GlassButton
+            onPress={() => navigation.navigate(COMMUNITY_ROUTES.PROFILE)}
+          >
+            <Avatar user={me && { ...me, _id: me.id }} size={32} />
+          </GlassButton>
         }
       >
-        <View style={styles.topRow}>
-          <Pressable
-            hitSlop={6}
-            style={styles.roundBtn}
-            onPress={() => navigation?.goBack()}
-            accessibilityLabel="Back"
-          >
-            <ArrowLeft size={rf(20)} color="#FFFFFF" strokeWidth={2.4} />
-          </Pressable>
-
-          <View style={styles.titleBox}>
-            <Text style={styles.kicker}>KHETIMASTER</Text>
-            <Text style={styles.title}>Community</Text>
-          </View>
-
-          <Pressable
-            hitSlop={6}
-            style={styles.roundBtn}
-            onPress={() => navigation?.navigate(COMMUNITY_ROUTES.SEARCH)}
-            accessibilityLabel="Search"
-          >
-            <Search size={rf(19)} color="#FFFFFF" strokeWidth={2.4} />
-          </Pressable>
-
-          <Pressable
-            hitSlop={6}
-            onPress={() => navigation?.navigate(COMMUNITY_ROUTES.PROFILE)}
-            style={styles.meRing}
-            accessibilityLabel="My community profile"
-          >
-            <Avatar user={me && { ...me, _id: me.id }} size={34} />
-          </Pressable>
+        <View style={styles.points}>
+          {HERO_POINTS.map(({ Icon, label }) => (
+            <View key={label} style={styles.point}>
+              <Icon size={12} color="#FFD08A" />
+              <Text style={styles.pointText}>{label}</Text>
+            </View>
+          ))}
         </View>
+      </MarketHero>
 
-        <Text style={styles.tagline}>
-          Farmers helping farmers — share what works in your field.
+      <TouchableOpacity
+        activeOpacity={0.88}
+        style={styles.search}
+        onPress={() => navigation.navigate(COMMUNITY_ROUTES.SEARCH)}
+        accessibilityRole="button"
+        accessibilityLabel={t('communityHeader.searchCommunity')}
+      >
+        <Search size={18} color={FIELD.FOREST} />
+        <Text numberOfLines={1} style={styles.searchText}>
+          {t('communityHeader.searchFarmersCropsHashtags')}
         </Text>
-      </Animated.View>
+      </TouchableOpacity>
+    </View>
+  );
+}
 
-      <View style={styles.switchTrack}>
-        {COMMUNITY_TABS.map(({ id, label, Icon }) => {
-          const active = id === activeTab;
+/*
+ * Section switcher, pinned under the status strip while the feed scrolls.
+ */
+export function CommunitySectionTabs({ activeTab, onTabChange }) {
+  return (
+    <View style={styles.tabs}>
+      {COMMUNITY_TABS.map(({ id, label }) => {
+        const active = id === activeTab;
 
-          return (
-            <Pressable
-              key={id}
-              onPress={() => onTabChange?.(id)}
-              style={[styles.switchItem, active && styles.switchActive]}
-              accessibilityRole="tab"
-              accessibilityState={{ selected: active }}
+        return (
+          <Pressable
+            key={id}
+            onPress={() => onTabChange(id)}
+            style={[styles.tab, active && styles.tabActive]}
+            accessibilityRole="tab"
+            accessibilityState={{ selected: active }}
+          >
+            <Text
+              numberOfLines={1}
+              style={[styles.tabText, active && styles.tabTextActive]}
             >
-              <Icon
-                size={rf(15)}
-                color={active ? FIELD.FOREST : 'rgba(255,255,255,0.8)'}
-                strokeWidth={2.4}
-              />
-              <Text
-                numberOfLines={1}
-                style={[styles.switchText, active && styles.switchTextActive]}
-              >
-                {label}
-              </Text>
-            </Pressable>
-          );
-        })}
-      </View>
-    </LinearGradient>
+              {label}
+            </Text>
+          </Pressable>
+        );
+      })}
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  hero: {
-    paddingHorizontal: PAGE_PADDING + 2,
-    paddingBottom: 16,
-    borderBottomLeftRadius: 28,
-    borderBottomRightRadius: 28,
-    overflow: 'hidden',
+  points: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 14 },
+  point: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    paddingHorizontal: 10,
+    paddingVertical: 6,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255,255,255,0.14)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.18)',
   },
-  glow: {
-    position: 'absolute',
-    width: 220,
-    height: 220,
-    borderRadius: 110,
-    right: -70,
-    top: -90,
-    backgroundColor: 'rgba(227,163,59,0.22)',
-  },
-  glowSmall: {
-    position: 'absolute',
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    left: -40,
-    bottom: -60,
-    backgroundColor: 'rgba(46,157,79,0.35)',
-  },
-  topRow: {
+  pointText: { color: '#FFFFFF', fontSize: 10.5, fontWeight: '800' },
+
+  search: {
+    marginTop: 16,
+    marginHorizontal: CARD_GUTTER,
+    height: 50,
+    borderRadius: 25,
+    paddingHorizontal: 16,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 10,
-  },
-  roundBtn: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255,255,255,0.14)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  titleBox: {
-    flex: 1,
-  },
-  kicker: {
-    fontSize: rf(9.5),
-    fontWeight: '900',
-    letterSpacing: 1.6,
-    color: FIELD.WHEAT,
-  },
-  title: {
-    marginTop: 1,
-    fontSize: rf(22),
-    fontWeight: '900',
-    color: '#FFFFFF',
-    letterSpacing: -0.4,
-  },
-  meRing: {
-    padding: 2,
-    borderRadius: 20,
-    borderWidth: 2,
-    borderColor: FIELD.WHEAT,
-  },
-  tagline: {
-    marginTop: 10,
-    fontSize: rf(12),
-    lineHeight: rf(17),
-    color: 'rgba(255,255,255,0.78)',
-    fontWeight: '600',
-  },
-  switchTrack: {
-    marginTop: 14,
-    flexDirection: 'row',
-    padding: 4,
-    borderRadius: 16,
-    backgroundColor: 'rgba(0,0,0,0.18)',
+    backgroundColor: FIELD.CARD,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.12)',
+    borderColor: FIELD.LINE,
+    ...CARD_SHADOW,
   },
-  switchItem: {
+  searchText: {
+    flex: 1,
+    fontSize: rf(14),
+    fontWeight: '600',
+    color: FIELD.BARK,
+  },
+
+  tabs: {
+    paddingHorizontal: CARD_GUTTER,
+    paddingVertical: 12,
+    flexDirection: 'row',
+    gap: 8,
+    backgroundColor: FIELD.SOIL,
+  },
+  tab: {
     flex: 1,
     height: 38,
-    borderRadius: 12,
-    flexDirection: 'row',
+    borderRadius: 19,
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 5,
+    backgroundColor: FIELD.CARD,
+    borderWidth: 1,
+    borderColor: FIELD.LINE,
   },
-  switchActive: {
-    backgroundColor: '#FFFFFF',
+  tabActive: {
+    backgroundColor: FIELD.FOREST,
+    borderColor: FIELD.FOREST,
   },
-  switchText: {
-    fontSize: rf(12),
+  tabText: {
+    fontSize: rf(13),
     fontWeight: '800',
-    color: 'rgba(255,255,255,0.85)',
+    color: FIELD.BARK,
   },
-  switchTextActive: {
-    color: FIELD.FOREST,
-    fontWeight: '900',
+  tabTextActive: {
+    color: '#FFFFFF',
   },
 });

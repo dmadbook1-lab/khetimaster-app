@@ -45,6 +45,7 @@ import {
   selectFarmFieldUpdating,
   selectFarmFieldDeleting,
 } from '../../redux/slices/farmFieldSlice';
+import i18n from 'i18next';
 
 const {width} = Dimensions.get('window');
 
@@ -77,7 +78,7 @@ const getInitialForm = farm => ({
   typeOfIrrigation: farm?.typeOfIrrigation || '',
   typeOfFarming: FARMING_TYPES.includes(farm?.typeOfFarming)
     ? farm.typeOfFarming
-    : 'Integrated',
+    : i18n.t('farmGridCard.integrated'),
   isBarrenLand: Boolean(farm?.isBarrenLand),
 });
 
@@ -209,7 +210,7 @@ export default function FarmGridCard({
       fieldName: editForm.fieldName.trim(),
       farmName: editForm.fieldName.trim(),
       cropName: editForm.isBarrenLand
-        ? editForm.cropName.trim() || farm?.cropName || 'Barren Land'
+        ? editForm.cropName.trim() || farm?.cropName || t('farmGridCard.barrenLand')
         : editForm.cropName.trim(),
       variety: editForm.variety.trim(),
       acre: area,
@@ -592,14 +593,14 @@ export default function FarmGridCard({
                   onChangeText={value =>
                     updateFormField('sowingDate', value)
                   }
-                  placeholder="YYYY-MM-DD"
+                  placeholder={t('farmGridCard.yyyyMmDd')}
                   placeholderTextColor="#9CA3AF"
                   style={styles.iconInput}
                   autoCapitalize="none"
                 />
               </View>
               <Text style={styles.helperText}>
-                Enter the date as YYYY-MM-DD.
+                {t('farmGridCard.enterTheDateAsYyyy')}
               </Text>
 
               <Text style={styles.fieldLabel}>{t('farms.irrigation_req')}</Text>

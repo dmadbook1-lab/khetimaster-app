@@ -35,6 +35,9 @@ import {
   Share2,
   Headphones,
 } from 'lucide-react-native';
+import {useTranslation} from 'react-i18next';
+import i18n from 'i18next';
+import {tOpt} from '../../utils/tOpt';
 const { width, height } = Dimensions.get('window');
 const GREEN = '#16B64B';
 const DARK_GREEN = '#16883E';
@@ -51,48 +54,72 @@ const rf = size => {
 const PAYMENT_METHODS = [
   {
     id: 'upi',
-    title: 'UPI Payment',
-    subtitle: 'Pay with Google Pay, PhonePe, BHIM',
+    get title() {
+    return i18n.t('checkout.upiPayment');
+  },
+    get subtitle() {
+    return i18n.t('checkout.payWithGooglePayPhonepe');
+  },
     icon: Smartphone,
     iconColor: '#16B64B',
     iconBg: '#FFFFFF',
   },
   {
     id: 'credit',
-    title: 'Credit Card',
-    subtitle: 'Visa, Mastercard, RuPay',
+    get title() {
+    return i18n.t('checkout.creditCard');
+  },
+    get subtitle() {
+    return i18n.t('checkout.visaMastercardRupay');
+  },
     icon: CreditCard,
     iconColor: '#3B82F6',
     iconBg: '#EFF6FF',
   },
   {
     id: 'debit',
-    title: 'Debit Card',
-    subtitle: 'All major bank cards accepted',
+    get title() {
+    return i18n.t('checkout.debitCard');
+  },
+    get subtitle() {
+    return i18n.t('checkout.allMajorBankCardsAccepted');
+  },
     icon: CreditCard,
     iconColor: '#A855F7',
     iconBg: '#FAF5FF',
   },
   {
     id: 'netbanking',
-    title: 'Net Banking',
-    subtitle: 'SBI, HDFC, ICICI, Axis & more',
+    get title() {
+    return i18n.t('checkout.netBanking');
+  },
+    get subtitle() {
+    return i18n.t('checkout.sbiHdfcIciciAxisMore');
+  },
     icon: Landmark,
     iconColor: '#6366F1',
     iconBg: '#EEF2FF',
   },
   {
     id: 'wallet',
-    title: 'Wallet',
-    subtitle: 'Paytm, Amazon Pay, Airtel',
+    get title() {
+    return i18n.t('checkout.wallet');
+  },
+    get subtitle() {
+    return i18n.t('checkout.paytmAmazonPayAirtel');
+  },
     icon: Wallet,
     iconColor: '#EC4899',
     iconBg: '#FDF2F8',
   },
   {
     id: 'cod',
-    title: 'Cash on Delivery',
-    subtitle: 'Pay when your order arrives',
+    get title() {
+    return i18n.t('checkout.cashOnDelivery');
+  },
+    get subtitle() {
+    return i18n.t('checkout.payWhenYourOrderArrives');
+  },
     icon: Banknote,
     iconColor: '#F97316',
     iconBg: '#FFF7ED',
@@ -123,6 +150,7 @@ const ORDER_ITEMS = [
 ];
 const formatINR = value => `₹${Number(value).toLocaleString('en-IN')}`;
 export default function CheckoutScreen({ navigation }) {
+  const {t} = useTranslation();
   const [selectedPayment, setSelectedPayment] = useState('upi');
   const [showOrderItems, setShowOrderItems] = useState(true);
   const itemsTotal = useMemo(
@@ -146,7 +174,7 @@ export default function CheckoutScreen({ navigation }) {
       orderId: '#KM458921',
       totalAmount: grandTotal,
       savedAmount: discount,
-      paymentMethod: selectedMethod?.title || 'Cash on Delivery',
+      paymentMethod: selectedMethod?.title || t('checkout.cashOnDelivery'),
     });
   };
   return (
@@ -162,7 +190,7 @@ export default function CheckoutScreen({ navigation }) {
           <ArrowLeft size={rf(22)} color={DARK} strokeWidth={2.4} />
         </TouchableOpacity>
 
-        <Text style={styles.headerTitle}>Checkout</Text>
+        <Text style={styles.headerTitle}>{t('checkout.checkout')}</Text>
       </View>
 
       <CheckoutProgress />
@@ -175,7 +203,7 @@ export default function CheckoutScreen({ navigation }) {
 
         <ExpectedDeliveryCard />
 
-        <Text style={styles.sectionHeading}>Order Items</Text>
+        <Text style={styles.sectionHeading}>{t('checkout.orderItems')}</Text>
 
         <OrderItemsCard
           expanded={showOrderItems}
@@ -184,11 +212,11 @@ export default function CheckoutScreen({ navigation }) {
           itemsTotal={itemsTotal}
         />
 
-        <Text style={styles.sectionHeading}>AI Insights</Text>
+        <Text style={styles.sectionHeading}>{t('checkout.aiInsights')}</Text>
 
         <AIInsightsCard />
 
-        <Text style={styles.sectionHeading}>Payment Method</Text>
+        <Text style={styles.sectionHeading}>{t('checkout.paymentMethod')}</Text>
 
         <View style={styles.paymentList}>
           {PAYMENT_METHODS.map(method => (
@@ -201,7 +229,7 @@ export default function CheckoutScreen({ navigation }) {
           ))}
         </View>
 
-        <Text style={styles.sectionHeading}>Bill Summary</Text>
+        <Text style={styles.sectionHeading}>{t('checkout.billSummary')}</Text>
 
         <BillSummaryCard
           subtotal={subtotal}
@@ -231,7 +259,7 @@ export default function CheckoutScreen({ navigation }) {
             <View style={styles.placeOrderLeft}>
               <LockKeyhole size={rf(20)} color="#FFFFFF" strokeWidth={2.5} />
 
-              <Text style={styles.placeOrderText}>Place Order</Text>
+              <Text style={styles.placeOrderText}>{t('checkout.placeOrder')}</Text>
             </View>
 
             <View style={styles.placeOrderPriceBox}>
@@ -239,7 +267,7 @@ export default function CheckoutScreen({ navigation }) {
                 {formatINR(grandTotal).replace('₹', '')}
               </Text>
 
-              <Text style={styles.placeOrderTax}>Incl. taxes & delivery</Text>
+              <Text style={styles.placeOrderTax}>{t('checkout.inclTaxesDelivery')}</Text>
             </View>
           </LinearGradient>
         </TouchableOpacity>
@@ -248,26 +276,27 @@ export default function CheckoutScreen({ navigation }) {
   );
 }
 function CheckoutProgress() {
+  const {t} = useTranslation();
   return (
     <View style={styles.progressContainer}>
-      <ProgressStep number="✓" label="Cart" completed active={false} />
+      <ProgressStep number="✓" label={t('checkout.cart')} completed active={false} />
 
       <View style={[styles.progressLine, styles.completedLine]} />
 
-      <ProgressStep number="2" label="Checkout" completed={false} active />
+      <ProgressStep number="2" label={t('checkout.checkout')} completed={false} active />
 
       <View style={styles.progressLine} />
 
       <ProgressStep
         number="3"
-        label="Payment"
+        label={t('checkout.payment')}
         completed={false}
         active={false}
       />
 
       <View style={styles.progressLine} />
 
-      <ProgressStep number="4" label="Done" completed={false} active={false} />
+      <ProgressStep number="4" label={t('checkout.done')} completed={false} active={false} />
     </View>
   );
 }
@@ -304,6 +333,7 @@ function ProgressStep({ number, label, completed, active }) {
   );
 }
 function DeliveryAddressCard() {
+  const {t} = useTranslation();
   return (
     <View style={styles.addressCard}>
       <View style={styles.addressHeader}>
@@ -311,19 +341,19 @@ function DeliveryAddressCard() {
           <MapPin size={rf(20)} color={DARK_GREEN} strokeWidth={2.2} />
         </View>
 
-        <Text style={styles.addressHeading}>Delivery Address</Text>
+        <Text style={styles.addressHeading}>{t('checkout.deliveryAddress')}</Text>
 
         <TouchableOpacity
           activeOpacity={0.85}
           onPress={() =>
             Alert.alert(
-              'Change Address',
-              'Address selection screen can be opened here.',
+              t('checkout.changeAddress'),
+              t('checkout.addressSelectionScreenCanBe'),
             )
           }
           style={styles.changeButton}
         >
-          <Text style={styles.changeButtonText}>Change</Text>
+          <Text style={styles.changeButtonText}>{t('checkout.change')}</Text>
         </TouchableOpacity>
       </View>
 
@@ -332,14 +362,14 @@ function DeliveryAddressCard() {
 
         <View style={styles.addressDetails}>
           <View style={styles.homeFarmBadge}>
-            <Text style={styles.homeFarmText}>Home Farm</Text>
+            <Text style={styles.homeFarmText}>{t('checkout.homeFarm')}</Text>
           </View>
 
-          <Text style={styles.farmName}>Patil Farm</Text>
+          <Text style={styles.farmName}>{t('checkout.patilFarm')}</Text>
 
           <Text style={styles.addressText}>
-            Village: Khadki, Aurangabad,{'\n'}
-            Maharashtra – 431001
+            {t('checkout.villageKhadkiAurangabad')}{'\n'}
+            {t('checkout.maharashtra431001')}
           </Text>
         </View>
       </View>
@@ -347,6 +377,7 @@ function DeliveryAddressCard() {
   );
 }
 function ExpectedDeliveryCard() {
+  const {t} = useTranslation();
   return (
     <View style={styles.deliveryCard}>
       <View style={styles.deliveryIconBox}>
@@ -354,24 +385,25 @@ function ExpectedDeliveryCard() {
       </View>
 
       <View style={styles.deliveryDetails}>
-        <Text style={styles.deliveryLabel}>Expected Delivery</Text>
+        <Text style={styles.deliveryLabel}>{t('checkout.expectedDelivery')}</Text>
 
         <Text style={styles.deliveryDate}>
-          Friday, 26 June{'\n'}
+          {t('checkout.friday26June')}{'\n'}
           2026
         </Text>
 
-        <Text style={styles.deliveryLocation}>Aurangabad, Maharashtra</Text>
+        <Text style={styles.deliveryLocation}>{t('checkout.aurangabadMaharashtra')}</Text>
       </View>
 
       <View style={styles.freeDeliveryBadge}>
         <Text style={styles.rupeeSmall}>₹</Text>
-        <Text style={styles.freeDeliveryText}>Free Delivery</Text>
+        <Text style={styles.freeDeliveryText}>{t('checkout.freeDelivery')}</Text>
       </View>
     </View>
   );
 }
 function OrderItemsCard({ expanded, onToggle, items, itemsTotal }) {
+  const {t} = useTranslation();
   return (
     <View style={styles.orderCard}>
       <TouchableOpacity
@@ -383,7 +415,7 @@ function OrderItemsCard({ expanded, onToggle, items, itemsTotal }) {
           <Package size={rf(17)} color={DARK_GREEN} strokeWidth={2.3} />
         </View>
 
-        <Text style={styles.orderCountText}>{items.length} Items in Order</Text>
+        <Text style={styles.orderCountText}>{t('checkout.itemsInOrder', {length: items.length})}</Text>
 
         <Text style={styles.orderTotal}>
           {formatINR(itemsTotal).replace('₹', '')}
@@ -416,11 +448,11 @@ function OrderItemsCard({ expanded, onToggle, items, itemsTotal }) {
 
               <View style={styles.orderItemDetails}>
                 <Text numberOfLines={1} style={styles.orderItemName}>
-                  {item.name}
+                  {tOpt(item.name)}
                 </Text>
 
                 <Text style={styles.orderItemMeta}>
-                  Qty: {item.quantity} × {formatINR(item.unitPrice)}
+                  {t('checkout.qty', {quantity: item.quantity, v2: formatINR(item.unitPrice)})}
                 </Text>
               </View>
 
@@ -435,6 +467,7 @@ function OrderItemsCard({ expanded, onToggle, items, itemsTotal }) {
   );
 }
 function AIInsightsCard() {
+  const {t} = useTranslation();
   return (
     <LinearGradient
       colors={['#0D9440', '#15A84A']}
@@ -455,34 +488,32 @@ function AIInsightsCard() {
         <View style={styles.aiBadge}>
           <Sparkles size={rf(12)} color="#FFFFFF" strokeWidth={2.5} />
 
-          <Text style={styles.aiBadgeText}>AI PURCHASE SUMMARY</Text>
+          <Text style={styles.aiBadgeText}>{t('checkout.aiPurchaseSummary')}</Text>
         </View>
 
         <View style={styles.matchCircle}>
           <Text style={styles.matchPercent}>98%</Text>
-          <Text style={styles.matchText}>MATCH</Text>
+          <Text style={styles.matchText}>{t('checkout.match')}</Text>
         </View>
       </View>
 
-      <Text style={styles.aiTitle}>Perfect for Soybean Crop</Text>
+      <Text style={styles.aiTitle}>{t('checkout.perfectForSoybeanCrop')}</Text>
 
       <Text style={styles.aiDescription}>
-        Suitable for your Soybean crop at the current vegetative stage. This
-        combination ensures balanced nutrition and optimal protection throughout
-        the growth cycle.
+        {t('checkout.suitableForYourSoybeanCrop')}
       </Text>
 
       <View style={styles.aiTagRow}>
         <View style={styles.aiTag}>
           <Shield size={rf(11)} color="#FFFFFF" strokeWidth={2.2} />
 
-          <Text style={styles.aiTagText}>Improved Nutrition</Text>
+          <Text style={styles.aiTagText}>{t('checkout.improvedNutrition')}</Text>
         </View>
 
         <View style={styles.aiTag}>
           <ArrowLeftRight size={rf(11)} color="#FFFFFF" strokeWidth={2.2} />
 
-          <Text style={styles.aiTagText}>Better Growth</Text>
+          <Text style={styles.aiTagText}>{t('checkout.betterGrowth')}</Text>
         </View>
       </View>
 
@@ -490,7 +521,7 @@ function AIInsightsCard() {
         <View style={styles.aiTag}>
           <Shield size={rf(11)} color="#FFFFFF" strokeWidth={2.2} />
 
-          <Text style={styles.aiTagText}>Crop Compatible</Text>
+          <Text style={styles.aiTagText}>{t('checkout.cropCompatible')}</Text>
         </View>
       </View>
     </LinearGradient>
@@ -544,32 +575,33 @@ function PaymentMethodCard({ method, selected, onPress }) {
   );
 }
 function BillSummaryCard({ subtotal, discount, delivery, gst, grandTotal }) {
+  const {t} = useTranslation();
   return (
     <View style={styles.billCard}>
       <View style={styles.billContent}>
         <BillRow
-          label="Subtotal (3 items)"
+          label={t('checkout.subtotal3Items')}
           value={formatINR(subtotal).replace('₹', '')}
         />
 
         <BillRow
-          label="Discount"
+          label={t('checkout.discount')}
           value={`- ${formatINR(discount).replace('₹', '')}`}
           valueStyle={styles.discountValue}
         />
 
         <BillRow
-          label="Delivery Charges"
-          value={delivery === 0 ? 'FREE' : formatINR(delivery)}
+          label={t('checkout.deliveryCharges')}
+          value={delivery === 0 ? t('plural.free') : formatINR(delivery)}
           valueStyle={styles.discountValue}
         />
 
-        <BillRow label="GST (5%)" value={formatINR(gst).replace('₹', '')} />
+        <BillRow label={t('checkout.gst5')} value={formatINR(gst).replace('₹', '')} />
 
         <View style={styles.billDivider} />
 
         <View style={styles.grandTotalRow}>
-          <Text style={styles.grandTotalLabel}>Grand Total</Text>
+          <Text style={styles.grandTotalLabel}>{t('checkout.grandTotal')}</Text>
 
           <Text style={styles.grandTotalValue}>{formatINR(grandTotal)}</Text>
         </View>
@@ -579,8 +611,7 @@ function BillSummaryCard({ subtotal, discount, delivery, gst, grandTotal }) {
         <Sparkles size={rf(14)} color={DARK_GREEN} strokeWidth={2.4} />
 
         <Text style={styles.savingsText}>
-          You’re saving <Text style={styles.savingsAmount}>389</Text> on this
-          order 🎉
+          {t('checkout.youreSaving')} <Text style={styles.savingsAmount}>389</Text> {t('checkout.onThisOrder')}
         </Text>
       </View>
     </View>
@@ -596,6 +627,7 @@ function BillRow({ label, value, valueStyle }) {
   );
 }
 function SecureCheckoutCard() {
+  const {t} = useTranslation();
   return (
     <View style={styles.secureCard}>
       <View style={styles.secureHeader}>
@@ -603,7 +635,7 @@ function SecureCheckoutCard() {
           <Shield size={rf(18)} color={DARK_GREEN} strokeWidth={2.3} />
         </View>
 
-        <Text style={styles.secureTitle}>Secure Checkout Guarantee</Text>
+        <Text style={styles.secureTitle}>{t('checkout.secureCheckoutGuarantee')}</Text>
       </View>
 
       <View style={styles.secureFeatures}>
@@ -627,7 +659,7 @@ function SecureCheckoutCard() {
           Icon={Share2}
           iconColor="#F97316"
           iconBg="#FFF7ED"
-          lineOne="Easy Returns"
+          lineOne={t('checkout.easyReturns')}
           lineTwo=""
         />
 

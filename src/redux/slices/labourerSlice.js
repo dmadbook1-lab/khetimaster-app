@@ -13,6 +13,7 @@ import {
   deactivateMyLabourerProfileApi,
   activateMyLabourerProfileApi,
 } from '../../api/labourerApi';
+import i18n from 'i18next';
 
 const errorMessage = (error, fallback) =>
   error.response?.data?.message ||
@@ -31,7 +32,7 @@ export const fetchLabourMeta = createAsyncThunk(
     try {
       return await getLabourMetaApi();
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to load options'));
+      return rejectWithValue(errorMessage(error, i18n.t('labourerSlice.unableToLoadOptions')));
     }
   },
 );
@@ -51,7 +52,7 @@ export const fetchLabourers = createAsyncThunk(
     try {
       return await getAllLabourersApi(params);
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to load workers'));
+      return rejectWithValue(errorMessage(error, i18n.t('labourerSlice.unableToLoadWorkers')));
     }
   },
 );
@@ -62,7 +63,7 @@ export const fetchLabourerById = createAsyncThunk(
     try {
       return await getLabourerByIdApi(labourerId);
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to load worker'));
+      return rejectWithValue(errorMessage(error, i18n.t('labourerSlice.unableToLoadWorker')));
     }
   },
 );
@@ -85,7 +86,7 @@ export const fetchMyLabourerProfile = createAsyncThunk(
     } catch (error) {
       return rejectWithValue({
         notFound: error.response?.status === 404,
-        message: errorMessage(error, 'Unable to load your worker profile'),
+        message: errorMessage(error, i18n.t('labourerSlice.unableToLoadYourWorker')),
       });
     }
   },
@@ -102,7 +103,7 @@ export const saveMyLabourerProfile = createAsyncThunk(
         ? await createLabourerApi(labourerData)
         : await updateMyLabourerProfileApi(labourerData);
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to save your profile'));
+      return rejectWithValue(errorMessage(error, i18n.t('labourerSlice.unableToSaveYourProfile')));
     }
   },
 );
@@ -118,7 +119,7 @@ export const setMyLabourerActive = createAsyncThunk(
         ? await activateMyLabourerProfileApi()
         : await deactivateMyLabourerProfileApi();
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to update your profile'));
+      return rejectWithValue(errorMessage(error, i18n.t('labourerSlice.unableToUpdateYourProfile')));
     }
   },
 );

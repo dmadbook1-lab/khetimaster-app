@@ -10,6 +10,7 @@ import {
   updateMarketDealApi,
   reviewMarketDealApi,
 } from '../../api/marketApi';
+import i18n from 'i18next';
 
 const errorMessage = (error, fallback) =>
   error.response?.data?.message ||
@@ -33,7 +34,7 @@ export const createMarketDeal = createAsyncThunk(
       return await createMarketDealApi(dealData);
     } catch (error) {
       return rejectWithValue({
-        message: errorMessage(error, 'Unable to send offer'),
+        message: errorMessage(error, i18n.t('marketDealSlice.unableToSendOffer')),
         dealId: error.response?.data?.dealId || null,
       });
     }
@@ -56,7 +57,7 @@ export const fetchMyMarketDeals = createAsyncThunk(
       return await getMyMarketDealsApi(params);
     } catch (error) {
       return rejectWithValue(
-        errorMessage(error, 'Unable to load deals'),
+        errorMessage(error, i18n.t('marketDealSlice.unableToLoadDeals')),
       );
     }
   },
@@ -69,7 +70,7 @@ export const fetchMarketDealById = createAsyncThunk(
       return await getMarketDealByIdApi(dealId);
     } catch (error) {
       return rejectWithValue(
-        errorMessage(error, 'Unable to load deal'),
+        errorMessage(error, i18n.t('marketDealSlice.unableToLoadDeal')),
       );
     }
   },
@@ -91,7 +92,7 @@ export const updateMarketDeal = createAsyncThunk(
       return await updateMarketDealApi(dealId, action, body);
     } catch (error) {
       return rejectWithValue(
-        errorMessage(error, 'Unable to update deal'),
+        errorMessage(error, i18n.t('marketDealSlice.unableToUpdateDeal')),
       );
     }
   },
@@ -104,7 +105,7 @@ export const reviewMarketDeal = createAsyncThunk(
       return await reviewMarketDealApi(dealId, {rating, comment});
     } catch (error) {
       return rejectWithValue(
-        errorMessage(error, 'Unable to submit review'),
+        errorMessage(error, i18n.t('marketDealSlice.unableToSubmitReview')),
       );
     }
   },

@@ -10,6 +10,7 @@ import {
   updateFarmFieldApi,
   deleteFarmFieldApi,
 } from '../../api/farmFieldApi';
+import i18n from 'i18next';
 
 /*
 |--------------------------------------------------------------------------
@@ -92,7 +93,7 @@ export const addFarmField = createAsyncThunk(
 
       if (!userId) {
         return rejectWithValue(
-          'User ID is required.',
+          i18n.t('farmFieldSlice.userIdIsRequired'),
         );
       }
 
@@ -107,7 +108,7 @@ export const addFarmField = createAsyncThunk(
         latlng.length < 3
       ) {
         return rejectWithValue(
-          'At least 3 field boundary points are required.',
+          i18n.t('farmFieldSlice.atLeast3FieldBoundary'),
         );
       }
 
@@ -119,7 +120,7 @@ export const addFarmField = createAsyncThunk(
 
       if (!cropName?.trim()) {
         return rejectWithValue(
-          'Crop name is required.',
+          i18n.t('farmFieldSlice.cropNameIsRequired'),
         );
       }
 
@@ -142,7 +143,7 @@ export const addFarmField = createAsyncThunk(
 
       if (!variety?.trim()) {
         return rejectWithValue(
-          'Crop variety is required.',
+          i18n.t('farmFieldSlice.cropVarietyIsRequired'),
         );
       }
 
@@ -154,7 +155,7 @@ export const addFarmField = createAsyncThunk(
 
       if (!sowingDate) {
         return rejectWithValue(
-          'Sowing date is required.',
+          i18n.t('farmFieldSlice.sowingDateIsRequired'),
         );
       }
 
@@ -166,7 +167,7 @@ export const addFarmField = createAsyncThunk(
 
       if (!typeOfIrrigation?.trim()) {
         return rejectWithValue(
-          'Irrigation type is required.',
+          i18n.t('farmFieldSlice.irrigationTypeIsRequired'),
         );
       }
 
@@ -178,7 +179,7 @@ export const addFarmField = createAsyncThunk(
 
       if (!farmName?.trim()) {
         return rejectWithValue(
-          'Farm name is required.',
+          i18n.t('farmFieldSlice.farmNameIsRequired'),
         );
       }
 
@@ -195,7 +196,7 @@ export const addFarmField = createAsyncThunk(
         Number(acre) <= 0
       ) {
         return rejectWithValue(
-          'Farm area must be greater than 0.',
+          i18n.t('farmFieldSlice.farmAreaMustBeGreater'),
         );
       }
 
@@ -217,7 +218,7 @@ export const addFarmField = createAsyncThunk(
         )
       ) {
         return rejectWithValue(
-          'Invalid farming type.',
+          i18n.t('farmFieldSlice.invalidFarmingType'),
         );
       }
 
@@ -240,7 +241,7 @@ export const addFarmField = createAsyncThunk(
 
       if (invalidCoordinate) {
         return rejectWithValue(
-          'Invalid field boundary coordinates.',
+          i18n.t('farmFieldSlice.invalidFieldBoundaryCoordinates'),
         );
       }
 
@@ -346,7 +347,7 @@ export const addFarmField = createAsyncThunk(
       if (!response?.success) {
         return rejectWithValue(
           response?.message ||
-            'Failed to create farm field.',
+            i18n.t('farmFieldSlice.failedToCreateFarmField'),
         );
       }
 
@@ -365,7 +366,7 @@ export const addFarmField = createAsyncThunk(
         error?.response?.data?.message ||
         error?.response?.data?.error ||
         error?.message ||
-        'Failed to create farm field.';
+        i18n.t('farmFieldSlice.failedToCreateFarmField');
 
       console.error(
         'ADD FARM FIELD ERROR:',
@@ -396,7 +397,7 @@ export const loadMyFarms =
       try {
         if (!userId) {
           return rejectWithValue(
-            'User ID is required.',
+            i18n.t('farmFieldSlice.userIdIsRequired'),
           );
         }
 
@@ -408,7 +409,7 @@ export const loadMyFarms =
         if (!response?.success) {
           return rejectWithValue(
             response?.message ||
-              'Failed to fetch farms.',
+              i18n.t('farmFieldSlice.failedToFetchFarms'),
           );
         }
 
@@ -418,7 +419,7 @@ export const loadMyFarms =
           error?.response?.data?.message ||
           error?.response?.data?.error ||
           error?.message ||
-          'Failed to fetch farms.';
+          i18n.t('farmFieldSlice.failedToFetchFarms');
 
         return rejectWithValue(
           message,
@@ -444,7 +445,7 @@ export const getFarm =
       try {
         if (!fieldId) {
           return rejectWithValue(
-            'Farm field ID is required.',
+            i18n.t('farmFieldSlice.farmFieldIdIsRequired'),
           );
         }
 
@@ -456,7 +457,7 @@ export const getFarm =
         if (!response?.success) {
           return rejectWithValue(
             response?.message ||
-              'Failed to fetch farm.',
+              i18n.t('farmFieldSlice.failedToFetchFarm'),
           );
         }
 
@@ -466,7 +467,7 @@ export const getFarm =
           error?.response?.data?.message ||
           error?.response?.data?.error ||
           error?.message ||
-          'Failed to fetch farm.';
+          i18n.t('farmFieldSlice.failedToFetchFarm');
 
         return rejectWithValue(
           message,
@@ -496,13 +497,13 @@ export const updateFarmField =
       try {
         if (!fieldId) {
           return rejectWithValue(
-            'Farm field ID is required.',
+            i18n.t('farmFieldSlice.farmFieldIdIsRequired'),
           );
         }
 
         if (!farmData) {
           return rejectWithValue(
-            'Farm field data is required.',
+            i18n.t('farmFieldSlice.farmFieldDataIsRequired'),
           );
         }
 
@@ -523,7 +524,7 @@ export const updateFarmField =
             Number(farmData.acre) <= 0
           ) {
             return rejectWithValue(
-              'Farm area must be greater than 0.',
+              i18n.t('farmFieldSlice.farmAreaMustBeGreater'),
             );
           }
         }
@@ -545,7 +546,7 @@ export const updateFarmField =
           )
         ) {
           return rejectWithValue(
-            'Invalid farming type.',
+            i18n.t('farmFieldSlice.invalidFarmingType'),
           );
         }
 
@@ -700,7 +701,7 @@ export const updateFarmField =
         if (!response?.success) {
           return rejectWithValue(
             response?.message ||
-              'Failed to update farm.',
+              i18n.t('farmFieldSlice.failedToUpdateFarm'),
           );
         }
 
@@ -710,7 +711,7 @@ export const updateFarmField =
           error?.response?.data?.message ||
           error?.response?.data?.error ||
           error?.message ||
-          'Failed to update farm.';
+          i18n.t('farmFieldSlice.failedToUpdateFarm');
 
         return rejectWithValue(
           message,
@@ -736,7 +737,7 @@ export const deleteFarmField =
       try {
         if (!fieldId) {
           return rejectWithValue(
-            'Farm field ID is required.',
+            i18n.t('farmFieldSlice.farmFieldIdIsRequired'),
           );
         }
 
@@ -748,7 +749,7 @@ export const deleteFarmField =
         if (!response?.success) {
           return rejectWithValue(
             response?.message ||
-              'Failed to delete farm.',
+              i18n.t('farmFieldSlice.failedToDeleteFarm'),
           );
         }
 
@@ -762,7 +763,7 @@ export const deleteFarmField =
           error?.response?.data?.message ||
           error?.response?.data?.error ||
           error?.message ||
-          'Failed to delete farm.';
+          i18n.t('farmFieldSlice.failedToDeleteFarm');
 
         return rejectWithValue(
           message,
@@ -877,7 +878,7 @@ const farmFieldSlice =
 
               state.message =
                 action.payload?.message ||
-                'Farm field created successfully.';
+                i18n.t('farmFieldSlice.farmFieldCreatedSuccessfully');
 
               const farmField =
                 action.payload
@@ -931,7 +932,7 @@ const farmFieldSlice =
 
               state.error =
                 action.payload ||
-                'Failed to create farm field.';
+                i18n.t('farmFieldSlice.failedToCreateFarmField');
 
               state.message = null;
             },
@@ -1001,7 +1002,7 @@ const farmFieldSlice =
 
               state.error =
                 action.payload ||
-                'Failed to fetch farms.';
+                i18n.t('farmFieldSlice.failedToFetchFarms');
             },
           );
 
@@ -1072,7 +1073,7 @@ const farmFieldSlice =
 
               state.error =
                 action.payload ||
-                'Failed to fetch farm.';
+                i18n.t('farmFieldSlice.failedToFetchFarm');
             },
           );
 
@@ -1107,7 +1108,7 @@ const farmFieldSlice =
 
               state.message =
                 action.payload?.message ||
-                'Farm updated successfully.';
+                i18n.t('farmFieldSlice.farmUpdatedSuccessfully');
 
               const updatedFarm =
                 action.payload
@@ -1159,7 +1160,7 @@ const farmFieldSlice =
 
               state.error =
                 action.payload ||
-                'Failed to update farm.';
+                i18n.t('farmFieldSlice.failedToUpdateFarm');
 
               state.message = null;
             },
@@ -1196,7 +1197,7 @@ const farmFieldSlice =
 
               state.message =
                 action.payload?.message ||
-                'Farm deleted successfully.';
+                i18n.t('farmFieldSlice.farmDeletedSuccessfully');
 
               const deletedId =
                 action.payload
@@ -1243,7 +1244,7 @@ const farmFieldSlice =
 
               state.error =
                 action.payload ||
-                'Failed to delete farm.';
+                i18n.t('farmFieldSlice.failedToDeleteFarm');
 
               state.message = null;
             },

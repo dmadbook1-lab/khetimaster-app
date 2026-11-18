@@ -60,6 +60,8 @@ import {
   formatRupees,
   timeAgo,
 } from '../../utils/marketFormat';
+import {useTranslation} from 'react-i18next';
+import i18n from 'i18next';
 
 /*
  * Hero colour for each deal state.
@@ -73,48 +75,94 @@ const heroGradientFor = deal => {
 };
 
 const HISTORY_LABELS = {
-  OFFER: 'sent an offer',
-  COUNTER: 'sent a counter offer',
-  ACCEPT: 'accepted the deal',
-  REJECT: 'rejected the offer',
-  CANCEL: 'cancelled the deal',
-  COMPLETE: 'marked the deal completed',
+  get OFFER() {
+    return i18n.t('marketDealDetails.sentAnOffer');
+  },
+  get COUNTER() {
+    return i18n.t('marketDealDetails.sentACounterOffer');
+  },
+  get ACCEPT() {
+    return i18n.t('marketDealDetails.acceptedTheDeal');
+  },
+  get REJECT() {
+    return i18n.t('marketDealDetails.rejectedTheOffer');
+  },
+  get CANCEL() {
+    return i18n.t('marketDealDetails.cancelledTheDeal');
+  },
+  get COMPLETE() {
+    return i18n.t('marketDealDetails.markedTheDealCompleted');
+  },
 };
 
 const TOASTS = {
-  accept: 'Deal accepted. You can now call each other.',
-  counter: 'Counter offer sent',
-  reject: 'Offer rejected',
-  cancel: 'Deal cancelled',
-  complete: 'Deal marked as completed',
+  get accept() {
+    return i18n.t('marketDealDetails.dealAcceptedYouCanNow');
+  },
+  get counter() {
+    return i18n.t('marketDealDetails.counterOfferSent');
+  },
+  get reject() {
+    return i18n.t('marketDealDetails.offerRejected');
+  },
+  get cancel() {
+    return i18n.t('marketDealDetails.dealCancelled');
+  },
+  get complete() {
+    return i18n.t('marketDealDetails.dealMarkedAsCompleted');
+  },
 };
 
 const SHEETS = {
   reject: {
-    title: 'Reject offer?',
-    description: 'The other side will see that you rejected this offer.',
-    placeholder: 'Reason (optional), e.g. Price too low',
-    submitLabel: 'Reject Offer',
+    get title() {
+    return i18n.t('marketDealDetails.rejectOffer');
+  },
+    get description() {
+    return i18n.t('marketDealDetails.theOtherSideWillSee');
+  },
+    get placeholder() {
+    return i18n.t('marketDealDetails.reasonOptionalEGPrice');
+  },
+    get submitLabel() {
+    return i18n.t('marketDealDetails.rejectOffer2');
+  },
     variant: 'danger',
   },
   cancel: {
-    title: 'Cancel deal?',
-    description:
-      'This closes the deal for both sides. If it was accepted, the quantity goes back to the listing.',
-    placeholder: 'Reason (optional)',
-    submitLabel: 'Cancel Deal',
+    get title() {
+    return i18n.t('marketDealDetails.cancelDeal');
+  },
+    get description() {
+    return i18n.t('marketDealDetails.thisClosesTheDealFor');
+  },
+    get placeholder() {
+    return i18n.t('marketDealDetails.reasonOptional');
+  },
+    get submitLabel() {
+    return i18n.t('marketDealDetails.cancelDeal2');
+  },
     variant: 'danger',
   },
   review: {
-    title: 'Rate the seller',
-    description: 'Your rating helps other farmers buy with confidence.',
-    placeholder: 'How was the quality and experience? (optional)',
-    submitLabel: 'Submit Review',
+    get title() {
+    return i18n.t('marketDealDetails.rateTheSeller');
+  },
+    get description() {
+    return i18n.t('marketDealDetails.yourRatingHelpsOtherFarmers');
+  },
+    get placeholder() {
+    return i18n.t('marketDealDetails.howWasTheQualityAnd');
+  },
+    get submitLabel() {
+    return i18n.t('marketDealDetails.submitReview');
+  },
     withRating: true,
   },
 };
 
 export default function MarketDealDetailsScreen({ navigation, route }) {
+  const {t} = useTranslation();
   const { dealId } = route.params;
   const dispatch = useDispatch();
   const { selectedDeal, dealLoading, dealError, actionInProgress } =
@@ -171,27 +219,27 @@ export default function MarketDealDetailsScreen({ navigation, route }) {
 
   const handleAccept = () =>
     feedback.confirm({
-      title: 'Accept this deal?',
-      message: `${formatQuantity(
+      title: t('marketDealDetails.acceptThisDeal'),
+      message: t('marketDealDetails.atForATotalOf', {v1: formatQuantity(
         deal.quantity,
         deal.listingSnapshot.unit,
-      )} at ${formatPricePerUnit(
+      ), v2: formatPricePerUnit(
         deal.pricePerUnit,
         deal.listingSnapshot.unit,
-      )} for a total of ${formatRupees(
+      ), v3: formatRupees(
         deal.totalAmount,
-      )}. Phone numbers will be shared with each other.`,
-      confirmLabel: 'Accept Deal',
-      cancelLabel: 'Not yet',
+      )}),
+      confirmLabel: t('marketDealDetails.acceptDeal'),
+      cancelLabel: t('marketDealDetails.notYet'),
       onConfirm: () => runAction('accept'),
     });
 
   const handleComplete = () =>
     feedback.confirm({
-      title: 'Mark as completed?',
+      title: t('marketDealDetails.markAsCompleted'),
       message:
-        'Do this only after the goods are handed over and you have received payment.',
-      confirmLabel: 'Yes, completed',
+        t('marketDealDetails.doThisOnlyAfterThe'),
+      confirmLabel: t('marketDealDetails.yesCompleted'),
       onConfirm: () => runAction('complete'),
     });
 
@@ -218,7 +266,7 @@ export default function MarketDealDetailsScreen({ navigation, route }) {
           reviewMarketDeal({ dealId, rating, comment: text }),
         ).unwrap();
         setSheet(null);
-        toast.show('Thanks for your review');
+        toast.show(t('marketDealDetails.thanksForYourReview'));
       } catch (error) {
         setSheetError(String(error));
       }
@@ -238,12 +286,12 @@ export default function MarketDealDetailsScreen({ navigation, route }) {
   if (!deal) {
     return (
       <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
-        <MarketHeader title="Deal" onBack={() => navigation.goBack()} />
+        <MarketHeader title={t('marketDealDetails.deal')} onBack={() => navigation.goBack()} />
         {dealError && !dealLoading ? (
           <EmptyState
-            title="Deal not available"
+            title={t('marketDealDetails.dealNotAvailable')}
             message={dealError}
-            actionLabel="Go Back"
+            actionLabel={t('marketDealDetails.goBack')}
             onAction={() => navigation.goBack()}
           />
         ) : (
@@ -264,7 +312,7 @@ export default function MarketDealDetailsScreen({ navigation, route }) {
   const priceDiff = deal.pricePerUnit - snapshot.listedPricePerUnit;
 
   const roleLabel = by =>
-    by === deal.myRole ? 'You' : by === 'BUYER' ? 'Buyer' : 'Seller';
+    by === deal.myRole ? t('marketDealDetails.you') : by === 'BUYER' ? t('marketDealDetails.buyer') : t('marketDealDetails.seller');
 
   const canReview =
     isBuyer && deal.status === 'COMPLETED' && !deal.review?.rating;
@@ -276,7 +324,7 @@ export default function MarketDealDetailsScreen({ navigation, route }) {
           <View style={styles.actionRow}>
             <MarketButton
               variant="danger"
-              label="Reject"
+              label={t('marketDealDetails.reject')}
               icon={<CircleX size={16} color={C.red} />}
               disabled={!!actionInProgress}
               onPress={() => openSheet('reject')}
@@ -284,7 +332,7 @@ export default function MarketDealDetailsScreen({ navigation, route }) {
             />
             <MarketButton
               variant="outline"
-              label="Counter"
+              label={t('marketDealDetails.counter')}
               icon={<ArrowLeftRight size={16} color={C.green} />}
               disabled={!!actionInProgress}
               onPress={() => {
@@ -295,7 +343,7 @@ export default function MarketDealDetailsScreen({ navigation, route }) {
             />
           </View>
           <MarketButton
-            label="Accept Deal"
+            label={t('marketDealDetails.acceptDeal')}
             icon={<CircleCheck size={17} color={C.white} />}
             loading={actionInProgress === 'accept'}
             disabled={!!actionInProgress}
@@ -309,7 +357,7 @@ export default function MarketDealDetailsScreen({ navigation, route }) {
       return (
         <MarketButton
           variant="danger"
-          label={isBuyer ? 'Withdraw Offer' : 'Cancel Deal'}
+          label={isBuyer ? t('marketDealDetails.withdrawOffer') : t('marketDealDetails.cancelDeal2')}
           disabled={!!actionInProgress}
           onPress={() => openSheet('cancel')}
           style={styles.flex}
@@ -322,14 +370,14 @@ export default function MarketDealDetailsScreen({ navigation, route }) {
         <View style={[styles.actionRow, styles.flex]}>
           <MarketButton
             variant="danger"
-            label="Cancel"
+            label={t('common.cancel')}
             disabled={!!actionInProgress}
             onPress={() => openSheet('cancel')}
             style={styles.flex}
           />
           {isBuyer ? (
             <MarketButton
-              label="Call Seller"
+              label={t('marketDealDetails.callSeller')}
               icon={<Phone size={16} color={C.white} />}
               disabled={!counterparty?.phoneNumber}
               onPress={() => Linking.openURL(`tel:${counterparty.phoneNumber}`)}
@@ -337,7 +385,7 @@ export default function MarketDealDetailsScreen({ navigation, route }) {
             />
           ) : (
             <MarketButton
-              label="Mark Completed"
+              label={t('marketDealDetails.markCompleted')}
               icon={<CircleCheck size={16} color={C.white} />}
               loading={actionInProgress === 'complete'}
               disabled={!!actionInProgress}
@@ -352,7 +400,7 @@ export default function MarketDealDetailsScreen({ navigation, route }) {
     if (canReview) {
       return (
         <MarketButton
-          label="Rate the Seller"
+          label={t('marketDealDetails.rateTheSeller2')}
           icon={<Star size={17} color={C.white} />}
           onPress={() => openSheet('review')}
           style={styles.flex}
@@ -386,7 +434,7 @@ export default function MarketDealDetailsScreen({ navigation, route }) {
           compact
           gradient={heroGradientFor(deal)}
           onBack={() => navigation.goBack()}
-          eyebrow={isBuyer ? 'Your purchase' : 'Your sale'}
+          eyebrow={isBuyer ? t('marketDealDetails.yourPurchase') : t('marketDealDetails.yourSale')}
           title={snapshot.title}
           right={
             <StatusPill
@@ -398,7 +446,7 @@ export default function MarketDealDetailsScreen({ navigation, route }) {
           <View style={styles.heroAmountRow}>
             <View style={styles.flex}>
               <Text style={styles.heroLabel}>
-                {deal.status === 'PENDING' ? 'Current offer' : 'Deal value'}
+                {deal.status === 'PENDING' ? t('marketDealDetails.currentOffer') : t('marketDealDetails.dealValue')}
               </Text>
               <Text style={styles.heroAmount}>
                 {formatRupees(deal.totalAmount)}
@@ -424,7 +472,7 @@ export default function MarketDealDetailsScreen({ navigation, route }) {
             {!!deal.closingReason &&
               ['REJECTED', 'CANCELLED'].includes(deal.status) && (
                 <Text style={styles.heroReason}>
-                  Reason: {deal.closingReason}
+                  {t('marketDealDetails.reason', {closingReason: deal.closingReason})}
                 </Text>
               )}
           </View>
@@ -456,7 +504,7 @@ export default function MarketDealDetailsScreen({ navigation, route }) {
                 {snapshot.title}
               </Text>
               <Text style={styles.muted}>
-                Listed at{' '}
+                {t('marketDealDetails.listedAt')}{' '}
                 {formatPricePerUnit(snapshot.listedPricePerUnit, unit)}
               </Text>
             </View>
@@ -466,39 +514,39 @@ export default function MarketDealDetailsScreen({ navigation, route }) {
           {/* CURRENT TERMS */}
           <View style={styles.card}>
             <Text style={styles.sectionTitle}>
-              {deal.status === 'PENDING' ? 'Current Offer' : 'Agreed Terms'}
+              {deal.status === 'PENDING' ? t('marketDealDetails.currentOffer2') : t('marketDealDetails.agreedTerms')}
             </Text>
 
             <InfoRow
-              label="Quantity"
+              label={t('marketDealDetails.quantity')}
               value={formatQuantity(deal.quantity, unit)}
             />
             <InfoRow
-              label="Price"
+              label={t('marketDealDetails.price')}
               value={formatPricePerUnit(deal.pricePerUnit, unit)}
             />
             {priceDiff !== 0 && Number.isFinite(priceDiff) && (
               <InfoRow
-                label="Vs listed price"
+                label={t('marketDealDetails.vsListedPrice')}
                 value={`${priceDiff > 0 ? '+' : '-'}${formatRupees(
                   Math.abs(priceDiff),
                 )}/${unit}`}
               />
             )}
             <InfoRow
-              label="Pickup / delivery"
+              label={t('marketDealDetails.pickupDelivery')}
               value={
                 deal.fulfilment === 'DELIVERY'
-                  ? 'Seller delivers'
-                  : 'Buyer picks up'
+                  ? t('marketDealDetails.sellerDelivers')
+                  : t('marketDealDetails.buyerPicksUp')
               }
             />
             {deal.fulfilment === 'DELIVERY' && (
-              <InfoRow label="Deliver to" value={deal.deliveryAddress} />
+              <InfoRow label={t('marketDealDetails.deliverTo')} value={deal.deliveryAddress} />
             )}
 
             <View style={styles.totalRow}>
-              <Text style={styles.totalLabel}>Total amount</Text>
+              <Text style={styles.totalLabel}>{t('marketDealDetails.totalAmount')}</Text>
               <Text style={styles.totalValue}>
                 {formatRupees(deal.totalAmount)}
               </Text>
@@ -508,7 +556,7 @@ export default function MarketDealDetailsScreen({ navigation, route }) {
           {/* COUNTERPARTY */}
           <View style={styles.card}>
             <Text style={styles.sectionTitle}>
-              {isBuyer ? 'Seller' : 'Buyer'}
+              {isBuyer ? t('marketDealDetails.seller') : t('marketDealDetails.buyer')}
             </Text>
 
             <View style={styles.partyRow}>
@@ -550,7 +598,7 @@ export default function MarketDealDetailsScreen({ navigation, route }) {
               <View style={styles.lockedRow}>
                 <Lock size={13} color={C.muted} />
                 <Text style={styles.lockedText}>
-                  Phone number is shared once the deal is accepted
+                  {t('marketDealDetails.phoneNumberIsSharedOnce')}
                 </Text>
               </View>
             )}
@@ -563,7 +611,7 @@ export default function MarketDealDetailsScreen({ navigation, route }) {
                   })
                 }
               >
-                <Text style={styles.link}>View seller profile</Text>
+                <Text style={styles.link}>{t('marketDealDetails.viewSellerProfile')}</Text>
               </TouchableOpacity>
             )}
           </View>
@@ -572,7 +620,7 @@ export default function MarketDealDetailsScreen({ navigation, route }) {
           {!!deal.review?.rating && (
             <View style={styles.card}>
               <Text style={styles.sectionTitle}>
-                {isBuyer ? 'Your Review' : "Buyer's Review"}
+                {isBuyer ? t('marketDealDetails.yourReview') : t('marketDealDetails.buyersReview')}
               </Text>
               <View style={styles.inline}>
                 {[1, 2, 3, 4, 5].map(value => (
@@ -594,7 +642,7 @@ export default function MarketDealDetailsScreen({ navigation, route }) {
 
           {/* HISTORY */}
           <View style={styles.card}>
-            <Text style={styles.sectionTitle}>Negotiation History</Text>
+            <Text style={styles.sectionTitle}>{t('marketDealDetails.negotiationHistory')}</Text>
 
             {[...(deal.history || [])].reverse().map((entry, index, list) => {
               const mine = entry.by === deal.myRole;
@@ -626,7 +674,7 @@ export default function MarketDealDetailsScreen({ navigation, route }) {
                       entry.quantity !== undefined &&
                       ['OFFER', 'COUNTER'].includes(entry.action) && (
                         <Text style={styles.historyTerms}>
-                          {formatQuantity(entry.quantity, unit)} at{' '}
+                          {formatQuantity(entry.quantity, unit)} {t('marketDealDetails.at')}{' '}
                           {formatPricePerUnit(entry.pricePerUnit, unit)} ={' '}
                           {formatRupees(entry.quantity * entry.pricePerUnit)}
                         </Text>

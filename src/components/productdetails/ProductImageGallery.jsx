@@ -7,6 +7,7 @@ import {
   StyleSheet,
   Dimensions,
 } from 'react-native';
+import {useTranslation} from 'react-i18next';
 const { width } = Dimensions.get('window');
 const productImage = require('../../assets/bazar/product1.jpg');
 const gallery = [
@@ -16,6 +17,7 @@ const gallery = [
   require('../../assets/bazar/agri.png'),
 ];
 export default function ProductImageGallery({ product }) {
+  const {t} = useTranslation();
   const [activeImage, setActiveImage] = useState(
     product?.image || productImage,
   );
@@ -23,11 +25,11 @@ export default function ProductImageGallery({ product }) {
     <>
       <View style={styles.mainCard}>
         <View style={styles.discountBadge}>
-          <Text style={styles.discountText}>10% OFF</Text>
+          <Text style={styles.discountText}>{t('productImageGallery.10Off')}</Text>
         </View>
 
         <View style={styles.stockBadge}>
-          <Text style={styles.stockText}>● In Stock</Text>
+          <Text style={styles.stockText}>{t('productImageGallery.inStock')}</Text>
         </View>
 
         <Image

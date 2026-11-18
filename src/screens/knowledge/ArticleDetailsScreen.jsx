@@ -10,6 +10,7 @@ import {
   View,
 } from 'react-native';
 import {SafeAreaView, useSafeAreaInsets} from 'react-native-safe-area-context';
+import {useTranslation} from 'react-i18next';
 
 const SOURCE_COLORS = {
   PIB: '#075A53',
@@ -39,6 +40,7 @@ export default function ArticleDetailsScreen({
   navigation,
   route,
 }) {
+  const {t} = useTranslation();
   const insets = useSafeAreaInsets();
   const article = route?.params?.article;
 
@@ -54,7 +56,7 @@ export default function ArticleDetailsScreen({
 
         <View style={styles.emptyContainer}>
           <Text style={styles.emptyTitle}>
-            Article unavailable
+            {t('articleDetails.articleUnavailable')}
           </Text>
 
           <TouchableOpacity
@@ -62,7 +64,7 @@ export default function ArticleDetailsScreen({
             onPress={() => navigation.goBack()}
             style={styles.backButton}>
             <Text style={styles.backButtonText}>
-              Go Back
+              {t('articleDetails.goBack')}
             </Text>
           </TouchableOpacity>
         </View>
@@ -124,13 +126,13 @@ export default function ArticleDetailsScreen({
           <Text
             numberOfLines={1}
             style={styles.headerTitle}>
-            Agriculture News
+            {t('articleDetails.agricultureNews')}
           </Text>
 
           <Text
             numberOfLines={1}
             style={styles.headerSubtitle}>
-            Article Details
+            {t('articleDetails.articleDetails')}
           </Text>
         </View>
 
@@ -166,7 +168,7 @@ export default function ArticleDetailsScreen({
             </Text>
 
             <Text style={styles.heroFallbackText}>
-              KhetiMaster
+              {t('articleDetails.khetimaster')}
             </Text>
           </View>
         )}
@@ -222,7 +224,7 @@ export default function ArticleDetailsScreen({
 
           {/* TITLE */}
           <Text style={styles.title}>
-            {article.title || 'Agriculture Update'}
+            {article.title || t('articleDetails.agricultureUpdate')}
           </Text>
 
           {/* DIVIDER */}
@@ -231,7 +233,7 @@ export default function ArticleDetailsScreen({
           {/* DESCRIPTION */}
           <Text style={styles.description}>
             {article.description ||
-              'No description is available for this article.'}
+              t('articleDetails.noDescriptionIsAvailableFor')}
           </Text>
 
           {/* OFFICIAL SOURCE CARD */}
@@ -245,14 +247,12 @@ export default function ArticleDetailsScreen({
 
             <View style={styles.sourceCardContent}>
               <Text style={styles.sourceCardTitle}>
-                Official Source
+                {t('articleDetails.officialSource')}
               </Text>
 
               <Text style={styles.sourceCardDescription}>
-                This information is provided by{' '}
-                {article.source || 'the original publisher'}.
-                Read the complete article from the
-                original source.
+                {t('articleDetails.thisInformationIsProvidedBy')}{' '}
+                {article.source || t('articleDetails.theOriginalPublisher')}{t('articleDetails.readTheCompleteArticleFrom')}
               </Text>
             </View>
           </View>
@@ -278,11 +278,11 @@ export default function ArticleDetailsScreen({
 
               <View style={styles.readButtonTextContainer}>
                 <Text style={styles.readButtonTitle}>
-                  Read Full Article
+                  {t('articleDetails.readFullArticle')}
                 </Text>
 
                 <Text style={styles.readButtonSubtitle}>
-                  Open original source
+                  {t('articleDetails.openOriginalSource')}
                 </Text>
               </View>
             </View>
@@ -294,10 +294,7 @@ export default function ArticleDetailsScreen({
 
           {/* DISCLAIMER */}
           <Text style={styles.disclaimer}>
-            KhetiMaster displays article metadata and
-            short descriptions for convenience. The
-            complete article remains available on the
-            original publisher's website.
+            {t('articleDetails.khetimasterDisplaysArticleMetadataAnd')}
           </Text>
 
         </View>

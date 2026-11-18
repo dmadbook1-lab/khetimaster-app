@@ -10,6 +10,7 @@ import {
   deactivateMyDoctorProfileApi,
   activateMyDoctorProfileApi,
 } from '../../api/doctorApi';
+import i18n from 'i18next';
 
 const errorMessage = (error, fallback) =>
   error.response?.data?.message || error.message || fallback;
@@ -26,7 +27,7 @@ export const fetchDoctorMeta = createAsyncThunk(
     try {
       return await getDoctorMetaApi();
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to load options'));
+      return rejectWithValue(errorMessage(error, i18n.t('doctorSlice.unableToLoadOptions')));
     }
   },
 );
@@ -46,7 +47,7 @@ export const fetchDoctors = createAsyncThunk(
     try {
       return await getAllDoctorsApi(params);
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to load doctors'));
+      return rejectWithValue(errorMessage(error, i18n.t('doctorSlice.unableToLoadDoctors')));
     }
   },
 );
@@ -57,7 +58,7 @@ export const fetchDoctorById = createAsyncThunk(
     try {
       return await getDoctorByIdApi(doctorId);
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to load doctor'));
+      return rejectWithValue(errorMessage(error, i18n.t('doctorSlice.unableToLoadDoctor')));
     }
   },
 );
@@ -78,7 +79,7 @@ export const fetchMyDoctorProfile = createAsyncThunk(
       return await getMyDoctorProfileApi();
     } catch (error) {
       return rejectWithValue({
-        message: errorMessage(error, 'Unable to load your doctor profile'),
+        message: errorMessage(error, i18n.t('doctorSlice.unableToLoadYourDoctor')),
         missing: error.response?.status === 404,
       });
     }
@@ -96,7 +97,7 @@ export const saveMyDoctorProfile = createAsyncThunk(
         ? await createDoctorApi(doctorData)
         : await updateMyDoctorProfileApi(doctorData);
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to save profile'));
+      return rejectWithValue(errorMessage(error, i18n.t('doctorSlice.unableToSaveProfile')));
     }
   },
 );
@@ -109,7 +110,7 @@ export const setMyDoctorActive = createAsyncThunk(
         ? await activateMyDoctorProfileApi()
         : await deactivateMyDoctorProfileApi();
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to update profile'));
+      return rejectWithValue(errorMessage(error, i18n.t('doctorSlice.unableToUpdateProfile')));
     }
   },
 );
@@ -124,7 +125,7 @@ export const setMyDoctorAvailability = createAsyncThunk(
       return await updateMyDoctorProfileApi({ availability });
     } catch (error) {
       return rejectWithValue(
-        errorMessage(error, 'Unable to update availability'),
+        errorMessage(error, i18n.t('doctorSlice.unableToUpdateAvailability')),
       );
     }
   },

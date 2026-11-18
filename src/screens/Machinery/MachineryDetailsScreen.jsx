@@ -70,22 +70,47 @@ import {
   formatTimeRange,
 } from '../../utils/indiaSchedule';
 import { timeAgo } from '../../utils/marketFormat';
+import {useTranslation} from 'react-i18next';
+import i18n from 'i18next';
+import {tOpt} from '../../utils/tOpt';
 
 const { width } = Dimensions.get('window');
 const HERO_HEIGHT = 340;
 
 const STEPS = [
-  { title: 'Send request', text: 'Pick date, time and rate' },
-  { title: 'Owner confirms', text: 'Phone numbers are shared' },
-  { title: 'Pay after work', text: 'Then rate the machine' },
+  { get title() {
+    return i18n.t('machineryDetails.sendRequest');
+  }, get text() {
+    return i18n.t('machineryDetails.pickDateTimeAndRate');
+  } },
+  { get title() {
+    return i18n.t('machineryDetails.ownerConfirms');
+  }, get text() {
+    return i18n.t('machineryDetails.phoneNumbersAreShared');
+  } },
+  { get title() {
+    return i18n.t('machineryDetails.payAfterWork');
+  }, get text() {
+    return i18n.t('machineryDetails.thenRateTheMachine');
+  } },
 ];
 
 const RATE_UNIT_TEXT = {
-  hour: 'per hour',
-  day: 'per day',
-  acre: 'per acre',
-  job: 'per job',
-  custom: 'per booking',
+  get hour() {
+    return i18n.t('machineryDetails.perHour');
+  },
+  get day() {
+    return i18n.t('machineryDetails.perDay');
+  },
+  get acre() {
+    return i18n.t('machineryDetails.perAcre');
+  },
+  get job() {
+    return i18n.t('machineryDetails.perJob');
+  },
+  get custom() {
+    return i18n.t('machineryDetails.perBooking');
+  },
 };
 
 const slotDays = slot => {
@@ -99,6 +124,7 @@ const slotDays = slot => {
 };
 
 export default function MachineryDetailsScreen({ navigation, route }) {
+  const {t} = useTranslation();
   const { machineryId } = route.params;
   const dispatch = useDispatch();
   const insets = useSafeAreaInsets();
@@ -126,12 +152,12 @@ export default function MachineryDetailsScreen({ navigation, route }) {
   if (!machine) {
     return (
       <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
-        <MarketHeader title="Machinery" onBack={() => navigation.goBack()} />
+        <MarketHeader title={t('machineryDetails.machinery')} onBack={() => navigation.goBack()} />
         {selectedError && !selectedLoading ? (
           <EmptyState
-            title="Machine not available"
+            title={t('machineryDetails.machineNotAvailable')}
             message={selectedError}
-            actionLabel="Go Back"
+            actionLabel={t('machineryDetails.goBack')}
             onAction={() => navigation.goBack()}
           />
         ) : (
@@ -157,41 +183,41 @@ export default function MachineryDetailsScreen({ navigation, route }) {
     machine.enginePower?.value
       ? {
           icon: Gauge,
-          label: 'Power',
+          label: t('machineryDetails.power'),
           value: `${machine.enginePower.value} ${
             machine.enginePower.unit || 'HP'
           }`,
         }
       : null,
     machine.fuelType
-      ? { icon: Fuel, label: 'Fuel', value: FUEL_LABELS[machine.fuelType] }
+      ? { icon: Fuel, label: t('machineryDetails.fuel'), value: FUEL_LABELS[machine.fuelType] }
       : null,
     machine.driveType
-      ? { icon: Cog, label: 'Drive', value: machine.driveType }
+      ? { icon: Cog, label: t('machineryDetails.drive'), value: machine.driveType }
       : null,
     machine.modelYear
-      ? { icon: CalendarCheck, label: 'Year', value: String(machine.modelYear) }
+      ? { icon: CalendarCheck, label: t('machineryDetails.year'), value: String(machine.modelYear) }
       : null,
   ].filter(Boolean);
 
   const toggleActive = () => {
     if (machine.isActive) {
       feedback.confirm({
-        title: 'Stop renting this machine?',
+        title: t('machineryDetails.stopRentingThisMachine'),
         message:
-          'It will be hidden from farmers and its new requests will be cancelled. You can turn it back on any time.',
-        confirmLabel: 'Deactivate',
+          t('machineryDetails.itWillBeHiddenFrom'),
+        confirmLabel: t('machineryDetails.deactivate'),
         destructive: true,
         onConfirm: async () => {
           try {
             await dispatch(
               setMachineryActive({ machineryId, active: false }),
             ).unwrap();
-            toast.show('Machine hidden from farmers');
+            toast.show(t('machineryDetails.machineHiddenFromFarmers'));
           } catch (error) {
             feedback.error('Could not deactivate', String(error), {
-              primaryLabel: 'View Requests',
-              secondaryLabel: 'Close',
+              primaryLabel: t('machineryDetails.viewRequests'),
+              secondaryLabel: t('common.close'),
               onPrimary: () =>
                 navigation.navigate(MACHINERY_ROUTES.REQUESTS, { machineryId }),
             });
@@ -202,15 +228,15 @@ export default function MachineryDetailsScreen({ navigation, route }) {
     }
 
     feedback.confirm({
-      title: 'Start renting again?',
-      message: 'Farmers will be able to find and book this machine.',
-      confirmLabel: 'Activate',
+      title: t('machineryDetails.startRentingAgain'),
+      message: t('machineryDetails.farmersWillBeAbleTo'),
+      confirmLabel: t('machineryDetails.activate'),
       onConfirm: async () => {
         try {
           await dispatch(
             setMachineryActive({ machineryId, active: true }),
           ).unwrap();
-          toast.show('Machine is live again');
+          toast.show(t('machineryDetails.machineIsLiveAgain'));
         } catch (error) {
           feedback.error('Could not activate', String(error));
         }
@@ -273,7 +299,7 @@ export default function MachineryDetailsScreen({ navigation, route }) {
             <StatusPill
               meta={
                 machine.isActive === false
-                  ? { label: 'Hidden', color: C.text, bg: '#EEF0F2' }
+                  ? { label: t('machineryDetails.hidden'), color: C.text, bg: '#EEF0F2' }
                   : AVAILABILITY_META[machine.availability]
               }
             />
@@ -293,7 +319,7 @@ export default function MachineryDetailsScreen({ navigation, route }) {
 
         {/* CONTENT */}
         <View style={styles.sheet}>
-          <Text style={styles.categoryTag}>{machine.category}</Text>
+          <Text style={styles.categoryTag}>{tOpt(machine.category)}</Text>
           <Text style={styles.title}>{machine.name}</Text>
           {!!(machine.brand || machine.model) && (
             <Text style={styles.subtitle}>
@@ -305,17 +331,17 @@ export default function MachineryDetailsScreen({ navigation, route }) {
             <Star size={14} color={C.gold} fill={C.gold} />
             <Text style={styles.ratingText}>
               {machine.totalReviews
-                ? `${machine.rating} · ${machine.totalReviews} reviews`
-                : 'No reviews yet'}
+                ? t('machineryDetails.reviews', {rating: machine.rating, totalReviews: machine.totalReviews})
+                : t('machineryDetails.noReviewsYet')}
             </Text>
             <BadgeCheck size={14} color={C.green} />
             <Text style={styles.ratingText}>
-              {machine.totalJobsCompleted || 0} jobs done
+              {t('machineryDetails.jobsDone', {v1: machine.totalJobsCompleted || 0})}
             </Text>
           </View>
 
           {/* RATES */}
-          <Text style={styles.blockTitle}>Rent rates</Text>
+          <Text style={styles.blockTitle}>{t('machineryDetails.rentRates')}</Text>
           <View style={styles.rates}>
             {rates.map(rate => (
               <View key={rate.key} style={styles.rate}>
@@ -341,7 +367,7 @@ export default function MachineryDetailsScreen({ navigation, route }) {
               <CalendarCheck size={20} color={C.blue} />
               <View style={styles.flex}>
                 <Text style={styles.activeTitle}>
-                  You have a booking for this machine
+                  {t('machineryDetails.youHaveABookingFor')}
                 </Text>
                 <Text style={styles.activeText}>
                   {formatDay(activeBooking.bookingDate)} ·{' '}
@@ -375,7 +401,7 @@ export default function MachineryDetailsScreen({ navigation, route }) {
                   <>
                     <View style={styles.cardTitleRow}>
                       <Wrench size={16} color={C.orange} />
-                      <Text style={styles.cardTitle}>Implements available</Text>
+                      <Text style={styles.cardTitle}>{t('machineryDetails.implementsAvailable')}</Text>
                     </View>
                     <View style={styles.chips}>
                       {machine.supportedImplements.map(item => (
@@ -404,10 +430,10 @@ export default function MachineryDetailsScreen({ navigation, route }) {
             <View style={styles.card}>
               <View style={styles.cardTitleRow}>
                 <CalendarX size={16} color={C.red} />
-                <Text style={styles.cardTitle}>Already booked</Text>
+                <Text style={styles.cardTitle}>{t('machineryDetails.alreadyBooked')}</Text>
               </View>
               <Text style={styles.cardText}>
-                Pick a different time for these days.
+                {t('machineryDetails.pickADifferentTimeFor')}
               </Text>
               {bookedSlots.slice(0, 6).map((slot, index) => (
                 <View
@@ -418,7 +444,7 @@ export default function MachineryDetailsScreen({ navigation, route }) {
                   <Text style={styles.slotTime}>
                     {slot.endTime
                       ? formatTimeRange(slot.startTime, slot.endTime)
-                      : 'Whole day'}
+                      : t('machineryDetails.wholeDay')}
                   </Text>
                 </View>
               ))}
@@ -429,7 +455,7 @@ export default function MachineryDetailsScreen({ navigation, route }) {
           <View style={[styles.card, styles.ownerRow]}>
             <PersonAvatar name={ownerName} size={50} />
             <View style={styles.flex}>
-              <Text style={styles.cardLabel}>Owner</Text>
+              <Text style={styles.cardLabel}>{t('machineryDetails.owner')}</Text>
               <Text style={styles.ownerName}>{ownerName}</Text>
               {!!location && (
                 <View style={styles.inline}>
@@ -445,7 +471,7 @@ export default function MachineryDetailsScreen({ navigation, route }) {
           {/* REVIEWS */}
           {reviews.length > 0 && (
             <>
-              <Text style={styles.blockTitle}>Reviews</Text>
+              <Text style={styles.blockTitle}>{t('machineryDetails.reviews2')}</Text>
               {reviews.map((review, index) => (
                 <View
                   key={`${review.createdAt}-${index}`}
@@ -481,7 +507,7 @@ export default function MachineryDetailsScreen({ navigation, route }) {
           {/* HOW IT WORKS */}
           {!machine.isOwner && (
             <>
-              <Text style={styles.blockTitle}>How renting works</Text>
+              <Text style={styles.blockTitle}>{t('machineryDetails.howRentingWorks')}</Text>
               <View style={styles.steps}>
                 {STEPS.map((step, index) => (
                   <View key={step.title} style={styles.step}>
@@ -512,7 +538,7 @@ export default function MachineryDetailsScreen({ navigation, route }) {
           <>
             <MarketButton
               variant={machine.isActive ? 'danger' : 'outline'}
-              label={machine.isActive ? 'Pause' : 'Activate'}
+              label={machine.isActive ? t('machineryDetails.pause') : t('machineryDetails.activate')}
               icon={
                 <Power size={16} color={machine.isActive ? C.red : C.green} />
               }
@@ -522,7 +548,7 @@ export default function MachineryDetailsScreen({ navigation, route }) {
             />
             <MarketButton
               variant="outline"
-              label="Edit"
+              label={t('machineryDetails.edit')}
               icon={<Pencil size={16} color={C.green} />}
               onPress={() =>
                 navigation.navigate(MACHINERY_ROUTES.FORM, {
@@ -532,7 +558,7 @@ export default function MachineryDetailsScreen({ navigation, route }) {
               style={styles.flex}
             />
             <MarketButton
-              label="Requests"
+              label={t('machineryDetails.requests')}
               icon={<Inbox size={16} color={C.white} />}
               onPress={() =>
                 navigation.navigate(MACHINERY_ROUTES.REQUESTS, { machineryId })
@@ -543,14 +569,14 @@ export default function MachineryDetailsScreen({ navigation, route }) {
         ) : (
           <>
             <View style={styles.flex}>
-              <Text style={styles.bottomLabel}>Starting from</Text>
+              <Text style={styles.bottomLabel}>{t('machineryDetails.startingFrom')}</Text>
               <Text style={styles.bottomPrice} numberOfLines={1}>
                 {startingPrice(machine)}
               </Text>
             </View>
             {activeBooking ? (
               <MarketButton
-                label="View Booking"
+                label={t('machineryDetails.viewBooking')}
                 icon={<CalendarCheck size={17} color={C.white} />}
                 onPress={() =>
                   navigation.navigate(MACHINERY_ROUTES.BOOKING_DETAILS, {
@@ -561,7 +587,7 @@ export default function MachineryDetailsScreen({ navigation, route }) {
               />
             ) : (
               <MarketButton
-                label={canBook ? 'Book Now' : 'Not available'}
+                label={canBook ? t('machineryDetails.bookNow') : t('machineryDetails.notAvailable')}
                 icon={
                   canBook ? <CalendarCheck size={17} color={C.white} /> : null
                 }

@@ -26,6 +26,9 @@ import {
   Image as ImageIcon,
   RefreshCw,
 } from 'lucide-react-native';
+import {useTranslation} from 'react-i18next';
+import i18n from 'i18next';
+import {tOpt} from '../../utils/tOpt';
 const { width } = Dimensions.get('window');
 const GREEN = '#16A34A';
 const DARK_GREEN = '#16883E';
@@ -50,19 +53,25 @@ const SAMPLE_TOMATO = require('../../assets/gov/sample-tomato.jpg');
 const QUALITY_CHECKS = [
   {
     id: 'leaf',
-    label: 'Leaf clearly visible',
+    get label() {
+    return i18n.t('uploadCropPhoto.leafClearlyVisible');
+  },
     status: 'good',
     value: 'Good',
   },
   {
     id: 'lighting',
-    label: 'Good lighting',
+    get label() {
+    return i18n.t('uploadCropPhoto.goodLighting');
+  },
     status: 'good',
     value: 'Good',
   },
   {
     id: 'sharpness',
-    label: 'Image sharpness',
+    get label() {
+    return i18n.t('uploadCropPhoto.imageSharpness');
+  },
     status: 'low',
     value: 'Low',
   },
@@ -70,28 +79,36 @@ const QUALITY_CHECKS = [
 const GUIDELINES = [
   {
     id: 'leaf',
-    title: 'One affected leaf',
+    get title() {
+    return i18n.t('uploadCropPhoto.oneAffectedLeaf');
+  },
     Icon: Leaf,
     color: DARK_GREEN,
     bg: '#EAFBF0',
   },
   {
     id: 'daylight',
-    title: 'Good daylight',
+    get title() {
+    return i18n.t('uploadCropPhoto.goodDaylight');
+  },
     Icon: Sun,
     color: ORANGE,
     bg: '#FFF7ED',
   },
   {
     id: 'steady',
-    title: 'Keep camera steady',
+    get title() {
+    return i18n.t('uploadCropPhoto.keepCameraSteady');
+  },
     Icon: Hand,
     color: PURPLE,
     bg: '#F5F3FF',
   },
   {
     id: 'focus',
-    title: 'Focus on damaged area',
+    get title() {
+    return i18n.t('uploadCropPhoto.focusOnDamagedArea');
+  },
     Icon: ScanLine,
     color: BLUE,
     bg: '#EFF6FF',
@@ -115,6 +132,7 @@ const SAMPLE_IMAGES = [
   },
 ];
 export default function UploadCropPhotoScreen({ navigation, route }) {
+  const {t} = useTranslation();
   const [helpExpanded, setHelpExpanded] = useState(true);
   const photoSource = route?.params?.photoUri
     ? {
@@ -127,13 +145,13 @@ export default function UploadCropPhotoScreen({ navigation, route }) {
     }
   };
   const handleChangePhoto = () => {
-    Alert.alert('Change Photo', 'Choose a new photo.');
+    Alert.alert(t('uploadCropPhoto.changePhoto'), t('uploadCropPhoto.chooseANewPhoto'));
   };
   const handleDetectDisease = () => {
     navigation.navigate('AIDetection');
   };
   const handleRetakePhoto = () => {
-    Alert.alert('Retake Photo', 'Camera will reopen.');
+    Alert.alert(t('uploadCropPhoto.retakePhoto'), t('uploadCropPhoto.cameraWillReopen'));
   };
   return (
     <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
@@ -149,9 +167,9 @@ export default function UploadCropPhotoScreen({ navigation, route }) {
         </TouchableOpacity>
 
         <View style={styles.headerTextBox}>
-          <Text style={styles.headerTitle}>Upload Crop Photo</Text>
+          <Text style={styles.headerTitle}>{t('uploadCropPhoto.uploadCropPhoto')}</Text>
           <Text numberOfLines={2} style={styles.headerSubtitle}>
-            Take a clear photo of the affected crop part.
+            {t('uploadCropPhoto.takeAClearPhotoOf')}
           </Text>
         </View>
 
@@ -173,7 +191,7 @@ export default function UploadCropPhotoScreen({ navigation, route }) {
           {}
           <View style={styles.photoSelectedBadge}>
             <View style={styles.photoSelectedDot} />
-            <Text style={styles.photoSelectedText}>Photo Selected</Text>
+            <Text style={styles.photoSelectedText}>{t('uploadCropPhoto.photoSelected')}</Text>
           </View>
 
           {}
@@ -186,7 +204,7 @@ export default function UploadCropPhotoScreen({ navigation, route }) {
           <View style={styles.photoBottomRow}>
             <View style={styles.filenameBox}>
               <Text style={styles.filenameText}>
-                tomato_leaf_01.jpg • 2.4 MB
+                {t('uploadCropPhoto.tomatoLeaf01Jpg2')}
               </Text>
             </View>
 
@@ -196,7 +214,7 @@ export default function UploadCropPhotoScreen({ navigation, route }) {
               style={styles.changePhotoButton}
             >
               <ImageIcon size={rf(13)} color="#FFFFFF" strokeWidth={2.3} />
-              <Text style={styles.changePhotoText}>Change Photo</Text>
+              <Text style={styles.changePhotoText}>{t('uploadCropPhoto.changePhoto')}</Text>
             </TouchableOpacity>
           </View>
         </View>
@@ -205,9 +223,9 @@ export default function UploadCropPhotoScreen({ navigation, route }) {
         <View style={styles.qualityCard}>
           <View style={styles.qualityHeader}>
             <ShieldCheck size={rf(18)} color={DARK_GREEN} strokeWidth={2.3} />
-            <Text style={styles.qualityTitle}>Photo Quality</Text>
+            <Text style={styles.qualityTitle}>{t('uploadCropPhoto.photoQuality')}</Text>
             <View style={styles.passedBadge}>
-              <Text style={styles.passedText}>2/3 Passed</Text>
+              <Text style={styles.passedText}>{t('uploadCropPhoto.23Passed')}</Text>
             </View>
           </View>
 
@@ -241,7 +259,7 @@ export default function UploadCropPhotoScreen({ navigation, route }) {
                       },
                     ]}
                   >
-                    {item.value}
+                    {tOpt(item.value)}
                   </Text>
                 </View>
               );
@@ -258,13 +276,12 @@ export default function UploadCropPhotoScreen({ navigation, route }) {
               }}
             />
             <Text style={styles.warningText}>
-              Image sharpness is low. For best results, retake the photo with a
-              steady hand in good light.
+              {t('uploadCropPhoto.imageSharpnessIsLowFor')}
             </Text>
           </View>
         </View>
 
-        <Text style={styles.sectionTitle}>Photo Guidelines</Text>
+        <Text style={styles.sectionTitle}>{t('uploadCropPhoto.photoGuidelines')}</Text>
 
         <View style={styles.guidelinesGrid}>
           {GUIDELINES.map(item => {
@@ -299,9 +316,9 @@ export default function UploadCropPhotoScreen({ navigation, route }) {
             </View>
 
             <View style={styles.helpTextBox}>
-              <Text style={styles.helpTitle}>Need Help?</Text>
+              <Text style={styles.helpTitle}>{t('uploadCropPhoto.needHelp')}</Text>
               <Text style={styles.helpSubtitle}>
-                View sample images for better detection accuracy.
+                {t('uploadCropPhoto.viewSampleImagesForBetter')}
               </Text>
             </View>
 
@@ -321,7 +338,7 @@ export default function UploadCropPhotoScreen({ navigation, route }) {
 
           {helpExpanded && (
             <View style={styles.helpContent}>
-              <Text style={styles.helpSectionTitle}>GOOD PHOTO EXAMPLES:</Text>
+              <Text style={styles.helpSectionTitle}>{t('uploadCropPhoto.goodPhotoExamples')}</Text>
 
               <View style={styles.samplesRow}>
                 {SAMPLE_IMAGES.map(sample => (
@@ -348,7 +365,7 @@ export default function UploadCropPhotoScreen({ navigation, route }) {
           style={styles.detectButton}
         >
           <ScanLine size={rf(17)} color="#FFFFFF" strokeWidth={2.4} />
-          <Text style={styles.detectButtonText}>Detect Disease</Text>
+          <Text style={styles.detectButtonText}>{t('uploadCropPhoto.detectDisease')}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -357,7 +374,7 @@ export default function UploadCropPhotoScreen({ navigation, route }) {
           style={styles.retakeButton}
         >
           <RefreshCw size={rf(15)} color={DARK_GREEN} strokeWidth={2.4} />
-          <Text style={styles.retakeButtonText}>Retake Photo</Text>
+          <Text style={styles.retakeButtonText}>{t('uploadCropPhoto.retakePhoto')}</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

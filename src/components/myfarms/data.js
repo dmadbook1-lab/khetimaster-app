@@ -1,4 +1,5 @@
-export const filters = [
+
+import i18n from 'i18next';export const filters = [
   'All',
   'Healthy',
   'Need Attention',
@@ -9,7 +10,9 @@ export const filters = [
 
 export const farms = [
   {
-    title: 'Patil Farm',
+    get title() {
+    return i18n.t('data.patilFarm');
+  },
     crop: 'Soybean',
     area: '2.34 Acres',
     status: 'Healthy',
@@ -17,7 +20,9 @@ export const farms = [
     image: require('../../assets/homescreen/farm2.jpg'),
   },
   {
-    title: 'Shinde Farm',
+    get title() {
+    return i18n.t('data.shindeFarm');
+  },
     crop: 'Cotton',
     area: '5.10 Acres',
     status: 'Need\nAttention',
@@ -25,7 +30,9 @@ export const farms = [
     image: require('../../assets/homescreen/farm1.jpg'),
   },
   {
-    title: 'East Farm',
+    get title() {
+    return i18n.t('data.eastFarm');
+  },
     crop: 'Tomato',
     area: '1.20 Acres',
     status: 'Healthy',
@@ -33,7 +40,9 @@ export const farms = [
     image: require('../../assets/homescreen/farm2.jpg'),
   },
   {
-    title: 'Jadhav Farm',
+    get title() {
+    return i18n.t('data.jadhavFarm');
+  },
     crop: 'Soybean',
     area: '3.80 Acres',
     status: 'Healthy',
@@ -41,7 +50,9 @@ export const farms = [
     image: require('../../assets/homescreen/farm2.jpg'),
   },
   {
-    title: 'North Field',
+    get title() {
+    return i18n.t('data.northField');
+  },
     crop: 'Cotton',
     area: '4.06 Acres',
     status: 'Healthy',

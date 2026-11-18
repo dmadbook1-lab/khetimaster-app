@@ -12,12 +12,14 @@ import {
   formatTimeRange,
 } from '../../utils/labourFormat';
 import { formatRupees } from '../../utils/marketFormat';
+import {useTranslation} from 'react-i18next';
 
 /*
  * Booking row for "My Bookings" (farmer) and "Work Requests" (labourer).
  * Shows the other side of the booking.
  */
 function LabourBookingCard({ booking, onPress, footer }) {
+  const {t} = useTranslation();
   const isFarmer = booking.myRole === 'farmer';
   const other = isFarmer ? booking.labourer : booking.farmer;
   const needsMe = !isFarmer && booking.status === 'pending';
@@ -38,11 +40,11 @@ function LabourBookingCard({ booking, onPress, footer }) {
 
         <View style={styles.flex}>
           <Text style={styles.name} numberOfLines={1}>
-            {other?.fullName || (isFarmer ? 'Worker' : 'Farmer')}
+            {other?.fullName || (isFarmer ? t('labourBookingCard.worker') : t('common.farmer'))}
           </Text>
           <Text style={styles.work} numberOfLines={1}>
             {booking.workType}
-            {booking.numberOfDays > 1 ? ` · ${booking.numberOfDays} days` : ''}
+            {booking.numberOfDays > 1 ? t('labourBookingCard.days', {numberOfDays: booking.numberOfDays}) : ''}
           </Text>
         </View>
 

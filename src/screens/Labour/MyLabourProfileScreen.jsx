@@ -63,40 +63,75 @@ import {
   formatLabourLocation,
   formatWage,
 } from '../../utils/labourFormat';
+import {useTranslation} from 'react-i18next';
+import i18n from 'i18next';
 
 const BENEFITS = [
   {
     icon: BellRing,
-    title: 'Get work requests',
-    text: 'Farmers near you book you directly',
+    get title() {
+    return i18n.t('myLabourProfile.getWorkRequests');
+  },
+    get text() {
+    return i18n.t('myLabourProfile.farmersNearYouBookYou');
+  },
   },
   {
     icon: IndianRupee,
-    title: 'Set your own wage',
-    text: 'Daily, hourly or monthly',
+    get title() {
+    return i18n.t('myLabourProfile.setYourOwnWage');
+  },
+    get text() {
+    return i18n.t('myLabourProfile.dailyHourlyOrMonthly');
+  },
   },
   {
     icon: ShieldCheck,
-    title: 'Your number stays private',
-    text: 'Shared only after you accept',
+    get title() {
+    return i18n.t('myLabourProfile.yourNumberStaysPrivate');
+  },
+    get text() {
+    return i18n.t('myLabourProfile.sharedOnlyAfterYouAccept');
+  },
   },
   {
     icon: Star,
-    title: 'Build your rating',
-    text: 'Good reviews bring more work',
+    get title() {
+    return i18n.t('myLabourProfile.buildYourRating');
+  },
+    get text() {
+    return i18n.t('myLabourProfile.goodReviewsBringMoreWork');
+  },
   },
 ];
 
 const REGISTER_STEPS = [
-  { title: 'About you', text: 'Name, phone and a photo' },
-  { title: 'Your work', text: 'Work you do and your experience' },
-  { title: 'Wage & dates', text: 'What you charge and when you are free' },
-  { title: 'Your village', text: 'So nearby farmers can find you' },
+  { get title() {
+    return i18n.t('myLabourProfile.aboutYou');
+  }, get text() {
+    return i18n.t('myLabourProfile.namePhoneAndAPhoto');
+  } },
+  { get title() {
+    return i18n.t('myLabourProfile.yourWork');
+  }, get text() {
+    return i18n.t('myLabourProfile.workYouDoAndYour');
+  } },
+  { get title() {
+    return i18n.t('myLabourProfile.wageDates');
+  }, get text() {
+    return i18n.t('myLabourProfile.whatYouChargeAndWhen');
+  } },
+  { get title() {
+    return i18n.t('myLabourProfile.yourVillage');
+  }, get text() {
+    return i18n.t('myLabourProfile.soNearbyFarmersCanFind');
+  } },
 ];
 
 const AVAILABILITY_CHOICES = ['available', 'busy', 'unavailable'];
 
 export default function MyLabourProfileScreen({ navigation }) {
+  const {t} = useTranslation();
   const dispatch = useDispatch();
   const insets = useSafeAreaInsets();
   const feedback = useFeedbackModal();
@@ -127,9 +162,9 @@ export default function MyLabourProfileScreen({ navigation }) {
         }),
       ).unwrap();
       toast.show(
-        `You are now shown as ${AVAILABILITY_META[
+        t('myLabourProfile.youAreNowShownAs', {v1: AVAILABILITY_META[
           availability
-        ].label.toLowerCase()}`,
+        ].label.toLowerCase()}),
       );
     } catch (error) {
       feedback.error('Could not update availability', String(error));
@@ -139,19 +174,19 @@ export default function MyLabourProfileScreen({ navigation }) {
   const toggleActive = () => {
     if (myProfile.isActive) {
       feedback.confirm({
-        title: 'Stop taking work?',
+        title: t('myLabourProfile.stopTakingWork'),
         message:
-          'Your profile will be hidden from farmers and your new requests will be cancelled. You can turn it back on any time.',
-        confirmLabel: 'Deactivate',
+          t('myLabourProfile.yourProfileWillBeHidden'),
+        confirmLabel: t('myLabourProfile.deactivate'),
         destructive: true,
         onConfirm: async () => {
           try {
             await dispatch(setMyLabourerActive(false)).unwrap();
-            toast.show('Profile deactivated');
+            toast.show(t('myLabourProfile.profileDeactivated'));
           } catch (error) {
             feedback.error('Could not deactivate', String(error), {
-              primaryLabel: 'View Bookings',
-              secondaryLabel: 'Close',
+              primaryLabel: t('myLabourProfile.viewBookings'),
+              secondaryLabel: t('common.close'),
               onPrimary: () => navigation.navigate(LABOUR_ROUTES.REQUESTS),
             });
           }
@@ -161,13 +196,13 @@ export default function MyLabourProfileScreen({ navigation }) {
     }
 
     feedback.confirm({
-      title: 'Start taking work again?',
-      message: 'Farmers will be able to find and book you.',
-      confirmLabel: 'Activate',
+      title: t('myLabourProfile.startTakingWorkAgain'),
+      message: t('myLabourProfile.farmersWillBeAbleTo'),
+      confirmLabel: t('myLabourProfile.activate'),
       onConfirm: async () => {
         try {
           await dispatch(setMyLabourerActive(true)).unwrap();
-          toast.show('Welcome back! Your profile is live.');
+          toast.show(t('myLabourProfile.welcomeBackYourProfileIs'));
         } catch (error) {
           feedback.error('Could not activate', String(error));
         }
@@ -192,9 +227,9 @@ export default function MyLabourProfileScreen({ navigation }) {
           <MarketHero
             image={WORKER_HERO_IMAGE}
             onBack={() => navigation.goBack()}
-            eyebrow="Find work"
-            title={'Earn by working\non farms near you'}
-            subtitle="Create a free worker profile and get booked by farmers in your area."
+            eyebrow={t('myLabourProfile.findWork')}
+            title={t('myLabourProfile.earnByWorkingOnFarms')}
+            subtitle={t('myLabourProfile.createAFreeWorkerProfile')}
           >
             <TouchableOpacity
               activeOpacity={0.88}
@@ -202,16 +237,16 @@ export default function MyLabourProfileScreen({ navigation }) {
               onPress={openRegistration}
             >
               <UserPlus size={18} color="#3A2400" />
-              <Text style={styles.heroCtaText}>Register as a worker</Text>
+              <Text style={styles.heroCtaText}>{t('myLabourProfile.registerAsAWorker')}</Text>
               <ArrowRight size={17} color="#3A2400" strokeWidth={2.6} />
             </TouchableOpacity>
-            <Text style={styles.heroCtaNote}>Free · takes about 2 minutes</Text>
+            <Text style={styles.heroCtaNote}>{t('myLabourProfile.freeTakesAbout2Minutes')}</Text>
           </MarketHero>
 
           <View style={styles.body}>
             {missing ? (
               <>
-                <Text style={styles.blockTitle}>How to register</Text>
+                <Text style={styles.blockTitle}>{t('myLabourProfile.howToRegister')}</Text>
                 <View style={styles.card}>
                   {REGISTER_STEPS.map((item, index) => (
                     <View key={item.title} style={styles.regStep}>
@@ -231,7 +266,7 @@ export default function MyLabourProfileScreen({ navigation }) {
                   ))}
                 </View>
 
-                <Text style={styles.blockTitle}>Why join</Text>
+                <Text style={styles.blockTitle}>{t('myLabourProfile.whyJoin')}</Text>
                 <View style={styles.benefits}>
                   {BENEFITS.map(({ icon: Icon, title, text }) => (
                     <View key={title} style={styles.benefit}>
@@ -256,11 +291,10 @@ export default function MyLabourProfileScreen({ navigation }) {
                   >
                     <View style={styles.flex}>
                       <Text style={styles.finalCtaTitle}>
-                        Ready to start earning?
+                        {t('myLabourProfile.readyToStartEarning')}
                       </Text>
                       <Text style={styles.finalCtaText}>
-                        Create your profile and start getting work requests
-                        today.
+                        {t('myLabourProfile.createYourProfileAndStart')}
                       </Text>
                     </View>
                     <View style={styles.finalCtaButton}>
@@ -271,9 +305,9 @@ export default function MyLabourProfileScreen({ navigation }) {
               </>
             ) : myProfileStatus === 'error' ? (
               <EmptyState
-                title="Couldn't load your profile"
+                title={t('myLabourProfile.couldntLoadYourProfile')}
                 message={myProfileError}
-                actionLabel="Try Again"
+                actionLabel={t('myLabourProfile.tryAgain')}
                 onAction={load}
               />
             ) : (
@@ -290,7 +324,7 @@ export default function MyLabourProfileScreen({ navigation }) {
             ]}
           >
             <MarketButton
-              label="Register as a Worker"
+              label={t('myLabourProfile.registerAsAWorker2')}
               icon={<UserPlus size={17} color={C.white} />}
               onPress={openRegistration}
               style={styles.flex}
@@ -339,7 +373,7 @@ export default function MyLabourProfileScreen({ navigation }) {
               </Text>
               <Text style={styles.type}>{profile.labourType}</Text>
               <Text style={styles.liveBadge}>
-                {profile.isActive ? '● Profile is live' : '● Profile is hidden'}
+                {profile.isActive ? t('myLabourProfile.profileIsLive') : t('myLabourProfile.profileIsHidden')}
               </Text>
             </View>
           </View>
@@ -347,16 +381,16 @@ export default function MyLabourProfileScreen({ navigation }) {
           <View style={styles.statsRow}>
             <HeroStat
               value={pending}
-              label="New requests"
+              label={t('myLabourProfile.newRequests')}
               highlight={pending > 0}
             />
             <HeroStat
-              value={profile.totalReviews ? `★ ${profile.rating}` : 'New'}
-              label={`${profile.totalReviews || 0} reviews`}
+              value={profile.totalReviews ? `★ ${profile.rating}` : t('myLabourProfile.new')}
+              label={t('myLabourProfile.reviews', {v1: profile.totalReviews || 0})}
             />
             <HeroStat
               value={profile.totalJobsCompleted || 0}
-              label="Jobs done"
+              label={t('myLabourProfile.jobsDone')}
             />
           </View>
         </MarketHero>
@@ -374,11 +408,11 @@ export default function MyLabourProfileScreen({ navigation }) {
               <Inbox size={20} color={C.amber} />
             </View>
             <View style={styles.flex}>
-              <Text style={styles.actionTitle}>Work requests</Text>
+              <Text style={styles.actionTitle}>{t('myLabourProfile.workRequests')}</Text>
               <Text style={styles.actionText}>
                 {pending
-                  ? `${pending} waiting for your reply`
-                  : 'See all your bookings'}
+                  ? t('myLabourProfile.waitingForYourReply', {pending})
+                  : t('myLabourProfile.seeAllYourBookings')}
               </Text>
             </View>
             <ChevronRight size={19} color={C.muted} />
@@ -395,7 +429,7 @@ export default function MyLabourProfileScreen({ navigation }) {
               >
                 <Pencil size={18} color={C.green} />
               </View>
-              <Text style={styles.actionTitle}>Edit profile</Text>
+              <Text style={styles.actionTitle}>{t('myLabourProfile.editProfile')}</Text>
             </TouchableOpacity>
             <TouchableOpacity
               activeOpacity={0.88}
@@ -411,17 +445,17 @@ export default function MyLabourProfileScreen({ navigation }) {
               >
                 <Eye size={18} color={C.blue} />
               </View>
-              <Text style={styles.actionTitle}>How farmers see me</Text>
+              <Text style={styles.actionTitle}>{t('myLabourProfile.howFarmersSeeMe')}</Text>
             </TouchableOpacity>
           </View>
 
           {/* AVAILABILITY */}
           <View style={styles.card}>
-            <Text style={styles.cardTitle}>Availability</Text>
+            <Text style={styles.cardTitle}>{t('myLabourProfile.availability')}</Text>
             <Text style={styles.cardText}>
               {profile.isActive
-                ? 'Farmers can only book you while you are available.'
-                : 'Activate your profile to change availability.'}
+                ? t('myLabourProfile.farmersCanOnlyBookYou')
+                : t('myLabourProfile.activateYourProfileToChange')}
             </Text>
             <View style={styles.availabilityRow}>
               {AVAILABILITY_CHOICES.map(choice => {
@@ -460,7 +494,7 @@ export default function MyLabourProfileScreen({ navigation }) {
             </View>
             {(profile.availableFrom || profile.availableUntil) && (
               <Text style={styles.cardText}>
-                Dates:{' '}
+                {t('myLabourProfile.dates')}{' '}
                 {[
                   profile.availableFrom &&
                     `from ${formatDay(profile.availableFrom, {
@@ -479,25 +513,25 @@ export default function MyLabourProfileScreen({ navigation }) {
 
           {/* DETAILS */}
           <View style={styles.card}>
-            <Text style={styles.cardTitle}>My details</Text>
+            <Text style={styles.cardTitle}>{t('myLabourProfile.myDetails')}</Text>
             <InfoRow
-              label="Wage"
+              label={t('myLabourProfile.wage')}
               value={formatWage(profile.expectedWage, profile.wageType)}
             />
             <InfoRow
-              label="Experience"
+              label={t('myLabourProfile.experience')}
               value={formatExperience(
                 profile.experience,
                 profile.experienceUnit,
               )}
             />
             <InfoRow
-              label="Work I do"
+              label={t('myLabourProfile.workIDo')}
               value={(profile.preferredWork || []).join(', ')}
             />
-            <InfoRow label="Skills" value={(profile.skills || []).join(', ')} />
+            <InfoRow label={t('myLabourProfile.skills')} value={(profile.skills || []).join(', ')} />
             <InfoRow
-              label="Languages"
+              label={t('myLabourProfile.languages')}
               value={(profile.languages || []).join(', ')}
             />
             {!!location && (
@@ -510,7 +544,7 @@ export default function MyLabourProfileScreen({ navigation }) {
               <View style={styles.detailRow}>
                 <Phone size={14} color={C.green} />
                 <Text style={styles.detailText}>
-                  {profile.phoneNumber} · shared after you accept
+                  {t('myLabourProfile.sharedAfterYouAccept', {phoneNumber: profile.phoneNumber})}
                 </Text>
               </View>
             )}
@@ -519,7 +553,7 @@ export default function MyLabourProfileScreen({ navigation }) {
           {/* ACTIVATE / DEACTIVATE */}
           <MarketButton
             variant={profile.isActive ? 'danger' : 'primary'}
-            label={profile.isActive ? 'Stop taking work' : 'Start taking work'}
+            label={profile.isActive ? t('myLabourProfile.stopTakingWork2') : t('myLabourProfile.startTakingWork')}
             icon={
               <Power size={16} color={profile.isActive ? C.red : C.white} />
             }

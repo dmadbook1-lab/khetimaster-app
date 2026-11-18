@@ -188,7 +188,7 @@ export default function SatelliteLegend({
 
       <View style={styles.legendHeader}>
         <Text style={styles.legendTitle}>
-          Legend
+          {t('satelliteLegend.legend')}
         </Text>
 
         <TouchableOpacity
@@ -273,7 +273,7 @@ export default function SatelliteLegend({
           ]}>
           <View style={styles.loadingContent}>
             <Text style={styles.loadingText}>
-              Analysing farm imagery...
+              {t('satelliteLegend.analysingFarmImagery')}
             </Text>
           </View>
         </Animated.View>

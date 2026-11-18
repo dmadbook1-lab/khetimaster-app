@@ -1,7 +1,7 @@
 import React from 'react';
 import { ScrollView, StyleSheet, Dimensions } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import BottomTabBar from '../../common/BottomTabBar';
+import BottomTabBar, { useBottomTabBarInset } from '../../common/BottomTabBar';
 import BazaarHeader from '../../components/bazaar/BazaarHeader';
 import BazaarHero from '../../components/bazaar/BazaarHero';
 import ServicesGrid from '../../components/bazaar/ServicesGrid';
@@ -11,11 +11,12 @@ import FeaturedProducts from '../../components/bazaar/FeaturedProducts';
 import BazaarRecentActivity from '../../components/bazaar/BazaarRecentActivity';
 const { width } = Dimensions.get('window');
 export default function BazaarScreen({ navigation }) {
+  const tabBarInset = useBottomTabBarInset();
   return (
     <SafeAreaView style={styles.safeArea} edges={['top']}>
       <ScrollView
         showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
+        contentContainerStyle={[styles.scrollContent, { paddingBottom: styles.scrollContent.paddingBottom + tabBarInset }]}
       >
         <BazaarHeader />
         <BazaarHero />

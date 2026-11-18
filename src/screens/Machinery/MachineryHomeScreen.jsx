@@ -52,27 +52,49 @@ import {
   fetchMachineryList,
   fetchMyMachinery,
 } from '../../redux/slices/machinerySlice';
+import {useTranslation} from 'react-i18next';
+import i18n from 'i18next';
+import VoiceActionButton from '../../components/voice/VoiceActionButton';
+import VoiceFlowOverlay from '../../components/voice/VoiceFlowOverlay';
+import useMachineryVoiceFlow from '../../components/voice/flows/useMachineryVoiceFlow';
 
 const { width } = Dimensions.get('window');
 const GUTTER = 16;
 const CARD_WIDTH = (width - GUTTER * 2 - 12) / 2;
 
 const SORTS = [
-  { key: 'newest', label: 'Newest' },
-  { key: 'rating', label: 'Top rated' },
-  { key: 'hourly_asc', label: 'Lowest hourly' },
-  { key: 'daily_asc', label: 'Lowest daily' },
+  { key: 'newest', get label() {
+    return i18n.t('machineryHome.newest');
+  } },
+  { key: 'rating', get label() {
+    return i18n.t('machineryHome.topRated');
+  } },
+  { key: 'hourly_asc', get label() {
+    return i18n.t('machineryHome.lowestHourly');
+  } },
+  { key: 'daily_asc', get label() {
+    return i18n.t('machineryHome.lowestDaily');
+  } },
 ];
 
 const TRUST_POINTS = [
-  { icon: Wallet, label: 'Pay after work' },
-  { icon: Phone, label: 'Number shared on confirm' },
-  { icon: ShieldCheck, label: 'Rated by farmers' },
+  { icon: Wallet, get label() {
+    return i18n.t('machineryHome.payAfterWork');
+  } },
+  { icon: Phone, get label() {
+    return i18n.t('machineryHome.numberSharedOnConfirm');
+  } },
+  { icon: ShieldCheck, get label() {
+    return i18n.t('machineryHome.ratedByFarmers');
+  } },
 ];
 
 const PAGE_SIZE = 20;
 
 export default function MachineryHomeScreen({ navigation }) {
+  const {t} = useTranslation();
+  const [voiceOpen, setVoiceOpen] = useState(false);
+  const voiceFlow = useMachineryVoiceFlow(navigation);
   const dispatch = useDispatch();
   const { categories } = useMachineryMeta();
 
@@ -173,9 +195,9 @@ export default function MachineryHomeScreen({ navigation }) {
       <MarketHero
         banner={MACHINERY_BANNER}
         onBack={() => navigation.goBack()}
-        eyebrow="Machinery on rent"
-        title="Rent Machinery"
-        subtitle="Tractors, rotavators, harvesters and more from owners near you."
+        eyebrow={t('machineryHome.machineryOnRent')}
+        title={t('machineryHome.rentMachinery')}
+        subtitle={t('machineryHome.tractorsRotavatorsHarvestersAndMore')}
         right={
           <>
             <GlassButton
@@ -208,7 +230,7 @@ export default function MachineryHomeScreen({ navigation }) {
           <TextInput
             value={searchText}
             onChangeText={setSearchText}
-            placeholder="Search tractor, rotavator, brand..."
+            placeholder={t('machineryHome.searchTractorRotavatorBrand')}
             placeholderTextColor={C.placeholder}
             style={styles.searchInput}
             returnKeyType="search"
@@ -233,8 +255,8 @@ export default function MachineryHomeScreen({ navigation }) {
             >
               <CalendarCheck size={19} color={C.blue} />
             </View>
-            <Text style={styles.shortcutTitle}>My Rentals</Text>
-            <Text style={styles.shortcutText}>Machines you booked</Text>
+            <Text style={styles.shortcutTitle}>{t('machineryHome.myRentals')}</Text>
+            <Text style={styles.shortcutText}>{t('machineryHome.machinesYouBooked')}</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -252,15 +274,15 @@ export default function MachineryHomeScreen({ navigation }) {
                 <Tractor size={19} color="#A25200" />
               </View>
               <Text style={styles.ownerTitle}>
-                {isOwner ? 'My Machines' : 'Own a machine?'}
+                {isOwner ? t('machineryHome.myMachines') : t('machineryHome.ownAMachine')}
               </Text>
               <View style={styles.ownerLink}>
                 <Text style={styles.ownerLinkText}>
                   {isOwner
                     ? pendingRequests
-                      ? `${pendingRequests} new requests`
-                      : `${mine.length} listed`
-                    : 'Earn by renting'}
+                      ? t('machineryHome.newRequests', {pendingRequests})
+                      : t('machineryHome.listed', {length: mine.length})
+                    : t('machineryHome.earnByRenting')}
                 </Text>
                 <ArrowRight size={13} color="#3A2400" strokeWidth={2.8} />
               </View>
@@ -268,7 +290,12 @@ export default function MachineryHomeScreen({ navigation }) {
           </TouchableOpacity>
         </View>
 
-        <Text style={styles.sectionTitle}>What do you need?</Text>
+        <VoiceActionButton
+          label={t('voiceFlow.button.machinery')}
+          onPress={() => setVoiceOpen(true)}
+        />
+
+        <Text style={styles.sectionTitle}>{t('machineryHome.whatDoYouNeed')}</Text>
       </View>
 
       <ScrollView
@@ -287,7 +314,7 @@ export default function MachineryHomeScreen({ navigation }) {
           <Text
             style={[styles.typeLabel, !category && styles.typeLabelSelected]}
           >
-            All machines
+            {t('machineryHome.allMachines')}
           </Text>
         </TouchableOpacity>
 
@@ -320,12 +347,12 @@ export default function MachineryHomeScreen({ navigation }) {
         <View style={styles.resultsHeader}>
           <View style={styles.flex}>
             <Text style={styles.sectionTitleFlat}>
-              {category || 'Available near you'}
+              {category || t('machineryHome.availableNearYou')}
             </Text>
             <Text style={styles.resultCount}>
               {listLoading
-                ? 'Searching…'
-                : `${pagination.total} machines found`}
+                ? t('machineryHome.searching')
+                : t('machineryHome.machinesFound', {total: pagination.total})}
             </Text>
           </View>
 
@@ -348,7 +375,7 @@ export default function MachineryHomeScreen({ navigation }) {
             <Text
               style={[styles.toggleText, nearMe && styles.toggleTextActive]}
             >
-              Only near {nearDistrict}
+              {t('machineryHome.onlyNear', {nearDistrict})}
             </Text>
           </TouchableOpacity>
         )}
@@ -386,16 +413,16 @@ export default function MachineryHomeScreen({ navigation }) {
           ) : listError ? (
             <EmptyState
               icon={<Tractor size={30} color={C.green} />}
-              title="Couldn't load machinery"
+              title={t('machineryHome.couldntLoadMachinery')}
               message={listError}
-              actionLabel="Try Again"
+              actionLabel={t('machineryHome.tryAgain')}
               onAction={loadFirstPage}
             />
           ) : (
             <EmptyState
               icon={<Tractor size={30} color={C.green} />}
-              title="No machines found"
-              message="Try another category, or turn off the location filter."
+              title={t('machineryHome.noMachinesFound')}
+              message={t('machineryHome.tryAnotherCategoryOrTurn')}
             />
           )
         }
@@ -404,6 +431,12 @@ export default function MachineryHomeScreen({ navigation }) {
             <ActivityIndicator color={C.green} style={styles.footerLoader} />
           ) : null
         }
+      />
+
+      <VoiceFlowOverlay
+        visible={voiceOpen}
+        flow={voiceFlow}
+        onClose={() => setVoiceOpen(false)}
       />
     </SafeAreaView>
   );

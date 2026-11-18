@@ -37,20 +37,37 @@ import {
   todayInIndiaKey,
 } from '../../utils/indiaSchedule';
 import { isAcceptedStatus } from '../../utils/doctorFormat';
+import {useTranslation} from 'react-i18next';
+import i18n from 'i18next';
 
 const STATUS_FILTERS = [
-  { key: 'pending', label: 'New' },
-  { key: 'accepted', label: 'Accepted' },
-  { key: 'active', label: 'All open' },
-  { key: 'completed', label: 'Completed' },
-  { key: 'cancelled', label: 'Cancelled' },
-  { key: 'rejected', label: 'Declined' },
-  { key: 'all', label: 'All' },
+  { key: 'pending', get label() {
+    return i18n.t('doctorRequests.new');
+  } },
+  { key: 'accepted', get label() {
+    return i18n.t('doctorRequests.accepted');
+  } },
+  { key: 'active', get label() {
+    return i18n.t('doctorRequests.allOpen');
+  } },
+  { key: 'completed', get label() {
+    return i18n.t('doctorRequests.completed');
+  } },
+  { key: 'cancelled', get label() {
+    return i18n.t('doctorRequests.cancelled');
+  } },
+  { key: 'rejected', get label() {
+    return i18n.t('doctorRequests.declined');
+  } },
+  { key: 'all', get label() {
+    return i18n.t('doctorRequests.all');
+  } },
 ];
 
 const PAGE_SIZE = 20;
 
 export default function DoctorRequestsScreen({ navigation, route }) {
+  const {t} = useTranslation();
   const dispatch = useDispatch();
   const feedback = useFeedbackModal();
   const toast = useToast();
@@ -68,9 +85,9 @@ export default function DoctorRequestsScreen({ navigation, route }) {
   const [sheetError, setSheetError] = useState(null);
 
   const dayOptions = [
-    { key: 'any', label: 'Any day' },
-    { key: todayKey, label: 'Today' },
-    { key: addDaysToKey(todayKey, 1), label: 'Tomorrow' },
+    { key: 'any', label: t('doctorRequests.anyDay') },
+    { key: todayKey, label: t('common.today') },
+    { key: addDaysToKey(todayKey, 1), label: t('common.tomorrow') },
   ];
   const dayKey = day === 'today' ? todayKey : day;
 
@@ -108,10 +125,10 @@ export default function DoctorRequestsScreen({ navigation, route }) {
 
   const accept = consultation =>
     feedback.confirm({
-      title: 'Accept this consultation?',
+      title: t('doctorRequests.acceptThisConsultation'),
       message:
-        'You and the farmer will see each other’s phone numbers. Other requests at the same time will be declined.',
-      confirmLabel: 'Accept',
+        t('doctorRequests.youAndTheFarmerWill'),
+      confirmLabel: t('doctorRequests.accept'),
       onConfirm: async () => {
         try {
           await dispatch(
@@ -120,7 +137,7 @@ export default function DoctorRequestsScreen({ navigation, route }) {
               action: 'accept',
             }),
           ).unwrap();
-          toast.show('Accepted. You can now call the farmer.');
+          toast.show(t('doctorRequests.acceptedYouCanNowCall'));
           load();
         } catch (failure) {
           feedback.error('Could not accept', String(failure));
@@ -139,7 +156,7 @@ export default function DoctorRequestsScreen({ navigation, route }) {
         }),
       ).unwrap();
       setDeclining(null);
-      toast.show('Request declined');
+      toast.show(t('doctorRequests.requestDeclined'));
       load();
     } catch (failure) {
       setSheetError(String(failure));
@@ -177,7 +194,7 @@ export default function DoctorRequestsScreen({ navigation, route }) {
                     <View style={styles.quickRow}>
                       <CareButton
                         variant="danger"
-                        label="Decline"
+                        label={t('doctorRequests.decline')}
                         icon={<CircleX size={15} color={C.red} />}
                         disabled={!!actionInProgress}
                         onPress={() => {
@@ -187,7 +204,7 @@ export default function DoctorRequestsScreen({ navigation, route }) {
                         style={styles.quickButton}
                       />
                       <CareButton
-                        label="Accept"
+                        label={t('doctorRequests.accept')}
                         icon={<CircleCheck size={15} color={C.white} />}
                         loading={busy && actionInProgress === 'accept'}
                         disabled={!!actionInProgress}
@@ -211,18 +228,18 @@ export default function DoctorRequestsScreen({ navigation, route }) {
               compact
               onBack={() => navigation.goBack()}
               gradient={newCount ? 'amber' : 'care'}
-              eyebrow="Doctor desk"
-              title={newCount ? `${newCount} new requests` : 'Requests'}
-              subtitle="Accept to share phone numbers. Complete after the visit with your diagnosis."
+              eyebrow={t('doctorRequests.doctorDesk')}
+              title={newCount ? t('doctorRequests.newRequests', {newCount}) : t('doctorRequests.requests')}
+              subtitle={t('doctorRequests.acceptToSharePhoneNumbers')}
             >
               <View style={styles.statsRow}>
                 <CareStat
                   value={newCount}
-                  label="New"
+                  label={t('doctorRequests.new')}
                   highlight={newCount > 0}
                 />
-                <CareStat value={todayCount} label="Today" />
-                <CareStat value={total} label="Showing" />
+                <CareStat value={todayCount} label={t('common.today')} />
+                <CareStat value={total} label={t('doctorRequests.showing')} />
               </View>
             </CareHero>
 
@@ -255,16 +272,16 @@ export default function DoctorRequestsScreen({ navigation, route }) {
             <CareLoading />
           ) : error ? (
             <CareEmpty
-              title="Couldn't load requests"
+              title={t('doctorRequests.couldntLoadRequests')}
               message={error}
-              actionLabel="Try Again"
+              actionLabel={t('doctorRequests.tryAgain')}
               onAction={load}
             />
           ) : (
             <CareEmpty
               icon={<Inbox size={30} color={C.teal} />}
-              title={status === 'pending' ? 'No new requests' : 'Nothing here'}
-              message="Keep your availability on so farmers can find you."
+              title={status === 'pending' ? t('doctorRequests.noNewRequests') : t('doctorRequests.nothingHere')}
+              message={t('doctorRequests.keepYourAvailabilityOnSo')}
             />
           )
         }
@@ -277,17 +294,17 @@ export default function DoctorRequestsScreen({ navigation, route }) {
 
       <CareSheet
         visible={!!declining}
-        title="Decline this request?"
-        description="The farmer will see that you declined. Add a reason if you like."
+        title={t('doctorRequests.declineThisRequest')}
+        description={t('doctorRequests.theFarmerWillSeeThat')}
         fields={[
           {
             key: 'reason',
-            label: 'Reason (optional)',
-            placeholder: 'e.g. I am travelling that day',
+            label: t('doctorRequests.reasonOptional'),
+            placeholder: t('doctorRequests.eGIAmTravelling'),
             multiline: true,
           },
         ]}
-        submitLabel="Decline Request"
+        submitLabel={t('doctorRequests.declineRequest')}
         variant="danger"
         loading={actionInProgress === 'reject'}
         serverError={sheetError}

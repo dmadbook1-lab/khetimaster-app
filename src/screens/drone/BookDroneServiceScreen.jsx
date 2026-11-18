@@ -28,6 +28,9 @@ import {
   FileText,
   Shield,
 } from 'lucide-react-native';
+import {useTranslation} from 'react-i18next';
+import i18n from 'i18next';
+import {tOpt} from '../../utils/tOpt';
 const { width } = Dimensions.get('window');
 const GREEN = '#16A34A';
 const DARK_GREEN = '#15803D';
@@ -42,31 +45,41 @@ const SERVICES = [
   {
     id: 'pest',
     name: 'Pesticide Spraying',
-    desc: 'Targeted pest control coverage',
+    get desc() {
+    return i18n.t('bookDroneService.targetedPestControlCoverage');
+  },
     price: '750',
   },
   {
     id: 'liq',
     name: 'Liquid Fertilizer',
-    desc: 'Uniform nutrient distribution',
+    get desc() {
+    return i18n.t('bookDroneService.uniformNutrientDistribution');
+  },
     price: '700',
   },
   {
     id: 'micro',
     name: 'Micronutrient Spray',
-    desc: 'Zinc, Boron & Iron treatment',
+    get desc() {
+    return i18n.t('bookDroneService.zincBoronIronTreatment');
+  },
     price: '720',
   },
   {
     id: 'bio',
     name: 'Bio-Stimulant Spray',
-    desc: 'Natural growth enhancer spray',
+    get desc() {
+    return i18n.t('bookDroneService.naturalGrowthEnhancerSpray');
+  },
     price: '800',
   },
   {
     id: 'survey',
     name: 'Crop Survey & Mapping',
-    desc: 'Aerial NDVI & RGB mapping',
+    get desc() {
+    return i18n.t('bookDroneService.aerialNdviRgbMapping');
+  },
     price: '650',
   },
 ];
@@ -74,12 +87,16 @@ const DATES = [
   {
     day: 'TUE',
     date: '20',
-    label: 'Today',
+    get label() {
+    return i18n.t('common.today');
+  },
   },
   {
     day: 'WED',
     date: '21',
-    label: 'AI Pick',
+    get label() {
+    return i18n.t('bookDroneService.aiPick');
+  },
     selected: true,
   },
   {
@@ -97,6 +114,7 @@ const DATES = [
 ];
 const TIMES = ['05:00 AM', '07:00 AM', '08:00 AM', '09:00 AM', '10:00 AM'];
 export default function BookDroneServiceScreen({ navigation }) {
+  const {t} = useTranslation();
   const [service, setService] = useState('pest');
   const [material, setMaterial] = useState('provide');
   const [date, setDate] = useState('21');
@@ -119,8 +137,8 @@ export default function BookDroneServiceScreen({ navigation }) {
             alignItems: 'center',
           }}
         >
-          <Text style={styles.headerTitle}>Book Drone Service</Text>
-          <Text style={styles.headerSub}>SkyAgri Drone Services</Text>
+          <Text style={styles.headerTitle}>{t('bookDroneService.bookDroneService')}</Text>
+          <Text style={styles.headerSub}>{t('bookDroneService.skyagriDroneServices')}</Text>
         </View>
         <View style={styles.progressPill} />
       </View>
@@ -132,7 +150,7 @@ export default function BookDroneServiceScreen({ navigation }) {
         {}
         <View style={styles.opCard}>
           <View style={styles.opInitial}>
-            <Text style={styles.opInitialText}>SA</Text>
+            <Text style={styles.opInitialText}>{t('bookDroneService.sa')}</Text>
           </View>
           <View
             style={{
@@ -140,7 +158,7 @@ export default function BookDroneServiceScreen({ navigation }) {
               marginLeft: 12,
             }}
           >
-            <Text style={styles.opName}>SkyAgri Drone Services</Text>
+            <Text style={styles.opName}>{t('bookDroneService.skyagriDroneServices')}</Text>
             <View style={styles.opMetaRow}>
               <Star
                 size={rf(11)}
@@ -151,12 +169,12 @@ export default function BookDroneServiceScreen({ navigation }) {
               <Text style={styles.opRating}>4.9</Text>
               <View style={styles.dgca}>
                 <BadgeCheck size={rf(10)} color={GREEN} strokeWidth={2.4} />
-                <Text style={styles.dgcaText}>DGCA Certified</Text>
+                <Text style={styles.dgcaText}>{t('bookDroneService.dgcaCertified')}</Text>
               </View>
             </View>
             <View style={styles.availPill}>
               <View style={styles.availDot} />
-              <Text style={styles.availText}>Available Tomorrow</Text>
+              <Text style={styles.availText}>{t('bookDroneService.availableTomorrow')}</Text>
             </View>
           </View>
           <View
@@ -165,16 +183,16 @@ export default function BookDroneServiceScreen({ navigation }) {
             }}
           >
             <Text style={styles.opPrice}>₹750</Text>
-            <Text style={styles.opUnit}>/ Acre</Text>
+            <Text style={styles.opUnit}>{t('bookDroneService.acre')}</Text>
           </View>
         </View>
 
         {}
-        <Text style={styles.sectionLabel}>SELECT FARM</Text>
+        <Text style={styles.sectionLabel}>{t('bookDroneService.selectFarm')}</Text>
         <View style={styles.farmCard}>
           <View style={styles.farmHeader}>
             <View>
-              <Text style={styles.farmName}>Patil{'\n'}Farm</Text>
+              <Text style={styles.farmName}>{t('bookDroneService.patil')}{'\n'}{t('common.farm')}</Text>
             </View>
             <View
               style={{
@@ -190,32 +208,32 @@ export default function BookDroneServiceScreen({ navigation }) {
                 }}
               >
                 <MapPin size={rf(12)} color={MUTED} strokeWidth={2.4} />
-                <Text style={styles.farmLoc}>Ahmednagar,{'\n'}Maharashtra</Text>
+                <Text style={styles.farmLoc}>{t('bookDroneService.ahmednagar')}{'\n'}{t('bookDroneService.maharashtra')}</Text>
               </View>
             </View>
             <TouchableOpacity style={styles.changeBtn}>
               <RefreshCw size={rf(11)} color={DARK_GREEN} strokeWidth={2.4} />
-              <Text style={styles.changeText}>Change{'\n'}Farm</Text>
+              <Text style={styles.changeText}>{t('bookDroneService.change')}{'\n'}{t('common.farm')}</Text>
             </TouchableOpacity>
           </View>
           <View style={styles.farmStats}>
             <View style={styles.farmStat}>
-              <Text style={styles.farmStatVal}>Soybean</Text>
-              <Text style={styles.farmStatLbl}>Crop Type</Text>
+              <Text style={styles.farmStatVal}>{t('bookDroneService.soybean')}</Text>
+              <Text style={styles.farmStatLbl}>{t('bookDroneService.cropType')}</Text>
             </View>
             <View style={styles.farmStat}>
-              <Text style={styles.farmStatVal}>2.34 Acres</Text>
-              <Text style={styles.farmStatLbl}>Total Area</Text>
+              <Text style={styles.farmStatVal}>{t('bookDroneService.234Acres')}</Text>
+              <Text style={styles.farmStatLbl}>{t('bookDroneService.totalArea')}</Text>
             </View>
             <View style={styles.farmStat}>
-              <Text style={styles.farmStatVal}>42 Days</Text>
-              <Text style={styles.farmStatLbl}>Crop Age</Text>
+              <Text style={styles.farmStatVal}>{t('bookDroneService.42Days')}</Text>
+              <Text style={styles.farmStatLbl}>{t('bookDroneService.cropAge')}</Text>
             </View>
           </View>
         </View>
 
         {}
-        <Text style={styles.sectionLabel}>SERVICE TYPE</Text>
+        <Text style={styles.sectionLabel}>{t('bookDroneService.serviceType')}</Text>
         {SERVICES.map(s => {
           const active = service === s.id;
           return (
@@ -238,7 +256,7 @@ export default function BookDroneServiceScreen({ navigation }) {
                   marginLeft: 12,
                 }}
               >
-                <Text style={styles.serviceName}>{s.name}</Text>
+                <Text style={styles.serviceName}>{tOpt(s.name)}</Text>
                 <Text style={styles.serviceDesc}>{s.desc}</Text>
               </View>
               <Text
@@ -249,7 +267,7 @@ export default function BookDroneServiceScreen({ navigation }) {
                   },
                 ]}
               >
-                ₹{s.price}/Ac
+                {t('bookDroneService.ac', {price: s.price})}
               </Text>
               <View style={[styles.radio, active && styles.radioActive]}>
                 {active && (
@@ -261,7 +279,7 @@ export default function BookDroneServiceScreen({ navigation }) {
         })}
 
         {}
-        <Text style={styles.sectionLabel}>SPRAY MATERIAL</Text>
+        <Text style={styles.sectionLabel}>{t('bookDroneService.sprayMaterial')}</Text>
         <TouchableOpacity
           onPress={() => setMaterial('provide')}
           activeOpacity={0.85}
@@ -285,9 +303,9 @@ export default function BookDroneServiceScreen({ navigation }) {
                 marginLeft: 10,
               }}
             >
-              <Text style={styles.matTitle}>I Will Provide Material</Text>
+              <Text style={styles.matTitle}>{t('bookDroneService.iWillProvideMaterial')}</Text>
               <Text style={styles.matSub}>
-                You bring the chemical / fertilizer
+                {t('bookDroneService.youBringTheChemicalFertilizer')}
               </Text>
             </View>
             <View
@@ -304,15 +322,15 @@ export default function BookDroneServiceScreen({ navigation }) {
 
           {material === 'provide' && (
             <>
-              <Text style={styles.fieldLabel}>CHEMICAL</Text>
+              <Text style={styles.fieldLabel}>{t('bookDroneService.chemical')}</Text>
               <TouchableOpacity style={styles.dropdown}>
-                <Text style={styles.dropdownText}>Chlorpyrifos 20 EC</Text>
+                <Text style={styles.dropdownText}>{t('bookDroneService.chlorpyrifos20Ec')}</Text>
                 <ChevronDown size={rf(14)} color={MUTED} />
               </TouchableOpacity>
 
-              <Text style={styles.fieldLabel}>QUANTITY</Text>
+              <Text style={styles.fieldLabel}>{t('bookDroneService.quantity')}</Text>
               <View style={styles.dropdown}>
-                <Text style={styles.dropdownText}>2 Litres per Acre</Text>
+                <Text style={styles.dropdownText}>{t('bookDroneService.2LitresPerAcre')}</Text>
                 <Pencil size={rf(13)} color={MUTED} />
               </View>
             </>
@@ -345,8 +363,8 @@ export default function BookDroneServiceScreen({ navigation }) {
                 marginLeft: 10,
               }}
             >
-              <Text style={styles.matTitle}>Operator Will Provide</Text>
-              <Text style={styles.matSub}>Pre-mixed material (+₹200/Acre)</Text>
+              <Text style={styles.matTitle}>{t('bookDroneService.operatorWillProvide')}</Text>
+              <Text style={styles.matSub}>{t('bookDroneService.preMixedMaterial200Acre')}</Text>
             </View>
             <View
               style={[
@@ -362,7 +380,7 @@ export default function BookDroneServiceScreen({ navigation }) {
         </TouchableOpacity>
 
         {}
-        <Text style={styles.sectionLabel}>BOOKING DATE</Text>
+        <Text style={styles.sectionLabel}>{t('bookDroneService.bookingDate')}</Text>
         <View style={styles.dateRow}>
           {DATES.map(d => {
             const active = date === d.date;
@@ -410,7 +428,7 @@ export default function BookDroneServiceScreen({ navigation }) {
         </View>
 
         {}
-        <Text style={styles.sectionLabel}>TIME SLOT</Text>
+        <Text style={styles.sectionLabel}>{t('bookDroneService.timeSlot')}</Text>
         <View style={styles.timeGrid}>
           {TIMES.map(t => {
             const active = time === t;
@@ -439,7 +457,7 @@ export default function BookDroneServiceScreen({ navigation }) {
         <View style={styles.aiNote}>
           <View style={styles.aiNoteDot} />
           <Text style={styles.aiNoteText}>
-            Orange dot = AI recommended time
+            {t('bookDroneService.orangeDotAiRecommendedTime')}
           </Text>
         </View>
 
@@ -463,8 +481,8 @@ export default function BookDroneServiceScreen({ navigation }) {
                 marginLeft: 10,
               }}
             >
-              <Text style={styles.smartTitle}>Smart Spray Plan</Text>
-              <Text style={styles.smartSub}>Patil Farm - Soybean</Text>
+              <Text style={styles.smartTitle}>{t('bookDroneService.smartSprayPlan')}</Text>
+              <Text style={styles.smartSub}>{t('bookDroneService.patilFarmSoybean')}</Text>
             </View>
             <View style={styles.idealPill}>
               <Star
@@ -473,7 +491,7 @@ export default function BookDroneServiceScreen({ navigation }) {
                 fill="#FFFFFF"
                 strokeWidth={1.5}
               />
-              <Text style={styles.idealText}>Ideal</Text>
+              <Text style={styles.idealText}>{t('bookDroneService.ideal')}</Text>
             </View>
           </View>
 
@@ -485,12 +503,12 @@ export default function BookDroneServiceScreen({ navigation }) {
             }}
           >
             <View style={styles.smartStat}>
-              <Text style={styles.smartLbl}>BEST TIME</Text>
-              <Text style={styles.smartVal}>06:30 AM</Text>
+              <Text style={styles.smartLbl}>{t('bookDroneService.bestTime')}</Text>
+              <Text style={styles.smartVal}>{t('bookDroneService.0630Am')}</Text>
             </View>
             <View style={styles.smartStat}>
-              <Text style={styles.smartLbl}>WIND SPEED</Text>
-              <Text style={styles.smartVal}>Low - Ideal</Text>
+              <Text style={styles.smartLbl}>{t('bookDroneService.windSpeed')}</Text>
+              <Text style={styles.smartVal}>{t('bookDroneService.lowIdeal')}</Text>
             </View>
           </View>
 
@@ -502,12 +520,12 @@ export default function BookDroneServiceScreen({ navigation }) {
             }}
           >
             <View style={styles.smartStat}>
-              <Text style={styles.smartLbl}>AREA</Text>
-              <Text style={styles.smartVal}>2.34 Acres</Text>
+              <Text style={styles.smartLbl}>{t('bookDroneService.area')}</Text>
+              <Text style={styles.smartVal}>{t('bookDroneService.234Acres')}</Text>
             </View>
             <View style={styles.smartStat}>
-              <Text style={styles.smartLbl}>RECOMMENDED</Text>
-              <Text style={styles.smartVal}>Pesticide</Text>
+              <Text style={styles.smartLbl}>{t('bookDroneService.recommended')}</Text>
+              <Text style={styles.smartVal}>{t('bookDroneService.pesticide')}</Text>
             </View>
           </View>
 
@@ -518,8 +536,8 @@ export default function BookDroneServiceScreen({ navigation }) {
                 alignItems: 'center',
               }}
             >
-              <Text style={styles.smartMetricVal}>35 Min</Text>
-              <Text style={styles.smartMetricLbl}>Duration</Text>
+              <Text style={styles.smartMetricVal}>{t('bookDroneService.35Min')}</Text>
+              <Text style={styles.smartMetricLbl}>{t('bookDroneService.duration')}</Text>
             </View>
             <View
               style={{
@@ -528,7 +546,7 @@ export default function BookDroneServiceScreen({ navigation }) {
               }}
             >
               <Text style={styles.smartMetricVal}>90%</Text>
-              <Text style={styles.smartMetricLbl}>Water Saving</Text>
+              <Text style={styles.smartMetricLbl}>{t('bookDroneService.waterSaving')}</Text>
             </View>
             <View
               style={{
@@ -537,17 +555,17 @@ export default function BookDroneServiceScreen({ navigation }) {
               }}
             >
               <Text style={styles.smartMetricVal}>98%</Text>
-              <Text style={styles.smartMetricLbl}>Accuracy</Text>
+              <Text style={styles.smartMetricLbl}>{t('bookDroneService.accuracy')}</Text>
             </View>
           </View>
 
           <TouchableOpacity style={styles.whyBtn}>
-            <Text style={styles.whyText}>⚡ Why this recommendation? ›</Text>
+            <Text style={styles.whyText}>{t('bookDroneService.whyThisRecommendation')}</Text>
           </TouchableOpacity>
         </LinearGradient>
 
         {}
-        <Text style={styles.sectionLabel}>FARM MAP</Text>
+        <Text style={styles.sectionLabel}>{t('bookDroneService.farmMap')}</Text>
         <View style={styles.mapCard}>
           <ImageBackground
             source={require('../../assets/drone/farm-map.png')}
@@ -571,30 +589,30 @@ export default function BookDroneServiceScreen({ navigation }) {
                   marginLeft: 8,
                 }}
               >
-                <Text style={styles.mapName}>Patil Farm</Text>
-                <Text style={styles.mapMeta}>2.34 Acres · Ahmednagar</Text>
+                <Text style={styles.mapName}>{t('bookDroneService.patilFarm')}</Text>
+                <Text style={styles.mapMeta}>{t('bookDroneService.234AcresAhmednagar')}</Text>
               </View>
             </View>
             <TouchableOpacity style={styles.viewFarmBtn}>
-              <Text style={styles.viewFarmText}>◎ View Full Farm</Text>
+              <Text style={styles.viewFarmText}>{t('bookDroneService.viewFullFarm')}</Text>
             </TouchableOpacity>
           </View>
         </View>
 
         {}
-        <Text style={styles.sectionLabel}>PRICE SUMMARY</Text>
+        <Text style={styles.sectionLabel}>{t('bookDroneService.priceSummary')}</Text>
         <View style={styles.priceBox}>
           <View style={styles.priceRow}>
             <View>
-              <Text style={styles.priceKey}>Drone Service</Text>
-              <Text style={styles.priceSub}>750 × 2.34 Acres</Text>
+              <Text style={styles.priceKey}>{t('bookDroneService.droneService')}</Text>
+              <Text style={styles.priceSub}>{t('bookDroneService.750234Acres')}</Text>
             </View>
             <Text style={styles.priceVal}>₹1,755</Text>
           </View>
           <View style={styles.priceRow}>
             <View>
-              <Text style={styles.priceKey}>Travel Charge</Text>
-              <Text style={styles.priceSub}>Within 5 km - Free</Text>
+              <Text style={styles.priceKey}>{t('bookDroneService.travelCharge')}</Text>
+              <Text style={styles.priceSub}>{t('bookDroneService.within5KmFree')}</Text>
             </View>
             <Text
               style={[
@@ -604,43 +622,43 @@ export default function BookDroneServiceScreen({ navigation }) {
                 },
               ]}
             >
-              FREE
+              {t('bookDroneService.free')}
             </Text>
           </View>
           <View style={styles.priceRow}>
-            <Text style={styles.priceKey}>Platform Fee</Text>
+            <Text style={styles.priceKey}>{t('bookDroneService.platformFee')}</Text>
             <Text style={styles.priceVal}>₹99</Text>
           </View>
           <View style={styles.priceRow}>
-            <Text style={styles.priceKey}>GST (18%)</Text>
+            <Text style={styles.priceKey}>{t('bookDroneService.gst18')}</Text>
             <Text style={styles.priceVal}>₹176</Text>
           </View>
           <View style={styles.divider} />
           <View style={styles.priceRow}>
-            <Text style={styles.totalKey}>Grand Total</Text>
+            <Text style={styles.totalKey}>{t('bookDroneService.grandTotal')}</Text>
             <Text style={styles.totalVal}>₹2,030</Text>
           </View>
         </View>
 
         {}
-        <Text style={styles.sectionLabel}>SERVICE INCLUDES</Text>
+        <Text style={styles.sectionLabel}>{t('bookDroneService.serviceIncludes')}</Text>
         <View style={styles.incGrid}>
           {[
             {
               Icon: User,
-              label: 'Certified Pilot',
+              label: t('bookDroneService.certifiedPilot'),
             },
             {
               Icon: Zap,
-              label: 'Drone Equipment',
+              label: t('bookDroneService.droneEquipment'),
             },
             {
               Icon: Shield,
-              label: 'Safety Gear',
+              label: t('bookDroneService.safetyGear'),
             },
             {
               Icon: FileText,
-              label: 'Spray Report',
+              label: t('bookDroneService.sprayReport'),
             },
           ].map(i => {
             const Icon = i.Icon;
@@ -654,12 +672,12 @@ export default function BookDroneServiceScreen({ navigation }) {
         </View>
 
         {}
-        <Text style={styles.sectionLabel}>SPECIAL INSTRUCTIONS</Text>
+        <Text style={styles.sectionLabel}>{t('bookDroneService.specialInstructions')}</Text>
         <View style={styles.instBox}>
           <TextInput
             value={instructions}
             onChangeText={setInstructions}
-            placeholder="Add instructions for the drone operator (optional)..."
+            placeholder={t('bookDroneService.addInstructionsForTheDrone')}
             placeholderTextColor="#94A3B8"
             multiline
             style={styles.instInput}
@@ -672,16 +690,16 @@ export default function BookDroneServiceScreen({ navigation }) {
       {}
       <View style={styles.bottomBar}>
         <View>
-          <Text style={styles.bottomLbl}>TOTAL AMOUNT</Text>
+          <Text style={styles.bottomLbl}>{t('bookDroneService.totalAmount')}</Text>
           <Text style={styles.bottomAmt}>₹2,030</Text>
-          <Text style={styles.bottomSub}>Incl. GST & Platform Fee</Text>
+          <Text style={styles.bottomSub}>{t('bookDroneService.inclGstPlatformFee')}</Text>
         </View>
         <TouchableOpacity
           activeOpacity={0.9}
           onPress={() => navigation.navigate('ConfirmDroneBooking')}
           style={styles.continueBtn}
         >
-          <Text style={styles.continueText}>Continue</Text>
+          <Text style={styles.continueText}>{t('common.continue')}</Text>
           <ArrowRight size={rf(15)} color="#FFFFFF" strokeWidth={2.4} />
         </TouchableOpacity>
       </View>

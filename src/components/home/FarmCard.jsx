@@ -217,7 +217,7 @@ export default function FarmCard({
 
           <View style={styles.detailsRow}>
             <Text style={styles.detailsText}>
-              View
+              {t('common.view')}
             </Text>
 
             <ChevronRight

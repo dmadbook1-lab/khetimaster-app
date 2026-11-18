@@ -1,5 +1,9 @@
-import apiClient from './client';
-import API_ENDPOINTS from './endpoints';
+import {
+  getMandiCrops,
+  getMandiStates,
+  getMandiDistricts,
+  getMandiRates,
+} from './mandiService';
 
 const clean = params =>
   Object.fromEntries(
@@ -20,23 +24,15 @@ const clean = params =>
 */
 
 export const getMandiCropsApi = async () => {
-  const response = await apiClient.get(API_ENDPOINTS.MANDI_CROPS);
-
-  return response.data;
+  return getMandiCrops();
 };
 
 export const getMandiStatesApi = async () => {
-  const response = await apiClient.get(API_ENDPOINTS.MANDI_STATES);
-
-  return response.data;
+  return getMandiStates();
 };
 
 export const getMandiDistrictsApi = async (state, crop) => {
-  const response = await apiClient.get(API_ENDPOINTS.MANDI_DISTRICTS, {
-    params: clean({ state, crop }),
-  });
-
-  return response.data;
+  return getMandiDistricts(state, crop);
 };
 
 /*
@@ -48,17 +44,17 @@ export const getMandiDistrictsApi = async (state, crop) => {
 | arrivalDate (YYYY-MM-DD), sort (location | price_desc | price_asc |
 | market | newest), page, limit (max 200)
 |
-| Response: {filters, source, fetchedAt, stale, truncated, summary,
-|            count, total, page, pages, data}
+| Response: {filters, source, date, isToday, rateLimited, fetchedAt,
+|            stale, truncated, summary, count, total, page, pages, data}
 |
-| The data.gov.in key stays on the server.
+| data holds ONE day only: today (IST) or, if nothing is reported yet,
+| the latest day within the last 7 (isToday: false). date is null when
+| there are no prices.
+|
+| Fetched straight from data.gov.in by ./mandiService (not our backend).
 |
 */
 
 export const getMandiRatesApi = async (params = {}) => {
-  const response = await apiClient.get(API_ENDPOINTS.MANDI_RATES, {
-    params: clean(params),
-  });
-
-  return response.data;
+  return getMandiRates(clean(params));
 };

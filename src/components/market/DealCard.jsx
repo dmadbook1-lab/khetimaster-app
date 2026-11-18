@@ -12,8 +12,10 @@ import {
   formatRupees,
   timeAgo,
 } from '../../utils/marketFormat';
+import {useTranslation} from 'react-i18next';
 
 function DealCard({deal, onPress}) {
+  const {t} = useTranslation();
   const snapshot = deal.listingSnapshot || {};
   const image = deal.listing?.images?.[0] || snapshot.image;
   const counterparty = deal.myRole === 'BUYER' ? deal.seller : deal.buyer;
@@ -56,7 +58,7 @@ function DealCard({deal, onPress}) {
 
           {!!counterparty?.fullName && (
             <Text style={styles.party} numberOfLines={1}>
-              {deal.myRole === 'BUYER' ? 'Seller' : 'Buyer'}: {counterparty.fullName}
+              {deal.myRole === 'BUYER' ? t('dealCard.seller') : t('dealCard.buyer')}: {counterparty.fullName}
             </Text>
           )}
         </View>

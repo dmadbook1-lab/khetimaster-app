@@ -26,15 +26,26 @@ import {
 import { MARKET_COLORS as C } from '../../components/market/theme';
 import { MARKET_ROUTES } from '../../constants/marketRoutes';
 import { fetchMyMarketListings } from '../../redux/slices/marketSlice';
+import {useTranslation} from 'react-i18next';
+import i18n from 'i18next';
 
 const STATUS_FILTERS = [
-  { key: 'all', label: 'All' },
-  { key: 'ACTIVE', label: 'Active' },
-  { key: 'PAUSED', label: 'Paused' },
-  { key: 'SOLD', label: 'Sold Out' },
+  { key: 'all', get label() {
+    return i18n.t('marketMyListings.all');
+  } },
+  { key: 'ACTIVE', get label() {
+    return i18n.t('common.active');
+  } },
+  { key: 'PAUSED', get label() {
+    return i18n.t('marketMyListings.paused');
+  } },
+  { key: 'SOLD', get label() {
+    return i18n.t('marketMyListings.soldOut');
+  } },
 ];
 
 export default function MarketMyListingsScreen({ navigation }) {
+  const {t} = useTranslation();
   const dispatch = useDispatch();
   const { myListings, myListingsLoading, myListingsError } = useSelector(
     state => state.market,
@@ -93,8 +104,7 @@ export default function MarketMyListingsScreen({ navigation }) {
               <Handshake size={15} color={C.amber} />
               <Text style={styles.offerText}>
                 {item.pendingOffers}{' '}
-                {item.pendingOffers === 1 ? 'offer' : 'offers'} waiting for your
-                reply
+                {item.pendingOffers === 1 ? t('plural.offer') : t('plural.offers')} {t('marketMyListings.waitingForYourReply')}
               </Text>
               <ChevronRight size={16} color={C.amber} />
             </TouchableOpacity>
@@ -118,12 +128,12 @@ export default function MarketMyListingsScreen({ navigation }) {
             <MarketHero
               compact
               onBack={() => navigation.goBack()}
-              eyebrow="Your shop"
-              title="My Listings"
+              eyebrow={t('marketMyListings.yourShop')}
+              title={t('marketMyListings.myListings')}
               subtitle={
                 totals?.pending
-                  ? `${totals.pending} offers are waiting for your reply`
-                  : 'Manage stock, prices and offers in one place'
+                  ? t('marketMyListings.offersAreWaitingForYour', {pending: totals.pending})
+                  : t('marketMyListings.manageStockPricesAndOffers')
               }
               right={
                 <GlassButton
@@ -134,11 +144,11 @@ export default function MarketMyListingsScreen({ navigation }) {
               }
             >
               <View style={styles.statsRow}>
-                <HeroStat value={totals ? totals.active : '-'} label="Active" />
-                <HeroStat value={totals ? totals.sold : '-'} label="Sold out" />
+                <HeroStat value={totals ? totals.active : '-'} label={t('common.active')} />
+                <HeroStat value={totals ? totals.sold : '-'} label={t('marketMyListings.soldOut2')} />
                 <HeroStat
                   value={totals ? totals.pending : '-'}
-                  label="Offers waiting"
+                  label={t('marketMyListings.offersWaiting')}
                   highlight={totals?.pending > 0}
                 />
               </View>
@@ -167,17 +177,17 @@ export default function MarketMyListingsScreen({ navigation }) {
           ) : myListingsError ? (
             <EmptyState
               icon={<Store size={30} color={C.green} />}
-              title="Couldn't load your listings"
+              title={t('marketMyListings.couldntLoadYourListings')}
               message={myListingsError}
-              actionLabel="Try Again"
+              actionLabel={t('marketMyListings.tryAgain')}
               onAction={load}
             />
           ) : (
             <EmptyState
               icon={<Store size={30} color={C.green} />}
-              title="No listings yet"
-              message="List your crops, fruits, vegetables or farm equipment and get offers from buyers."
-              actionLabel="Create Listing"
+              title={t('marketMyListings.noListingsYet')}
+              message={t('marketMyListings.listYourCropsFruitsVegetables')}
+              actionLabel={t('marketMyListings.createListing')}
               onAction={() => navigation.navigate(MARKET_ROUTES.SELL)}
             />
           )

@@ -11,12 +11,14 @@ import {
   togglePostSave,
 } from '../../../redux/slices/communitySlice';
 import { COMMUNITY_ROUTES } from '../../../constants/communityRoutes';
+import {useTranslation} from 'react-i18next';
 
 /*
  * Everything a post can do, shared by the feed, reels, profile and search
  * screens. Pass `actions` to cards and render `sheets` once in the screen.
  */
 export default function usePostInteractions(navigation, { onDeleted } = {}) {
+  const {t} = useTranslation();
   const dispatch = useDispatch();
   const [commentsFor, setCommentsFor] = useState(null);
   // optionsFor is kept while the sheet animates closed
@@ -76,7 +78,7 @@ export default function usePostInteractions(navigation, { onDeleted } = {}) {
   const share = useCallback(async post => {
     const media = post.media?.[0];
     const lines = [
-      `${post.author?.fullName || 'A farmer'} on KhetiMaster Community`,
+      t('usePostInteractions.onKhetimasterCommunity', {v1: post.author?.fullName || 'A farmer'}),
       post.caption,
       media?.url,
     ].filter(Boolean);
@@ -90,23 +92,23 @@ export default function usePostInteractions(navigation, { onDeleted } = {}) {
     } catch {
       // share sheet dismissed / unavailable
     }
-  }, []);
+  }, [t]);
 
   const confirmDelete = useCallback(
     post => {
       Alert.alert(
-        post.type === 'reel' ? 'Delete reel?' : 'Delete post?',
-        'This cannot be undone.',
+        post.type === 'reel' ? t('usePostInteractions.deleteReel') : t('usePostInteractions.deletePost'),
+        t('usePostInteractions.thisCannotBeUndone'),
         [
-          { text: 'Cancel', style: 'cancel' },
+          { text: t('common.cancel'), style: 'cancel' },
           {
-            text: 'Delete',
+            text: t('common.delete'),
             style: 'destructive',
             onPress: async () => {
               const result = await dispatch(deleteCommunityPost(post._id));
 
               if (deleteCommunityPost.rejected.match(result)) {
-                Alert.alert('Delete', result.payload);
+                Alert.alert(t('common.delete'), result.payload);
                 return;
               }
 
@@ -116,20 +118,20 @@ export default function usePostInteractions(navigation, { onDeleted } = {}) {
         ],
       );
     },
-    [dispatch, onDeleted],
+    [dispatch, onDeleted, t],
   );
 
   const options = optionsFor
     ? [
         {
           key: 'share',
-          label: 'Share',
+          label: t('usePostInteractions.share'),
           Icon: Share2,
           onPress: () => share(optionsFor),
         },
         {
           key: 'save',
-          label: optionsFor.isSaved ? 'Remove from saved' : 'Save',
+          label: optionsFor.isSaved ? t('usePostInteractions.removeFromSaved') : t('usePostInteractions.save'),
           Icon: Bookmark,
           onPress: () => save(optionsFor),
         },
@@ -137,7 +139,7 @@ export default function usePostInteractions(navigation, { onDeleted } = {}) {
           ? [
               {
                 key: 'delete',
-                label: 'Delete',
+                label: t('common.delete'),
                 Icon: Trash2,
                 destructive: true,
                 onPress: () => confirmDelete(optionsFor),
@@ -146,7 +148,7 @@ export default function usePostInteractions(navigation, { onDeleted } = {}) {
           : [
               {
                 key: 'profile',
-                label: `View ${optionsFor.author?.fullName || 'profile'}`,
+                label: t('usePostInteractions.view', {v1: optionsFor.author?.fullName || 'profile'}),
                 Icon: UserRound,
                 onPress: () => openProfile(optionsFor.author?._id),
               },

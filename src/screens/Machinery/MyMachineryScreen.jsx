@@ -49,40 +49,77 @@ import {
 import { MACHINERY_ROUTES } from '../../constants/machineryRoutes';
 import { fetchMyMachinery } from '../../redux/slices/machinerySlice';
 import { AVAILABILITY_META, startingPrice } from '../../utils/machineryFormat';
+import {useTranslation} from 'react-i18next';
+import i18n from 'i18next';
 
 const LIST_STEPS = [
-  { title: 'Add your machine', text: 'Name, type and a few photos' },
-  { title: 'Set your rates', text: 'Per hour, per day or per acre' },
-  { title: 'Get requests', text: 'Farmers nearby send bookings' },
-  { title: 'Confirm & earn', text: 'Do the work and get paid' },
+  { get title() {
+    return i18n.t('myMachinery.addYourMachine');
+  }, get text() {
+    return i18n.t('myMachinery.nameTypeAndAFew');
+  } },
+  { get title() {
+    return i18n.t('myMachinery.setYourRates');
+  }, get text() {
+    return i18n.t('myMachinery.perHourPerDayOr');
+  } },
+  { get title() {
+    return i18n.t('myMachinery.getRequests');
+  }, get text() {
+    return i18n.t('myMachinery.farmersNearbySendBookings');
+  } },
+  { get title() {
+    return i18n.t('myMachinery.confirmEarn');
+  }, get text() {
+    return i18n.t('myMachinery.doTheWorkAndGet');
+  } },
 ];
 
 const BENEFITS = [
   {
     icon: IndianRupee,
-    title: 'Earn when idle',
-    text: 'Rent out when you are not using it',
+    get title() {
+    return i18n.t('myMachinery.earnWhenIdle');
+  },
+    get text() {
+    return i18n.t('myMachinery.rentOutWhenYouAre');
+  },
   },
   {
     icon: BellRing,
-    title: 'Requests come to you',
-    text: 'Farmers near you book directly',
+    get title() {
+    return i18n.t('myMachinery.requestsComeToYou');
+  },
+    get text() {
+    return i18n.t('myMachinery.farmersNearYouBookDirectly');
+  },
   },
   {
     icon: ShieldCheck,
-    title: 'Number stays private',
-    text: 'Shared only after you confirm',
+    get title() {
+    return i18n.t('myMachinery.numberStaysPrivate');
+  },
+    get text() {
+    return i18n.t('myMachinery.sharedOnlyAfterYouConfirm');
+  },
   },
   {
     icon: Star,
-    title: 'Build your rating',
-    text: 'Good reviews bring more work',
+    get title() {
+    return i18n.t('myMachinery.buildYourRating');
+  },
+    get text() {
+    return i18n.t('myMachinery.goodReviewsBringMoreWork');
+  },
   },
 ];
 
-const HIDDEN_META = { label: 'Hidden', color: C.text, bg: '#EEF0F2' };
+const HIDDEN_META = { get label() {
+    return i18n.t('myMachinery.hidden');
+  }, color: C.text, bg: '#EEF0F2' };
 
 export default function MyMachineryScreen({ navigation }) {
+  const {t} = useTranslation();
   const dispatch = useDispatch();
   const insets = useSafeAreaInsets();
   const { mine, mineStatus, mineError } = useSelector(state => state.machinery);
@@ -112,9 +149,9 @@ export default function MyMachineryScreen({ navigation }) {
           <MarketHero
             image={OWNER_HERO_IMAGE}
             onBack={() => navigation.goBack()}
-            eyebrow="Machine owners"
-            title={'Earn from your\ntractor & machines'}
-            subtitle="List your machinery for free and get rental requests from farmers nearby."
+            eyebrow={t('myMachinery.machineOwners')}
+            title={t('myMachinery.earnFromYourTractorMachines')}
+            subtitle={t('myMachinery.listYourMachineryForFree')}
           >
             <TouchableOpacity
               activeOpacity={0.88}
@@ -122,25 +159,25 @@ export default function MyMachineryScreen({ navigation }) {
               onPress={addMachine}
             >
               <Plus size={18} color="#3A2400" strokeWidth={2.8} />
-              <Text style={styles.heroCtaText}>List your machine</Text>
+              <Text style={styles.heroCtaText}>{t('myMachinery.listYourMachine')}</Text>
               <ArrowRight size={17} color="#3A2400" strokeWidth={2.6} />
             </TouchableOpacity>
-            <Text style={styles.heroCtaNote}>Free · takes about 3 minutes</Text>
+            <Text style={styles.heroCtaNote}>{t('myMachinery.freeTakesAbout3Minutes')}</Text>
           </MarketHero>
 
           <View style={styles.body}>
             {mineStatus === 'error' ? (
               <EmptyState
-                title="Couldn't load your machines"
+                title={t('myMachinery.couldntLoadYourMachines')}
                 message={mineError}
-                actionLabel="Try Again"
+                actionLabel={t('myMachinery.tryAgain')}
                 onAction={load}
               />
             ) : !empty ? (
               <LoadingState />
             ) : (
               <>
-                <Text style={styles.blockTitle}>How it works</Text>
+                <Text style={styles.blockTitle}>{t('myMachinery.howItWorks')}</Text>
                 <View style={styles.card}>
                   {LIST_STEPS.map((item, index) => (
                     <View key={item.title} style={styles.regStep}>
@@ -160,7 +197,7 @@ export default function MyMachineryScreen({ navigation }) {
                   ))}
                 </View>
 
-                <Text style={styles.blockTitle}>Why list on KhetiMaster</Text>
+                <Text style={styles.blockTitle}>{t('myMachinery.whyListOnKhetimaster')}</Text>
                 <View style={styles.benefits}>
                   {BENEFITS.map(({ icon: Icon, title, text }) => (
                     <View key={title} style={styles.benefit}>
@@ -182,11 +219,10 @@ export default function MyMachineryScreen({ navigation }) {
                   >
                     <View style={styles.flex}>
                       <Text style={styles.finalCtaTitle}>
-                        Ready to start earning?
+                        {t('myMachinery.readyToStartEarning')}
                       </Text>
                       <Text style={styles.finalCtaText}>
-                        Add your first machine and start getting rental
-                        requests.
+                        {t('myMachinery.addYourFirstMachineAnd')}
                       </Text>
                     </View>
                     <View style={styles.finalCtaButton}>
@@ -207,7 +243,7 @@ export default function MyMachineryScreen({ navigation }) {
             ]}
           >
             <MarketButton
-              label="List Your Machine"
+              label={t('myMachinery.listYourMachine2')}
               icon={<Plus size={17} color={C.white} />}
               onPress={addMachine}
               style={styles.flex}
@@ -251,9 +287,9 @@ export default function MyMachineryScreen({ navigation }) {
           compact
           gradient="forest"
           onBack={() => navigation.goBack()}
-          eyebrow="Machine owner"
-          title="My Machines"
-          subtitle={`${live} of ${mine.length} available for rent`}
+          eyebrow={t('myMachinery.machineOwner')}
+          title={t('myMachinery.myMachines')}
+          subtitle={t('myMachinery.ofAvailableForRent', {live, length: mine.length})}
           right={
             <GlassButton onPress={addMachine}>
               <Plus size={20} color={C.white} />
@@ -263,11 +299,11 @@ export default function MyMachineryScreen({ navigation }) {
           <View style={styles.statsRow}>
             <HeroStat
               value={pending}
-              label="New requests"
+              label={t('myMachinery.newRequests')}
               highlight={pending > 0}
             />
-            <HeroStat value={mine.length} label="Machines" />
-            <HeroStat value={jobs} label="Jobs done" />
+            <HeroStat value={mine.length} label={t('myMachinery.machines')} />
+            <HeroStat value={jobs} label={t('myMachinery.jobsDone')} />
           </View>
         </MarketHero>
 
@@ -283,17 +319,17 @@ export default function MyMachineryScreen({ navigation }) {
               <Inbox size={20} color={C.amber} />
             </View>
             <View style={styles.flex}>
-              <Text style={styles.actionTitle}>Rental requests</Text>
+              <Text style={styles.actionTitle}>{t('myMachinery.rentalRequests')}</Text>
               <Text style={styles.actionText}>
                 {pending
-                  ? `${pending} waiting for your reply`
-                  : 'See all bookings for your machines'}
+                  ? t('myMachinery.waitingForYourReply', {pending})
+                  : t('myMachinery.seeAllBookingsForYour')}
               </Text>
             </View>
             <ChevronRight size={19} color={C.muted} />
           </TouchableOpacity>
 
-          <Text style={styles.blockTitle}>Your machines</Text>
+          <Text style={styles.blockTitle}>{t('myMachinery.yourMachines')}</Text>
 
           {mine.map(machine => (
             <TouchableOpacity
@@ -346,8 +382,8 @@ export default function MyMachineryScreen({ navigation }) {
                   <Inbox size={15} color={C.amber} />
                   <Text style={styles.pendingText}>
                     {machine.pendingRequests}{' '}
-                    {machine.pendingRequests === 1 ? 'request' : 'requests'}{' '}
-                    waiting for your reply
+                    {machine.pendingRequests === 1 ? t('plural.request') : t('plural.requests')}{' '}
+                    {t('myMachinery.waitingForYourReply2')}
                   </Text>
                   <ChevronRight size={16} color={C.amber} />
                 </TouchableOpacity>
@@ -361,7 +397,7 @@ export default function MyMachineryScreen({ navigation }) {
             onPress={addMachine}
           >
             <Tractor size={22} color={C.green} />
-            <Text style={styles.addText}>Add another machine</Text>
+            <Text style={styles.addText}>{t('myMachinery.addAnotherMachine')}</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>

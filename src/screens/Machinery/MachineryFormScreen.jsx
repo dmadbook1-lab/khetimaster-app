@@ -57,14 +57,32 @@ import {
   buildMachineryPayload,
 } from '../../utils/machineryFormat';
 import { dayKeyOf, formatDay, toDayKey } from '../../utils/indiaSchedule';
+import {useTranslation} from 'react-i18next';
+import i18n from 'i18next';
 
 const MAX_IMAGES = 6;
 
 const STEPS = [
-  { title: 'Your machine', text: 'Name, type and photos' },
-  { title: 'Specs & implements', text: 'Power, fuel and attachments' },
-  { title: 'Rent rates', text: 'What you charge farmers' },
-  { title: 'Availability & location', text: 'When and where it is available' },
+  { get title() {
+    return i18n.t('machineryForm.yourMachine');
+  }, get text() {
+    return i18n.t('machineryForm.nameTypeAndPhotos');
+  } },
+  { get title() {
+    return i18n.t('machineryForm.specsImplements');
+  }, get text() {
+    return i18n.t('machineryForm.powerFuelAndAttachments');
+  } },
+  { get title() {
+    return i18n.t('machineryForm.rentRates');
+  }, get text() {
+    return i18n.t('machineryForm.whatYouChargeFarmers');
+  } },
+  { get title() {
+    return i18n.t('machineryForm.availabilityLocation');
+  }, get text() {
+    return i18n.t('machineryForm.whenAndWhereItIs');
+  } },
 ];
 
 // page each validated field lives on (fields from buildMachineryPayload)
@@ -83,10 +101,18 @@ const AVAILABILITY_LABELS = Object.fromEntries(
 );
 
 const CUSTOM_UNIT_LABELS = {
-  acre: 'per acre',
-  hour: 'per hour',
-  day: 'per day',
-  job: 'per job',
+  get acre() {
+    return i18n.t('machineryForm.perAcre');
+  },
+  get hour() {
+    return i18n.t('machineryForm.perHour2');
+  },
+  get day() {
+    return i18n.t('machineryForm.perDay2');
+  },
+  get job() {
+    return i18n.t('machineryForm.perJob');
+  },
   custom: 'fixed',
 };
 
@@ -154,6 +180,7 @@ function SwitchRow({ label, description, value, onValueChange }) {
 }
 
 export default function MachineryFormScreen({ navigation, route }) {
+  const {t} = useTranslation();
   const editing = route?.params?.machinery || null;
   const isCreate = !editing;
 
@@ -230,8 +257,8 @@ export default function MachineryFormScreen({ navigation, route }) {
 
     if (remaining <= 0) {
       feedback.info(
-        'Maximum reached',
-        `You can add up to ${MAX_IMAGES} photos.`,
+        t('machineryForm.maximumReached'),
+        t('machineryForm.youCanAddUpTo', {MAX_IMAGES}),
       );
       return;
     }
@@ -277,10 +304,10 @@ export default function MachineryFormScreen({ navigation, route }) {
 
       if (isCreate) {
         feedback.success(
-          'Your machine is listed!',
-          'Farmers near you can now find it and send rental requests.',
+          t('machineryForm.yourMachineIsListed'),
+          t('machineryForm.farmersNearYouCanNow'),
           {
-            primaryLabel: 'View Machine',
+            primaryLabel: t('machineryForm.viewMachine'),
             dismissable: false,
             onPrimary: () =>
               navigation.replace(MACHINERY_ROUTES.DETAILS, {
@@ -290,10 +317,10 @@ export default function MachineryFormScreen({ navigation, route }) {
         );
       } else {
         feedback.success(
-          'Machine updated',
-          'New rates apply to new bookings only.',
+          t('machineryForm.machineUpdated'),
+          t('machineryForm.newRatesApplyToNew'),
           {
-            primaryLabel: 'Done',
+            primaryLabel: t('machineryForm.done'),
             dismissable: false,
             onPrimary: () => navigation.goBack(),
           },
@@ -336,18 +363,18 @@ export default function MachineryFormScreen({ navigation, route }) {
             compact
             gradient={isCreate ? 'amber' : 'forest'}
             onBack={handleBack}
-            eyebrow={isCreate ? 'List your machine' : 'Edit machine'}
-            title={isCreate ? 'Rent out your\nmachine' : editing.name}
+            eyebrow={isCreate ? t('machineryForm.listYourMachine') : t('machineryForm.editMachine')}
+            title={isCreate ? t('machineryForm.rentOutYourMachine') : editing.name}
             subtitle={
               isCreate
                 ? STEPS[step].text
-                : 'Price changes only apply to new bookings.'
+                : t('machineryForm.priceChangesOnlyApplyTo')
             }
           >
             {isCreate && (
               <View style={styles.progress}>
                 <Text style={styles.progressLabel}>
-                  Step {step + 1} of {STEPS.length} · {STEPS[step].title}
+                  {t('machineryForm.stepOf', {v1: step + 1, length: STEPS.length, title: STEPS[step].title})}
                 </Text>
                 <View style={styles.progressBar}>
                   {STEPS.map((item, index) => (
@@ -369,12 +396,12 @@ export default function MachineryFormScreen({ navigation, route }) {
               <>
                 <SectionHeading
                   icon={<Tractor size={16} color={C.green} />}
-                  title="Your machine"
+                  title={t('machineryForm.yourMachine')}
                 />
                 <FormCard>
                   <Field
-                    label="Photos"
-                    hint={`Clear photos get more bookings. Up to ${MAX_IMAGES}.`}
+                    label={t('machineryForm.photos')}
+                    hint={t('machineryForm.clearPhotosGetMoreBookings', {MAX_IMAGES})}
                   >
                     <ScrollView
                       horizontal
@@ -428,21 +455,21 @@ export default function MachineryFormScreen({ navigation, route }) {
                           onPress={choosePhotos}
                         >
                           <ImagePlus size={24} color={C.green} />
-                          <Text style={styles.addImageText}>Add Photos</Text>
+                          <Text style={styles.addImageText}>{t('machineryForm.addPhotos')}</Text>
                         </TouchableOpacity>
                       )}
                     </ScrollView>
                   </Field>
 
-                  <Field label="Machine name *">
+                  <Field label={t('machineryForm.machineName')}>
                     <FormInput
                       value={form.name}
                       onChangeText={value => setField('name', value)}
-                      placeholder="e.g. Mahindra 575 DI with Rotavator"
+                      placeholder={t('machineryForm.eGMahindra575Di')}
                       maxLength={100}
                     />
                   </Field>
-                  <Field label="Type of machine *">
+                  <Field label={t('machineryForm.typeOfMachine')}>
                     <SelectChips
                       options={categoryOptions}
                       value={form.category}
@@ -451,25 +478,25 @@ export default function MachineryFormScreen({ navigation, route }) {
                   </Field>
                   <View style={styles.row}>
                     <View style={styles.flex}>
-                      <Field label="Brand">
+                      <Field label={t('machineryForm.brand')}>
                         <FormInput
                           value={form.brand}
                           onChangeText={value => setField('brand', value)}
-                          placeholder="Mahindra"
+                          placeholder={t('machineryForm.mahindra')}
                         />
                       </Field>
                     </View>
                     <View style={styles.flex}>
-                      <Field label="Model">
+                      <Field label={t('machineryForm.model')}>
                         <FormInput
                           value={form.model}
                           onChangeText={value => setField('model', value)}
-                          placeholder="575 DI"
+                          placeholder={t('machineryForm.575Di')}
                         />
                       </Field>
                     </View>
                   </View>
-                  <Field label="Model year">
+                  <Field label={t('machineryForm.modelYear')}>
                     <FormInput
                       value={form.modelYear}
                       onChangeText={value => setField('modelYear', value)}
@@ -487,12 +514,12 @@ export default function MachineryFormScreen({ navigation, route }) {
                 <SectionHeading
                   icon={<Cog size={16} color={C.blue} />}
                   color={C.blue}
-                  title="Specs & implements"
+                  title={t('machineryForm.specsImplements')}
                 />
                 <FormCard>
                   <View style={styles.row}>
                     <View style={styles.flex}>
-                      <Field label="Engine power">
+                      <Field label={t('machineryForm.enginePower')}>
                         <FormInput
                           value={form.enginePowerValue}
                           onChangeText={value =>
@@ -504,7 +531,7 @@ export default function MachineryFormScreen({ navigation, route }) {
                       </Field>
                     </View>
                     <View style={styles.flexWide}>
-                      <Field label="Unit">
+                      <Field label={t('machineryForm.unit')}>
                         <SelectChips
                           options={
                             meta.enginePowerUnits.length
@@ -517,7 +544,7 @@ export default function MachineryFormScreen({ navigation, route }) {
                       </Field>
                     </View>
                   </View>
-                  <Field label="Fuel">
+                  <Field label={t('machineryForm.fuel')}>
                     <SelectChips
                       options={
                         meta.fuelTypes.length
@@ -529,7 +556,7 @@ export default function MachineryFormScreen({ navigation, route }) {
                       onChange={value => setField('fuelType', value)}
                     />
                   </Field>
-                  <Field label="Drive">
+                  <Field label={t('machineryForm.drive')}>
                     <SelectChips
                       options={
                         meta.driveTypes.length
@@ -542,15 +569,15 @@ export default function MachineryFormScreen({ navigation, route }) {
                   </Field>
 
                   <SwitchRow
-                    label="Comes with implements"
-                    description="Rotavator, plough, trolley... that farmers can choose"
+                    label={t('machineryForm.comesWithImplements')}
+                    description={t('machineryForm.rotavatorPloughTrolleyThatFarmers')}
                     value={form.supportsImplements}
                     onValueChange={value =>
                       setField('supportsImplements', value)
                     }
                   />
                   {form.supportsImplements && (
-                    <Field label="Implements you have">
+                    <Field label={t('machineryForm.implementsYouHave')}>
                       <SelectChips
                         multiple
                         options={implementOptions}
@@ -570,13 +597,13 @@ export default function MachineryFormScreen({ navigation, route }) {
                 <SectionHeading
                   icon={<IndianRupee size={16} color={C.orange} />}
                   color={C.orange}
-                  title="Rent rates"
-                  subtitle="Set at least one. Leave a box empty if you don't offer it."
+                  title={t('machineryForm.rentRates')}
+                  subtitle={t('machineryForm.setAtLeastOneLeave')}
                 />
                 <FormCard>
                   <View style={styles.row}>
                     <View style={styles.flex}>
-                      <Field label="Per hour">
+                      <Field label={t('machineryForm.perHour')}>
                         <View style={styles.moneyBox}>
                           <Text style={styles.rupee}>₹</Text>
                           <FormInput
@@ -590,7 +617,7 @@ export default function MachineryFormScreen({ navigation, route }) {
                       </Field>
                     </View>
                     <View style={styles.flex}>
-                      <Field label="Per day">
+                      <Field label={t('machineryForm.perDay')}>
                         <View style={styles.moneyBox}>
                           <Text style={styles.rupee}>₹</Text>
                           <FormInput
@@ -606,8 +633,8 @@ export default function MachineryFormScreen({ navigation, route }) {
                   </View>
 
                   <Field
-                    label="Other rates"
-                    hint='e.g. "Rotavation" ₹1200 per acre, or "Trolley trip" ₹500 per job'
+                    label={t('machineryForm.otherRates')}
+                    hint={t('machineryForm.eGRotavation1200Per')}
                   >
                     {form.customRates.map(rate => (
                       <View key={rate.key} style={styles.rateRow}>
@@ -617,7 +644,7 @@ export default function MachineryFormScreen({ navigation, route }) {
                             onChangeText={value =>
                               updateRate(rate.key, { name: value })
                             }
-                            placeholder="Rate name"
+                            placeholder={t('machineryForm.rateName')}
                             style={styles.flex}
                           />
                           <View style={[styles.moneyBox, styles.rateAmount]}>
@@ -660,7 +687,7 @@ export default function MachineryFormScreen({ navigation, route }) {
                       onPress={addRate}
                     >
                       <Plus size={16} color={C.green} />
-                      <Text style={styles.addRateText}>Add a rate</Text>
+                      <Text style={styles.addRateText}>{t('machineryForm.addARate')}</Text>
                     </TouchableOpacity>
                   </Field>
                 </FormCard>
@@ -671,10 +698,10 @@ export default function MachineryFormScreen({ navigation, route }) {
               <>
                 <SectionHeading
                   icon={<MapPin size={16} color={C.green} />}
-                  title="Availability & location"
+                  title={t('machineryForm.availabilityLocation')}
                 />
                 <FormCard>
-                  <Field label="Right now it is">
+                  <Field label={t('machineryForm.rightNowItIs')}>
                     <SelectChips
                       options={
                         meta.availabilityOptions.length
@@ -688,7 +715,7 @@ export default function MachineryFormScreen({ navigation, route }) {
                   </Field>
                   <View style={styles.row}>
                     <View style={styles.flex}>
-                      <Field label="Available from">
+                      <Field label={t('machineryForm.availableFrom')}>
                         <PickerField
                           icon={<Calendar size={16} color={C.green} />}
                           value={
@@ -698,14 +725,14 @@ export default function MachineryFormScreen({ navigation, route }) {
                                 })
                               : ''
                           }
-                          placeholder="Any time"
+                          placeholder={t('machineryForm.anyTime')}
                           onPress={() => setDateField('availableFrom')}
                           onClear={() => setField('availableFrom', null)}
                         />
                       </Field>
                     </View>
                     <View style={styles.flex}>
-                      <Field label="Until">
+                      <Field label={t('machineryForm.until')}>
                         <PickerField
                           icon={<Calendar size={16} color={C.green} />}
                           value={
@@ -715,7 +742,7 @@ export default function MachineryFormScreen({ navigation, route }) {
                                 })
                               : ''
                           }
-                          placeholder="No end"
+                          placeholder={t('machineryForm.noEnd')}
                           onPress={() => setDateField('availableUntil')}
                           onClear={() => setField('availableUntil', null)}
                         />
@@ -725,58 +752,58 @@ export default function MachineryFormScreen({ navigation, route }) {
 
                   <View style={styles.row}>
                     <View style={styles.flex}>
-                      <Field label="Village">
+                      <Field label={t('machineryForm.village')}>
                         <FormInput
                           value={form.village}
                           onChangeText={value => setField('village', value)}
-                          placeholder="Village"
+                          placeholder={t('machineryForm.village')}
                         />
                       </Field>
                     </View>
                     <View style={styles.flex}>
-                      <Field label="District">
+                      <Field label={t('machineryForm.district')}>
                         <FormInput
                           value={form.district}
                           onChangeText={value => setField('district', value)}
-                          placeholder="District"
+                          placeholder={t('machineryForm.district')}
                         />
                       </Field>
                     </View>
                   </View>
-                  <Field label="State">
+                  <Field label={t('machineryForm.state')}>
                     <FormInput
                       value={form.state}
                       onChangeText={value => setField('state', value)}
-                      placeholder="State"
+                      placeholder={t('machineryForm.state')}
                     />
                   </Field>
                   <Field
-                    label="Owner name"
-                    hint="Shown to farmers on your listing."
+                    label={t('machineryForm.ownerName')}
+                    hint={t('machineryForm.shownToFarmersOnYour')}
                   >
                     <FormInput
                       value={form.ownerName}
                       onChangeText={value => setField('ownerName', value)}
-                      placeholder="Your name"
+                      placeholder={t('machineryForm.yourName')}
                       maxLength={100}
                     />
                   </Field>
-                  <Field label="About the machine">
+                  <Field label={t('machineryForm.aboutTheMachine')}>
                     <FormInput
                       value={form.description}
                       onChangeText={value => setField('description', value)}
-                      placeholder="Condition, operator included, diesel terms..."
+                      placeholder={t('machineryForm.conditionOperatorIncludedDieselTerms')}
                       maxLength={500}
                       multiline
                       textAlignVertical="top"
                       style={styles.textArea}
                     />
                   </Field>
-                  <Field label="Note for farmers">
+                  <Field label={t('machineryForm.noteForFarmers')}>
                     <FormInput
                       value={form.ownerNotes}
                       onChangeText={value => setField('ownerNotes', value)}
-                      placeholder="e.g. Diesel to be provided by farmer"
+                      placeholder={t('machineryForm.eGDieselToBe')}
                       maxLength={500}
                     />
                   </Field>
@@ -796,7 +823,7 @@ export default function MachineryFormScreen({ navigation, route }) {
         {isCreate && step > 0 && (
           <MarketButton
             variant="outline"
-            label="Back"
+            label={t('common.back')}
             icon={<ArrowLeft size={16} color={C.green} />}
             disabled={saving || uploading}
             onPress={handleBack}
@@ -807,10 +834,10 @@ export default function MachineryFormScreen({ navigation, route }) {
           <MarketButton
             label={
               uploading
-                ? 'Uploading photos…'
+                ? t('machineryForm.uploadingPhotos')
                 : isCreate
-                ? 'List Machine'
-                : 'Save Changes'
+                ? t('machineryForm.listMachine')
+                : t('machineryForm.saveChanges')
             }
             icon={<Save size={17} color={C.white} />}
             loading={saving || uploading}
@@ -819,7 +846,7 @@ export default function MachineryFormScreen({ navigation, route }) {
           />
         ) : (
           <MarketButton
-            label="Next"
+            label={t('machineryForm.next')}
             icon={<ArrowRight size={17} color={C.white} />}
             onPress={handleNext}
             style={styles.flexWide}

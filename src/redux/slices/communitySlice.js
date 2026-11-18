@@ -9,6 +9,7 @@ import {
   setPostReactionApi,
   setFollowApi,
 } from '../../api/communityApi';
+import i18n from 'i18next';
 
 const errorMessage = (error, fallback) =>
   error.response?.data?.message || error.message || fallback;
@@ -81,7 +82,7 @@ export const fetchCommunityList = createAsyncThunk(
 
       return { ...data, page };
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to load posts'));
+      return rejectWithValue(errorMessage(error, i18n.t('communitySlice.unableToLoadPosts')));
     }
   },
   {
@@ -101,7 +102,7 @@ export const fetchReelCreators = createAsyncThunk(
     try {
       return await getReelCreatorsApi();
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to load reels'));
+      return rejectWithValue(errorMessage(error, i18n.t('communitySlice.unableToLoadReels')));
     }
   },
 );
@@ -118,7 +119,7 @@ export const createCommunityPost = createAsyncThunk(
     try {
       return await createCommunityPostApi(postData);
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to share post'));
+      return rejectWithValue(errorMessage(error, i18n.t('communitySlice.unableToSharePost')));
     }
   },
 );
@@ -129,7 +130,7 @@ export const updateCommunityPost = createAsyncThunk(
     try {
       return await updateCommunityPostApi(postId, postData);
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to update post'));
+      return rejectWithValue(errorMessage(error, i18n.t('communitySlice.unableToUpdatePost')));
     }
   },
 );
@@ -142,7 +143,7 @@ export const deleteCommunityPost = createAsyncThunk(
 
       return { postId };
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to delete post'));
+      return rejectWithValue(errorMessage(error, i18n.t('communitySlice.unableToDeletePost')));
     }
   },
 );
@@ -163,7 +164,7 @@ export const togglePostLike = createAsyncThunk(
     try {
       return await setPostReactionApi(postId, 'like', like);
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to like post'));
+      return rejectWithValue(errorMessage(error, i18n.t('communitySlice.unableToLikePost')));
     }
   },
 );
@@ -174,7 +175,7 @@ export const togglePostSave = createAsyncThunk(
     try {
       return await setPostReactionApi(postId, 'save', save);
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to save post'));
+      return rejectWithValue(errorMessage(error, i18n.t('communitySlice.unableToSavePost')));
     }
   },
 );
@@ -185,7 +186,7 @@ export const toggleFollow = createAsyncThunk(
     try {
       return await setFollowApi(userId, follow);
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to update follow'));
+      return rejectWithValue(errorMessage(error, i18n.t('communitySlice.unableToUpdateFollow')));
     }
   },
 );
@@ -299,7 +300,7 @@ const communitySlice = createSlice({
 
         list.loading = false;
         list.refreshing = false;
-        list.error = action.payload || 'Unable to load posts';
+        list.error = action.payload || i18n.t('communitySlice.unableToLoadPosts');
       })
 
       .addCase(fetchReelCreators.fulfilled, (state, action) => {

@@ -17,6 +17,8 @@ import {
   Sprout,
   TriangleAlert,
 } from 'lucide-react-native';
+import {useTranslation} from 'react-i18next';
+import i18n from 'i18next';
 
 const getHealthTheme = score => {
   const numericScore =
@@ -24,7 +26,7 @@ const getHealthTheme = score => {
 
   if (numericScore >= 75) {
     return {
-      label: 'Healthy',
+      label: i18n.t('cropHealthCard.healthy'),
       icon: CheckCircle2,
       iconColor: '#159447',
       background: '#EAF8F0',
@@ -35,7 +37,7 @@ const getHealthTheme = score => {
 
   if (numericScore >= 50) {
     return {
-      label: 'Moderate',
+      label: i18n.t('cropHealthCard.moderate'),
       icon: TriangleAlert,
       iconColor: '#D98B00',
       background: '#FFF7E6',
@@ -45,7 +47,7 @@ const getHealthTheme = score => {
   }
 
   return {
-    label: 'Poor',
+    label: i18n.t('cropHealthCard.poor'),
     icon: AlertCircle,
     iconColor: '#DC3F3F',
     background: '#FFF0F0',
@@ -76,6 +78,7 @@ const CropHealthCard = ({
   cropImage = '',
   cropName = '',
 }) => {
+  const {t} = useTranslation();
   if (loading) {
     return (
       <View
@@ -104,7 +107,7 @@ const CropHealthCard = ({
                   styles.title
                 }
               >
-                Crop Health
+                {t('cropHealthCard.cropHealth')}
               </Text>
 
               <Text
@@ -112,8 +115,7 @@ const CropHealthCard = ({
                   styles.subtitle
                 }
               >
-                Analysing your crop
-                condition
+                {t('cropHealthCard.analysingYourCropCondition')}
               </Text>
             </View>
           </View>
@@ -134,7 +136,7 @@ const CropHealthCard = ({
               styles.loadingText
             }
           >
-            Calculating crop health...
+            {t('cropHealthCard.calculatingCropHealth')}
           </Text>
         </View>
       </View>
@@ -172,7 +174,7 @@ const CropHealthCard = ({
                   styles.title
                 }
               >
-                Crop Health
+                {t('cropHealthCard.cropHealth')}
               </Text>
 
               <Text
@@ -180,8 +182,7 @@ const CropHealthCard = ({
                   styles.subtitle
                 }
               >
-                Satellite-based crop
-                condition
+                {t('cropHealthCard.satelliteBasedCropCondition')}
               </Text>
             </View>
           </View>
@@ -302,7 +303,7 @@ const CropHealthCard = ({
                 styles.title
               }
             >
-              Crop Health
+              {t('cropHealthCard.cropHealth')}
             </Text>
 
             <Text
@@ -310,8 +311,7 @@ const CropHealthCard = ({
                 styles.subtitle
               }
             >
-              Satellite-based crop
-              condition
+              {t('cropHealthCard.satelliteBasedCropCondition')}
             </Text>
           </View>
         </View>
@@ -387,7 +387,7 @@ const CropHealthCard = ({
                   styles.cropImageLabelText
                 }
               >
-                YOUR CROP
+                {t('cropHealthCard.yourCrop')}
               </Text>
             </View>
 
@@ -445,7 +445,7 @@ const CropHealthCard = ({
               styles.scoreTitle
             }
           >
-            Overall Crop Health
+            {t('cropHealthCard.overallCropHealth')}
           </Text>
 
           <Text
@@ -453,7 +453,7 @@ const CropHealthCard = ({
               styles.scoreDescription
             }
           >
-            Your crop is currently in{' '}
+            {t('cropHealthCard.yourCropIsCurrentlyIn')}{' '}
             <Text
               style={{
                 color:
@@ -467,7 +467,7 @@ const CropHealthCard = ({
                 theme.label
               ).toLowerCase()}
             </Text>{' '}
-            condition.
+            {t('cropHealthCard.condition')}
           </Text>
 
           <View
@@ -519,7 +519,7 @@ const CropHealthCard = ({
                 styles.metricLabel
               }
             >
-              NDVI
+              {t('cropHealthCard.ndvi')}
             </Text>
 
             <Text
@@ -563,7 +563,7 @@ const CropHealthCard = ({
                 styles.metricLabel
               }
             >
-              NDRE
+              {t('cropHealthCard.ndre')}
             </Text>
 
             <Text
@@ -607,7 +607,7 @@ const CropHealthCard = ({
                 styles.metricLabel
               }
             >
-              Stress
+              {t('cropHealthCard.stress')}
             </Text>
 
             <Text
@@ -642,7 +642,7 @@ const CropHealthCard = ({
                 styles.metricLabel
               }
             >
-              Stage
+              {t('cropHealthCard.stage')}
             </Text>
 
             <Text
@@ -687,7 +687,7 @@ const CropHealthCard = ({
                   styles.cloudText
                 }
               >
-                Cloud coverage
+                {t('cropHealthCard.cloudCoverage')}
               </Text>
             </View>
 

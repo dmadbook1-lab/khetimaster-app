@@ -8,6 +8,7 @@ import {
   Dimensions,
 } from 'react-native';
 import { Zap } from 'lucide-react-native';
+import {useTranslation} from 'react-i18next';
 const { width } = Dimensions.get('window');
 const isSmall = width < 370;
 const rf = size => {
@@ -15,6 +16,7 @@ const rf = size => {
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
 export default function AgriHeroBanner() {
+  const {t} = useTranslation();
   return (
     <ImageBackground
       source={require('../../assets/bazar/bazar-hero.png')}
@@ -26,20 +28,20 @@ export default function AgriHeroBanner() {
 
       <View style={styles.fastBadge}>
         <Zap size={13} color="#16883E" fill="#16883E" />
-        <Text style={styles.fastText}>Fast Delivery</Text>
+        <Text style={styles.fastText}>{t('agriHeroBanner.fastDelivery')}</Text>
       </View>
 
       <View style={styles.content}>
         <Text numberOfLines={2} style={styles.title}>
-          Top Agri Products Delivered Fast
+          {t('agriHeroBanner.topAgriProductsDeliveredFast')}
         </Text>
 
         <Text numberOfLines={1} style={styles.subtitle}>
-          Quality guaranteed • Farmer trusted
+          {t('agriHeroBanner.qualityGuaranteedFarmerTrusted')}
         </Text>
 
         <TouchableOpacity activeOpacity={0.9} style={styles.button}>
-          <Text style={styles.buttonText}>Shop Now</Text>
+          <Text style={styles.buttonText}>{t('agriHeroBanner.shopNow')}</Text>
         </TouchableOpacity>
       </View>
     </ImageBackground>

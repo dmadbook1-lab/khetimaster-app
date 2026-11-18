@@ -9,12 +9,14 @@ import {
 } from 'react-native';
 import { ArrowLeft, MoreVertical, MapPin } from 'lucide-react-native';
 import { defaultFarm } from './data';
+import {useTranslation} from 'react-i18next';
 const { width } = Dimensions.get('window');
 const rf = size => {
   const scale = width / 390;
   return Math.max(size - 2, Math.min(size * scale, size + 2));
 };
 export default function FarmOverviewHero({ navigation, farm }) {
+  const {t} = useTranslation();
   const item = farm || defaultFarm;
   return (
     <ImageBackground source={item.image} style={styles.hero} resizeMode="cover">
@@ -36,7 +38,7 @@ export default function FarmOverviewHero({ navigation, farm }) {
 
       <View style={styles.content}>
         <View style={styles.badge}>
-          <Text style={styles.badgeText}>Healthy</Text>
+          <Text style={styles.badgeText}>{t('farmOverviewHero.healthy')}</Text>
         </View>
 
         <Text style={styles.title}>{item.title || defaultFarm.title}</Text>

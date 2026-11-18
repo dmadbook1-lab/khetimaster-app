@@ -73,6 +73,8 @@ import {
   getConsultationActions,
   isAcceptedStatus,
 } from '../../utils/doctorFormat';
+import {useTranslation} from 'react-i18next';
+import i18n from 'i18next';
 
 const heroGradientFor = consultation => {
   const { status, myRole } = consultation;
@@ -86,22 +88,34 @@ const heroGradientFor = consultation => {
 const OUTCOME_FIELDS = [
   {
     key: 'diagnosis',
-    label: 'Diagnosis',
-    placeholder: 'What is the problem?',
+    get label() {
+    return i18n.t('consultationDetails.diagnosis');
+  },
+    get placeholder() {
+    return i18n.t('consultationDetails.whatIsTheProblem');
+  },
     multiline: true,
     maxLength: 2000,
   },
   {
     key: 'prescription',
-    label: 'Prescription / treatment',
-    placeholder: 'Medicines, doses, sprays, how long...',
+    get label() {
+    return i18n.t('consultationDetails.prescriptionTreatment');
+  },
+    get placeholder() {
+    return i18n.t('consultationDetails.medicinesDosesSpraysHowLong');
+  },
     multiline: true,
     maxLength: 2000,
   },
   {
     key: 'doctorNotes',
-    label: 'Advice for the farmer',
-    placeholder: 'Care tips, what to watch for...',
+    get label() {
+    return i18n.t('consultationDetails.adviceForTheFarmer');
+  },
+    get placeholder() {
+    return i18n.t('consultationDetails.careTipsWhatToWatch');
+  },
     multiline: true,
     maxLength: 2000,
   },
@@ -109,75 +123,125 @@ const OUTCOME_FIELDS = [
 
 const SHEETS = {
   reject: {
-    title: 'Decline this request?',
-    description:
-      'The farmer will see that you declined. Add a reason if you like.',
+    get title() {
+    return i18n.t('consultationDetails.declineThisRequest');
+  },
+    get description() {
+    return i18n.t('consultationDetails.theFarmerWillSeeThat');
+  },
     fields: [
       {
         key: 'reason',
-        label: 'Reason (optional)',
-        placeholder: 'e.g. I am travelling that day',
+        get label() {
+    return i18n.t('consultationDetails.reasonOptional');
+  },
+        get placeholder() {
+    return i18n.t('consultationDetails.eGIAmTravelling');
+  },
         multiline: true,
       },
     ],
-    submitLabel: 'Decline Request',
+    get submitLabel() {
+    return i18n.t('consultationDetails.declineRequest');
+  },
     variant: 'danger',
   },
   cancel: {
-    title: 'Cancel consultation?',
-    description: 'This cancels the consultation for both of you.',
+    get title() {
+    return i18n.t('consultationDetails.cancelConsultation');
+  },
+    get description() {
+    return i18n.t('consultationDetails.thisCancelsTheConsultationFor');
+  },
     fields: [
       {
         key: 'reason',
-        label: 'Reason (optional)',
-        placeholder: 'e.g. The animal is better now',
+        get label() {
+    return i18n.t('consultationDetails.reasonOptional');
+  },
+        get placeholder() {
+    return i18n.t('consultationDetails.eGTheAnimalIs');
+  },
         multiline: true,
       },
     ],
-    submitLabel: 'Cancel Consultation',
+    get submitLabel() {
+    return i18n.t('consultationDetails.cancelConsultation2');
+  },
     variant: 'danger',
   },
   review: {
-    title: 'Rate the doctor',
-    description:
-      'How helpful was the consultation? Your rating helps other farmers.',
+    get title() {
+    return i18n.t('consultationDetails.rateTheDoctor');
+  },
+    get description() {
+    return i18n.t('consultationDetails.howHelpfulWasTheConsultation');
+  },
     fields: [
       {
         key: 'comment',
-        label: 'Your review (optional)',
-        placeholder: 'e.g. Came on time, cow recovered in 2 days',
+        get label() {
+    return i18n.t('consultationDetails.yourReviewOptional');
+  },
+        get placeholder() {
+    return i18n.t('consultationDetails.eGCameOnTime');
+  },
         multiline: true,
       },
     ],
     withRating: true,
-    submitLabel: 'Submit Rating',
+    get submitLabel() {
+    return i18n.t('consultationDetails.submitRating');
+  },
   },
   complete: {
-    title: 'Complete consultation',
-    description: 'Write what you found and what to do. The farmer sees this.',
+    get title() {
+    return i18n.t('consultationDetails.completeConsultation');
+  },
+    get description() {
+    return i18n.t('consultationDetails.writeWhatYouFoundAnd');
+  },
     fields: OUTCOME_FIELDS,
     withFollowUp: true,
-    submitLabel: 'Mark Completed',
+    get submitLabel() {
+    return i18n.t('consultationDetails.markCompleted');
+  },
   },
   notes: {
-    title: 'Diagnosis & prescription',
-    description:
-      'Add or correct your notes. The farmer sees the latest version.',
+    get title() {
+    return i18n.t('consultationDetails.diagnosisPrescription');
+  },
+    get description() {
+    return i18n.t('consultationDetails.addOrCorrectYourNotes');
+  },
     fields: OUTCOME_FIELDS,
     withFollowUp: true,
-    submitLabel: 'Save Notes',
+    get submitLabel() {
+    return i18n.t('consultationDetails.saveNotes');
+  },
   },
 };
 
 const TOASTS = {
-  accept: 'Accepted. You can now call each other.',
-  reject: 'Request declined',
-  cancel: 'Consultation cancelled',
-  complete: 'Marked as completed',
-  notes: 'Notes saved',
+  get accept() {
+    return i18n.t('consultationDetails.acceptedYouCanNowCall');
+  },
+  get reject() {
+    return i18n.t('consultationDetails.requestDeclined');
+  },
+  get cancel() {
+    return i18n.t('consultationDetails.consultationCancelled');
+  },
+  get complete() {
+    return i18n.t('consultationDetails.markedAsCompleted');
+  },
+  get notes() {
+    return i18n.t('consultationDetails.notesSaved');
+  },
 };
 
 export default function ConsultationDetailsScreen({ navigation, route }) {
+  const {t} = useTranslation();
   const { consultationId } = route.params;
   const dispatch = useDispatch();
   const feedback = useFeedbackModal();
@@ -207,12 +271,12 @@ export default function ConsultationDetailsScreen({ navigation, route }) {
   if (!consultation) {
     return (
       <SafeAreaView style={styles.container} edges={['left', 'right']}>
-        <CareTopBar title="Consultation" onBack={() => navigation.goBack()} />
+        <CareTopBar title={t('consultationDetails.consultation')} onBack={() => navigation.goBack()} />
         {selectedError && !selectedLoading ? (
           <CareEmpty
-            title="Consultation not available"
+            title={t('consultationDetails.consultationNotAvailable')}
             message={selectedError}
-            actionLabel="Go Back"
+            actionLabel={t('consultationDetails.goBack')}
             onAction={() => navigation.goBack()}
           />
         ) : (
@@ -227,7 +291,7 @@ export default function ConsultationDetailsScreen({ navigation, route }) {
   const doctor = consultation.doctor || {};
   const farmer = consultation.farmer || {};
   const other = isDoctor ? farmer : doctor;
-  const otherName = other?.fullName || (isDoctor ? 'Farmer' : 'Doctor');
+  const otherName = other?.fullName || (isDoctor ? t('common.farmer') : t('consultationDetails.doctor'));
   const contactShared =
     isAcceptedStatus(consultation.status) ||
     consultation.status === 'completed';
@@ -283,7 +347,7 @@ export default function ConsultationDetailsScreen({ navigation, route }) {
           }),
         ).unwrap();
         setSheet(null);
-        toast.show('Thanks for your rating');
+        toast.show(t('consultationDetails.thanksForYourRating'));
       } catch (error) {
         setSheetError(String(error));
       }
@@ -309,18 +373,18 @@ export default function ConsultationDetailsScreen({ navigation, route }) {
 
   const accept = () =>
     feedback.confirm({
-      title: 'Accept this consultation?',
+      title: t('consultationDetails.acceptThisConsultation'),
       message:
-        'You and the farmer will see each other’s phone numbers. Other requests at the same time will be declined.',
-      confirmLabel: 'Accept',
+        t('consultationDetails.youAndTheFarmerWill'),
+      confirmLabel: t('consultationDetails.accept'),
       onConfirm: () => runAction('accept'),
     });
 
   const completeAsFarmer = () =>
     feedback.confirm({
-      title: 'Mark as completed?',
-      message: 'Do this once the doctor has seen your animal or crop.',
-      confirmLabel: 'Yes, completed',
+      title: t('consultationDetails.markAsCompleted'),
+      message: t('consultationDetails.doThisOnceTheDoctor'),
+      confirmLabel: t('consultationDetails.yesCompleted'),
       onConfirm: () => runAction('complete'),
     });
 
@@ -332,14 +396,14 @@ export default function ConsultationDetailsScreen({ navigation, route }) {
         <>
           <CareButton
             variant="danger"
-            label="Decline"
+            label={t('consultationDetails.decline')}
             icon={<CircleX size={16} color={C.red} />}
             disabled={!!actionInProgress}
             onPress={() => openSheet('reject')}
             style={styles.flex}
           />
           <CareButton
-            label="Accept"
+            label={t('consultationDetails.accept')}
             icon={<CircleCheck size={17} color={C.white} />}
             loading={actionInProgress === 'accept'}
             disabled={!!actionInProgress}
@@ -353,7 +417,7 @@ export default function ConsultationDetailsScreen({ navigation, route }) {
     if (actions.includes('review')) {
       return (
         <CareButton
-          label="Rate the Doctor"
+          label={t('consultationDetails.rateTheDoctor2')}
           icon={<Star size={17} color={C.white} />}
           onPress={() => openSheet('review')}
           style={styles.flex}
@@ -367,14 +431,14 @@ export default function ConsultationDetailsScreen({ navigation, route }) {
           {contactShared && !!other?.phoneNumber && (
             <CareButton
               variant="outline"
-              label="Call"
+              label={t('consultationDetails.call')}
               icon={<Phone size={16} color={C.tealDark} />}
               onPress={call}
               style={styles.flex}
             />
           )}
           <CareButton
-            label="Mark Completed"
+            label={t('consultationDetails.markCompleted')}
             icon={<CircleCheck size={16} color={C.white} />}
             disabled={!!actionInProgress}
             onPress={() =>
@@ -392,7 +456,7 @@ export default function ConsultationDetailsScreen({ navigation, route }) {
           <CareButton
             variant="danger"
             label={
-              consultation.status === 'pending' ? 'Cancel Request' : 'Cancel'
+              consultation.status === 'pending' ? t('consultationDetails.cancelRequest') : t('common.cancel')
             }
             disabled={!!actionInProgress}
             onPress={() => openSheet('cancel')}
@@ -400,7 +464,7 @@ export default function ConsultationDetailsScreen({ navigation, route }) {
           />
           {contactShared && !!other?.phoneNumber && (
             <CareButton
-              label={isDoctor ? 'Call Farmer' : 'Call Doctor'}
+              label={isDoctor ? t('consultationDetails.callFarmer') : t('consultationDetails.callDoctor')}
               icon={<Phone size={16} color={C.white} />}
               onPress={call}
               style={styles.flexWide}
@@ -414,7 +478,7 @@ export default function ConsultationDetailsScreen({ navigation, route }) {
       return (
         <CareButton
           variant="outline"
-          label={hasOutcome ? 'Edit Diagnosis' : 'Add Diagnosis'}
+          label={hasOutcome ? t('consultationDetails.editDiagnosis') : t('consultationDetails.addDiagnosis')}
           icon={<Pencil size={16} color={C.tealDark} />}
           onPress={() => openSheet('notes')}
           style={styles.flex}
@@ -455,11 +519,11 @@ export default function ConsultationDetailsScreen({ navigation, route }) {
           }
           gradient={heroGradientFor(consultation)}
           eyebrow={`${
-            isDoctor ? 'Consultation request' : 'Your consultation'
+            isDoctor ? t('consultationDetails.consultationRequest') : t('consultationDetails.yourConsultation')
           } · ${CONSULTATION_TYPE_LABELS[consultation.consultationType]}`}
           title={consultation.problemType || 'Consultation'}
           subtitle={`${
-            day === todayKey ? 'Today' : formatDay(day)
+            day === todayKey ? t('common.today') : formatDay(day)
           } · ${formatTimeRange(consultation.startTime, consultation.endTime)}`}
         >
           <View
@@ -477,15 +541,15 @@ export default function ConsultationDetailsScreen({ navigation, route }) {
               {describeConsultationState(consultation, todayKey)}
             </Text>
             {!!reason && (
-              <Text style={styles.heroReason}>Reason: {reason}</Text>
+              <Text style={styles.heroReason}>{t('consultationDetails.reason', {reason})}</Text>
             )}
           </View>
           <View style={styles.heroFeeRow}>
-            <Text style={styles.heroFeeLabel}>Fee</Text>
+            <Text style={styles.heroFeeLabel}>{t('consultationDetails.fee')}</Text>
             <Text style={styles.heroFee}>
               {consultation.totalAmount
                 ? formatRupees(consultation.totalAmount)
-                : 'Free'}
+                : t('consultationDetails.free')}
             </Text>
           </View>
         </CareHero>
@@ -494,7 +558,7 @@ export default function ConsultationDetailsScreen({ navigation, route }) {
           {/* OTHER PERSON */}
           <CareCard>
             <Text style={styles.cardLabel}>
-              {isDoctor ? 'Farmer' : 'Doctor'}
+              {isDoctor ? t('common.farmer') : t('consultationDetails.doctor')}
             </Text>
             <TouchableOpacity
               activeOpacity={isDoctor ? 1 : 0.85}
@@ -541,7 +605,7 @@ export default function ConsultationDetailsScreen({ navigation, route }) {
               <View style={styles.lockedRow}>
                 <Lock size={13} color={C.muted} />
                 <Text style={styles.lockedText}>
-                  Phone numbers are shared once the doctor accepts
+                  {t('consultationDetails.phoneNumbersAreSharedOnce')}
                 </Text>
               </View>
             )}
@@ -553,11 +617,11 @@ export default function ConsultationDetailsScreen({ navigation, route }) {
               <CareCardTitle
                 icon={<ClipboardList size={16} color={C.blue} />}
                 color={C.blue}
-                title="Doctor's advice"
+                title={t('consultationDetails.doctorsAdvice')}
               />
               {!!consultation.diagnosis && (
                 <View style={styles.outcomeBlock}>
-                  <Text style={styles.outcomeLabel}>Diagnosis</Text>
+                  <Text style={styles.outcomeLabel}>{t('consultationDetails.diagnosis')}</Text>
                   <Text style={styles.outcomeText}>
                     {consultation.diagnosis}
                   </Text>
@@ -567,7 +631,7 @@ export default function ConsultationDetailsScreen({ navigation, route }) {
                 <View style={styles.outcomeBlock}>
                   <View style={styles.inline}>
                     <Pill size={13} color={C.teal} />
-                    <Text style={styles.outcomeLabel}>Prescription</Text>
+                    <Text style={styles.outcomeLabel}>{t('consultationDetails.prescription')}</Text>
                   </View>
                   <Text style={styles.outcomeText}>
                     {consultation.prescription}
@@ -576,7 +640,7 @@ export default function ConsultationDetailsScreen({ navigation, route }) {
               )}
               {!!consultation.doctorNotes && (
                 <View style={styles.outcomeBlock}>
-                  <Text style={styles.outcomeLabel}>Advice</Text>
+                  <Text style={styles.outcomeLabel}>{t('consultationDetails.advice')}</Text>
                   <Text style={styles.outcomeText}>
                     {consultation.doctorNotes}
                   </Text>
@@ -586,7 +650,7 @@ export default function ConsultationDetailsScreen({ navigation, route }) {
                 <View style={styles.followUp}>
                   <CalendarClock size={15} color={C.amber} />
                   <Text style={styles.followUpText}>
-                    Follow-up on {formatDay(consultation.followUpDate)}
+                    {t('consultationDetails.followUpOn', {v1: formatDay(consultation.followUpDate)})}
                   </Text>
                 </View>
               )}
@@ -604,30 +668,30 @@ export default function ConsultationDetailsScreen({ navigation, route }) {
                 )
               }
               color={isVet ? C.teal : C.olive}
-              title={isVet ? 'About the animal' : 'About the crop'}
+              title={isVet ? t('consultationDetails.aboutTheAnimal') : t('consultationDetails.aboutTheCrop')}
             />
-            <CareInfoRow label="Problem" value={consultation.problemType} />
+            <CareInfoRow label={t('consultationDetails.problem')} value={consultation.problemType} />
             {isVet ? (
               <>
-                <CareInfoRow label="Animal" value={consultation.animalType} />
+                <CareInfoRow label={t('consultationDetails.animal')} value={consultation.animalType} />
                 <CareInfoRow
-                  label="How many"
+                  label={t('consultationDetails.howMany')}
                   value={consultation.animalCount || ''}
                 />
-                <CareInfoRow label="Age" value={consultation.animalAge} />
+                <CareInfoRow label={t('consultationDetails.age')} value={consultation.animalAge} />
               </>
             ) : (
-              <CareInfoRow label="Crop" value={consultation.cropName} />
+              <CareInfoRow label={t('common.crop')} value={consultation.cropName} />
             )}
             {!!consultation.symptoms && (
               <View style={styles.outcomeBlock}>
-                <Text style={styles.outcomeLabel}>Symptoms</Text>
+                <Text style={styles.outcomeLabel}>{t('consultationDetails.symptoms')}</Text>
                 <Text style={styles.outcomeText}>{consultation.symptoms}</Text>
               </View>
             )}
             {!!consultation.description && (
               <View style={styles.outcomeBlock}>
-                <Text style={styles.outcomeLabel}>More details</Text>
+                <Text style={styles.outcomeLabel}>{t('consultationDetails.moreDetails')}</Text>
                 <Text style={styles.outcomeText}>
                   {consultation.description}
                 </Text>
@@ -670,10 +734,8 @@ export default function ConsultationDetailsScreen({ navigation, route }) {
               <Wallet size={16} color={C.teal} />
               <Text style={styles.payLabel}>
                 {consultation.totalAmount
-                  ? `Pay by ${
-                      PAYMENT_LABELS[consultation.paymentMethod] || 'cash'
-                    }`
-                  : 'Free consultation'}
+                  ? t('consultationDetails.payBy', {v1: PAYMENT_LABELS[consultation.paymentMethod] || 'cash'})
+                  : t('consultationDetails.freeConsultation')}
               </Text>
               <Text style={styles.payValue}>
                 {consultation.totalAmount
@@ -687,7 +749,7 @@ export default function ConsultationDetailsScreen({ navigation, route }) {
           {!!consultation.review?.rating && (
             <CareCard>
               <Text style={styles.cardLabel}>
-                {isDoctor ? "Farmer's rating" : 'Your rating'}
+                {isDoctor ? t('consultationDetails.farmersRating') : t('consultationDetails.yourRating')}
               </Text>
               <View style={styles.stars}>
                 {[1, 2, 3, 4, 5].map(value => (
@@ -714,7 +776,7 @@ export default function ConsultationDetailsScreen({ navigation, route }) {
           <View style={styles.statusFoot}>
             <CarePill meta={STATUS_META[consultation.status]} />
             <Text style={styles.footText}>
-              Requested {formatDay(consultation.createdAt, { weekday: false })}
+              {t('consultationDetails.requested', {v1: formatDay(consultation.createdAt, { weekday: false })})}
             </Text>
           </View>
         </View>

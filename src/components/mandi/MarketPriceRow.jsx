@@ -4,6 +4,7 @@ import { Check, MapPin } from 'lucide-react-native';
 
 import { MARKET_COLORS as C, MARKET_SHADOW } from '../market/theme';
 import { formatPerKg, formatQuintal, isPrice } from '../../utils/mandiFormat';
+import {useTranslation} from 'react-i18next';
 
 /*
  * One market's price, in plain words. In select mode the row toggles
@@ -17,6 +18,7 @@ function MarketPriceRow({
   selected = false,
   onPress,
 }) {
+  const {t} = useTranslation();
   const difference =
     isPrice(record.modalPrice) && isPrice(average)
       ? Math.round(record.modalPrice - average)
@@ -42,7 +44,7 @@ function MarketPriceRow({
         )}
 
         <View style={styles.flex}>
-          {best && <Text style={styles.bestTag}>Best price</Text>}
+          {best && <Text style={styles.bestTag}>{t('marketPriceRow.bestPrice')}</Text>}
           <Text style={styles.market} numberOfLines={1}>
             {record.market}
           </Text>
@@ -58,7 +60,7 @@ function MarketPriceRow({
           <Text style={[styles.price, best && styles.priceBest]}>
             {formatQuintal(record.modalPrice)}
           </Text>
-          <Text style={styles.unit}>per quintal</Text>
+          <Text style={styles.unit}>{t('marketPriceRow.perQuintal')}</Text>
           <Text style={styles.perKg}>{formatPerKg(record.modalPrice)}</Text>
         </View>
       </View>
@@ -79,13 +81,13 @@ function MarketPriceRow({
             style={[styles.footText, difference > 0 ? styles.up : styles.down]}
           >
             {difference > 0 ? '▲' : '▼'} {formatQuintal(Math.abs(difference))}{' '}
-            {difference > 0 ? 'above' : 'below'} average
+            {difference > 0 ? 'above' : 'below'} {t('marketPriceRow.average')}
           </Text>
         )}
       </View>
 
       {!!record.arrivalDate && (
-        <Text style={styles.date}>Price of {record.arrivalDate}</Text>
+        <Text style={styles.date}>{t('marketPriceRow.priceOf', {arrivalDate: record.arrivalDate})}</Text>
       )}
     </TouchableOpacity>
   );

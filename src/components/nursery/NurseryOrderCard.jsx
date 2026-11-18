@@ -14,6 +14,7 @@ import {
   groupItemsBySeller,
   itemCount,
 } from '../../utils/nurseryFormat';
+import {useTranslation} from 'react-i18next';
 
 const itemsSummary = items => {
   const names = items.map(item => item.name);
@@ -26,6 +27,7 @@ const itemsSummary = items => {
  * seller view (only their items, sellerStatus, buyer's place).
  */
 function NurseryOrderCard({ order, role = 'buyer', onPress, footer }) {
+  const {t} = useTranslation();
   const isSeller = role === 'seller';
   const items = order.items || [];
   const status = isSeller ? order.sellerStatus : order.orderStatus;
@@ -62,8 +64,7 @@ function NurseryOrderCard({ order, role = 'buyer', onPress, footer }) {
             {itemsSummary(items)}
           </Text>
           <Text style={styles.sub} numberOfLines={1}>
-            {itemCount(items)} plants · Order #
-            {String(order._id).slice(-6).toUpperCase()}
+            {t('nurseryOrderCard.plantsOrder', {v1: itemCount(items), v2: String(order._id).slice(-6).toUpperCase()})}
           </Text>
         </View>
 
@@ -87,7 +88,7 @@ function NurseryOrderCard({ order, role = 'buyer', onPress, footer }) {
             {isSeller
               ? place || order.deliveryAddress?.fullName || 'Buyer'
               : sellers.length > 1
-              ? `${sellers.length} sellers`
+              ? t('nurseryOrderCard.sellers', {length: sellers.length})
               : sellers[0]?.sellerName || 'Seller'}
           </Text>
         </View>

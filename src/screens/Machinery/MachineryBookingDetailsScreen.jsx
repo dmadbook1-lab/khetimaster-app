@@ -70,6 +70,8 @@ import {
   formatTimeRange,
 } from '../../utils/indiaSchedule';
 import { formatRupees } from '../../utils/marketFormat';
+import {useTranslation} from 'react-i18next';
+import i18n from 'i18next';
 
 const heroGradientFor = booking => {
   if (booking.status === 'pending')
@@ -82,42 +84,79 @@ const heroGradientFor = booking => {
 
 const SHEETS = {
   accept: {
-    title: 'Confirm this rental?',
-    description:
-      'Phone numbers will be shared and other requests for the same time will be declined. Add a note for the farmer if you like.',
-    placeholder: 'Note (optional), e.g. Please arrange diesel',
-    submitLabel: 'Confirm Rental',
+    get title() {
+    return i18n.t('machineryBookingDetails.confirmThisRental');
+  },
+    get description() {
+    return i18n.t('machineryBookingDetails.phoneNumbersWillBeShared');
+  },
+    get placeholder() {
+    return i18n.t('machineryBookingDetails.noteOptionalEGPlease');
+  },
+    get submitLabel() {
+    return i18n.t('machineryBookingDetails.confirmRental');
+  },
   },
   reject: {
-    title: 'Decline this request?',
-    description:
-      'The farmer will see that you declined. Add a reason if you like.',
-    placeholder: 'Reason (optional), e.g. Machine under repair',
-    submitLabel: 'Decline Request',
+    get title() {
+    return i18n.t('machineryBookingDetails.declineThisRequest');
+  },
+    get description() {
+    return i18n.t('machineryBookingDetails.theFarmerWillSeeThat');
+  },
+    get placeholder() {
+    return i18n.t('machineryBookingDetails.reasonOptionalEGMachine');
+  },
+    get submitLabel() {
+    return i18n.t('machineryBookingDetails.declineRequest');
+  },
     variant: 'danger',
   },
   cancel: {
-    title: 'Cancel booking?',
-    description: 'This cancels the booking for both of you.',
-    placeholder: 'Reason (optional)',
-    submitLabel: 'Cancel Booking',
+    get title() {
+    return i18n.t('machineryBookingDetails.cancelBooking');
+  },
+    get description() {
+    return i18n.t('machineryBookingDetails.thisCancelsTheBookingFor');
+  },
+    get placeholder() {
+    return i18n.t('machineryBookingDetails.reasonOptional');
+  },
+    get submitLabel() {
+    return i18n.t('machineryBookingDetails.cancelBooking2');
+  },
     variant: 'danger',
   },
   review: {
-    title: 'Rate this rental',
-    description:
-      'How were the machine and the owner? Your rating helps other farmers.',
-    placeholder: 'How was the work? (optional)',
-    submitLabel: 'Submit Rating',
+    get title() {
+    return i18n.t('machineryBookingDetails.rateThisRental');
+  },
+    get description() {
+    return i18n.t('machineryBookingDetails.howWereTheMachineAnd');
+  },
+    get placeholder() {
+    return i18n.t('machineryBookingDetails.howWasTheWorkOptional');
+  },
+    get submitLabel() {
+    return i18n.t('machineryBookingDetails.submitRating');
+  },
     withRating: true,
   },
 };
 
 const TOASTS = {
-  accept: 'Rental confirmed. You can now call the farmer.',
-  reject: 'Request declined',
-  cancel: 'Booking cancelled',
-  complete: 'Marked as completed',
+  get accept() {
+    return i18n.t('machineryBookingDetails.rentalConfirmedYouCanNow');
+  },
+  get reject() {
+    return i18n.t('machineryBookingDetails.requestDeclined');
+  },
+  get cancel() {
+    return i18n.t('machineryBookingDetails.bookingCancelled');
+  },
+  get complete() {
+    return i18n.t('machineryBookingDetails.markedAsCompleted');
+  },
 };
 
 const scheduleText = booking =>
@@ -129,6 +168,7 @@ const scheduleText = booking =>
       )}`;
 
 export default function MachineryBookingDetailsScreen({ navigation, route }) {
+  const {t} = useTranslation();
   const { bookingId } = route.params;
   const dispatch = useDispatch();
   const insets = useSafeAreaInsets();
@@ -187,7 +227,7 @@ export default function MachineryBookingDetailsScreen({ navigation, route }) {
           reviewMachineryBooking({ bookingId, rating, comment: text }),
         ).unwrap();
         setSheet(null);
-        toast.show('Thanks for your rating');
+        toast.show(t('machineryBookingDetails.thanksForYourRating'));
       } catch (error) {
         setSheetError(String(error));
       }
@@ -202,12 +242,12 @@ export default function MachineryBookingDetailsScreen({ navigation, route }) {
   if (!booking) {
     return (
       <SafeAreaView style={styles.container} edges={['top', 'left', 'right']}>
-        <MarketHeader title="Rental" onBack={() => navigation.goBack()} />
+        <MarketHeader title={t('machineryBookingDetails.rental')} onBack={() => navigation.goBack()} />
         {bookingError && !bookingLoading ? (
           <EmptyState
-            title="Booking not available"
+            title={t('machineryBookingDetails.bookingNotAvailable')}
             message={bookingError}
-            actionLabel="Go Back"
+            actionLabel={t('machineryBookingDetails.goBack')}
             onAction={() => navigation.goBack()}
           />
         ) : (
@@ -221,7 +261,7 @@ export default function MachineryBookingDetailsScreen({ navigation, route }) {
   const machine = booking.machinery || {};
   const other = isOwner ? booking.farmer : machine.owner;
   const otherName =
-    other?.fullName || (isOwner ? 'Farmer' : machine.ownerName || 'Owner');
+    other?.fullName || (isOwner ? t('common.farmer') : machine.ownerName || t('machineryBookingDetails.owner'));
   const contactShared =
     isAcceptedStatus(booking.status) || booking.status === 'completed';
   const actions = getRentalActions(booking);
@@ -243,11 +283,11 @@ export default function MachineryBookingDetailsScreen({ navigation, route }) {
 
   const handleComplete = () =>
     feedback.confirm({
-      title: 'Mark work as completed?',
+      title: t('machineryBookingDetails.markWorkAsCompleted'),
       message: isOwner
-        ? 'Do this once the work is finished and you have been paid.'
-        : 'Do this once the work is finished and you have paid the owner.',
-      confirmLabel: 'Yes, completed',
+        ? t('machineryBookingDetails.doThisOnceTheWork')
+        : t('machineryBookingDetails.doThisOnceTheWork2'),
+      confirmLabel: t('machineryBookingDetails.yesCompleted'),
       onConfirm: () => runAction('complete'),
     });
 
@@ -261,14 +301,14 @@ export default function MachineryBookingDetailsScreen({ navigation, route }) {
         <>
           <MarketButton
             variant="danger"
-            label="Decline"
+            label={t('machineryBookingDetails.decline')}
             icon={<CircleX size={16} color={C.red} />}
             disabled={!!actionInProgress}
             onPress={() => openSheet('reject')}
             style={styles.flex}
           />
           <MarketButton
-            label="Confirm Rental"
+            label={t('machineryBookingDetails.confirmRental')}
             icon={<CircleCheck size={17} color={C.white} />}
             disabled={!!actionInProgress}
             onPress={() => openSheet('accept')}
@@ -281,7 +321,7 @@ export default function MachineryBookingDetailsScreen({ navigation, route }) {
     if (actions.includes('review')) {
       return (
         <MarketButton
-          label="Rate this Rental"
+          label={t('machineryBookingDetails.rateThisRental2')}
           icon={<Star size={17} color={C.white} />}
           onPress={() => openSheet('review')}
           style={styles.flex}
@@ -294,7 +334,7 @@ export default function MachineryBookingDetailsScreen({ navigation, route }) {
         {actions.includes('cancel') && (
           <MarketButton
             variant="danger"
-            label={booking.status === 'pending' ? 'Cancel Request' : 'Cancel'}
+            label={booking.status === 'pending' ? t('machineryBookingDetails.cancelRequest') : t('common.cancel')}
             disabled={!!actionInProgress}
             onPress={() => openSheet('cancel')}
             style={styles.flex}
@@ -302,7 +342,7 @@ export default function MachineryBookingDetailsScreen({ navigation, route }) {
         )}
         {actions.includes('complete') ? (
           <MarketButton
-            label="Mark Completed"
+            label={t('machineryBookingDetails.markCompleted')}
             icon={<CircleCheck size={16} color={C.white} />}
             disabled={!!actionInProgress}
             onPress={handleComplete}
@@ -312,7 +352,7 @@ export default function MachineryBookingDetailsScreen({ navigation, route }) {
           contactShared &&
           !!other?.phoneNumber && (
             <MarketButton
-              label={isOwner ? 'Call Farmer' : 'Call Owner'}
+              label={isOwner ? t('machineryBookingDetails.callFarmer') : t('machineryBookingDetails.callOwner')}
               icon={<Phone size={16} color={C.white} />}
               onPress={callOther}
               style={styles.flexWide}
@@ -345,7 +385,7 @@ export default function MachineryBookingDetailsScreen({ navigation, route }) {
           compact
           gradient={heroGradientFor(booking)}
           onBack={() => navigation.goBack()}
-          eyebrow={isOwner ? 'Rental request' : 'Your rental'}
+          eyebrow={isOwner ? t('machineryBookingDetails.rentalRequest') : t('machineryBookingDetails.yourRental')}
           title={machine.name || 'Machinery'}
           right={
             <StatusPill
@@ -354,7 +394,7 @@ export default function MachineryBookingDetailsScreen({ navigation, route }) {
             />
           }
         >
-          <Text style={styles.heroLabel}>Total payment</Text>
+          <Text style={styles.heroLabel}>{t('machineryBookingDetails.totalPayment')}</Text>
           <Text style={styles.heroAmount}>
             {formatRupees(booking.totalAmount)}
           </Text>
@@ -376,7 +416,7 @@ export default function MachineryBookingDetailsScreen({ navigation, route }) {
             </Text>
             {!!closingReason &&
               ['rejected', 'cancelled'].includes(booking.status) && (
-                <Text style={styles.heroReason}>Reason: {closingReason}</Text>
+                <Text style={styles.heroReason}>{t('machineryBookingDetails.reason', {closingReason})}</Text>
               )}
           </View>
         </MarketHero>
@@ -412,7 +452,7 @@ export default function MachineryBookingDetailsScreen({ navigation, route }) {
 
           {/* OTHER PARTY */}
           <View style={styles.card}>
-            <Text style={styles.cardLabel}>{isOwner ? 'Farmer' : 'Owner'}</Text>
+            <Text style={styles.cardLabel}>{isOwner ? t('common.farmer') : t('machineryBookingDetails.owner')}</Text>
             <View style={styles.partyRow}>
               <PersonAvatar
                 name={otherName}
@@ -444,7 +484,7 @@ export default function MachineryBookingDetailsScreen({ navigation, route }) {
               <View style={styles.lockedRow}>
                 <Lock size={13} color={C.muted} />
                 <Text style={styles.lockedText}>
-                  Phone number is shared once the owner confirms
+                  {t('machineryBookingDetails.phoneNumberIsSharedOnce')}
                 </Text>
               </View>
             )}
@@ -453,7 +493,7 @@ export default function MachineryBookingDetailsScreen({ navigation, route }) {
               <View style={styles.noteBox}>
                 <MessageSquareText size={14} color={C.blue} />
                 <Text style={[styles.noteText, styles.ownerNote]}>
-                  Owner: {booking.ownerNotes}
+                  {t('machineryBookingDetails.owner2', {ownerNotes: booking.ownerNotes})}
                 </Text>
               </View>
             )}
@@ -463,22 +503,22 @@ export default function MachineryBookingDetailsScreen({ navigation, route }) {
           <View style={styles.card}>
             <View style={styles.cardTitleRow}>
               <CalendarDays size={17} color={C.green} />
-              <Text style={styles.cardTitle}>Schedule & work</Text>
+              <Text style={styles.cardTitle}>{t('machineryBookingDetails.scheduleWork')}</Text>
             </View>
-            <InfoRow label="Starts" value={formatDay(booking.bookingDate)} />
+            <InfoRow label={t('machineryBookingDetails.starts')} value={formatDay(booking.bookingDate)} />
             {booking.durationUnit === 'days' && booking.duration > 1 && (
-              <InfoRow label="Ends" value={formatDay(booking.endDate)} />
+              <InfoRow label={t('machineryBookingDetails.ends')} value={formatDay(booking.endDate)} />
             )}
             {booking.durationUnit !== 'days' && (
               <InfoRow
-                label="Time"
+                label={t('machineryBookingDetails.time')}
                 value={formatTimeRange(booking.startTime, booking.endTime)}
               />
             )}
-            <InfoRow label="Work" value={booking.workType} />
-            <InfoRow label="Implement" value={booking.selectedImplement} />
-            <InfoRow label="Crop" value={booking.crop} />
-            <InfoRow label="Farm size" value={booking.farmSize} />
+            <InfoRow label={t('machineryBookingDetails.work')} value={booking.workType} />
+            <InfoRow label={t('machineryBookingDetails.implement')} value={booking.selectedImplement} />
+            <InfoRow label={t('common.crop')} value={booking.crop} />
+            <InfoRow label={t('machineryBookingDetails.farmSize')} value={booking.farmSize} />
 
             {!!farmLocation && (
               <View style={styles.locationRow}>
@@ -499,13 +539,13 @@ export default function MachineryBookingDetailsScreen({ navigation, route }) {
           <View style={styles.card}>
             <View style={styles.cardTitleRow}>
               <IndianRupee size={17} color={C.blue} />
-              <Text style={styles.cardTitle}>Payment</Text>
+              <Text style={styles.cardTitle}>{t('machineryBookingDetails.payment')}</Text>
             </View>
             {!!booking.customRate?.name && (
-              <InfoRow label="Rate" value={booking.customRate.name} />
+              <InfoRow label={t('machineryBookingDetails.rate')} value={booking.customRate.name} />
             )}
             <InfoRow
-              label="Price"
+              label={t('machineryBookingDetails.price')}
               value={
                 rateUnit
                   ? formatRate(booking.rate, rateUnit)
@@ -513,21 +553,21 @@ export default function MachineryBookingDetailsScreen({ navigation, route }) {
               }
             />
             <InfoRow
-              label="Quantity"
+              label={t('machineryBookingDetails.quantity')}
               value={formatDuration(booking.duration, booking.durationUnit)}
             />
             <InfoRow
-              label="Pay with"
+              label={t('machineryBookingDetails.payWith')}
               value={PAYMENT_LABELS[booking.paymentMethod]}
             />
             <View style={styles.totalRow}>
-              <Text style={styles.totalLabel}>Total</Text>
+              <Text style={styles.totalLabel}>{t('machineryBookingDetails.total')}</Text>
               <Text style={styles.totalValue}>
                 {formatRupees(booking.totalAmount)}
               </Text>
             </View>
             <Text style={styles.payNote}>
-              Paid directly to the owner after the work.
+              {t('machineryBookingDetails.paidDirectlyToTheOwner')}
             </Text>
           </View>
 
@@ -535,7 +575,7 @@ export default function MachineryBookingDetailsScreen({ navigation, route }) {
           {!!booking.review?.rating && (
             <View style={styles.card}>
               <Text style={styles.cardTitle}>
-                {isOwner ? "Farmer's rating" : 'Your rating'}
+                {isOwner ? t('machineryBookingDetails.farmersRating') : t('machineryBookingDetails.yourRating')}
               </Text>
               <View style={styles.stars}>
                 {[1, 2, 3, 4, 5].map(value => (
@@ -559,7 +599,7 @@ export default function MachineryBookingDetailsScreen({ navigation, route }) {
           <View style={styles.footerHint}>
             <Briefcase size={13} color={C.muted} />
             <Text style={styles.footerHintText}>
-              Booked {formatDay(booking.createdAt, { weekday: false })}
+              {t('machineryBookingDetails.booked', {v1: formatDay(booking.createdAt, { weekday: false })})}
             </Text>
           </View>
         </View>

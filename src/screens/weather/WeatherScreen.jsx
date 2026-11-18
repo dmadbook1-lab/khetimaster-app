@@ -398,7 +398,7 @@ export default function WeatherScreen({ navigation }) {
 
             {/* DETAILS */}
             <FadeIn delay={440}>
-              <SectionHeader title="Weather details" />
+              <SectionHeader title={t('weather.weatherDetails')} />
               <View style={styles.tiles}>
                 <DetailTile
                   icon={Thermometer}
@@ -495,7 +495,7 @@ export default function WeatherScreen({ navigation }) {
         )}
 
         <Text style={styles.source}>
-          Weather data: Visual Crossing · {data.address}
+          {t('weather.weatherDataVisualCrossing', {address: data.address})}
         </Text>
       </ScrollView>
     </SafeAreaView>

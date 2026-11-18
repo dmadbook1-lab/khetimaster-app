@@ -45,11 +45,11 @@ export default function SatelliteControls({
   const { t } = useTranslation();
   const satelliteOptions = [
     {
-      label: 'Sentinel-2',
+      label: t('satelliteControls.sentinel2'),
       value: 's2',
     },
     {
-      label: 'Sentinel-1',
+      label: t('satelliteControls.sentinel1'),
       value: 's1',
     },
   ];
@@ -183,7 +183,7 @@ export default function SatelliteControls({
                 />
 
                 <Text style={styles.cloudBadgeText}>
-                  {cloudCover.toFixed(0)}% cloud
+                  {t('satelliteControls.cloud', {v1: cloudCover.toFixed(0)})}
                 </Text>
               </View>
             )}

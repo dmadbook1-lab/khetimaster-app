@@ -26,6 +26,9 @@ import {
   FileText,
   Camera,
 } from 'lucide-react-native';
+import {useTranslation} from 'react-i18next';
+import i18n from 'i18next';
+import {tOpt} from '../../utils/tOpt';
 const { width } = Dimensions.get('window');
 const GREEN = '#16A34A';
 const DARK_GREEN = '#16883E';
@@ -45,30 +48,41 @@ const CROP_PHOTO = require('../../assets/gov/crop-photo.png');
 const SUMMARY_ITEMS = [
   {
     id: 'crop',
-    label: 'Crop',
+    get label() {
+    return i18n.t('common.crop');
+  },
     value: 'Maize / Corn',
     Icon: Sprout,
   },
   {
     id: 'area',
-    label: 'Affected Area',
+    get label() {
+    return i18n.t('aIDiagnosis.affectedArea');
+  },
     value: '~35%',
     Icon: Grid3x3,
   },
   {
     id: 'disease',
-    label: 'Disease',
-    value: 'Leaf Spot',
+    get label() {
+    return i18n.t('aIDiagnosis.disease');
+  },
+    get value() {
+    return i18n.t('aIDiagnosis.leafSpot');
+  },
     Icon: Code2,
   },
   {
     id: 'severity',
-    label: 'Severity',
+    get label() {
+    return i18n.t('aIDiagnosis.severity');
+  },
     value: 'Moderate',
     Icon: AlertTriangle,
   },
 ];
 export default function AIDiagnosisScreen({ navigation, route }) {
+  const {t} = useTranslation();
   const confidence = 92;
   const CIRCLE_SIZE = 82;
   const STROKE_WIDTH = 8;
@@ -103,7 +117,7 @@ export default function AIDiagnosisScreen({ navigation, route }) {
         </TouchableOpacity>
 
         <View style={styles.headerTextBox}>
-          <Text style={styles.headerTitle}>AI Diagnosis</Text>
+          <Text style={styles.headerTitle}>{t('aIDiagnosis.aiDiagnosis')}</Text>
         </View>
 
         <TouchableOpacity activeOpacity={0.8} style={styles.iconButton}>
@@ -121,9 +135,9 @@ export default function AIDiagnosisScreen({ navigation, route }) {
             <Check size={rf(14)} color="#FFFFFF" strokeWidth={3} />
           </View>
           <View style={styles.completedTextBox}>
-            <Text style={styles.completedTitle}>Analysis Completed</Text>
+            <Text style={styles.completedTitle}>{t('aIDiagnosis.analysisCompleted')}</Text>
             <Text style={styles.completedSubtitle}>
-              Disease detected successfully
+              {t('aIDiagnosis.diseaseDetectedSuccessfully')}
             </Text>
           </View>
           <MoreHorizontal size={rf(18)} color="#64748B" strokeWidth={2.2} />
@@ -158,18 +172,18 @@ export default function AIDiagnosisScreen({ navigation, route }) {
               </Svg>
               <View style={styles.confidenceTextBox}>
                 <Text style={styles.confidencePercent}>{confidence}%</Text>
-                <Text style={styles.confidenceLabel}>confidence</Text>
+                <Text style={styles.confidenceLabel}>{t('aIDiagnosis.confidence')}</Text>
               </View>
             </View>
 
             <View style={styles.diagnosisTextBox}>
-              <Text style={styles.detectedLabel}>DETECTED</Text>
-              <Text style={styles.diseaseName}>Leaf Spot</Text>
-              <Text style={styles.diseaseSubname}>Alternaria Leaf Spot</Text>
+              <Text style={styles.detectedLabel}>{t('aIDiagnosis.detected')}</Text>
+              <Text style={styles.diseaseName}>{t('aIDiagnosis.leafSpot')}</Text>
+              <Text style={styles.diseaseSubname}>{t('aIDiagnosis.alternariaLeafSpot')}</Text>
 
               <View style={styles.severityPill}>
                 <View style={styles.severityDot} />
-                <Text style={styles.severityText}>Moderate Infection</Text>
+                <Text style={styles.severityText}>{t('aIDiagnosis.moderateInfection')}</Text>
               </View>
             </View>
           </View>
@@ -177,12 +191,12 @@ export default function AIDiagnosisScreen({ navigation, route }) {
           <View style={styles.diagnosisFooter}>
             <View style={styles.footerLeft}>
               <Clock size={rf(11)} color={MUTED} strokeWidth={2.2} />
-              <Text style={styles.footerLeftText}>Analyzed just now</Text>
+              <Text style={styles.footerLeftText}>{t('aIDiagnosis.analyzedJustNow')}</Text>
             </View>
 
             <View style={styles.footerRight}>
               <ShieldCheck size={rf(11)} color={DARK_GREEN} strokeWidth={2.4} />
-              <Text style={styles.footerRightText}>KhetiMaster AI</Text>
+              <Text style={styles.footerRightText}>{t('aIDiagnosis.khetimasterAi')}</Text>
             </View>
           </View>
         </View>
@@ -197,7 +211,7 @@ export default function AIDiagnosisScreen({ navigation, route }) {
 
           <View style={styles.affectedBadge}>
             <View style={styles.affectedDot} />
-            <Text style={styles.affectedText}>Affected Area</Text>
+            <Text style={styles.affectedText}>{t('aIDiagnosis.affectedArea')}</Text>
           </View>
 
           <TouchableOpacity activeOpacity={0.8} style={styles.expandButton}>
@@ -211,7 +225,7 @@ export default function AIDiagnosisScreen({ navigation, route }) {
         </View>
 
         {}
-        <Text style={styles.sectionTitle}>Diagnosis Summary</Text>
+        <Text style={styles.sectionTitle}>{t('aIDiagnosis.diagnosisSummary')}</Text>
 
         <View style={styles.summaryGrid}>
           {SUMMARY_ITEMS.map(item => {
@@ -223,7 +237,7 @@ export default function AIDiagnosisScreen({ navigation, route }) {
                 </View>
                 <View style={styles.summaryTextBox}>
                   <Text style={styles.summaryLabel}>{item.label}</Text>
-                  <Text style={styles.summaryValue}>{item.value}</Text>
+                  <Text style={styles.summaryValue}>{tOpt(item.value)}</Text>
                 </View>
               </View>
             );
@@ -231,13 +245,10 @@ export default function AIDiagnosisScreen({ navigation, route }) {
         </View>
 
         {}
-        <Text style={styles.sectionTitle}>About This Disease</Text>
+        <Text style={styles.sectionTitle}>{t('aIDiagnosis.aboutThisDisease')}</Text>
 
         <Text style={styles.aboutText}>
-          Leaf Spot is a fungal disease caused by Alternaria species. It appears
-          as small brown or dark circular spots on leaves, reducing plant's
-          ability to photosynthesize. Early treatment helps prevent spread to
-          healthy plants.
+          {t('aIDiagnosis.leafSpotIsAFungal')}
         </Text>
 
         {}
@@ -248,8 +259,8 @@ export default function AIDiagnosisScreen({ navigation, route }) {
             </View>
 
             <View style={styles.aiConfidenceTextBox}>
-              <Text style={styles.aiConfidenceTitle}>AI Confidence</Text>
-              <Text style={styles.aiConfidenceSubtitle}>High Confidence</Text>
+              <Text style={styles.aiConfidenceTitle}>{t('aIDiagnosis.aiConfidence')}</Text>
+              <Text style={styles.aiConfidenceSubtitle}>{t('aIDiagnosis.highConfidence')}</Text>
             </View>
 
             <Text style={styles.aiConfidencePercent}>92%</Text>
@@ -267,7 +278,7 @@ export default function AIDiagnosisScreen({ navigation, route }) {
           </View>
 
           <Text style={styles.aiConfidenceCaption}>
-            Based on image quality and symptom matching.
+            {t('aIDiagnosis.basedOnImageQualityAnd')}
           </Text>
         </View>
       </ScrollView>
@@ -280,7 +291,7 @@ export default function AIDiagnosisScreen({ navigation, route }) {
           style={styles.primaryButton}
         >
           <FileText size={rf(15)} color="#FFFFFF" strokeWidth={2.4} />
-          <Text style={styles.primaryButtonText}>View Disease Details</Text>
+          <Text style={styles.primaryButtonText}>{t('aIDiagnosis.viewDiseaseDetails')}</Text>
         </TouchableOpacity>
 
         <TouchableOpacity
@@ -289,7 +300,7 @@ export default function AIDiagnosisScreen({ navigation, route }) {
           style={styles.secondaryButton}
         >
           <Camera size={rf(15)} color={DARK_GREEN} strokeWidth={2.4} />
-          <Text style={styles.secondaryButtonText}>Analyze Another Photo</Text>
+          <Text style={styles.secondaryButtonText}>{t('aIDiagnosis.analyzeAnotherPhoto')}</Text>
         </TouchableOpacity>
       </View>
     </SafeAreaView>

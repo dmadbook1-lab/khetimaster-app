@@ -1,18 +1,23 @@
 import { Dimensions } from 'react-native';
+import { WH, WH_SHADOW } from '../warehouse/theme';
 
 const { width } = Dimensions.get('window');
 
+/*
+ * Community shares the Storage look: steel blue with a harvest amber accent.
+ * Token names predate that palette, so GREEN, FOREST etc. are now steel blues.
+ */
 export const COLORS = {
-  GREEN: '#16883E',
-  DARK_GREEN: '#14532D',
-  BRIGHT_GREEN: '#2E9D4F',
-  DARK: '#1F2A22',
-  MUTED: '#64748B',
-  BORDER: '#DDEBE2',
-  PAGE_BG: '#F4F8F5',
-  ORANGE: '#F97316',
-  BLUE: '#3B82F6',
-  AMBER: '#F59E0B',
+  GREEN: WH.steel,
+  DARK_GREEN: WH.steelDark,
+  BRIGHT_GREEN: '#2F7FA8',
+  DARK: WH.ink,
+  MUTED: WH.muted,
+  BORDER: WH.border,
+  PAGE_BG: WH.bg,
+  ORANGE: WH.amber,
+  BLUE: WH.steel,
+  AMBER: WH.amber,
   RED: '#EF4444',
   PURPLE: '#A855F7',
   LIKE: '#E11D48',
@@ -20,26 +25,32 @@ export const COLORS = {
 };
 
 export const FIELD = {
-  DEEP: '#14532D',
-  FOREST: '#16883E',
-  LEAF: '#2E9D4F',
-  SPROUT: '#E8F4E9',
-  SOIL: '#F4F8F5',
-  CARD: '#FFFFFF',
-  LINE: '#DDEBE2',
-  WHEAT: '#E3A33B',
-  WHEAT_SOFT: '#F0F7ED',
+  DEEP: WH.navy,
+  FOREST: WH.steel,
+  LEAF: '#2F7FA8',
+  SPROUT: WH.steelSoft,
+  SOIL: WH.bg,
+  CARD: WH.white,
+  LINE: WH.border,
+  WHEAT: WH.amber,
+  WHEAT_DEEP: WH.amberDark,
+  WHEAT_SOFT: WH.amberSoft,
   CLAY: '#C65D3B',
-  INK: '#1F2A22',
-  BARK: '#64748B',
+  INK: WH.ink,
+  BARK: WH.muted,
 };
 
+// Feed cards sit inset from the screen edge, like the other marketplaces
+export const CARD_GUTTER = 16;
+export const CARD_RADIUS = 22;
+export const CARD_SHADOW = WH_SHADOW;
+
 // Ring around avatars of people with recent reels
-export const STORY_RING = ['#F2C14E', '#2E9D4F'];
+export const STORY_RING = ['#FBBF24', '#2F7FA8'];
 
 // Background tints for avatars without a photo
 export const AVATAR_TINTS = [
-  '#1E6B3A',
+  WH.steel,
   '#0E7490',
   '#C65D3B',
   '#8A6D1F',

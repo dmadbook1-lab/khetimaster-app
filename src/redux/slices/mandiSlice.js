@@ -7,6 +7,7 @@ import {
   getMandiRatesApi,
 } from '../../api/mandiApi';
 import { summaryKey } from '../../utils/mandiFormat';
+import i18n from 'i18next';
 
 const errorMessage = (error, fallback) =>
   error.response?.data?.message || error.message || fallback;
@@ -23,7 +24,7 @@ export const fetchMandiCrops = createAsyncThunk(
     try {
       return await getMandiCropsApi();
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to load crops'));
+      return rejectWithValue(errorMessage(error, i18n.t('mandiSlice.unableToLoadCrops')));
     }
   },
 );
@@ -34,7 +35,7 @@ export const fetchMandiStates = createAsyncThunk(
     try {
       return await getMandiStatesApi();
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to load states'));
+      return rejectWithValue(errorMessage(error, i18n.t('mandiSlice.unableToLoadStates')));
     }
   },
 );
@@ -45,7 +46,7 @@ export const fetchMandiDistricts = createAsyncThunk(
     try {
       return await getMandiDistrictsApi(state);
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to load districts'));
+      return rejectWithValue(errorMessage(error, i18n.t('mandiSlice.unableToLoadDistricts')));
     }
   },
 );
@@ -67,7 +68,7 @@ export const fetchMandiRates = createAsyncThunk(
       return await getMandiRatesApi(params);
     } catch (error) {
       return rejectWithValue(
-        errorMessage(error, 'Unable to load mandi prices'),
+        errorMessage(error, i18n.t('mandiSlice.unableToLoadMandiPrices')),
       );
     }
   },
@@ -86,10 +87,12 @@ export const fetchMandiSummary = createAsyncThunk(
       return {
         summary: response.summary,
         source: response.source,
+        date: response.date,
+        isToday: response.isToday,
         stale: response.stale,
       };
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to load prices'));
+      return rejectWithValue(errorMessage(error, i18n.t('mandiSlice.unableToLoadPrices')));
     }
   },
   {
@@ -113,6 +116,9 @@ const emptyRates = {
   data: [],
   summary: null,
   source: null,
+  date: null,
+  isToday: false,
+  rateLimited: false,
   stale: false,
   truncated: false,
   fetchedAt: null,
@@ -226,6 +232,9 @@ const mandiSlice = createSlice({
           data: action.meta.arg.append ? [...state.rates.data, ...data] : data,
           summary: payload.summary || null,
           source: payload.source || null,
+          date: payload.date || null,
+          isToday: Boolean(payload.isToday),
+          rateLimited: Boolean(payload.rateLimited),
           stale: Boolean(payload.stale),
           truncated: Boolean(payload.truncated),
           fetchedAt: payload.fetchedAt || null,
@@ -244,6 +253,8 @@ const mandiSlice = createSlice({
             status: 'loaded',
             summary: payload.summary,
             source: payload.source,
+            date: payload.date,
+            isToday: payload.isToday,
           };
         }
       })

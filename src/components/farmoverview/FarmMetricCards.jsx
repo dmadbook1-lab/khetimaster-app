@@ -1,6 +1,9 @@
 import React from 'react';
 import { View, Text, StyleSheet, Dimensions } from 'react-native';
 import { Sparkles, BookOpen, FlaskConical } from 'lucide-react-native';
+import i18n from 'i18next';
+import {tOpt} from '../../utils/tOpt';
+import {useTranslation} from 'react-i18next';
 const { width } = Dimensions.get('window');
 const GREEN = '#16883E';
 const BLUE = '#2563EB';
@@ -8,7 +11,9 @@ const CARD_WIDTH = (width - width * 0.074 - 32) / 3;
 const items = [
   {
     Icon: Sparkles,
-    label: 'Crop Health',
+    get label() {
+    return i18n.t('farmMetricCards.cropHealth');
+  },
     value: '92%',
     pill: 'HEALTHY',
     color: '#111827',
@@ -17,7 +22,9 @@ const items = [
   },
   {
     Icon: BookOpen,
-    label: 'Growth Stage',
+    get label() {
+    return i18n.t('farmMetricCards.growthStage');
+  },
     value: 'Vegetative',
     pill: 'CURRENT\nSTAGE',
     color: '#166534',
@@ -27,7 +34,9 @@ const items = [
   },
   {
     Icon: FlaskConical,
-    label: 'Soil Moisture',
+    get label() {
+    return i18n.t('farmMetricCards.soilMoisture');
+  },
     value: 'Good',
     pill: 'OPTIMAL',
     color: BLUE,
@@ -36,6 +45,7 @@ const items = [
   },
 ];
 export default function FarmMetricCards() {
+  useTranslation();
   return (
     <View style={styles.row}>
       {items.map((item, index) => {
@@ -62,7 +72,7 @@ export default function FarmMetricCards() {
                 },
               ]}
             >
-              {item.value}
+              {tOpt(item.value)}
             </Text>
 
             <View style={[styles.pill, item.bigPill && styles.bigPill]}>

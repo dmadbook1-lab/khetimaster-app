@@ -7,6 +7,7 @@ import {
   parseTime,
 } from './indiaSchedule';
 import { formatRupees } from './marketFormat';
+import i18n from 'i18next';
 
 /*
 |--------------------------------------------------------------------------
@@ -30,44 +31,86 @@ export const SLOT_DAY_END = 20 * 60;
 
 export const DOCTOR_TYPE_META = {
   veterinarian: {
-    label: 'Veterinarian',
-    short: 'Vet',
+    get label() {
+    return i18n.t('doctorFormat.veterinarian');
+  },
+    get short() {
+    return i18n.t('doctorFormat.vet');
+  },
     consultationType: 'veterinary',
-    for: 'Animals & livestock',
+    get for() {
+    return i18n.t('doctorFormat.animalsLivestock');
+  },
   },
   agriculturalDoctor: {
-    label: 'Crop Doctor',
-    short: 'Crop doctor',
+    get label() {
+    return i18n.t('doctorFormat.cropDoctor');
+  },
+    get short() {
+    return i18n.t('doctorFormat.cropDoctor2');
+  },
     consultationType: 'agricultural',
-    for: 'Crops, soil & pests',
+    get for() {
+    return i18n.t('doctorFormat.cropsSoilPests');
+  },
   },
 };
 
 export const CONSULTATION_TYPE_LABELS = {
-  veterinary: 'Animal consultation',
-  agricultural: 'Crop consultation',
+  get veterinary() {
+    return i18n.t('doctorFormat.animalConsultation');
+  },
+  get agricultural() {
+    return i18n.t('doctorFormat.cropConsultation');
+  },
 };
 
 export const STATUS_META = {
-  pending: { label: 'Requested', color: '#B7791F', bg: '#FFF6E0' },
-  accepted: { label: 'Accepted', color: '#0B7C76', bg: '#E1F5F3' },
-  confirmed: { label: 'Accepted', color: '#0B7C76', bg: '#E1F5F3' },
-  completed: { label: 'Completed', color: '#2563EB', bg: '#EAF1FF' },
-  rejected: { label: 'Declined', color: '#B42318', bg: '#FDECEA' },
-  cancelled: { label: 'Cancelled', color: '#475467', bg: '#EEF0F2' },
+  pending: { get label() {
+    return i18n.t('doctorFormat.requested');
+  }, color: '#B7791F', bg: '#FFF6E0' },
+  accepted: { get label() {
+    return i18n.t('doctorFormat.accepted');
+  }, color: '#0B7C76', bg: '#E1F5F3' },
+  confirmed: { get label() {
+    return i18n.t('doctorFormat.accepted');
+  }, color: '#0B7C76', bg: '#E1F5F3' },
+  completed: { get label() {
+    return i18n.t('doctorFormat.completed');
+  }, color: '#2563EB', bg: '#EAF1FF' },
+  rejected: { get label() {
+    return i18n.t('doctorFormat.declined');
+  }, color: '#B42318', bg: '#FDECEA' },
+  cancelled: { get label() {
+    return i18n.t('doctorFormat.cancelled');
+  }, color: '#475467', bg: '#EEF0F2' },
 };
 
 export const AVAILABILITY_META = {
-  available: { label: 'Available', color: '#0B7C76', bg: '#E1F5F3' },
-  busy: { label: 'Busy', color: '#B7791F', bg: '#FFF6E0' },
-  unavailable: { label: 'Not available', color: '#B42318', bg: '#FDECEA' },
+  available: { get label() {
+    return i18n.t('doctorFormat.available');
+  }, color: '#0B7C76', bg: '#E1F5F3' },
+  busy: { get label() {
+    return i18n.t('doctorFormat.busy');
+  }, color: '#B7791F', bg: '#FFF6E0' },
+  unavailable: { get label() {
+    return i18n.t('doctorFormat.notAvailable');
+  }, color: '#B42318', bg: '#FDECEA' },
 };
 
 export const PAYMENT_LABELS = {
-  cod: 'Cash',
-  upi: 'UPI',
-  card: 'Card',
-  wallet: 'Wallet',
+  get cod() {
+    return i18n.t('doctorFormat.cash');
+  },
+  get upi() {
+    return i18n.t('doctorFormat.upi');
+  },
+  get card() {
+    return i18n.t('doctorFormat.card');
+  },
+  get wallet() {
+    return i18n.t('doctorFormat.wallet');
+  },
 };
 
 export const isAcceptedStatus = status =>
@@ -89,7 +132,7 @@ export const isFreeDoctor = doctor =>
   doctor?.consultationFeeType === 'free' || !Number(doctor?.consultationFee);
 
 export const feeLabel = doctor =>
-  isFreeDoctor(doctor) ? 'Free' : formatRupees(doctor.consultationFee);
+  isFreeDoctor(doctor) ? i18n.t('doctorFormat.free') : formatRupees(doctor.consultationFee);
 
 export const doctorPlace = doctor =>
   [doctor?.village, doctor?.district, doctor?.state].filter(Boolean).join(', ');
@@ -198,26 +241,26 @@ export const buildConsultationPayload = (
   const consultationType = consultationTypeFor(doctor);
 
   if (!form.consultationDate) {
-    return { error: 'Please choose a day', field: 'consultationDate' };
+    return { error: i18n.t('doctorFormat.pleaseChooseADay'), field: 'consultationDate' };
   }
   if (form.consultationDate < todayKey) {
-    return { error: 'This day has already passed', field: 'consultationDate' };
+    return { error: i18n.t('doctorFormat.thisDayHasAlreadyPassed'), field: 'consultationDate' };
   }
 
   const startMinute = parseTime(form.startTime);
 
   if (startMinute === null) {
-    return { error: 'Please choose a time', field: 'startTime' };
+    return { error: i18n.t('doctorFormat.pleaseChooseATime'), field: 'startTime' };
   }
   if (form.consultationDate === todayKey && startMinute < nowMinutes) {
     return {
-      error: 'This time has already passed today',
+      error: i18n.t('doctorFormat.thisTimeHasAlreadyPassed'),
       field: 'startTime',
     };
   }
 
   if (!trim(form.problemType)) {
-    return { error: 'Please choose the problem', field: 'problemType' };
+    return { error: i18n.t('doctorFormat.pleaseChooseTheProblem'), field: 'problemType' };
   }
 
   const animalCountText = trim(String(form.animalCount ?? ''));
@@ -228,14 +271,14 @@ export const buildConsultationPayload = (
     (!Number.isInteger(animalCount) || animalCount < 0 || animalCount > 10000)
   ) {
     return {
-      error: 'Number of animals must be a whole number',
+      error: i18n.t('doctorFormat.numberOfAnimalsMustBe'),
       field: 'animalCount',
     };
   }
 
   if (!trim(form.symptoms) && !trim(form.description)) {
     return {
-      error: 'Please describe what you see so the doctor can prepare',
+      error: i18n.t('doctorFormat.pleaseDescribeWhatYouSee'),
       field: 'symptoms',
     };
   }
@@ -244,7 +287,7 @@ export const buildConsultationPayload = (
 
   if (images.length > MAX_CONSULTATION_IMAGES) {
     return {
-      error: `You can add at most ${MAX_CONSULTATION_IMAGES} photos`,
+      error: i18n.t('doctorFormat.youCanAddAtMost', {MAX_CONSULTATION_IMAGES}),
       field: 'images',
     };
   }
@@ -291,26 +334,26 @@ export const buildConsultationPayload = (
 export const buildDoctorProfilePayload = form => {
   const fullName = trim(form.fullName);
 
-  if (!fullName) return { error: 'Please enter your name', field: 'fullName' };
+  if (!fullName) return { error: i18n.t('doctorFormat.pleaseEnterYourName'), field: 'fullName' };
   if (fullName.length > 100) {
-    return { error: 'Name must be at most 100 characters', field: 'fullName' };
+    return { error: i18n.t('doctorFormat.nameMustBeAtMost'), field: 'fullName' };
   }
 
   if (!DOCTOR_TYPE_META[form.doctorType]) {
     return {
-      error: 'Please choose what kind of doctor you are',
+      error: i18n.t('doctorFormat.pleaseChooseWhatKindOf'),
       field: 'doctorType',
     };
   }
 
   const phoneNumber = trim(form.phoneNumber);
   if (phoneNumber && !/^\+?[0-9\s-]{10,15}$/.test(phoneNumber)) {
-    return { error: 'Please enter a valid phone number', field: 'phoneNumber' };
+    return { error: i18n.t('doctorFormat.pleaseEnterAValidPhone'), field: 'phoneNumber' };
   }
 
   const email = trim(form.email).toLowerCase();
   if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    return { error: 'Please enter a valid email', field: 'email' };
+    return { error: i18n.t('doctorFormat.pleaseEnterAValidEmail'), field: 'email' };
   }
 
   for (const [key, label] of [
@@ -319,20 +362,20 @@ export const buildDoctorProfilePayload = form => {
     ['languages', 'languages'],
   ]) {
     if ((form[key] || []).length > 20) {
-      return { error: `You can add at most 20 ${label}`, field: key };
+      return { error: i18n.t('doctorFormat.youCanAddAtMost2', {label}), field: key };
     }
   }
 
   if (!(form.specialization || []).length) {
     return {
-      error: 'Please choose at least one specialization',
+      error: i18n.t('doctorFormat.pleaseChooseAtLeastOne'),
       field: 'specialization',
     };
   }
 
   const about = trim(form.about);
   if (about.length > 1000) {
-    return { error: 'About must be at most 1000 characters', field: 'about' };
+    return { error: i18n.t('doctorFormat.aboutMustBeAtMost'), field: 'about' };
   }
 
   const isFree = form.consultationFeeType === 'free';
@@ -340,11 +383,11 @@ export const buildDoctorProfilePayload = form => {
   const fee = feeText ? Number(feeText) : 0;
 
   if (!isFree && (!Number.isFinite(fee) || fee < 0)) {
-    return { error: 'Please enter a valid fee', field: 'consultationFee' };
+    return { error: i18n.t('doctorFormat.pleaseEnterAValidFee'), field: 'consultationFee' };
   }
   if (!isFree && fee === 0) {
     return {
-      error: 'Enter your fee, or choose "Free consultation"',
+      error: i18n.t('doctorFormat.enterYourFeeOrChoose'),
       field: 'consultationFee',
     };
   }
@@ -354,7 +397,7 @@ export const buildDoctorProfilePayload = form => {
 
   if (availableFrom && availableUntil && availableUntil < availableFrom) {
     return {
-      error: '"Until" must be after "from"',
+      error: i18n.t('doctorFormat.untilMustBeAfterFrom'),
       field: 'availableUntil',
     };
   }
@@ -428,28 +471,28 @@ export const describeConsultationState = (consultation, todayKey) => {
   switch (status) {
     case 'pending':
       return isDoctor
-        ? 'New request. Accept it to share phone numbers.'
-        : 'Waiting for the doctor to accept.';
+        ? i18n.t('doctorFormat.newRequestAcceptItTo')
+        : i18n.t('doctorFormat.waitingForTheDoctorTo');
     case 'accepted':
     case 'confirmed':
       if (day <= todayKey) {
         return isDoctor
-          ? 'Consultation is due. Mark it completed with your diagnosis.'
-          : 'Consultation is due. The doctor will call or visit.';
+          ? i18n.t('doctorFormat.consultationIsDueMarkIt')
+          : i18n.t('doctorFormat.consultationIsDueTheDoctor');
       }
-      return `Accepted. Consultation ${when} at ${formatTime(
+      return i18n.t('doctorFormat.acceptedConsultationAt', {when, v2: formatTime(
         consultation.startTime,
-      )}.`;
+      )});
     case 'completed':
       return consultation.canReview
-        ? 'Completed. Please rate the doctor.'
-        : 'Completed.';
+        ? i18n.t('doctorFormat.completedPleaseRateTheDoctor')
+        : i18n.t('doctorFormat.completed2');
     case 'rejected':
-      return isDoctor ? 'You declined this request.' : 'The doctor declined.';
+      return isDoctor ? i18n.t('doctorFormat.youDeclinedThisRequest') : i18n.t('doctorFormat.theDoctorDeclined');
     case 'cancelled':
-      if (cancelledBy === 'system') return 'Expired: no reply before the date.';
-      if (cancelledBy === myRole) return 'You cancelled this consultation.';
-      return isDoctor ? 'The farmer cancelled.' : 'The doctor cancelled.';
+      if (cancelledBy === 'system') return i18n.t('doctorFormat.expiredNoReplyBeforeThe');
+      if (cancelledBy === myRole) return i18n.t('doctorFormat.youCancelledThisConsultation');
+      return isDoctor ? i18n.t('doctorFormat.theFarmerCancelled') : i18n.t('doctorFormat.theDoctorCancelled');
     default:
       return '';
   }

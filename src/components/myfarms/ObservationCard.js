@@ -46,7 +46,7 @@ export default function ObservationCard({
 
       <View style={styles.index}>
         <Text style={styles.indexLabel}>
-          INDEX
+          {t('observationCard.index')}
         </Text>
 
         <Text style={styles.indexValue}>

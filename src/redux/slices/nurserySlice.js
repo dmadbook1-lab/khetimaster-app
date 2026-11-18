@@ -11,6 +11,7 @@ import {
   deleteNurseryPlantApi,
 } from '../../api/nurseryApi';
 import { DEFAULT_DELIVERY } from '../../utils/nurseryFormat';
+import i18n from 'i18next';
 
 const errorMessage = (error, fallback) =>
   error.response?.data?.message || error.message || fallback;
@@ -27,7 +28,7 @@ export const fetchNurseryMeta = createAsyncThunk(
     try {
       return await getNurseryMetaApi();
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to load options'));
+      return rejectWithValue(errorMessage(error, i18n.t('nurserySlice.unableToLoadOptions')));
     }
   },
 );
@@ -39,7 +40,7 @@ export const fetchNurseryCategories = createAsyncThunk(
     try {
       return await getNurseryCategoriesApi();
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to load categories'));
+      return rejectWithValue(errorMessage(error, i18n.t('nurserySlice.unableToLoadCategories')));
     }
   },
 );
@@ -59,7 +60,7 @@ export const fetchNurseryPlants = createAsyncThunk(
     try {
       return await getNurseryPlantsApi(params);
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to load plants'));
+      return rejectWithValue(errorMessage(error, i18n.t('nurserySlice.unableToLoadPlants')));
     }
   },
 );
@@ -70,7 +71,7 @@ export const fetchNurseryPlantById = createAsyncThunk(
     try {
       return await getNurseryPlantByIdApi(plantId);
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to load plant'));
+      return rejectWithValue(errorMessage(error, i18n.t('nurserySlice.unableToLoadPlant')));
     }
   },
 );
@@ -87,7 +88,7 @@ export const fetchMyNurseryListings = createAsyncThunk(
     try {
       return await getMyNurseryListingsApi();
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to load your plants'));
+      return rejectWithValue(errorMessage(error, i18n.t('nurserySlice.unableToLoadYourPlants')));
     }
   },
 );
@@ -103,7 +104,7 @@ export const saveNurseryPlant = createAsyncThunk(
         ? await updateNurseryPlantApi(plantId, plantData)
         : await createNurseryPlantApi(plantData);
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to save plant'));
+      return rejectWithValue(errorMessage(error, i18n.t('nurserySlice.unableToSavePlant')));
     }
   },
 );
@@ -119,7 +120,7 @@ export const setNurseryPlantActive = createAsyncThunk(
         ? await updateNurseryPlantApi(plantId, { isActive: true })
         : await deleteNurseryPlantApi(plantId);
     } catch (error) {
-      return rejectWithValue(errorMessage(error, 'Unable to update plant'));
+      return rejectWithValue(errorMessage(error, i18n.t('nurserySlice.unableToUpdatePlant')));
     }
   },
 );

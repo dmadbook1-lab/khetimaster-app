@@ -151,7 +151,7 @@ function ActivityRow({activity, expanded, onToggle, saving, onProgress, isLast})
 
                   {product?.totalKgFarm != null ? (
                     <Text style={[styles.productTotal, {color: ui.color}]}>
-                      {product.totalKgFarm} kg for whole farm
+                      {t('activityPlanCard.kgForWholeFarm', {totalKgFarm: product.totalKgFarm})}
                     </Text>
                   ) : null}
                 </View>

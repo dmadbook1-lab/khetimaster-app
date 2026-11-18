@@ -81,7 +81,7 @@ export default function FarmMappingScreen({ navigation }) {
         </View>
 
         <View style={styles.stepsRow}>
-          {['Profile', 'Farm Info', 'Mapping'].map(item => (
+          {['Profile', t('farmMapping.farmInfo'), 'Mapping'].map(item => (
             <View key={item} style={styles.stepItem}>
               <View style={styles.smallCheck}>
                 <Check size={12} color="#FFFFFF" strokeWidth={4} />

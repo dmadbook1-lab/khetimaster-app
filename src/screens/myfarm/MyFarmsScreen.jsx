@@ -26,7 +26,7 @@ import {
 
 import {useDispatch, useSelector} from 'react-redux';
 
-import BottomTabBar from '../../common/BottomTabBar';
+import BottomTabBar, { useBottomTabBarInset } from '../../common/BottomTabBar';
 
 import MyFarmsHeader from '../../components/myfarms/MyFarmsHeader';
 import FarmSearchBar from '../../components/myfarms/FarmSearchBar';
@@ -63,6 +63,7 @@ export default function MyFarmsScreen({
   navigation,
 }) {
   const { t } = useTranslation();
+  const tabBarInset = useBottomTabBarInset();
   const dispatch = useDispatch();
 
   /*
@@ -374,9 +375,7 @@ export default function MyFarmsScreen({
             colors={[GREEN]}
           />
         }
-        contentContainerStyle={
-          styles.scrollContent
-        }
+        contentContainerStyle={[styles.scrollContent, { paddingBottom: styles.scrollContent.paddingBottom + tabBarInset }]}
       >
         <MyFarmsHeader />
 
@@ -442,7 +441,7 @@ export default function MyFarmsScreen({
             <Text
               style={styles.loadingText}
             >
-              Loading your farms...
+              {t('myFarms.loadingYourFarms')}
             </Text>
           </View>
         ) : error &&
@@ -453,7 +452,7 @@ export default function MyFarmsScreen({
             <Text
               style={styles.emptyTitle}
             >
-              Couldn't load farms
+              {t('myFarms.couldntLoadFarms')}
             </Text>
 
             <Text
@@ -561,7 +560,7 @@ export default function MyFarmsScreen({
       <TouchableOpacity
         activeOpacity={0.9}
         onPress={handleAddFarm}
-        style={styles.floatingAdd}
+        style={[styles.floatingAdd, { bottom: styles.floatingAdd.bottom + tabBarInset }]}
       >
         <Plus
           size={30}

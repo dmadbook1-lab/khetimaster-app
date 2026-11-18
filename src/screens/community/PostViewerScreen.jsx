@@ -34,6 +34,7 @@ import { FIELD, rf } from '../../components/community/theme';
 import { selectCommunityPost } from '../../redux/slices/communitySlice';
 import { formatCount } from '../../utils/communityFormat';
 import { timeAgo } from '../../utils/marketFormat';
+import {useTranslation} from 'react-i18next';
 
 const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get('window');
 const DOUBLE_TAP_MS = 260;
@@ -85,6 +86,7 @@ function ViewerAction({ Icon, label, count, active, activeColor, onPress }) {
  * params: postId, index (media slide to open on)
  */
 export default function PostViewerScreen({ navigation, route }) {
+  const {t} = useTranslation();
   const { postId, index: startIndex = 0 } = route.params || {};
 
   const insets = useSafeAreaInsets();
@@ -118,13 +120,13 @@ export default function PostViewerScreen({ navigation, route }) {
       <View style={[styles.screen, styles.missing]}>
         <StatusBar barStyle="light-content" backgroundColor="#000000" />
         <Text style={styles.missingText}>
-          This post is no longer available.
+          {t('postViewer.thisPostIsNoLonger')}
         </Text>
         <Pressable
           onPress={() => navigation.goBack()}
           style={styles.missingBtn}
         >
-          <Text style={styles.missingBtnText}>Go back</Text>
+          <Text style={styles.missingBtnText}>{t('postViewer.goBack')}</Text>
         </Pressable>
       </View>
     );
@@ -235,7 +237,7 @@ export default function PostViewerScreen({ navigation, route }) {
             hitSlop={10}
             onPress={() => navigation.goBack()}
             style={styles.roundBtn}
-            accessibilityLabel="Back"
+            accessibilityLabel={t('common.back')}
           >
             <ArrowLeft size={rf(22)} color="#FFFFFF" strokeWidth={2.3} />
           </Pressable>
@@ -256,7 +258,7 @@ export default function PostViewerScreen({ navigation, route }) {
                 hitSlop={10}
                 onPress={() => setMuted(value => !value)}
                 style={styles.roundBtn}
-                accessibilityLabel={muted ? 'Unmute' : 'Mute'}
+                accessibilityLabel={muted ? t('postViewer.unmute') : t('postViewer.mute')}
               >
                 {muted ? (
                   <VolumeX size={rf(19)} color="#FFFFFF" strokeWidth={2.3} />
@@ -269,7 +271,7 @@ export default function PostViewerScreen({ navigation, route }) {
               hitSlop={10}
               onPress={() => actions.openOptions(post)}
               style={styles.roundBtn}
-              accessibilityLabel="More options"
+              accessibilityLabel={t('postViewer.moreOptions')}
             >
               <Ellipsis size={rf(20)} color="#FFFFFF" />
             </Pressable>
@@ -340,7 +342,7 @@ export default function PostViewerScreen({ navigation, route }) {
           <View style={styles.actions}>
             <ViewerAction
               Icon={Heart}
-              label={post.isLiked ? 'Unlike' : 'Like'}
+              label={post.isLiked ? t('postViewer.unlike') : t('postViewer.like')}
               count={post.likesCount}
               active={post.isLiked}
               activeColor="#F43F5E"
@@ -348,19 +350,19 @@ export default function PostViewerScreen({ navigation, route }) {
             />
             <ViewerAction
               Icon={MessageCircle}
-              label="Comment"
+              label={t('postViewer.comment')}
               count={post.commentsCount}
               onPress={() => actions.openComments(post._id)}
             />
             <ViewerAction
               Icon={Share2}
-              label="Share"
+              label={t('postViewer.share')}
               onPress={() => actions.share(post)}
             />
             <View style={styles.flex} />
             <ViewerAction
               Icon={Bookmark}
-              label={post.isSaved ? 'Remove from saved' : 'Save'}
+              label={post.isSaved ? t('postViewer.removeFromSaved') : t('postViewer.save')}
               active={post.isSaved}
               activeColor={FIELD.WHEAT}
               onPress={() => actions.save(post)}
