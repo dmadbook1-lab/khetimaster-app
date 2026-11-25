@@ -62,6 +62,7 @@ import {
 import { formatRupees } from '../../utils/marketFormat';
 import {useTranslation} from 'react-i18next';
 import i18n from 'i18next';
+import { tOpt } from '../../utils/tOpt';
 
 const TIME_PRESETS = [
   { key: 'full', get label() {
@@ -255,7 +256,7 @@ export default function BookLabourScreen({ navigation, route }) {
                   {labourer.fullName}
                 </Text>
                 <Text style={styles.workerType} numberOfLines={1}>
-                  {labourer.labourType}
+                  {tOpt(labourer.labourType)}
                 </Text>
                 <View style={styles.inline}>
                   <Star size={11} color={C.gold} fill={C.gold} />

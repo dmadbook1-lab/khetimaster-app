@@ -177,7 +177,7 @@ export default function FarmSuccessScreen() {
   const addAnotherFarm =
     () => {
       navigation.replace(
-        'MapYourFarm',
+        'FarmMappingScreen',
       );
     };
 

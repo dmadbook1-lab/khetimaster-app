@@ -109,7 +109,8 @@ export default function DoctorListScreen({ navigation, route }) {
   const [sort, setSort] = useState('rating');
   const [language, setLanguage] = useState('');
   const [freeOnly, setFreeOnly] = useState(false);
-  const [nearMe, setNearMe] = useState(false);
+  // the home screen's "Doctors near you" opens the list with this on
+  const [nearMe, setNearMe] = useState(!!initial.nearMe);
   const [refreshing, setRefreshing] = useState(false);
 
   useEffect(() => {

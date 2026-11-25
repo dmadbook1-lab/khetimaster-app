@@ -2001,15 +2001,6 @@ export default function FarmDetailsScreen() {
                     t('farmForm.select_crop')}
                 </Text>
 
-                {selectedCrop && (
-                  <Text
-                    style={
-                      styles.cropSelectorHint
-                    }
-                  >
-                    {t('farmForm.cropgen_catalogue')}
-                  </Text>
-                )}
               </View>
 
               <ChevronDown
@@ -3004,14 +2995,6 @@ export default function FarmDetailsScreen() {
                               crop.cropName
                             }
                           </Text>
-
-                          <Text
-                            style={
-                              styles.cropOptionSubtext
-                            }
-                          >
-                            {t('farmForm.cropgen_crop')}
-                          </Text>
                         </View>
 
                         {selected && (
@@ -3882,12 +3865,6 @@ const styles =
       fontWeight: '600',
     },
 
-    cropSelectorHint: {
-      marginTop: 3,
-      fontSize: 9.5,
-      color: '#94A3B8',
-      fontWeight: '600',
-    },
 
     cropAvailableText: {
       marginTop: 5,
@@ -4437,12 +4414,6 @@ const styles =
       color: GREEN,
     },
 
-    cropOptionSubtext: {
-      marginTop: 3,
-      fontSize: 9.5,
-      color: '#94A3B8',
-      fontWeight: '600',
-    },
 
     cropCheck: {
       width: 28,

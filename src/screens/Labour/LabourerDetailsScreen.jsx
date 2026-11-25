@@ -56,6 +56,7 @@ import {
 import { timeAgo } from '../../utils/marketFormat';
 import {useTranslation} from 'react-i18next';
 import i18n from 'i18next';
+import { tOpt } from '../../utils/tOpt';
 
 const STEPS = [
   { get title() {
@@ -80,7 +81,7 @@ function ChipList({ items }) {
     <View style={styles.chips}>
       {items.map(item => (
         <Text key={item} style={styles.chip}>
-          {item}
+          {tOpt(item)}
         </Text>
       ))}
     </View>
@@ -195,7 +196,7 @@ export default function LabourerDetailsScreen({ navigation, route }) {
               style={styles.heroAvatar}
             />
             <Text style={styles.heroName}>{labourer.fullName}</Text>
-            <Text style={styles.heroType}>{labourer.labourType}</Text>
+            <Text style={styles.heroType}>{tOpt(labourer.labourType)}</Text>
             {!!location && (
               <View style={styles.inline}>
                 <MapPin size={12} color="#BFF0D2" />
@@ -247,7 +248,7 @@ export default function LabourerDetailsScreen({ navigation, route }) {
                   {t('labourerDetails.youHaveABookingWith')}
                 </Text>
                 <Text style={styles.activeText}>
-                  {activeBooking.workType} ·{' '}
+                  {tOpt(activeBooking.workType)} ·{' '}
                   {formatDateRange(
                     activeBooking.bookingDate,
                     activeBooking.numberOfDays,
@@ -300,7 +301,7 @@ export default function LabourerDetailsScreen({ navigation, route }) {
             )}
 
             {!work.length && !skills.length && !languages.length && (
-              <Text style={styles.value}>{labourer.labourType}</Text>
+              <Text style={styles.value}>{tOpt(labourer.labourType)}</Text>
             )}
           </View>
 
@@ -325,7 +326,7 @@ export default function LabourerDetailsScreen({ navigation, route }) {
                       {review.farmer?.fullName || 'Farmer'}
                     </Text>
                     <Text style={styles.reviewMeta}>
-                      {review.workType} · {timeAgo(review.createdAt)}
+                      {tOpt(review.workType)} · {timeAgo(review.createdAt)}
                     </Text>
                   </View>
                   <View style={styles.reviewStars}>

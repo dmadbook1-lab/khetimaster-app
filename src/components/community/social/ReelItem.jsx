@@ -17,6 +17,7 @@ import {
   Sprout,
   MessageCircle,
   Music2,
+  Plus,
   Send,
   Volume2,
   VolumeX,
@@ -63,6 +64,7 @@ function ReelItem({
   postId,
   height,
   bottomInset = 0,
+  onCreate,
   isActive,
   shouldLoad,
   paused: screenPaused,
@@ -244,6 +246,17 @@ function ReelItem({
 
       {/* author + caption */}
       <View style={[styles.meta, { bottom: bottomInset + 22 }]}>
+        {onCreate ? (
+          <Pressable
+            onPress={onCreate}
+            hitSlop={8}
+            style={styles.createButton}
+            accessibilityRole="button"
+            accessibilityLabel="Add reel or post"
+          >
+            <Plus size={rf(24)} color="#FFFFFF" strokeWidth={3} />
+          </Pressable>
+        ) : null}
         <View style={styles.authorRow}>
           <Avatar
             user={post.author}
@@ -366,6 +379,19 @@ const styles = StyleSheet.create({
     fontWeight: '700',
     textShadowColor: 'rgba(0,0,0,0.5)',
     textShadowRadius: 3,
+  },
+  createButton: {
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    backgroundColor: '#16A34A',
+    borderWidth: 2,
+    borderColor: '#FFFFFF',
+    alignItems: 'center',
+    justifyContent: 'center',
+    elevation: 6,
+    alignSelf: 'flex-start',
+    marginBottom: 4,
   },
   audioThumb: {
     width: 34,

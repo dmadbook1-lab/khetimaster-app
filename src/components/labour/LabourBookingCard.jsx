@@ -13,6 +13,7 @@ import {
 } from '../../utils/labourFormat';
 import { formatRupees } from '../../utils/marketFormat';
 import {useTranslation} from 'react-i18next';
+import { tOpt } from '../../utils/tOpt';
 
 /*
  * Booking row for "My Bookings" (farmer) and "Work Requests" (labourer).
@@ -43,7 +44,7 @@ function LabourBookingCard({ booking, onPress, footer }) {
             {other?.fullName || (isFarmer ? t('labourBookingCard.worker') : t('common.farmer'))}
           </Text>
           <Text style={styles.work} numberOfLines={1}>
-            {booking.workType}
+            {tOpt(booking.workType)}
             {booking.numberOfDays > 1 ? t('labourBookingCard.days', {numberOfDays: booking.numberOfDays}) : ''}
           </Text>
         </View>

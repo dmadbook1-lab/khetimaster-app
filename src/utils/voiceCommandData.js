@@ -145,6 +145,42 @@ export const COMMANDS = [
     ],
   },
   {
+    id: 'delivery',
+    route: 'DeliveryHome',
+    message: 'voice.open_delivery',
+    aiHint: 'send / transport goods with a local driver (truck, tempo, pickup)',
+    loanwords: ['delivery', 'transport'],
+    phrases: [
+      'delivery', 'goods delivery', 'send goods', 'transport', 'truck',
+      'tempo', 'maal bhejna', 'maal bhejna hai', 'saman bhejna',
+      'truck chahiye', 'tempo chahiye', 'truck book', 'tempo book',
+      'mal pathvaycha',
+      // Hindi
+      'डिलीवरी', 'डिलिवरी', 'माल भेजना', 'माल भेजना है', 'सामान भेजना',
+      'ट्रक', 'टेम्पो', 'मालवाहक', 'ढुलाई', 'ट्रांसपोर्ट',
+      // Marathi
+      'डिलिव्हरी', 'माल पाठवायचा', 'माल पाठवा', 'वाहतूक',
+      // Bengali / Assamese
+      'ডেলিভারি', 'মাল পাঠানো', 'ট্রাক', 'পরিবহন', 'ডেলিভাৰী',
+      // Gujarati
+      'ડિલિવરી', 'માલ મોકલવો', 'ટ્રક', 'ટેમ્પો',
+      // Punjabi
+      'ਡਿਲੀਵਰੀ', 'ਮਾਲ ਭੇਜਣਾ', 'ਟਰੱਕ',
+      // Odia
+      'ଡେଲିଭରି', 'ଟ୍ରକ',
+      // Tamil
+      'டெலிவரி', 'சரக்கு', 'லாரி',
+      // Telugu
+      'డెలివరీ', 'సరుకు', 'లారీ',
+      // Kannada
+      'ಡೆಲಿವರಿ', 'ಸರಕು', 'ಲಾರಿ',
+      // Malayalam
+      'ഡെലിവറി', 'ചരക്ക്', 'ലോറി',
+      // Urdu
+      'ڈیلیوری', 'مال بھیجنا', 'ٹرک',
+    ],
+  },
+  {
     id: 'doctor',
     route: 'DoctorMain',
     message: 'voice.open_vet',

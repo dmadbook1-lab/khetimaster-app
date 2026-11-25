@@ -8,6 +8,9 @@ import labourBookingReducer from './slices/labourBookingSlice';
 import machineryReducer from './slices/machinerySlice';
 import machineryBookingReducer from './slices/machineryBookingSlice';
 
+// Delivery (drivers + shipments)
+import deliveryReducer from './slices/deliverySlice';
+
 import doctorReducer from './slices/doctorSlice';
 import doctorConsultationReducer from './slices/doctorConsultationSlice';
 
@@ -44,6 +47,8 @@ const store = configureStore({
 
     machinery: machineryReducer,
     machineryBooking: machineryBookingReducer,
+
+    delivery: deliveryReducer,
 
     doctor: doctorReducer,
     doctorConsultation: doctorConsultationReducer,

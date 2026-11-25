@@ -41,5 +41,73 @@ export const categoryVisual = category =>
       .toLowerCase()
   ] || DEFAULT_VISUAL;
 
+/*
+ * Photo per category (server PLANT_CATEGORIES), shown on the category grid
+ * and for listings without photos. Sellers can type any category, so
+ * common plant names are matched by keyword ("Mango" -> fruit plants,
+ * "Tulsi" -> medicinal); anything unknown gets the general nursery photo.
+ */
+const CATEGORY_IMAGES = {
+  fruit: require('../../assets/nursery/fruit-plants.jpg'),
+  vegetable: require('../../assets/nursery/vegetable-seedlings.jpg'),
+  flowering: require('../../assets/nursery/flowering-plants.jpg'),
+  medicinal: require('../../assets/nursery/medicinal-plants.jpg'),
+  timber: require('../../assets/nursery/timber-trees.jpg'),
+  plantation: require('../../assets/nursery/plantation-crops.jpg'),
+  spice: require('../../assets/nursery/spice-plants.jpg'),
+  ornamental: require('../../assets/nursery/ornamental-plants.jpg'),
+  indoor: require('../../assets/nursery/indoor-plants.jpg'),
+  grafted: require('../../assets/nursery/grafted-saplings.jpg'),
+  seeds: require('../../assets/nursery/seeds.jpg'),
+  other: require('../../assets/nursery/other.jpg'),
+};
+
+// First match wins: category words, then common plant names, then the
+// generic "seedling" / "seed".
+const IMAGE_KEYWORDS = [
+  ['graft', 'grafted'],
+  ['seeds', 'seeds'],
+  ['vegetable', 'vegetable'],
+  ['fruit', 'fruit'],
+  ['flower', 'flowering'],
+  ['medicin', 'medicinal'],
+  ['herb', 'medicinal'],
+  ['timber', 'timber'],
+  ['plantation', 'plantation'],
+  ['spice', 'spice'],
+  ['ornamental', 'ornamental'],
+  ['indoor', 'indoor'],
+  ['house plant', 'indoor'],
+  // plant names
+  ['mango', 'fruit'], ['guava', 'fruit'], ['lemon', 'fruit'], ['orange', 'fruit'],
+  ['pomegranate', 'fruit'], ['papaya', 'fruit'], ['chikoo', 'fruit'], ['sapota', 'fruit'],
+  ['jackfruit', 'fruit'], ['custard apple', 'fruit'], ['amla', 'fruit'], ['apple', 'fruit'],
+  ['tomato', 'vegetable'], ['chilli', 'vegetable'], ['brinjal', 'vegetable'],
+  ['cabbage', 'vegetable'], ['cauliflower', 'vegetable'], ['capsicum', 'vegetable'],
+  ['bell pepper', 'vegetable'],
+  ['rose', 'flowering'], ['marigold', 'flowering'], ['hibiscus', 'flowering'],
+  ['jasmine', 'flowering'], ['mogra', 'flowering'], ['chrysanthemum', 'flowering'],
+  ['tulsi', 'medicinal'], ['aloe', 'medicinal'], ['neem', 'medicinal'],
+  ['giloy', 'medicinal'], ['ashwagandha', 'medicinal'],
+  ['teak', 'timber'], ['mahogany', 'timber'], ['sandalwood', 'timber'],
+  ['bamboo', 'timber'], ['eucalyptus', 'timber'],
+  ['coconut', 'plantation'], ['banana', 'plantation'], ['areca', 'plantation'],
+  ['cashew', 'plantation'], ['coffee', 'plantation'], ['rubber', 'plantation'],
+  ['pepper', 'spice'], ['cardamom', 'spice'], ['curry', 'spice'], ['clove', 'spice'],
+  ['cinnamon', 'spice'], ['turmeric', 'spice'], ['ginger', 'spice'],
+  ['croton', 'ornamental'], ['bougainvillea', 'ornamental'], ['palm', 'ornamental'],
+  ['money plant', 'indoor'], ['snake plant', 'indoor'], ['succulent', 'indoor'],
+  ['cactus', 'indoor'],
+  // generic words last, so "Coconut seedling" stays a plantation crop
+  ['seedling', 'vegetable'],
+  ['seed', 'seeds'],
+];
+
+export const categoryImage = category => {
+  const text = String(category || '').toLowerCase();
+  const match = IMAGE_KEYWORDS.find(([keyword]) => text.includes(keyword));
+  return CATEGORY_IMAGES[match ? match[1] : 'other'];
+};
+
 export const plantImageUri = plant =>
   plant?.images?.find(Boolean) || plant?.image || null;

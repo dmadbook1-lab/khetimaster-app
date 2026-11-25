@@ -72,6 +72,7 @@ import {
 import { formatRupees } from '../../utils/marketFormat';
 import {useTranslation} from 'react-i18next';
 import i18n from 'i18next';
+import { tOpt } from '../../utils/tOpt';
 
 const heroGradientFor = booking => {
   if (booking.status === 'pending')
@@ -515,7 +516,7 @@ export default function MachineryBookingDetailsScreen({ navigation, route }) {
                 value={formatTimeRange(booking.startTime, booking.endTime)}
               />
             )}
-            <InfoRow label={t('machineryBookingDetails.work')} value={booking.workType} />
+            <InfoRow label={t('machineryBookingDetails.work')} value={tOpt(booking.workType)} />
             <InfoRow label={t('machineryBookingDetails.implement')} value={booking.selectedImplement} />
             <InfoRow label={t('common.crop')} value={booking.crop} />
             <InfoRow label={t('machineryBookingDetails.farmSize')} value={booking.farmSize} />

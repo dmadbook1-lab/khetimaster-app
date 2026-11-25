@@ -1,15 +1,16 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   Dimensions,
   FlatList,
+  Image,
   RefreshControl,
-  ScrollView,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
+  useWindowDimensions,
 } from 'react-native';
 import {
   SafeAreaView,
@@ -21,7 +22,10 @@ import {
   ArrowRight,
   ArrowUpDown,
   Banknote,
+  BookUser,
+  Check,
   LayoutGrid,
+  MapPin,
   Package,
   Search,
   ShoppingCart,
@@ -47,7 +51,7 @@ import PlantGridCard from '../../components/nursery/PlantGridCard';
 import useNurseryMeta from '../../components/nursery/useNurseryMeta';
 import {
   NURSERY_BANNER,
-  categoryVisual,
+  categoryImage,
 } from '../../components/nursery/nurseryVisuals';
 import { NURSERY_ROUTES } from '../../constants/nurseryRoutes';
 import {
@@ -108,6 +112,23 @@ export default function NurseryHomeScreen({ navigation }) {
   const {t} = useTranslation();
   const [voiceOpen, setVoiceOpen] = useState(false);
   const voiceFlow = useNurseryVoiceFlow(navigation);
+  const { width: screenWidth } = useWindowDimensions();
+  // 4 tiles per row inside the 16px side padding, 8px gaps.
+  const tileWidth = Math.floor((screenWidth - 32 - 24) / 4);
+  // Exact square art: tile width minus 5px padding and 1.5px border each side.
+  const tileArtSize = tileWidth - 13;
+
+  // Jump down to the plants list (category tap / quick actions).
+  const listRef = useRef(null);
+  const resultsY = useRef(0);
+  const scrollToResults = useCallback(() => {
+    setTimeout(() => {
+      listRef.current?.scrollToOffset({
+        offset: Math.max(0, resultsY.current - 8),
+        animated: true,
+      });
+    }, 60);
+  }, []);
   const dispatch = useDispatch();
   const insets = useSafeAreaInsets();
   const meta = useNurseryMeta();
@@ -270,7 +291,25 @@ export default function NurseryHomeScreen({ navigation }) {
       </View>
 
       <View style={styles.section}>
+        {/* QUICK ACTIONS */}
         <View style={styles.ctaRow}>
+          <TouchableOpacity
+            activeOpacity={0.88}
+            style={styles.shortcut}
+            onPress={() => {
+              setCategory('');
+              scrollToResults();
+            }}
+          >
+            <View
+              style={[styles.shortcutIcon, { backgroundColor: C.lightGreen }]}
+            >
+              <BookUser size={19} color={C.green} />
+            </View>
+            <Text style={styles.shortcutTitle}>{t('nurseryHome.buyPlants')}</Text>
+            <Text style={styles.shortcutText}>{t('nurseryHome.browseAllPlants')}</Text>
+          </TouchableOpacity>
+
           <TouchableOpacity
             activeOpacity={0.88}
             style={styles.shortcut}
@@ -283,6 +322,25 @@ export default function NurseryHomeScreen({ navigation }) {
             </View>
             <Text style={styles.shortcutTitle}>{t('nurseryHome.myOrders')}</Text>
             <Text style={styles.shortcutText}>{t('nurseryHome.trackYourPlants')}</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            activeOpacity={0.88}
+            style={styles.shortcut}
+            onPress={() => {
+              if (nearDistrict) setNearMe(true);
+              scrollToResults();
+            }}
+          >
+            <View style={[styles.shortcutIcon, styles.nearIcon]}>
+              <MapPin size={19} color="#DC2626" />
+            </View>
+            <Text style={styles.shortcutTitle}>{t('nurseryHome.plantsNearYou')}</Text>
+            <Text style={styles.shortcutText} numberOfLines={1}>
+              {nearDistrict
+                ? t('nurseryHome.inDistrict', { district: nearDistrict })
+                : t('nurseryHome.inYourDistrict')}
+            </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -321,56 +379,75 @@ export default function NurseryHomeScreen({ navigation }) {
           onPress={() => setVoiceOpen(true)}
         />
 
-        <Text style={styles.sectionTitle}>{t('nurseryHome.shopByCategory')}</Text>
+        <View style={styles.typeHeader}>
+          <Text style={[styles.sectionTitle, styles.typeHeaderTitle]}>
+            {t('nurseryHome.shopByCategory')}
+          </Text>
+          {!!category && (
+            <TouchableOpacity
+              activeOpacity={0.85}
+              hitSlop={8}
+              onPress={() => setCategory('')}
+              style={styles.typeAllChip}
+            >
+              <LayoutGrid size={13} color={C.green} strokeWidth={2.6} />
+              <Text style={styles.typeAllText}>{t('nurseryHome.allPlants')}</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+
+        {/* CATEGORIES: all visible at once, 4 per row */}
+        <View style={styles.typeGrid}>
+          {categories.map(item => {
+            const selected = category.toLowerCase() === item.toLowerCase();
+
+            return (
+              <TouchableOpacity
+                key={item}
+                activeOpacity={0.88}
+                onPress={() => {
+                  setCategory(selected ? '' : item);
+                  if (!selected) scrollToResults();
+                }}
+                style={[
+                  styles.typeTile,
+                  { width: tileWidth },
+                  selected && styles.typeTileSelected,
+                ]}
+              >
+                <View>
+                  <Image
+                    source={categoryImage(item)}
+                    style={[
+                      styles.typeIcon,
+                      { width: tileArtSize, height: tileArtSize },
+                    ]}
+                    resizeMode="cover"
+                  />
+                  {selected && (
+                    <View style={styles.typeCheck}>
+                      <Check size={10} color={C.white} strokeWidth={3.5} />
+                    </View>
+                  )}
+                </View>
+                <Text
+                  style={[styles.typeLabel, selected && styles.typeLabelSelected]}
+                  numberOfLines={2}
+                >
+                  {tOpt(item)}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
       </View>
 
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.typeList}
+      <View
+        style={styles.section}
+        onLayout={event => {
+          resultsY.current = event.nativeEvent.layout.y;
+        }}
       >
-        <TouchableOpacity
-          activeOpacity={0.88}
-          onPress={() => setCategory('')}
-          style={[styles.typeTile, !category && styles.typeTileSelected]}
-        >
-          <View style={[styles.typeIcon, styles.typeAll]}>
-            <LayoutGrid size={24} color={C.dark} />
-          </View>
-          <Text
-            style={[styles.typeLabel, !category && styles.typeLabelSelected]}
-          >
-            {t('nurseryHome.allPlants')}
-          </Text>
-        </TouchableOpacity>
-
-        {categories.map(item => {
-          const selected = category.toLowerCase() === item.toLowerCase();
-          const visual = categoryVisual(item);
-          const Icon = visual.icon;
-
-          return (
-            <TouchableOpacity
-              key={item}
-              activeOpacity={0.88}
-              onPress={() => setCategory(selected ? '' : item)}
-              style={[styles.typeTile, selected && styles.typeTileSelected]}
-            >
-              <View style={[styles.typeIcon, { backgroundColor: visual.bg }]}>
-                <Icon size={24} color={visual.color} />
-              </View>
-              <Text
-                style={[styles.typeLabel, selected && styles.typeLabelSelected]}
-                numberOfLines={2}
-              >
-                {tOpt(item)}
-              </Text>
-            </TouchableOpacity>
-          );
-        })}
-      </ScrollView>
-
-      <View style={styles.section}>
         <View style={styles.resultsHeader}>
           <View style={styles.flex}>
             <Text style={styles.sectionTitleFlat}>
@@ -413,6 +490,7 @@ export default function NurseryHomeScreen({ navigation }) {
     <SafeAreaView style={styles.container} edges={['left', 'right']}>
       <TopInset />
       <FlatList
+        ref={listRef}
         data={listLoading && !refreshing ? [] : list}
         keyExtractor={item => item._id}
         renderItem={renderItem}
@@ -535,9 +613,10 @@ const styles = StyleSheet.create({
   },
   trustText: { color: C.white, fontSize: 10.5, fontWeight: '800' },
 
-  ctaRow: { flexDirection: 'row', gap: 12, marginTop: 18 },
+  ctaRow: { flexDirection: 'row', flexWrap: 'wrap', gap: 12, marginTop: 18 },
   shortcut: {
-    flex: 1,
+    width: '47.8%',
+    flexGrow: 1,
     borderRadius: 22,
     backgroundColor: C.white,
     padding: 15,
@@ -563,7 +642,8 @@ const styles = StyleSheet.create({
     color: C.muted,
     marginTop: 2,
   },
-  sellCtaWrap: { flex: 1, borderRadius: 22, ...MARKET_SHADOW },
+  sellCtaWrap: { width: '47.8%', flexGrow: 1, borderRadius: 22, ...MARKET_SHADOW },
+  nearIcon: { backgroundColor: '#FDECEC' },
   sellCta: { flex: 1, borderRadius: 22, padding: 15, minHeight: 132 },
   sellIcon: {
     width: 40,
@@ -607,13 +687,30 @@ const styles = StyleSheet.create({
     letterSpacing: -0.4,
   },
 
-  typeList: { paddingHorizontal: GUTTER, gap: 10, paddingBottom: 6 },
+  typeHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  typeHeaderTitle: { flexShrink: 1 },
+  typeAllChip: {
+    marginTop: 24,
+    marginBottom: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    paddingHorizontal: 11,
+    paddingVertical: 6,
+    borderRadius: 14,
+    backgroundColor: C.lightGreen,
+  },
+  typeAllText: { fontSize: 12, fontWeight: '900', color: C.green },
+  typeGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, paddingBottom: 6 },
   typeTile: {
-    width: 92,
     backgroundColor: C.white,
-    borderRadius: 18,
-    padding: 8,
-    paddingBottom: 9,
+    borderRadius: 14,
+    padding: 5,
+    paddingBottom: 7,
     alignItems: 'center',
     borderWidth: 1.5,
     borderColor: 'transparent',
@@ -621,20 +718,30 @@ const styles = StyleSheet.create({
   },
   typeTileSelected: { borderColor: C.green, backgroundColor: C.lightGreen },
   typeIcon: {
-    width: 54,
-    height: 54,
-    borderRadius: 18,
+    borderRadius: 11,
+    backgroundColor: '#E3EEE7',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  typeAll: { backgroundColor: '#EEF1EF' },
+  typeCheck: {
+    position: 'absolute',
+    top: 4,
+    right: 4,
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    backgroundColor: C.green,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
   typeLabel: {
-    marginTop: 7,
-    fontSize: 11,
+    marginTop: 6,
+    fontSize: 10.5,
+    lineHeight: 13,
     fontWeight: '800',
     color: C.dark,
     textAlign: 'center',
-    minHeight: 28,
+    minHeight: 26,
   },
   typeLabelSelected: { color: C.green },
 

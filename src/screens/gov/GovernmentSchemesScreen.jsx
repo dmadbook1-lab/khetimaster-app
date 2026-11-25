@@ -1,954 +1,406 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   View,
   Text,
   StyleSheet,
-  StatusBar,
   ScrollView,
   TouchableOpacity,
-  Image,
-  ImageBackground,
+  TextInput,
+  RefreshControl,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
-import LinearGradient from 'react-native-linear-gradient';
 import {
-  ArrowLeft,
-  Bell,
   ArrowRight,
-  Users,
-  Wallet,
-  CreditCard,
   ChevronRight,
-  Sprout,
-  Droplet,
-  Megaphone,
-  Landmark,
-  FolderOpen,
+  BookOpen,
   CheckCircle2,
+  FolderOpen,
+  Search,
+  ShieldCheck,
+  Lock,
+  BadgeCheck,
 } from 'lucide-react-native';
-import { COLORS, rf, PAGE_PADDING } from '../../components/gov/theme';
-import { GOV_ROUTES } from '../../constants/govRoutes';
 import {useTranslation} from 'react-i18next';
-import i18n from 'i18next';
-import {tOpt} from '../../utils/tOpt';
-const RECOMMENDED = [
-  {
-    id: 'r1',
-    name: 'PM-KISAN',
-    get desc() {
-    return i18n.t('governmentSchemes.incomeSupportForFarmers');
-  },
-    status: 'Eligible',
-    statusBg: '#DCFCE7',
-    statusColor: COLORS.DARK_GREEN,
-    get cta() {
-    return i18n.t('governmentSchemes.applyNow');
-  },
-    icon: Users,
-    iconBg: '#DCFCE7',
-    iconColor: COLORS.DARK_GREEN,
-  },
-  {
-    id: 'r2',
-    name: 'PM Fasal Bima\nYojana',
-    get desc() {
-    return i18n.t('governmentSchemes.cropInsuranceScheme');
-  },
-    status: 'New',
-    statusBg: '#FFF7ED',
-    statusColor: COLORS.ORANGE,
-    get cta() {
-    return i18n.t('common.view_details');
-  },
-    icon: Users,
-    iconBg: '#FFEDD5',
-    iconColor: COLORS.ORANGE,
-  },
-  {
-    id: 'r3',
-    name: 'Kisan Credit\nCard',
-    get desc() {
-    return i18n.t('governmentSchemes.lowInterestFarmLoan');
-  },
-    status: 'Recommended',
-    statusBg: '#DBEAFE',
-    statusColor: COLORS.BLUE,
-    get cta() {
-    return i18n.t('governmentSchemes.applyNow');
-  },
-    icon: CreditCard,
-    iconBg: '#DBEAFE',
-    iconColor: COLORS.BLUE,
-  },
-];
-const POPULAR = [
-  {
-    id: 'p1',
-    name: 'PM-Kisan Samman Nidhi',
-    get desc() {
-    return i18n.t('governmentSchemes.incomeSupportOf6000');
-  },
-    icon: Wallet,
-    bg: '#DCFCE7',
-    color: COLORS.DARK_GREEN,
-  },
-  {
-    id: 'p2',
-    name: 'PM Fasal Bima Yojana',
-    get desc() {
-    return i18n.t('governmentSchemes.cropInsuranceSchemeFor');
-  },
-    icon: Users,
-    bg: '#FFEDD5',
-    color: COLORS.ORANGE,
-  },
-  {
-    id: 'p3',
-    name: 'Kisan Credit Card (KCC)',
-    get desc() {
-    return i18n.t('governmentSchemes.easyCreditForFarmersAt');
-  },
-    icon: CreditCard,
-    bg: '#DBEAFE',
-    color: COLORS.BLUE,
-  },
-  {
-    id: 'p4',
-    name: 'Soil Health Card Scheme',
-    get desc() {
-    return i18n.t('governmentSchemes.improveSoilHealthAnd');
-  },
-    icon: Sprout,
-    bg: '#F3E8FF',
-    color: COLORS.PURPLE,
-  },
-  {
-    id: 'p5',
-    name: 'PM Krishi Sinchai Yojana',
-    get desc() {
-    return i18n.t('governmentSchemes.financialAssistanceFor');
-  },
-    icon: Droplet,
-    bg: '#DBEAFE',
-    color: COLORS.BLUE,
-  },
-];
-export default function GovernmentSchemesScreen({ navigation }) {
-  const {t} = useTranslation();
+import MarketHero, {GlassButton, TopInset} from '../../components/market/MarketHero';
+import {
+  MARKET_COLORS as C,
+  MARKET_SHADOW,
+  MARKET_SHADOW_STRONG,
+} from '../../components/market/theme';
+import {SchemeIcon, StatusPill, formatDate} from '../../components/gov/SchemeUi';
+import {GOV_ROUTES} from '../../constants/govRoutes';
+import {GOV_SCHEMES} from '../../data/govSchemes';
+import {useGovData} from '../../utils/useGovData';
+import {refreshSchemes, useSchemeStats} from '../../utils/schemeStore';
+import {catLabelFromKey} from '../../utils/schemeLabels';
+
+const HERO = require('../../assets/gov/hero.png');
+
+export default function GovernmentSchemesScreen({navigation}) {
+  const {t, i18n} = useTranslation();
+  const {hasProfile, results, applications} = useGovData();
+  const stats = useSchemeStats();
+  const [query, setQuery] = useState('');
+  const [refreshing, setRefreshing] = useState(false);
+
+  const all = GOV_SCHEMES;
+  const popular = all.filter(x => x.popular);
+  const recommended = hasProfile
+    ? results.filter(r => r.status === 'eligible').slice(0, 6)
+    : popular.slice(0, 3).map(scheme => ({scheme, status: null}));
+  const eligibleCount = hasProfile
+    ? results.filter(r => r.status === 'eligible').length
+    : null;
+  const countOf = st => applications.filter(a => a.status === st).length;
+
+  const onRefresh = async () => {
+    setRefreshing(true);
+    await refreshSchemes(true);
+    setRefreshing(false);
+  };
+
+  const go = (route, params) => navigation?.navigate(route, params);
+  const search = () => go(GOV_ROUTES.LATEST_SCHEMES, {query: query.trim()});
+  const maxCat = Math.max(1, ...(stats?.byCategory || []).map(c => c.count));
+
+  const tiles = [
+    {
+      key: 'browse',
+      Icon: BookOpen,
+      bg: C.lightGreen,
+      fg: C.green,
+      title: t('govUi.tileBrowse'),
+      sub: t('govUi.tileBrowseSub'),
+      route: GOV_ROUTES.LATEST_SCHEMES,
+    },
+    {
+      key: 'elig',
+      Icon: CheckCircle2,
+      bg: C.lightBlue,
+      fg: C.blue,
+      title: t('govUi.tileEligibility'),
+      sub: t('govUi.tileEligibilitySub'),
+      route: GOV_ROUTES.ELIGIBILITY_CHECK,
+    },
+    {
+      key: 'apps',
+      Icon: FolderOpen,
+      bg: C.lightOrange,
+      fg: C.orange,
+      title: t('govUi.tileApplications'),
+      sub: t('govUi.tileApplicationsSub'),
+      route: GOV_ROUTES.MY_APPLICATIONS,
+    },
+  ];
+
+  const statCards = [
+    {v: stats?.total ?? all.length, l: t('govUi.statSchemes')},
+    {v: stats?.byCategory?.length ?? '–', l: t('govUi.statCategories')},
+    {v: stats?.updatedLast30Days ?? '–', l: t('govUi.statUpdated')},
+    {v: eligibleCount ?? '–', l: t('govUi.statEligible'), hi: true},
+  ];
+
   return (
-    <SafeAreaView style={styles.safeArea} edges={['top', 'bottom']}>
-      <StatusBar barStyle="dark-content" backgroundColor="#FFFFFF" />
-
-      {}
-      <View style={styles.header}>
-        <TouchableOpacity
-          onPress={() => navigation?.goBack()}
-          activeOpacity={0.8}
-          style={styles.iconBtn}
-        >
-          <ArrowLeft size={rf(18)} color={COLORS.DARK} strokeWidth={2.5} />
-        </TouchableOpacity>
-        <View
-          style={{
-            flex: 1,
-            alignItems: 'center',
-          }}
-        >
-          <Text style={styles.headerTitle}>{t('governmentSchemes.governmentSchemes')}</Text>
-          <Text style={styles.headerSub}>सरकारी योजनाएं</Text>
-        </View>
-        <TouchableOpacity activeOpacity={0.8} style={styles.iconBtn}>
-          <Bell size={rf(17)} color={COLORS.DARK} strokeWidth={2.4} />
-          <View style={styles.badge}>
-            <Text style={styles.badgeText}>3</Text>
-          </View>
-        </TouchableOpacity>
-      </View>
-
+    <View style={styles.container}>
+      <TopInset />
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scroll}
-      >
-        {}
-        <ImageBackground
-          source={require('../../assets/gov/hero.png')}
-          style={styles.hero}
-          imageStyle={styles.heroImg}
-        >
-          <LinearGradient
-            colors={[
-              'rgba(6,78,32,0.95)',
-              'rgba(17,111,52,0.7)',
-              'rgba(17,111,52,0.1)',
-            ]}
-            start={{
-              x: 0,
-              y: 0,
-            }}
-            end={{
-              x: 1,
-              y: 0,
-            }}
-            style={styles.heroGrad}
-          >
-            <View style={styles.heroIconBox}>
-              <Landmark size={rf(20)} color="#FFFFFF" strokeWidth={2.4} />
-            </View>
-            <Text style={styles.heroTitle}>{t('governmentSchemes.government')}{'\n'}{t('governmentSchemes.assistanceHub')}</Text>
-            <Text style={styles.heroDesc}>
-              {t('governmentSchemes.discoverAgriculturalSchemes')}{'\n'}{t('governmentSchemes.subsidiesInsuranceAndFinancial')}{'\n'}{t('governmentSchemes.supportForYourFarm')}
-            </Text>
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={C.green} />
+        }>
+        <MarketHero
+          image={HERO}
+          onBack={() => navigation?.goBack()}
+          eyebrow={t('govUi.heroEyebrow')}
+          title={t('govUi.heroTitle')}
+          subtitle={t('govUi.heroSub')}
+          right={
+            <GlassButton onPress={() => go(GOV_ROUTES.MY_APPLICATIONS)}>
+              <FolderOpen size={19} color={C.white} />
+            </GlassButton>
+          }>
+          <View style={styles.trustRow}>
+            {[
+              [ShieldCheck, t('govUi.trustOfficial')],
+              [BadgeCheck, t('govUi.trustFree')],
+              [Lock, t('govUi.trustPrivate')],
+            ].map(([Icon, label]) => (
+              <View key={label} style={styles.trustPill}>
+                <Icon size={12} color="#BFF0D2" />
+                <Text style={styles.trustText}>{label}</Text>
+              </View>
+            ))}
+          </View>
+        </MarketHero>
 
-            <View style={styles.heroBtnRow}>
-              <TouchableOpacity
-                activeOpacity={0.9}
-                onPress={() =>
-                  navigation?.navigate(GOV_ROUTES.ELIGIBILITY_CHECK)
-                }
-                style={styles.heroCheckBtn}
-              >
-                <Text style={styles.heroCheckText}>{t('governmentSchemes.checkEligibility')}</Text>
-                <ArrowRight size={rf(14)} color="#FFFFFF" strokeWidth={2.5} />
-              </TouchableOpacity>
-              <TouchableOpacity
-                activeOpacity={0.9}
-                onPress={() => navigation?.navigate('LatestSchemes')}
-                style={styles.heroBrowseBtn}
-              >
-                <Text style={styles.heroBrowseText}>{t('governmentSchemes.browseSchemes')}</Text>
-              </TouchableOpacity>
-            </View>
-          </LinearGradient>
-        </ImageBackground>
+        <View style={styles.searchWrap}>
+          <View style={styles.searchBox}>
+            <Search size={19} color={C.green} />
+            <TextInput
+              value={query}
+              onChangeText={setQuery}
+              onSubmitEditing={search}
+              placeholder={t('govUi.searchPlaceholder')}
+              placeholderTextColor={C.placeholder}
+              style={styles.searchInput}
+              returnKeyType="search"
+            />
+          </View>
+        </View>
 
-        {}
-        <View style={styles.sectionHead}>
-          <Text style={styles.sectionTitle}>{t('governmentSchemes.recommendedForYou')}</Text>
-          <TouchableOpacity
-            activeOpacity={0.8}
-            onPress={() => navigation?.navigate(GOV_ROUTES.LATEST_SCHEMES)}
-          >
-            <Text style={styles.viewAll}>{t('common.view_all')}</Text>
-          </TouchableOpacity>
+        <View style={styles.section}>
+          <View style={styles.ctaGrid}>
+            {tiles.map(({key, Icon, bg, fg, title, sub, route}) => (
+              <TouchableOpacity
+                key={key}
+                activeOpacity={0.88}
+                style={styles.shortcut}
+                onPress={() => go(route)}>
+                <View style={[styles.shortcutIcon, {backgroundColor: bg}]}>
+                  <Icon size={19} color={fg} />
+                </View>
+                <Text style={styles.shortcutTitle}>{title}</Text>
+                <Text style={styles.shortcutText}>{sub}</Text>
+              </TouchableOpacity>
+            ))}
+          </View>
+
+          {/* LIVE STATISTICS */}
+          <Text style={styles.sectionTitle}>{t('govUi.statsTitle')}</Text>
+          <View style={styles.statGrid}>
+            {statCards.map(s => (
+              <View key={s.l} style={[styles.statCard, s.hi && styles.statCardHi]}>
+                <Text style={[styles.statVal, s.hi && {color: C.white}]}>{s.v}</Text>
+                <Text style={[styles.statLabel, s.hi && {color: '#D7F5E2'}]} numberOfLines={2}>
+                  {s.l}
+                </Text>
+              </View>
+            ))}
+          </View>
+          {!!stats?.byCategory?.length && (
+            <View style={styles.card}>
+              <Text style={styles.cardTitle}>{t('govUi.statByCategory')}</Text>
+              {stats.byCategory.slice(0, 6).map(c => (
+                <View key={c.name} style={styles.barRow}>
+                  <Text style={styles.barLabel} numberOfLines={1}>
+                    {catLabelFromKey(t, c.name)}
+                  </Text>
+                  <View style={styles.barTrack}>
+                    <View style={[styles.barFill, {width: `${(c.count / maxCat) * 100}%`}]} />
+                  </View>
+                  <Text style={styles.barCount}>{c.count}</Text>
+                </View>
+              ))}
+              {!!stats.lastUpdated && (
+                <Text style={styles.updated}>
+                  {t('govUi.statLastUpdated', {
+                    date: formatDate(stats.lastUpdated, i18n.language),
+                  })}
+                </Text>
+              )}
+            </View>
+          )}
+
+          {/* RECOMMENDED */}
+          <View style={styles.sectionHead}>
+            <Text style={styles.sectionTitleInline}>{t('governmentSchemes.recommendedForYou')}</Text>
+            <TouchableOpacity onPress={() => go(GOV_ROUTES.LATEST_SCHEMES)}>
+              <Text style={styles.viewAll}>{t('common.view_all')}</Text>
+            </TouchableOpacity>
+          </View>
         </View>
 
         <ScrollView
           horizontal
           showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.recRow}
-        >
-          {RECOMMENDED.map(r => {
-            const Icon = r.icon;
-            return (
-              <TouchableOpacity
-                key={r.id}
-                activeOpacity={0.9}
-                onPress={() =>
-                  navigation?.navigate(GOV_ROUTES.SCHEME_DETAIL, {
-                    id: r.id,
-                  })
-                }
-                style={styles.recCard}
-              >
-                <View
-                  style={[
-                    styles.recIcon,
-                    {
-                      backgroundColor: r.iconBg,
-                    },
-                  ]}
-                >
-                  <Icon size={rf(17)} color={r.iconColor} strokeWidth={2.3} />
-                </View>
-                <Text style={styles.recName}>{tOpt(r.name)}</Text>
-                <Text style={styles.recDesc}>{r.desc}</Text>
-                <View
-                  style={[
-                    styles.recStatus,
-                    {
-                      backgroundColor: r.statusBg,
-                    },
-                  ]}
-                >
-                  {r.status === 'Eligible' && (
-                    <CheckCircle2
-                      size={rf(12)}
-                      color={r.statusColor}
-                      strokeWidth={2.4}
-                    />
-                  )}
-                  <Text
-                    style={[
-                      styles.recStatusText,
-                      {
-                        color: r.statusColor,
-                      },
-                    ]}
-                  >
-                    {tOpt(r.status)}
-                  </Text>
-                </View>
-                <View style={styles.recDivider} />
-                <View style={styles.recCtaRow}>
-                  <Text style={styles.recCtaText}>{r.cta}</Text>
-                  <ArrowRight
-                    size={rf(12)}
-                    color={COLORS.DARK}
-                    strokeWidth={2.4}
-                  />
-                </View>
-              </TouchableOpacity>
-            );
-          })}
+          contentContainerStyle={styles.recRow}>
+          {recommended.map(({scheme, status}) => (
+            <TouchableOpacity
+              key={scheme.id}
+              activeOpacity={0.9}
+              onPress={() => go(GOV_ROUTES.SCHEME_DETAIL, {id: scheme.id})}
+              style={styles.recCard}>
+              <SchemeIcon scheme={scheme} size={38} />
+              <Text style={styles.recName} numberOfLines={2}>
+                {scheme.name.split(' (')[0]}
+              </Text>
+              <Text style={styles.recDesc} numberOfLines={3}>
+                {scheme.desc}
+              </Text>
+              <View style={{marginTop: 10, alignSelf: 'flex-start'}}>
+                {status ? <StatusPill status={status} /> : null}
+              </View>
+              <View style={styles.recCtaRow}>
+                <Text style={styles.recCtaText}>{t('common.view_details')}</Text>
+                <ArrowRight size={12} color={C.dark} />
+              </View>
+            </TouchableOpacity>
+          ))}
+          {!hasProfile && (
+            <TouchableOpacity
+              activeOpacity={0.9}
+              onPress={() => go(GOV_ROUTES.ELIGIBILITY_CHECK)}
+              style={[styles.recCard, {justifyContent: 'center', backgroundColor: C.lightGreen}]}>
+              <CheckCircle2 size={22} color={C.green} />
+              <Text style={styles.recName}>{t('govUi.getPersonalPicks')}</Text>
+              <Text style={styles.recDesc}>{t('govUi.getPersonalPicksDesc')}</Text>
+            </TouchableOpacity>
+          )}
         </ScrollView>
 
-        {}
-        <Text
-          style={[
-            styles.sectionTitle,
-            {
-              marginTop: 6,
-            },
-          ]}
-        >
-          {t('governmentSchemes.popularSchemes')}
-        </Text>
-        <View style={styles.popularCard}>
-          {POPULAR.map((p, i) => {
-            const Icon = p.icon;
-            return (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>{t('governmentSchemes.popularSchemes')}</Text>
+          <View style={styles.listCard}>
+            {popular.map((p, i) => (
               <TouchableOpacity
                 key={p.id}
                 activeOpacity={0.85}
-                onPress={() =>
-                  navigation?.navigate(GOV_ROUTES.SCHEME_DETAIL, {
-                    id: p.id,
-                  })
-                }
-                style={[
-                  styles.popRow,
-                  i !== POPULAR.length - 1 && styles.popRowBorder,
-                ]}
-              >
-                <View
-                  style={[
-                    styles.popIcon,
-                    {
-                      backgroundColor: p.bg,
-                    },
-                  ]}
-                >
-                  <Icon size={rf(16)} color={p.color} strokeWidth={2.3} />
+                onPress={() => go(GOV_ROUTES.SCHEME_DETAIL, {id: p.id})}
+                style={[styles.popRow, i !== popular.length - 1 && styles.popRowBorder]}>
+                <SchemeIcon scheme={p} size={40} />
+                <View style={{flex: 1}}>
+                  <Text style={styles.popName}>{p.name}</Text>
+                  <Text style={styles.popDesc} numberOfLines={2}>
+                    {p.desc}
+                  </Text>
                 </View>
-                <View
-                  style={{
-                    flex: 1,
-                  }}
-                >
-                  <Text style={styles.popName}>{tOpt(p.name)}</Text>
-                  <Text style={styles.popDesc}>{p.desc}</Text>
-                </View>
-                <ChevronRight
-                  size={rf(16)}
-                  color={COLORS.MUTED}
-                  strokeWidth={2.4}
-                />
+                <ChevronRight size={16} color={C.muted} />
               </TouchableOpacity>
-            );
-          })}
-        </View>
+            ))}
+          </View>
 
-        {}
-        <View style={styles.sectionHead}>
-          <Text style={styles.sectionTitle}>{t('governmentSchemes.latestUpdates')}</Text>
-          <TouchableOpacity activeOpacity={0.8}>
-            <Text style={styles.viewAll}>{t('common.view_all')}</Text>
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.updatesRow}>
-          {}
-          <View
-            style={[
-              styles.updateCard,
-              {
-                backgroundColor: '#F0FDF4',
-              },
-            ]}
-          >
-            <View style={styles.updatePillRow}>
-              <View
-                style={[
-                  styles.updateIconSm,
-                  {
-                    backgroundColor: COLORS.DARK_GREEN,
-                  },
-                ]}
-              >
-                <Megaphone size={rf(12)} color="#FFFFFF" strokeWidth={2.4} />
-              </View>
-              <View
-                style={[
-                  styles.updatePill,
-                  {
-                    backgroundColor: '#DCFCE7',
-                  },
-                ]}
-              >
-                <Text
-                  style={[
-                    styles.updatePillText,
-                    {
-                      color: COLORS.DARK_GREEN,
-                    },
-                  ]}
-                >
-                  {t('governmentSchemes.pmKisan')}
-                </Text>
-              </View>
+          {/* APPLICATIONS OVERVIEW */}
+          <View style={[styles.card, {marginTop: 24}]}>
+            <Text style={styles.cardTitle}>{t('governmentSchemes.myApplicationsOverview')}</Text>
+            <Text style={styles.appDesc}>{t('governmentSchemes.trackAllYourSchemeApplications')}</Text>
+            <View style={styles.appStatsRow}>
+              {[
+                ['approved', C.green, 'governmentSchemes.approved'],
+                ['applied', C.orange, 'governmentSchemes.underReview'],
+                ['rejected', C.red, 'governmentSchemes.rejected'],
+              ].map(([st, color, key]) => (
+                <View key={st} style={styles.appStat}>
+                  <Text style={[styles.appStatVal, {color}]}>{countOf(st)}</Text>
+                  <Text style={styles.appStatLabel}>{t(key)}</Text>
+                </View>
+              ))}
             </View>
-            <Text style={styles.updateTitle}>{t('governmentSchemes.15thInstallmentReleased')}</Text>
-            <Text style={styles.updateDesc}>
-              {t('governmentSchemes.2000CreditedToFarmers')}{'\n'}{t('governmentSchemes.bankAccounts')}
-            </Text>
-            <TouchableOpacity activeOpacity={0.8}>
-              <Text style={styles.updateLink}>{t('governmentSchemes.readMore')}</Text>
+            <TouchableOpacity
+              activeOpacity={0.85}
+              onPress={() => go(GOV_ROUTES.MY_APPLICATIONS)}
+              style={styles.trackBtn}>
+              <Text style={styles.trackText}>{t('governmentSchemes.trackAllApplications')}</Text>
             </TouchableOpacity>
-            <Image
-              source={require('../../assets/gov/pmkisan.png')}
-              style={styles.updateImg}
-              resizeMode="contain"
-            />
           </View>
-
-          {}
-          <View
-            style={[
-              styles.updateCard,
-              {
-                backgroundColor: '#EFF6FF',
-              },
-            ]}
-          >
-            <View style={styles.updatePillRow}>
-              <View
-                style={[
-                  styles.updateIconSm,
-                  {
-                    backgroundColor: COLORS.BLUE,
-                  },
-                ]}
-              >
-                <Landmark size={rf(12)} color="#FFFFFF" strokeWidth={2.4} />
-              </View>
-              <View
-                style={[
-                  styles.updatePill,
-                  {
-                    backgroundColor: '#DBEAFE',
-                  },
-                ]}
-              >
-                <Text
-                  style={[
-                    styles.updatePillText,
-                    {
-                      color: COLORS.BLUE,
-                    },
-                  ]}
-                >
-                  {t('governmentSchemes.newSubsidy')}
-                </Text>
-              </View>
-            </View>
-            <Text style={styles.updateTitle}>{t('governmentSchemes.solarPumpSubsidy')}</Text>
-            <Text style={styles.updateDesc}>
-              {t('governmentSchemes.upTo90SubsidyFor')}{'\n'}{t('governmentSchemes.pumpInstallation')}
-            </Text>
-            <TouchableOpacity activeOpacity={0.8}>
-              <Text
-                style={[
-                  styles.updateLink,
-                  {
-                    color: COLORS.BLUE,
-                  },
-                ]}
-              >
-                {t('governmentSchemes.readMore')}
-              </Text>
-            </TouchableOpacity>
-            <Image
-              source={require('../../assets/gov/solar.png')}
-              style={styles.updateImg}
-              resizeMode="contain"
-            />
-          </View>
-        </View>
-
-        {}
-        <View style={styles.appCard}>
-          <View style={styles.appHead}>
-            <View style={styles.appIconBox}>
-              <FolderOpen
-                size={rf(16)}
-                color={COLORS.DARK_GREEN}
-                strokeWidth={2.3}
-              />
-            </View>
-            <View
-              style={{
-                flex: 1,
-              }}
-            >
-              <Text style={styles.appTitle}>{t('governmentSchemes.myApplicationsOverview')}</Text>
-              <Text style={styles.appDesc}>
-                {t('governmentSchemes.trackAllYourSchemeApplications')}
-              </Text>
-            </View>
-          </View>
-
-          <View style={styles.appStatsRow}>
-            <View style={styles.appStat}>
-              <Text
-                style={[
-                  styles.appStatVal,
-                  {
-                    color: COLORS.DARK,
-                  },
-                ]}
-              >
-                2
-              </Text>
-              <View style={styles.appStatUnderline} />
-              <Text style={styles.appStatLabel}>{t('governmentSchemes.approved')}</Text>
-            </View>
-            <View style={styles.appStat}>
-              <Text
-                style={[
-                  styles.appStatVal,
-                  {
-                    color: COLORS.ORANGE,
-                  },
-                ]}
-              >
-                1
-              </Text>
-              <Text style={styles.appStatLabel}>{t('governmentSchemes.underReview')}</Text>
-            </View>
-            <View style={styles.appStat}>
-              <Text
-                style={[
-                  styles.appStatVal,
-                  {
-                    color: COLORS.RED,
-                  },
-                ]}
-              >
-                0
-              </Text>
-              <Text style={styles.appStatLabel}>{t('governmentSchemes.rejected')}</Text>
-            </View>
-            <ChevronRight
-              size={rf(16)}
-              color={COLORS.MUTED}
-              strokeWidth={2.4}
-            />
-          </View>
-
-          <View style={styles.appDivider} />
-
-          <TouchableOpacity
-            activeOpacity={0.85}
-            onPress={() => navigation?.navigate(GOV_ROUTES.MY_APPLICATIONS)}
-            style={styles.trackBtn}
-          >
-            <Text style={styles.trackText}>{t('governmentSchemes.trackAllApplications')}</Text>
-          </TouchableOpacity>
         </View>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 }
+
 const styles = StyleSheet.create({
-  safeArea: {
-    flex: 1,
-    backgroundColor: COLORS.PAGE_BG,
-  },
-  scroll: {
-    padding: PAGE_PADDING,
-    paddingBottom: 30,
-    gap: 16,
-  },
-  header: {
-    paddingHorizontal: PAGE_PADDING,
-    paddingTop: 6,
-    paddingBottom: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    backgroundColor: COLORS.PAGE_BG,
-    borderBottomWidth: 1,
-    borderBottomColor: '#F1F5F9',
-  },
-  iconBtn: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: '#FFFFFF',
-    alignItems: 'center',
-    justifyContent: 'center',
+  container: {flex: 1, backgroundColor: C.bg},
+  scroll: {paddingBottom: 40},
+  section: {paddingHorizontal: 16},
+  searchWrap: {paddingHorizontal: 16, marginTop: 16},
+  searchBox: {
+    height: 52,
+    borderRadius: 18,
+    backgroundColor: C.white,
     borderWidth: 1,
-    borderColor: COLORS.BORDER,
-  },
-  badge: {
-    position: 'absolute',
-    top: -2,
-    right: -2,
-    minWidth: 18,
-    height: 18,
-    borderRadius: 9,
-    backgroundColor: COLORS.RED,
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 4,
-  },
-  badgeText: {
-    fontSize: rf(9),
-    fontWeight: '900',
-    color: '#FFFFFF',
-  },
-  headerTitle: {
-    fontSize: rf(17),
-    fontWeight: '900',
-    color: COLORS.DARK,
-  },
-  headerSub: {
-    marginTop: 2,
-    fontSize: rf(11),
-    fontWeight: '500',
-    color: COLORS.MUTED,
-  },
-  hero: {
-    minHeight: 230,
-    borderRadius: 16,
-    overflow: 'hidden',
-  },
-  heroImg: {
-    borderRadius: 16,
-  },
-  heroGrad: {
-    flex: 1,
-    padding: 18,
-    justifyContent: 'space-between',
-    minHeight: 230,
-  },
-  heroIconBox: {
-    width: 40,
-    height: 40,
-    borderRadius: 10,
-    backgroundColor: 'rgba(255,255,255,0.2)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  heroTitle: {
-    marginTop: 8,
-    fontSize: rf(22),
-    fontWeight: '900',
-    color: '#FFFFFF',
-    lineHeight: rf(28),
-  },
-  heroDesc: {
-    marginTop: 8,
-    fontSize: rf(12),
-    fontWeight: '500',
-    color: 'rgba(255,255,255,0.95)',
-    lineHeight: rf(17),
-  },
-  heroBtnRow: {
-    marginTop: 14,
+    borderColor: C.border,
     flexDirection: 'row',
-    gap: 8,
-  },
-  heroCheckBtn: {
-    height: 44,
+    alignItems: 'center',
     paddingHorizontal: 16,
-    borderRadius: 10,
-    backgroundColor: COLORS.DARK_GREEN,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
-  heroCheckText: {
-    fontSize: rf(13),
-    fontWeight: '900',
-    color: '#FFFFFF',
-  },
-  heroBrowseBtn: {
-    height: 44,
-    paddingHorizontal: 16,
-    borderRadius: 10,
-    backgroundColor: '#FFFFFF',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  heroBrowseText: {
-    fontSize: rf(13),
-    fontWeight: '900',
-    color: COLORS.DARK_GREEN,
-  },
-  sectionHead: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  sectionTitle: {
-    fontSize: rf(17),
-    fontWeight: '900',
-    color: COLORS.DARK,
-  },
-  viewAll: {
-    fontSize: rf(13),
-    fontWeight: '900',
-    color: COLORS.DARK_GREEN,
-  },
-  recRow: {
     gap: 10,
-    paddingRight: 10,
-    paddingVertical: 2,
+    ...MARKET_SHADOW_STRONG,
   },
-  recCard: {
-    width: 180,
-    minHeight: 200,
-    padding: 14,
-    borderRadius: 14,
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: COLORS.BORDER,
-  },
-  recIcon: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
+  searchInput: {flex: 1, fontSize: 14, color: C.dark, paddingVertical: 0, fontWeight: '600'},
+  trustRow: {flexDirection: 'row', flexWrap: 'wrap', gap: 8, marginTop: 14},
+  trustPill: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-  },
-  recName: {
-    marginTop: 12,
-    fontSize: rf(14),
-    fontWeight: '900',
-    color: COLORS.DARK,
-    lineHeight: rf(18),
-  },
-  recDesc: {
-    marginTop: 6,
-    fontSize: rf(11.5),
-    fontWeight: '500',
-    color: COLORS.MUTED,
-    lineHeight: rf(15),
-  },
-  recStatus: {
-    marginTop: 12,
-    alignSelf: 'flex-start',
+    gap: 5,
     paddingHorizontal: 10,
-    height: 24,
-    borderRadius: 12,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  recStatusText: {
-    fontSize: rf(11),
-    fontWeight: '900',
-  },
-  recDivider: {
-    marginTop: 12,
-    height: 1,
-    backgroundColor: COLORS.BORDER,
-  },
-  recCtaRow: {
-    marginTop: 10,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  recCtaText: {
-    fontSize: rf(12.5),
-    fontWeight: '900',
-    color: COLORS.DARK,
-  },
-  popularCard: {
-    borderRadius: 14,
-    backgroundColor: '#FFFFFF',
+    paddingVertical: 6,
+    borderRadius: 20,
+    backgroundColor: 'rgba(255,255,255,0.14)',
     borderWidth: 1,
-    borderColor: COLORS.BORDER,
-    overflow: 'hidden',
+    borderColor: 'rgba(255,255,255,0.18)',
   },
-  popRow: {
-    padding: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
+  trustText: {color: C.white, fontSize: 10.5, fontWeight: '800'},
+  ctaGrid: {flexDirection: 'row', flexWrap: 'wrap', gap: 12, marginTop: 18},
+  shortcut: {
+    width: '47.8%',
+    flexGrow: 1,
+    borderRadius: 22,
+    backgroundColor: C.white,
+    padding: 15,
+    minHeight: 124,
+    ...MARKET_SHADOW,
   },
-  popRowBorder: {
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.BORDER,
-  },
-  popIcon: {
+  shortcutIcon: {
     width: 40,
     height: 40,
-    borderRadius: 10,
+    borderRadius: 13,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  popName: {
-    fontSize: rf(14),
-    fontWeight: '900',
-    color: COLORS.DARK,
-  },
-  popDesc: {
-    marginTop: 3,
-    fontSize: rf(12),
-    fontWeight: '500',
-    color: COLORS.MUTED,
-  },
-  updatesRow: {
+  shortcutTitle: {marginTop: 'auto', fontSize: 15, fontWeight: '900', color: C.dark},
+  shortcutText: {fontSize: 11, fontWeight: '600', color: C.muted, marginTop: 2},
+  sectionTitle: {marginTop: 24, marginBottom: 12, fontSize: 18, fontWeight: '900', color: C.dark},
+  sectionTitleInline: {fontSize: 18, fontWeight: '900', color: C.dark},
+  sectionHead: {
+    marginTop: 24,
+    marginBottom: 12,
     flexDirection: 'row',
-    gap: 10,
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
-  updateCard: {
-    flex: 1,
+  viewAll: {fontSize: 13, fontWeight: '900', color: C.green},
+  statGrid: {flexDirection: 'row', flexWrap: 'wrap', gap: 12},
+  statCard: {
+    width: '47.8%',
+    flexGrow: 1,
+    borderRadius: 18,
+    backgroundColor: C.white,
     padding: 14,
-    borderRadius: 14,
-    minHeight: 210,
-    overflow: 'hidden',
-    position: 'relative',
+    ...MARKET_SHADOW,
   },
-  updatePillRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
-  updateIconSm: {
-    width: 26,
-    height: 26,
-    borderRadius: 7,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  updatePill: {
-    paddingHorizontal: 8,
-    height: 22,
-    borderRadius: 4,
-    justifyContent: 'center',
-  },
-  updatePillText: {
-    fontSize: rf(10),
-    fontWeight: '900',
-    letterSpacing: 0.5,
-  },
-  updateTitle: {
-    marginTop: 12,
-    fontSize: rf(14),
-    fontWeight: '900',
-    color: COLORS.DARK,
-    lineHeight: rf(18),
-  },
-  updateDesc: {
-    marginTop: 6,
-    fontSize: rf(11.5),
-    fontWeight: '500',
-    color: COLORS.MUTED,
-    lineHeight: rf(15),
-  },
-  updateLink: {
-    marginTop: 10,
-    fontSize: rf(12),
-    fontWeight: '900',
-    color: COLORS.DARK_GREEN,
-  },
-  updateImg: {
-    position: 'absolute',
-    bottom: 6,
-    right: 6,
-    width: 64,
-    height: 64,
-  },
-  appCard: {
-    padding: 16,
-    borderRadius: 14,
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: COLORS.BORDER,
-  },
-  appHead: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-  },
-  appIconBox: {
-    width: 38,
-    height: 38,
-    borderRadius: 10,
-    backgroundColor: '#DCFCE7',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  appTitle: {
-    fontSize: rf(14),
-    fontWeight: '900',
-    color: COLORS.DARK,
-  },
-  appDesc: {
-    marginTop: 3,
-    fontSize: rf(11.5),
-    fontWeight: '500',
-    color: COLORS.MUTED,
-    lineHeight: rf(15),
-  },
-  appStatsRow: {
-    marginTop: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-  },
-  appStat: {
-    flex: 1,
-    alignItems: 'center',
-  },
-  appStatVal: {
-    fontSize: rf(22),
-    fontWeight: '900',
-  },
-  appStatUnderline: {
-    marginTop: 3,
-    width: 28,
-    height: 2,
-    backgroundColor: COLORS.DARK,
-    borderRadius: 1,
-  },
-  appStatLabel: {
-    marginTop: 5,
-    fontSize: rf(9.5),
-    fontWeight: '900',
-    color: COLORS.MUTED,
-    letterSpacing: 0.5,
-  },
-  appDivider: {
-    marginTop: 16,
-    height: 1,
-    backgroundColor: COLORS.BORDER,
-  },
+  statCardHi: {backgroundColor: C.green},
+  statVal: {fontSize: 26, fontWeight: '900', color: C.dark},
+  statLabel: {marginTop: 2, fontSize: 11.5, fontWeight: '700', color: C.muted},
+  card: {marginTop: 12, borderRadius: 22, backgroundColor: C.white, padding: 16, ...MARKET_SHADOW},
+  cardTitle: {fontSize: 15, fontWeight: '900', color: C.dark},
+  barRow: {marginTop: 12, flexDirection: 'row', alignItems: 'center', gap: 10},
+  barLabel: {width: 92, fontSize: 12, fontWeight: '700', color: C.text},
+  barTrack: {flex: 1, height: 8, borderRadius: 4, backgroundColor: C.mint, overflow: 'hidden'},
+  barFill: {height: 8, borderRadius: 4, backgroundColor: C.green},
+  barCount: {width: 22, textAlign: 'right', fontSize: 12, fontWeight: '900', color: C.dark},
+  updated: {marginTop: 12, fontSize: 11, fontWeight: '600', color: C.muted},
+  recRow: {gap: 12, paddingHorizontal: 16, paddingVertical: 4},
+  recCard: {width: 188, minHeight: 210, padding: 15, borderRadius: 22, backgroundColor: C.white, ...MARKET_SHADOW},
+  recName: {marginTop: 12, fontSize: 14, fontWeight: '900', color: C.dark, lineHeight: 18},
+  recDesc: {marginTop: 6, fontSize: 11.5, fontWeight: '500', color: C.muted, lineHeight: 15},
+  recCtaRow: {marginTop: 'auto', paddingTop: 12, flexDirection: 'row', alignItems: 'center', gap: 4},
+  recCtaText: {fontSize: 12.5, fontWeight: '900', color: C.dark},
+  listCard: {borderRadius: 22, backgroundColor: C.white, overflow: 'hidden', ...MARKET_SHADOW},
+  popRow: {padding: 16, flexDirection: 'row', alignItems: 'center', gap: 12},
+  popRowBorder: {borderBottomWidth: 1, borderBottomColor: C.border},
+  popName: {fontSize: 14, fontWeight: '900', color: C.dark},
+  popDesc: {marginTop: 3, fontSize: 12, fontWeight: '500', color: C.muted},
+  appDesc: {marginTop: 3, fontSize: 11.5, fontWeight: '500', color: C.muted},
+  appStatsRow: {marginTop: 16, flexDirection: 'row'},
+  appStat: {flex: 1, alignItems: 'center'},
+  appStatVal: {fontSize: 24, fontWeight: '900'},
+  appStatLabel: {marginTop: 4, fontSize: 10, fontWeight: '900', color: C.muted},
   trackBtn: {
-    marginTop: 14,
+    marginTop: 16,
     height: 48,
-    borderRadius: 10,
-    backgroundColor: '#F0FDF4',
+    borderRadius: 14,
+    backgroundColor: C.lightGreen,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  trackText: {
-    fontSize: rf(13.5),
-    fontWeight: '900',
-    color: COLORS.DARK_GREEN,
-  },
+  trackText: {fontSize: 13.5, fontWeight: '900', color: C.green},
 });

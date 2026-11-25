@@ -165,10 +165,7 @@ export default function FarmMappingScreen({ navigation }) {
 
         <TouchableOpacity
           activeOpacity={0.9}
-          onPress={() => {
-            setSelected('walk');
-            navigation.navigate('WalkAroundScreen');
-          }}
+          onPress={() => setSelected('walk')}
           style={[
             styles.methodCard,
             selected === 'walk' && styles.methodActiveOrange,

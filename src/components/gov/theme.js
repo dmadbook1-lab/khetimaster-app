@@ -11,11 +11,11 @@ export const rf = size => {
 export const PAGE_PADDING = 16;
 
 export const COLORS = {
-  PAGE_BG: '#F7F8FA',
-  DARK: '#0F172A',
+  PAGE_BG: '#F4F7F5',
+  DARK: '#151C2B',
   MUTED: '#64748B',
-  BORDER: '#E5E7EB',
-  DARK_GREEN: '#128C3A',
+  BORDER: '#E6EBE8',
+  DARK_GREEN: '#159447',
   LIGHT_GREEN: '#EAFBF0',
   ORANGE: '#F97316',
   RED: '#EF4444',

@@ -67,6 +67,7 @@ import {
 import { formatRupees } from '../../utils/marketFormat';
 import {useTranslation} from 'react-i18next';
 import i18n from 'i18next';
+import { tOpt } from '../../utils/tOpt';
 
 const heroGradientFor = booking => {
   if (booking.status === 'pending')
@@ -369,7 +370,7 @@ export default function LabourBookingDetailsScreen({ navigation, route }) {
           gradient={heroGradientFor(booking)}
           onBack={() => navigation.goBack()}
           eyebrow={isFarmer ? t('labourBookingDetails.yourBooking') : t('labourBookingDetails.workRequest')}
-          title={booking.workType}
+          title={tOpt(booking.workType)}
           right={
             <StatusPill
               meta={BOOKING_STATUS_META[booking.status]}
@@ -498,7 +499,7 @@ export default function LabourBookingDetailsScreen({ navigation, route }) {
               <Briefcase size={17} color={C.orange} />
               <Text style={styles.cardTitle}>{t('labourBookingDetails.work')}</Text>
             </View>
-            <InfoRow label={t('labourBookingDetails.type')} value={booking.workType} />
+            <InfoRow label={t('labourBookingDetails.type')} value={tOpt(booking.workType)} />
             {!!booking.description && (
               <Text style={styles.paragraph}>{booking.description}</Text>
             )}

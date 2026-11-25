@@ -11,6 +11,7 @@ import {
   formatExperience,
 } from '../../utils/labourFormat';
 import {useTranslation} from 'react-i18next';
+import { tOpt } from '../../utils/tOpt';
 
 /*
  * Worker row on the labour browse screen.
@@ -46,7 +47,7 @@ function LabourerCard({ labourer, onPress, onBook }) {
           </View>
 
           <Text style={styles.type} numberOfLines={1}>
-            {labourer.labourType}
+            {tOpt(labourer.labourType)}
           </Text>
 
           <View style={styles.statsRow}>
@@ -80,7 +81,7 @@ function LabourerCard({ labourer, onPress, onBook }) {
         <View style={styles.skills}>
           {uniqueSkills.map(skill => (
             <Text key={skill} style={styles.skill} numberOfLines={1}>
-              {skill}
+              {tOpt(skill)}
             </Text>
           ))}
         </View>

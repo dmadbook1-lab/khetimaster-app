@@ -17,6 +17,7 @@ import {
 } from '../../utils/indiaSchedule';
 import { formatRupees } from '../../utils/marketFormat';
 import {useTranslation} from 'react-i18next';
+import { tOpt } from '../../utils/tOpt';
 
 const scheduleLabel = booking => {
   if (booking.durationUnit === 'days') {
@@ -49,7 +50,7 @@ function RentalCard({ booking, onPress, footer }) {
             {machine.name || 'Machine'}
           </Text>
           <Text style={styles.work} numberOfLines={1}>
-            {booking.workType}
+            {tOpt(booking.workType)}
             {booking.selectedImplement ? ` · ${booking.selectedImplement}` : ''}
           </Text>
           <View style={styles.inline}>

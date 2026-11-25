@@ -312,7 +312,7 @@ export default function MyFarmsScreen({
   const handleAddFarm =
     useCallback(() => {
       navigation.navigate(
-        'MapYourFarm',
+        'FarmMappingScreen',
       );
     }, [navigation]);
 

@@ -65,6 +65,7 @@ import {
 } from '../../utils/labourFormat';
 import {useTranslation} from 'react-i18next';
 import i18n from 'i18next';
+import { tOpt } from '../../utils/tOpt';
 
 const BENEFITS = [
   {
@@ -371,7 +372,7 @@ export default function MyLabourProfileScreen({ navigation }) {
               <Text style={styles.name} numberOfLines={2}>
                 {profile.fullName}
               </Text>
-              <Text style={styles.type}>{profile.labourType}</Text>
+              <Text style={styles.type}>{tOpt(profile.labourType)}</Text>
               <Text style={styles.liveBadge}>
                 {profile.isActive ? t('myLabourProfile.profileIsLive') : t('myLabourProfile.profileIsHidden')}
               </Text>

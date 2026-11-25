@@ -1,15 +1,15 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import {
   ActivityIndicator,
   FlatList,
   Image,
   RefreshControl,
-  ScrollView,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
+  useWindowDimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import LinearGradient from 'react-native-linear-gradient';
@@ -20,6 +20,7 @@ import {
   BookUser,
   CalendarCheck,
   Inbox,
+  Check,
   LayoutGrid,
   MapPin,
   Phone,
@@ -59,6 +60,7 @@ import {
 } from '../../redux/slices/labourerSlice';
 import {useTranslation} from 'react-i18next';
 import i18n from 'i18next';
+import { tOpt } from '../../utils/tOpt';
 
 const SORTS = [
   { key: 'rating', get label() {
@@ -91,6 +93,11 @@ const PAGE_SIZE = 20;
 
 export default function LabourHomeScreen({ navigation }) {
   const {t} = useTranslation();
+  const { width: screenWidth } = useWindowDimensions();
+  // 4 tiles per row inside the 16px side padding, 8px gaps.
+  const tileWidth = Math.floor((screenWidth - 32 - 24) / 4);
+  // Exact square photo: tile width minus 5px padding and 1.5px border each side.
+  const tileImageSize = tileWidth - 13;
   const dispatch = useDispatch();
   const { labourTypes } = useLabourMeta();
 
@@ -114,6 +121,18 @@ export default function LabourHomeScreen({ navigation }) {
   const [nearMe, setNearMe] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [voiceOpen, setVoiceOpen] = useState(false);
+
+  // Jump down to the results list when a category is picked.
+  const listRef = useRef(null);
+  const resultsY = useRef(0);
+  const scrollToResults = useCallback(() => {
+    setTimeout(() => {
+      listRef.current?.scrollToOffset({
+        offset: Math.max(0, resultsY.current - 8),
+        animated: true,
+      });
+    }, 60);
+  }, []);
   const voiceFlow = useLabourVoiceFlow(navigation);
 
   const sort = SORTS[sortIndex];
@@ -346,59 +365,74 @@ export default function LabourHomeScreen({ navigation }) {
         />
 
         {/* WORK TYPES */}
-        <Text style={styles.sectionTitle}>{t('labourHome.whatWorkDoYouNeed')}</Text>
+        <View style={styles.typeHeader}>
+          <Text style={[styles.sectionTitle, styles.typeHeaderTitle]}>
+            {t('labourHome.whatWorkDoYouNeed')}
+          </Text>
+          {!!labourType && (
+            <TouchableOpacity
+              activeOpacity={0.85}
+              hitSlop={8}
+              onPress={() => setLabourType('')}
+              style={styles.typeAllChip}
+            >
+              <LayoutGrid size={13} color={C.green} strokeWidth={2.6} />
+              <Text style={styles.typeAllText}>{t('labourHome.allWork')}</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+
+        {/* CATEGORIES: all visible at once, 4 per row */}
+        <View style={styles.typeGrid}>
+          {labourTypes.map(type => {
+            const selected = labourType === type;
+
+            return (
+              <TouchableOpacity
+                key={type}
+                activeOpacity={0.88}
+                onPress={() => {
+                  setLabourType(selected ? '' : type);
+                  if (!selected) scrollToResults();
+                }}
+                style={[
+                  styles.typeTile,
+                  { width: tileWidth },
+                  selected && styles.typeTileSelected,
+                ]}
+              >
+                <View>
+                  <Image source={getLabourTypeImage(type)} style={[styles.typeImage, { width: tileImageSize, height: tileImageSize }]}
+                    resizeMode="cover"
+                  />
+                  {selected && (
+                    <View style={styles.typeCheck}>
+                      <Check size={10} color={C.white} strokeWidth={3.5} />
+                    </View>
+                  )}
+                </View>
+                <Text
+                  style={[styles.typeLabel, selected && styles.typeLabelSelected]}
+                  numberOfLines={2}
+                >
+                  {tOpt(type)}
+                </Text>
+              </TouchableOpacity>
+            );
+          })}
+        </View>
       </View>
 
-      <ScrollView
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={styles.typeList}
+      <View
+        style={styles.section}
+        onLayout={event => {
+          resultsY.current = event.nativeEvent.layout.y;
+        }}
       >
-        <TouchableOpacity
-          activeOpacity={0.88}
-          onPress={() => setLabourType('')}
-          style={[styles.typeTile, !labourType && styles.typeTileSelected]}
-        >
-          <View style={[styles.typeImage, styles.typeAll]}>
-            <LayoutGrid size={26} color={C.dark} />
-          </View>
-          <Text
-            style={[styles.typeLabel, !labourType && styles.typeLabelSelected]}
-          >
-            {t('labourHome.allWork')}
-          </Text>
-        </TouchableOpacity>
-
-        {labourTypes.map(type => {
-          const selected = labourType === type;
-
-          return (
-            <TouchableOpacity
-              key={type}
-              activeOpacity={0.88}
-              onPress={() => setLabourType(selected ? '' : type)}
-              style={[styles.typeTile, selected && styles.typeTileSelected]}
-            >
-              <Image
-                source={getLabourTypeImage(type)}
-                style={styles.typeImage}
-              />
-              <Text
-                style={[styles.typeLabel, selected && styles.typeLabelSelected]}
-                numberOfLines={2}
-              >
-                {type}
-              </Text>
-            </TouchableOpacity>
-          );
-        })}
-      </ScrollView>
-
-      <View style={styles.section}>
         <View style={styles.resultsHeader}>
           <View style={styles.flex}>
             <Text style={styles.sectionTitleFlat}>
-              {labourType || t('labourHome.availableWorkers')}
+              {tOpt(labourType) || t('labourHome.availableWorkers')}
             </Text>
             <Text style={styles.resultCount}>
               {listLoading ? t('labourHome.searching') : t('labourHome.workersFound', {total: pagination.total})}
@@ -437,6 +471,7 @@ export default function LabourHomeScreen({ navigation }) {
     <SafeAreaView style={styles.container} edges={['left', 'right']}>
       <TopInset />
       <FlatList
+        ref={listRef}
         data={listLoading && !refreshing ? [] : labourers}
         keyExtractor={item => item._id}
         renderItem={renderItem}
@@ -613,36 +648,58 @@ const styles = StyleSheet.create({
     letterSpacing: -0.4,
   },
 
-  typeList: { paddingHorizontal: 16, gap: 10, paddingBottom: 6 },
+  typeHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  typeHeaderTitle: { flexShrink: 1 },
+  typeAllChip: {
+    marginTop: 24,
+    marginBottom: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    paddingHorizontal: 11,
+    paddingVertical: 6,
+    borderRadius: 14,
+    backgroundColor: C.lightGreen,
+  },
+  typeAllText: { fontSize: 12, fontWeight: '900', color: C.green },
+  typeGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 8, paddingBottom: 6 },
   typeTile: {
-    width: 96,
     backgroundColor: C.white,
-    borderRadius: 18,
-    padding: 6,
-    paddingBottom: 9,
+    borderRadius: 14,
+    padding: 5,
+    paddingBottom: 7,
     borderWidth: 1.5,
     borderColor: 'transparent',
     ...MARKET_SHADOW,
   },
   typeTileSelected: { borderColor: C.green, backgroundColor: C.lightGreen },
   typeImage: {
-    width: '100%',
-    height: 64,
-    borderRadius: 13,
+    borderRadius: 11,
     backgroundColor: '#E3EEE7',
   },
-  typeAll: {
+  typeCheck: {
+    position: 'absolute',
+    top: 4,
+    right: 4,
+    width: 18,
+    height: 18,
+    borderRadius: 9,
+    backgroundColor: C.green,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#EEF1EF',
   },
   typeLabel: {
-    marginTop: 7,
-    fontSize: 11,
+    marginTop: 6,
+    fontSize: 10.5,
+    lineHeight: 13,
     fontWeight: '800',
     color: C.dark,
     textAlign: 'center',
-    minHeight: 28,
+    minHeight: 26,
   },
   typeLabelSelected: { color: C.green },
 

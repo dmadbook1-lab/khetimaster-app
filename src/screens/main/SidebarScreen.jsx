@@ -18,6 +18,7 @@ import { selectProfileCompleted } from '../../redux/slices/authSlice';
 import useAccountSummary from '../../common/useAccountSummary';
 import { getLanguageLabel } from '../../utils/languageUtils';
 import { COMMUNITY_ROUTES } from '../../constants/communityRoutes';
+import { SOIL_ROUTES } from '../../constants/soilRoutes';
 import { DOCTOR_ROUTES } from '../../constants/doctorRoutes';
 import { MARKET_ROUTES } from '../../constants/marketRoutes';
 import {
@@ -45,6 +46,7 @@ import {
   Sun,
   IndianRupee,
   Landmark,
+  FlaskConical,
   MessagesSquare,
   Clapperboard,
   Stethoscope,
@@ -233,6 +235,14 @@ export default function SidebarScreen({ navigation }) {
       iconColor: '#16A34A',
       iconBackground: '#ECFDF3',
       route: 'MandiHome',
+    },
+    {
+      id: 'soil-test',
+      title: t('soilTest.menu'),
+      Icon: FlaskConical,
+      iconColor: '#92400E',
+      iconBackground: '#FEF3C7',
+      route: SOIL_ROUTES.HOME,
     },
     {
       id: 'schemes',

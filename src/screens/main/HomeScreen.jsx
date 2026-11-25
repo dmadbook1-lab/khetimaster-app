@@ -34,6 +34,7 @@ import VoiceAssistantCard from '../../components/home/VoiceAssistantCard';
 import VoiceAssistantModal from '../../components/voice/VoiceAssistantModal';
 import {MARKET_ROUTES} from '../../constants/marketRoutes';
 import {COMMUNITY_ROUTES} from '../../constants/communityRoutes';
+import {DELIVERY_ROUTES} from '../../constants/deliveryRoutes';
 
 import {selectUser} from '../../redux/slices/authSlice';
 
@@ -223,12 +224,13 @@ export default function HomeScreen({navigation}) {
       onPress: () => navigation.navigate('WarehouseHome'),
     },
 
-    // Not built yet: each opens the Coming Soon screen for that feature
     {
       title: t('home.qa_delivery'),
       image: require('../../assets/homescreen/Deliveryy.png'),
-      onPress: () => navigation.navigate('ComingSoon', { feature: 'delivery' }),
+      onPress: () => navigation.navigate(DELIVERY_ROUTES.HOME),
     },
+
+    // Not built yet: each opens the Coming Soon screen for that feature
     {
       title: t('home.qa_disease'),
       image: require('../../assets/homescreen/dis.png'),
@@ -237,7 +239,7 @@ export default function HomeScreen({navigation}) {
     {
       title: t('home.qa_schemes'),
       image: require('../../assets/homescreen/govv.png'),
-      onPress: () => navigation.navigate('ComingSoon', { feature: 'schemes' }),
+      onPress: () => navigation.navigate('GovernmentSchemes'),
     },
   ];
 

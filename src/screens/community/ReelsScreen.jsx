@@ -94,6 +94,9 @@ export default function ReelsScreen({ navigation, route }) {
 
   const toggleMute = useCallback(() => setMuted(value => !value), []);
 
+  const openCreate = () =>
+    navigation.navigate(COMMUNITY_ROUTES.CREATE, { type: 'reel' });
+
   const renderItem = ({ item, index }) => (
     <ReelItem
       postId={item}
@@ -105,11 +108,9 @@ export default function ReelsScreen({ navigation, route }) {
       muted={muted}
       onToggleMute={toggleMute}
       actions={actions}
+      onCreate={openCreate}
     />
   );
-
-  const openCreate = () =>
-    navigation.navigate(COMMUNITY_ROUTES.CREATE, { type: 'reel' });
 
   const showEmpty = ids.length === 0 && !(isFeed && reels.loading);
 

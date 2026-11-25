@@ -10,7 +10,7 @@ import {
 import { Check, Minus, Plus } from 'lucide-react-native';
 
 import { MARKET_COLORS as C } from '../market/theme';
-import { categoryVisual, plantImageUri } from './nurseryVisuals';
+import { categoryImage, plantImageUri } from './nurseryVisuals';
 import { ORDER_FLOW, TRACKER_LABELS } from '../../utils/nurseryFormat';
 
 /*
@@ -18,32 +18,25 @@ import { ORDER_FLOW, TRACKER_LABELS } from '../../utils/nurseryFormat';
 | PLANT IMAGE
 |--------------------------------------------------------------------------
 |
-| Photo, or the category icon on a tinted tile when there is none.
-| plant can be a plant or an order item ({image, name}).
+| Photo, or the category photo when the listing has none.
+| plant can be a plant or an order item ({image, name}); without a
+| category the name is matched instead ("Mango sapling" -> fruit plants).
 |
 */
 
-export function PlantImage({ plant, category, style, iconSize = 28 }) {
+export function PlantImage({ plant, category, style }) {
   const uri = plantImageUri(plant);
 
-  if (uri) {
-    return <Image source={{ uri }} style={[styles.image, style]} />;
-  }
-
-  const visual = categoryVisual(category || plant?.category);
-  const Icon = visual.icon;
-
   return (
-    <View
-      style={[
-        styles.image,
-        styles.placeholder,
-        { backgroundColor: visual.bg },
-        style,
-      ]}
-    >
-      <Icon size={iconSize} color={visual.color} />
-    </View>
+    <Image
+      source={
+        uri
+          ? { uri }
+          : categoryImage(category || plant?.category || plant?.name)
+      }
+      style={[styles.image, style]}
+      resizeMode="cover"
+    />
   );
 }
 
@@ -161,7 +154,6 @@ export function OrderTracker({ status, light = false }) {
 
 const styles = StyleSheet.create({
   image: { backgroundColor: '#E3EEE7' },
-  placeholder: { alignItems: 'center', justifyContent: 'center' },
 
   stepper: {
     flexDirection: 'row',

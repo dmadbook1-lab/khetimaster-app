@@ -13,9 +13,10 @@ import LinearGradient from 'react-native-linear-gradient';
 import { useFocusEffect } from '@react-navigation/native';
 import {
   ArrowRight,
+  BookUser,
   CalendarCheck,
-  ChevronRight,
   Leaf,
+  MapPin,
   PawPrint,
   Phone,
   Search,
@@ -23,6 +24,8 @@ import {
   Stethoscope,
 } from 'lucide-react-native';
 import { useDispatch, useSelector } from 'react-redux';
+
+import { useLocation } from '../../context/LocationContext';
 
 import CareHero, { CareGlassButton } from '../../components/doctor/CareHero';
 import { TopInset } from '../../components/market/MarketHero';
@@ -90,6 +93,8 @@ export default function DoctorHomeScreen({ navigation }) {
   const dispatch = useDispatch();
   const meta = useDoctorMeta();
   const todayKey = todayInIndiaKey();
+  const { location: liveLocation } = useLocation();
+  const nearDistrict = liveLocation?.district || '';
 
   const { list, listLoading, listError } = useSelector(state => state.doctor);
   const { myProfile, myProfileStatus } = useSelector(state => state.doctor);
@@ -213,6 +218,79 @@ export default function DoctorHomeScreen({ navigation }) {
         </View>
 
         <View style={styles.body}>
+          {/* QUICK ACTIONS */}
+          <View style={styles.ctaGrid}>
+            <TouchableOpacity
+              activeOpacity={0.88}
+              style={styles.shortcut}
+              onPress={() => openList({})}
+            >
+              <View style={[styles.shortcutIcon, styles.iconTeal]}>
+                <BookUser size={19} color={C.teal} />
+              </View>
+              <Text style={styles.shortcutTitle}>{t('doctorHome.bookDoctor')}</Text>
+              <Text style={styles.shortcutText}>{t('doctorHome.browseAllDoctors')}</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              activeOpacity={0.88}
+              style={styles.shortcut}
+              onPress={() => navigation.navigate(DOCTOR_ROUTES.MY_CONSULTATIONS)}
+            >
+              <View style={[styles.shortcutIcon, styles.iconBlue]}>
+                <CalendarCheck size={19} color={C.blue} />
+              </View>
+              <Text style={styles.shortcutTitle}>{t('doctorHome.myConsultations')}</Text>
+              <Text style={styles.shortcutText}>{t('doctorHome.yourBookings')}</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              activeOpacity={0.88}
+              style={styles.shortcut}
+              onPress={() => openList({ nearMe: !!nearDistrict })}
+            >
+              <View style={[styles.shortcutIcon, styles.iconRed]}>
+                <MapPin size={19} color="#DC2626" />
+              </View>
+              <Text style={styles.shortcutTitle}>{t('doctorHome.doctorsNearYou')}</Text>
+              <Text style={styles.shortcutText} numberOfLines={1}>
+                {nearDistrict
+                  ? t('doctorHome.inDistrict', { district: nearDistrict })
+                  : t('doctorHome.inYourDistrict')}
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              activeOpacity={0.9}
+              style={styles.joinCtaWrap}
+              onPress={() => navigation.navigate(DOCTOR_ROUTES.DASHBOARD)}
+            >
+              <LinearGradient
+                colors={['#F7B733', '#E8890C']}
+                start={{ x: 0, y: 0 }}
+                end={{ x: 1, y: 1 }}
+                style={styles.joinCta}
+              >
+                <View style={styles.joinCtaIcon}>
+                  <Stethoscope size={19} color="#A25200" />
+                </View>
+                <Text style={styles.joinCtaTitle}>
+                  {isDoctor ? t('doctorHome.doctorDashboard') : t('doctorHome.areYouADoctor')}
+                </Text>
+                <View style={styles.joinCtaLink}>
+                  <Text style={styles.joinCtaLinkText}>
+                    {isDoctor
+                      ? pendingRequests
+                        ? t('doctorHome.newCount', { count: pendingRequests })
+                        : t('doctorHome.viewAll')
+                      : t('doctorHome.joinFree')}
+                  </Text>
+                  <ArrowRight size={13} color="#3A2400" strokeWidth={2.8} />
+                </View>
+              </LinearGradient>
+            </TouchableOpacity>
+          </View>
+
         <VoiceActionButton
           label={t('voiceFlow.button.doctor')}
           onPress={() => setVoiceOpen(true)}
@@ -384,30 +462,6 @@ export default function DoctorHomeScreen({ navigation }) {
             ))}
           </View>
 
-          {/* DOCTOR ENTRY */}
-          <TouchableOpacity
-            activeOpacity={0.9}
-            style={styles.joinCard}
-            onPress={() => navigation.navigate(DOCTOR_ROUTES.DASHBOARD)}
-          >
-            <View style={styles.joinIcon}>
-              <Stethoscope size={22} color={C.teal} />
-            </View>
-            <View style={styles.flex}>
-              <Text style={styles.joinTitle}>
-                {isDoctor ? t('doctorHome.doctorDashboard') : t('doctorHome.areYouADoctorOr')}
-              </Text>
-              <Text style={styles.joinText}>
-                {isDoctor
-                  ? pendingRequests
-                    ? t('doctorHome.newRequestsWaitingForYou', {pendingRequests})
-                    : t('doctorHome.seeYourRequestsAndSchedule')
-                  : t('doctorHome.joinFreeAndGetConsultation')}
-              </Text>
-            </View>
-            <ChevronRight size={20} color={C.white} />
-          </TouchableOpacity>
-
           <View style={styles.trust}>
             <ShieldCheck size={14} color={C.muted} />
             <Text style={styles.trustText}>
@@ -461,6 +515,52 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+
+  ctaGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: 12, marginTop: 18 },
+  shortcut: {
+    width: '47.8%',
+    flexGrow: 1,
+    borderRadius: 22,
+    backgroundColor: C.white,
+    padding: 15,
+    minHeight: 124,
+    ...CARE_SHADOW,
+  },
+  shortcutIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 13,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  iconTeal: { backgroundColor: C.tealSoft },
+  iconBlue: { backgroundColor: '#EAF1FF' },
+  iconRed: { backgroundColor: '#FDECEC' },
+  shortcutTitle: { marginTop: 'auto', fontSize: 15, fontWeight: '900', color: C.ink },
+  shortcutText: { fontSize: 11, fontWeight: '600', color: C.muted, marginTop: 2 },
+  joinCtaWrap: { width: '47.8%', flexGrow: 1, borderRadius: 22, ...CARE_SHADOW },
+  joinCta: { flex: 1, borderRadius: 22, padding: 15, minHeight: 124 },
+  joinCtaIcon: {
+    width: 40,
+    height: 40,
+    borderRadius: 13,
+    backgroundColor: 'rgba(255,255,255,0.9)',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  joinCtaTitle: { marginTop: 'auto', color: '#2E1C00', fontSize: 15, fontWeight: '900' },
+  joinCtaLink: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    alignSelf: 'flex-start',
+    marginTop: 6,
+    backgroundColor: 'rgba(255,255,255,0.55)',
+    paddingHorizontal: 10,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  joinCtaLinkText: { color: '#3A2400', fontSize: 11, fontWeight: '900' },
 
   typeRow: { flexDirection: 'row', gap: 12, marginTop: 12 },
   typeWrap: { flex: 1, borderRadius: 24, ...CARE_SHADOW },
@@ -552,31 +652,6 @@ const styles = StyleSheet.create({
     lineHeight: 14,
   },
 
-  joinCard: {
-    marginTop: 22,
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 12,
-    padding: 16,
-    borderRadius: 24,
-    backgroundColor: C.navy,
-  },
-  joinIcon: {
-    width: 46,
-    height: 46,
-    borderRadius: 23,
-    backgroundColor: C.white,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  joinTitle: { color: C.white, fontSize: 15, fontWeight: '900' },
-  joinText: {
-    color: 'rgba(255,255,255,0.75)',
-    fontSize: 11.5,
-    fontWeight: '600',
-    marginTop: 3,
-    lineHeight: 16,
-  },
   trust: {
     flexDirection: 'row',
     alignItems: 'center',

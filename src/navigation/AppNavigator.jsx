@@ -59,8 +59,15 @@ import MandiHomeScreen from '../screens/mandi/MandiHomeScreen';
 import CropPricesScreen from '../screens/mandi/CropPricesScreen';
 import CompareCropsScreen from '../screens/mandi/CompareCropsScreen';
 import { MANDI_ROUTES } from '../constants/mandiRoutes';
+import SoilTestHomeScreen from '../screens/Soil/SoilTestHomeScreen';
+import BookSoilTestScreen from '../screens/Soil/BookSoilTestScreen';
+import SoilTestDetailScreen from '../screens/Soil/SoilTestDetailScreen';
+import { SOIL_ROUTES } from '../constants/soilRoutes';
 import GovernmentSchemesScreen from '../screens/gov/GovernmentSchemesScreen';
 import LatestSchemesScreen from '../screens/gov/LatestSchemesScreen';
+import SchemeDetailScreen from '../screens/gov/SchemeDetailScreen';
+import EligibilityCheckScreen from '../screens/gov/EligibilityCheckScreen';
+import MyApplicationsScreen from '../screens/gov/MyApplicationsScreen';
 import DoctorHomeScreen from '../screens/Doctor/DoctorHomeScreen';
 import DoctorListScreen from '../screens/Doctor/DoctorListScreen';
 import DoctorProfileScreen from '../screens/Doctor/DoctorProfileScreen';
@@ -112,6 +119,14 @@ import MachineryRequestsScreen from '../screens/Machinery/MachineryRequestsScree
 import MyMachineryScreen from '../screens/Machinery/MyMachineryScreen';
 import MachineryFormScreen from '../screens/Machinery/MachineryFormScreen';
 import { MACHINERY_ROUTES } from '../constants/machineryRoutes';
+import DeliveryHomeScreen from '../screens/Delivery/DeliveryHomeScreen';
+import DeliveryPartnerDetailsScreen from '../screens/Delivery/DeliveryPartnerDetailsScreen';
+import BookDeliveryScreen from '../screens/Delivery/BookDeliveryScreen';
+import DeliveryTripScreen from '../screens/Delivery/DeliveryTripScreen';
+import MyDeliveriesScreen from '../screens/Delivery/MyDeliveriesScreen';
+import DriverDashboardScreen from '../screens/Delivery/DriverDashboardScreen';
+import DriverProfileFormScreen from '../screens/Delivery/DriverProfileFormScreen';
+import { DELIVERY_ROUTES } from '../constants/deliveryRoutes';
 const Stack = createNativeStackNavigator();
 const navigationTheme = {
   ...DefaultTheme,
@@ -267,6 +282,36 @@ export default function AppNavigator() {
           component={MachineryFormScreen}
         />
 
+        {/* Route names: DeliveryHome, DeliveryPartnerDetails, BookDelivery, DeliveryTrip, MyDeliveries, DeliveryDriverDashboard, DeliveryDriverForm */}
+        <Stack.Screen
+          name={DELIVERY_ROUTES.HOME}
+          component={DeliveryHomeScreen}
+        />
+        <Stack.Screen
+          name={DELIVERY_ROUTES.PARTNER_DETAILS}
+          component={DeliveryPartnerDetailsScreen}
+        />
+        <Stack.Screen
+          name={DELIVERY_ROUTES.BOOK}
+          component={BookDeliveryScreen}
+        />
+        <Stack.Screen
+          name={DELIVERY_ROUTES.TRIP}
+          component={DeliveryTripScreen}
+        />
+        <Stack.Screen
+          name={DELIVERY_ROUTES.MY_DELIVERIES}
+          component={MyDeliveriesScreen}
+        />
+        <Stack.Screen
+          name={DELIVERY_ROUTES.DRIVER_DASHBOARD}
+          component={DriverDashboardScreen}
+        />
+        <Stack.Screen
+          name={DELIVERY_ROUTES.DRIVER_FORM}
+          component={DriverProfileFormScreen}
+        />
+
         {/* Route names: DiseaseDetection, UploadCropPhoto, AIDetection, AIDiagnosis, DiseaseInformation */}
         <Stack.Screen
           name="DiseaseDetection"
@@ -364,7 +409,22 @@ export default function AppNavigator() {
           name="GovernmentSchemes"
           component={GovernmentSchemesScreen}
         />
+        <Stack.Screen name={SOIL_ROUTES.HOME} component={SoilTestHomeScreen} />
+        <Stack.Screen name={SOIL_ROUTES.BOOK} component={BookSoilTestScreen} />
+        <Stack.Screen
+          name={SOIL_ROUTES.DETAILS}
+          component={SoilTestDetailScreen}
+        />
         <Stack.Screen name="LatestSchemes" component={LatestSchemesScreen} />
+        <Stack.Screen name="SchemeDetail" component={SchemeDetailScreen} />
+        <Stack.Screen
+          name="EligibilityCheck"
+          component={EligibilityCheckScreen}
+        />
+        <Stack.Screen
+          name="MyApplications"
+          component={MyApplicationsScreen}
+        />
         <Stack.Screen
           name={WAREHOUSE_ROUTES.HOME}
           component={WarehouseHomeScreen}
